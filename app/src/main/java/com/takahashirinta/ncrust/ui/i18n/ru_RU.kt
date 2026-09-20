@@ -112,6 +112,7 @@ val ruRU = Strings(
     playAllButton = "Играть всё",
 
     songCountFormat = { "Всего $it песен" },
+    resumeFromFormat = { "Продолжено с $it" },
     playNowTitle = "Играть сейчас",
     playNowDesc = "Очистить текущую очередь и начать воспроизведение",
     insertNextTitle = "Следующим",

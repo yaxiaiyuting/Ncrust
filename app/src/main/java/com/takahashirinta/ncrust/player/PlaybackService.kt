@@ -1,6 +1,25 @@
+/*
+ * Ncrust —— 网易云音乐第三方客户端
+ * 原始代码 Copyright (c) 2026 Takahashi_Rinta，以 MIT 许可发布（全文见仓库根目录 LICENSE-MIT）。
+ *
+ * 本文件属于本 Fork（https://github.com/yaxiaiyuting/Ncrust）的修改部分，
+ * Copyright (c) 2026 yaxiaiyuting，以 GPLv3 许可分发；本 Fork 整体以 GPLv3 分发。
+ *
+ * 修改说明（B2 FFmpeg 集成）：
+ *   - 挂载 DefaultRenderersFactory，扩展渲染器模式设为 ON：有平台解码器时仍走平台，
+ *     没有时（API < 27 的 FLAC）才回退到随包分发的 FFmpeg 软件解码器。
+ *   - B3-1：缓冲策略按物理内存分档，≤3.5GB 机型峰值缓冲减半。
+ *   - B3-2：禁用流内嵌 ID3 元数据（封面等）解析，显示用的元数据全部来自 API。
+ *   - B3-3：加入音频 offload 能力探测日志（刻意不启用，依据见 logAudioOffloadCapability）。
+ *   - B4：playUrl 支持 startPositionMs，配合「每首歌进度记忆」实现断点续播；
+ *     用 setMediaItem(item, pos) 而非 prepare 后 seekTo，保证歌词首帧即对齐。 */
+
 package com.takahashirinta.ncrust.player
 
+import android.app.ActivityManager
 import android.app.Notification
+import android.media.AudioFormat
+import android.media.AudioManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -23,8 +42,14 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.DefaultLoadControl
+import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.LoadControl
 import androidx.media3.exoplayer.analytics.AnalyticsListener
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
+import androidx.media3.extractor.DefaultExtractorsFactory
+import androidx.media3.extractor.flac.FlacExtractor
+import androidx.media3.extractor.mp3.Mp3Extractor
 import androidx.media3.session.LibraryResult
 import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaLibraryService.LibraryParams
@@ -97,12 +122,101 @@ class PlaybackService : MediaLibraryService() {
     private var pendingNextArtworkBitmap: Bitmap? = null
     private var artworkPreloadGeneration = 0
 
+    /** 低内存档阈值：≤3.5GB 视为低配（覆盖 2GB / 3GB 机型，4GB 及以上不降级）。 */
+    private val LOW_RAM_TOTAL_BYTES = 3_500L * 1024 * 1024 * 1024
+
+    /**
+     * B3-3：音频 offload（硬件直通解码，低功耗路径）能力探测。
+     *
+     * **本版本刻意不启用**，依据：
+     *  1) Media3 1.5.0 的 DefaultRenderersFactory **没有** setEnableAudioOffload
+     *     （1.6+ 才提供）。要启用必须自建 DefaultAudioSink + AudioOffloadSupportProvider，
+     *     改动面大且难以在无真机的情况下验证。
+     *  2) offload 会绕过应用侧音频处理链，与本 App 的无缝预载 / 播放参数策略冲突，
+     *     可能导致「无缝播放」退化 —— 那是本 App 的核心体验，不宜用它换省电。
+     *  3) offload 只对平台原生支持的编码生效；本项目大量走 FFmpeg 软解（无损 FLAC），
+     *     软解路径本来就不经过 offload。
+     *
+     * 因此这里只做能力探测并打日志，供在目标机型上评估后续是否需要单独开关。
+     */
+    private fun logAudioOffloadCapability() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            Log.i("PlaybackService", "AudioOffload: unsupported (API < 29)")
+            return
+        }
+        val supported = runCatching {
+            // 注意：isOffloadedPlaybackSupported 是 AudioManager 的**静态**方法。
+            AudioManager.isOffloadedPlaybackSupported(
+                AudioFormat.Builder()
+                    .setEncoding(AudioFormat.ENCODING_MP3)
+                    .setSampleRate(44_100)
+                    .setChannelMask(AudioFormat.CHANNEL_OUT_STEREO)
+                    .build(),
+                // 必须用 android.media.AudioAttributes —— 本文件已 import 了 media3 的同名类。
+                android.media.AudioAttributes.Builder()
+                    .setUsage(android.media.AudioAttributes.USAGE_MEDIA)
+                    .setContentType(android.media.AudioAttributes.CONTENT_TYPE_MUSIC)
+                    .build()
+            )
+        }.getOrDefault(false)
+        Log.i("PlaybackService", "AudioOffload: mp3 supported=" + supported + " (decision: disabled by design)")
+    }
+
+    /**
+     * 按设备**物理内存**分档的缓冲策略（B3-1）。
+     *
+     * 背景：默认 LoadControl 在重缓冲后仅攒 5s 就续播，网络略慢于码率时会「播一点断一点」，
+     * 所以此前把目标缓冲拉到了 30–60s。但峰值缓冲正是播放器常驻内存的主要来源：
+     * 无损 FLAC 按 ~1000 kbps 估算约 125 KB/s，60s 峰值 ≈ 7.5 MB，30s ≈ 3.7 MB。
+     *
+     * 3 GB 机型（如三星 S6 G9209）在系统内存紧张时更早被回收，因此对低内存档把峰值缓冲
+     * 减半；重缓冲续播阈值只从 15s 降到 12s —— 仍足以跨过弱网抖动，不至于退回
+     * 「播一点断一点」。
+     *
+     * 判定用 totalMem 而非 isLowRamDevice：Android 只对 ≤1GB 机型置 low-ram 标志，
+     * 3GB 机型不会被标记，达不到本次优化目标。
+     */
+    private fun buildLoadControl(): LoadControl {
+        val am = getSystemService(ACTIVITY_SERVICE) as ActivityManager
+        val memInfo = ActivityManager.MemoryInfo().also { am.getMemoryInfo(it) }
+        val lowRamProfile = memInfo.totalMem in 1..LOW_RAM_TOTAL_BYTES
+        Log.i(
+            "PlaybackService",
+            "LoadControl profile=" + (if (lowRamProfile) "low" else "default") +
+                " totalMem=" + memInfo.totalMem / (1024 * 1024) + "MB"
+        )
+        val builder = DefaultLoadControl.Builder()
+        return if (lowRamProfile) {
+            // 低内存档：峰值缓冲 60s → 30s（常驻大致减半），续播阈值 15s → 12s。
+            builder.setBufferDurationsMs(15_000, 30_000, 2_000, 12_000).build()
+        } else {
+            // 常规档：保持既有的弱网优化配置不变。
+            builder.setBufferDurationsMs(30_000, 60_000, 2_500, 15_000).build()
+        }
+    }
+
     override fun onCreate() {
         super.onCreate()
         instance = this
         Log.d("PlaybackService", "onCreate")
+        logAudioOffloadCapability()
 
-        player = ExoPlayer.Builder(this)
+        // 扩展渲染器模式 ON：优先用平台解码器（API 27+ 的 FLAC 走系统解码，省电），
+        // 只有当平台没有任何解码器支持该格式时才回退到扩展里的 FFmpeg 软件解码器。
+        // 这正是 API 24–26 播放无损 FLAC 所需要的路径。
+        val renderersFactory = DefaultRenderersFactory(this)
+            .setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON)
+
+        // 流内嵌的 ID3 元数据（尤其封面图，单张可达数百 KB）在本 App 里毫无用处：
+        // 标题 / 歌手 / 封面一律由网易云 API 提供，并显式写入 MediaMetadata 与通知栏
+        // （见 songItem() 与通知栏的 MediaMetadataCompat.Builder）。关掉解析可省下
+        // 这部分解析 CPU 与内存 —— 对 3GB 机型是实打实的收益，且不影响任何显示。
+        val extractorsFactory = DefaultExtractorsFactory()
+            .setMp3ExtractorFlags(Mp3Extractor.FLAG_DISABLE_ID3_METADATA)
+            .setFlacExtractorFlags(FlacExtractor.FLAG_DISABLE_ID3_METADATA)
+        val mediaSourceFactory = DefaultMediaSourceFactory(this, extractorsFactory)
+
+        player = ExoPlayer.Builder(this, renderersFactory, mediaSourceFactory)
             .setAudioAttributes(
                 AudioAttributes.Builder()
                     .setUsage(C.USAGE_MEDIA)
@@ -114,19 +228,7 @@ class PlaybackService : MediaLibraryService() {
             // 后台/熄屏播放时持有 partial wake lock，避免 CPU 休眠导致音频欠载
             // （听感是"炒豆子"爆鸣，严重时 AudioTrack 直接死掉、进度还在跑但没声）。
             .setWakeMode(C.WAKE_MODE_NETWORK)
-            // 弱网缓冲策略：默认 LoadControl 重缓冲后仅攒 5s 就续播，网络略慢于码率时
-            // 会"播一点断一点"（拖带感）。这里拉高重缓冲续播阈值到 15s、并把目标缓冲
-            // 扩到 30~60s，弱网下宁可多缓冲一小会儿，也不持续卡顿。
-            .setLoadControl(
-                DefaultLoadControl.Builder()
-                    .setBufferDurationsMs(
-                        /* minBufferMs = */ 30_000,
-                        /* maxBufferMs = */ 60_000,
-                        /* bufferForPlaybackMs = */ 2_500,
-                        /* bufferForPlaybackAfterRebufferMs = */ 15_000
-                    )
-                    .build()
-            )
+            .setLoadControl(buildLoadControl())
             .build()
 
         // media3 MediaLibrarySession：对外暴露播放控制 + 浏览树，车机
@@ -281,6 +383,8 @@ class PlaybackService : MediaLibraryService() {
         val artist = intent?.getStringExtra("artist")
         val artwork = intent?.getStringExtra("artwork")
         val songId = intent?.getLongExtra("songId", -1L) ?: -1L
+        // B4：起播位置。0 = 从 0 分 0 秒开始；> 0 = 从上次退出的时间点续播。
+        val startPositionMs = intent?.getLongExtra("startPositionMs", 0L) ?: 0L
 
         if (title != null) mediaTitle = title
         if (artist != null) mediaArtist = artist
@@ -293,7 +397,7 @@ class PlaybackService : MediaLibraryService() {
 
         if (url != null) {
             PlaybackStateManager.saveState(this, songId, mediaTitle, mediaArtist, currentArtworkUrl ?: "", true)
-            playUrl(url)
+            playUrl(url, startPositionMs)
         } else if (!isServiceStarted && mediaTitle != "Ncrust") {
             updateNotify()
         }
@@ -402,8 +506,15 @@ class PlaybackService : MediaLibraryService() {
         return levels.getOrElse(prefs.getInt("wifi_quality", 3)) { "lossless" }
     }
 
-    private fun playUrl(url: String) {
-        Log.d("PlaybackService", "Playing: $url")
+    /**
+     * @param startPositionMs 起播位置（B4 续播）；0 表示从 0 分 0 秒开始。
+     *
+     * 用 setMediaItem(item, startPositionMs) 而不是「先 prepare 再 seekTo」：
+     * 后者会先按位置 0 解码并回调一次进度，歌词面板可能闪一下第一行再跳走。
+     * 直接带起播位置能让 position 从第一帧起就是正确值，歌词首帧即对齐。
+     */
+    private fun playUrl(url: String, startPositionMs: Long = 0L) {
+        Log.d("PlaybackService", "Playing: $url startPositionMs=$startPositionMs")
         // Clear any stale preload metadata; setMediaItem replaces the entire playlist.
         pendingNextTitle = null
         pendingNextArtist = null
@@ -413,7 +524,7 @@ class PlaybackService : MediaLibraryService() {
         pendingNextArtworkBitmap = null
         artworkPreloadGeneration++
         val mediaItem = androidx.media3.common.MediaItem.fromUri(url)
-        player.setMediaItem(mediaItem)
+        player.setMediaItem(mediaItem, startPositionMs.coerceAtLeast(0L))
         player.prepare()
         player.playWhenReady = true
     }

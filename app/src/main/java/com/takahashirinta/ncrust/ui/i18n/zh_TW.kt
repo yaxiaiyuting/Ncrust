@@ -112,6 +112,7 @@ scanConnecting = "正在連接平板…",
     playAllButton = "盡奏",
 
     songCountFormat = { "共 $it 曲" },
+    resumeFromFormat = { "已從 $it 繼續播放" },
     playNowTitle = "即奏",
     playNowDesc = "清空當前列而始奏",
     insertNextTitle = "徑接",

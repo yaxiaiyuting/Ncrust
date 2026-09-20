@@ -112,6 +112,7 @@ val zhCN = Strings(
     playAllButton = "播放全部",
 
     songCountFormat = { "共 $it 首歌曲" },
+    resumeFromFormat = { "已从 $it 继续播放" },
     playNowTitle = "现在播放",
     playNowDesc = "清空当前队列并开始播放",
     insertNextTitle = "插播",

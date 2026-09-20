@@ -112,6 +112,7 @@ val en = Strings(
     playAllButton = "Play All",
 
     songCountFormat = { "$it songs total" },
+    resumeFromFormat = { "Resumed from $it" },
     playNowTitle = "Play Now",
     playNowDesc = "Clear current queue and start playing",
     insertNextTitle = "Play Next",

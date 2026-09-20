@@ -133,6 +133,8 @@ data class Strings(
 
     // Play-all dialog
     val songCountFormat: (Int) -> String,
+    /** 断点续播提示，参数是已格式化的时间点（如 "1:23"）。 */
+    val resumeFromFormat: (String) -> String,
     val playNowTitle: String,
     val playNowDesc: String,
     val insertNextTitle: String,

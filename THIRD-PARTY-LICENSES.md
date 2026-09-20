@@ -25,6 +25,51 @@ Apache-2.0 与 GPLv3 兼容（Apache-2.0 → GPLv3 单向兼容；GPLv2 才不�
 | 1 | Apache-2.0 | BSD（`androidx.camera:camera-core`，双许可，可选 Apache-2.0） | ✅ |
 | 10 | POM 未声明 `<licenses>`，见下方逐项核实 | ✅ |
 
+## 一之二、FFmpeg 解码扩展（v1.1.0-gpl 新增，同为 GPL）
+
+| 项 | 值 |
+|---|---|
+| 坐标 | `org.jellyfin.media3:media3-ffmpeg-decoder:1.5.0+1` |
+| 来源 | **Maven Central**（不可变、可复现，非 JitPack 按需构建） |
+| 上游 | https://github.com/jellyfin/jellyfin-androidx-media |
+| 声明许可证 | **GPL-3.0**（仓库 LICENSE 与 POM `<licenses>` 一致） |
+| 与本项目关系 | 本项目整体以 **GPLv3** 分发 —— **许可证一致，完全兼容** |
+| 分发形态 | 每个 ABI 一个独立 `libffmpegJNI.so`，运行时由 `FfmpegLibrary` 动态加载 |
+
+**引入原因**：API 24–26（Android 7.0/7.1）系统的 `media_codecs*.xml` 中，`audio/flac`
+**只有 `OMX.google.flac.encoder`，没有解码器**（本机 API 24 模拟器已实测确认），
+导致无损档位在这些设备上只能降级到 mp3。内置 FFmpeg 软件解码器后，
+`FfmpegAudioRenderer` 会在平台无解码器时接管 FLAC 解码。
+
+**ABI 覆盖**（已确认 APK 内实际存在）：
+
+| ABI | libffmpegJNI.so |
+|---|---|
+| arm64-v8a | 1,471,232 B |
+| armeabi-v7a | 1,370,136 B |
+| x86 | 1,476,784 B |
+| x86_64 | 1,563,520 B |
+
+**合规说明**：
+
+- 该扩展是 **GPL-3.0**，与本项目整体许可证一致，**不引入任何新的分发限制**。
+- 它**不是** LGPL。若未来替换为 LGPL 构建的 FFmpeg，则需满足 LGPL 的「动态链接 + 可替换」
+  要求 —— 当前实现已是独立的 `.so` 动态加载，该条件天然满足。
+- 引入 GPL 组件后，**本项目的整体 GPLv3 分发方式不可回退为 MIT 或闭源**；
+  原 MIT 部分（`LICENSE-MIT`）仍完整保留。
+
+**实测证据**（Android 7.0 / API 24 模拟器 logcat）：
+
+```
+SongUrlFetcher: FLAC capability: platformDecoder=false ffmpegExtension=true
+                ffmpegVersion=Lavc60.3.100 => canDecodeFlac=true
+```
+
+### 联动的版本变更
+
+为与该扩展严格对齐（其版本号规则为 `<media3版本>+<修订>`，Maven Central 上没有 1.4.x 构建），
+Media3 由 **1.4.1 升级为 1.5.0**（exoplayer / session / ui 三者保持一致）。Media3 仍为 Apache-2.0。
+
 ## 二、POM 未声明许可证的依赖（逐项人工核实）
 
 这些组件的 POM 没有 `<licenses>` 段，已逐个按其上游仓库许可证确认：
