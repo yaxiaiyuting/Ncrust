@@ -9,12 +9,15 @@
  *   - 挂载 DefaultRenderersFactory，扩展渲染器模式设为 ON：有平台解码器时仍走平台，
  *     没有时（API < 27 的 FLAC）才回退到随包分发的 FFmpeg 软件解码器。
  *   - B3-1：缓冲策略按物理内存分档，≤3.5GB 机型峰值缓冲减半。
- *   - B3-2：禁用流内嵌 ID3 元数据（封面等）解析，显示用的元数据全部来自 API。 */
+ *   - B3-2：禁用流内嵌 ID3 元数据（封面等）解析，显示用的元数据全部来自 API。
+ *   - B3-3：加入音频 offload 能力探测日志（刻意不启用，依据见 logAudioOffloadCapability）。 */
 
 package com.takahashirinta.ncrust.player
 
 import android.app.ActivityManager
 import android.app.Notification
+import android.media.AudioFormat
+import android.media.AudioManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -121,6 +124,43 @@ class PlaybackService : MediaLibraryService() {
     private val LOW_RAM_TOTAL_BYTES = 3_500L * 1024 * 1024 * 1024
 
     /**
+     * B3-3：音频 offload（硬件直通解码，低功耗路径）能力探测。
+     *
+     * **本版本刻意不启用**，依据：
+     *  1) Media3 1.5.0 的 DefaultRenderersFactory **没有** setEnableAudioOffload
+     *     （1.6+ 才提供）。要启用必须自建 DefaultAudioSink + AudioOffloadSupportProvider，
+     *     改动面大且难以在无真机的情况下验证。
+     *  2) offload 会绕过应用侧音频处理链，与本 App 的无缝预载 / 播放参数策略冲突，
+     *     可能导致「无缝播放」退化 —— 那是本 App 的核心体验，不宜用它换省电。
+     *  3) offload 只对平台原生支持的编码生效；本项目大量走 FFmpeg 软解（无损 FLAC），
+     *     软解路径本来就不经过 offload。
+     *
+     * 因此这里只做能力探测并打日志，供在目标机型上评估后续是否需要单独开关。
+     */
+    private fun logAudioOffloadCapability() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            Log.i("PlaybackService", "AudioOffload: unsupported (API < 29)")
+            return
+        }
+        val supported = runCatching {
+            // 注意：isOffloadedPlaybackSupported 是 AudioManager 的**静态**方法。
+            AudioManager.isOffloadedPlaybackSupported(
+                AudioFormat.Builder()
+                    .setEncoding(AudioFormat.ENCODING_MP3)
+                    .setSampleRate(44_100)
+                    .setChannelMask(AudioFormat.CHANNEL_OUT_STEREO)
+                    .build(),
+                // 必须用 android.media.AudioAttributes —— 本文件已 import 了 media3 的同名类。
+                android.media.AudioAttributes.Builder()
+                    .setUsage(android.media.AudioAttributes.USAGE_MEDIA)
+                    .setContentType(android.media.AudioAttributes.CONTENT_TYPE_MUSIC)
+                    .build()
+            )
+        }.getOrDefault(false)
+        Log.i("PlaybackService", "AudioOffload: mp3 supported=" + supported + " (decision: disabled by design)")
+    }
+
+    /**
      * 按设备**物理内存**分档的缓冲策略（B3-1）。
      *
      * 背景：默认 LoadControl 在重缓冲后仅攒 5s 就续播，网络略慢于码率时会「播一点断一点」，
@@ -157,6 +197,7 @@ class PlaybackService : MediaLibraryService() {
         super.onCreate()
         instance = this
         Log.d("PlaybackService", "onCreate")
+        logAudioOffloadCapability()
 
         // 扩展渲染器模式 ON：优先用平台解码器（API 27+ 的 FLAC 走系统解码，省电），
         // 只有当平台没有任何解码器支持该格式时才回退到扩展里的 FFmpeg 软件解码器。
