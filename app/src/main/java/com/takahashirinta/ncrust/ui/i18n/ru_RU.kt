@@ -1,4 +1,4 @@
-﻿package com.takahashirinta.ncrust.ui.i18n
+package com.takahashirinta.ncrust.ui.i18n
 
 val ruRU = Strings(
     tabHome = "Главная",
@@ -23,6 +23,8 @@ val ruRU = Strings(
     wifiQualityLabel = "В сети Wi-Fi",
     mobileQualityLabel = "В мобильной сети",
     qualityOptions = listOf("Сжатое", "Среднее", "Лучшее", "Без потерь", "Hi-Res", "Объёмный звук", "Dolby Atmos"),
+    qualityDowngradedBadge = "Понижено",
+    qualityFlacUnsupportedHint = "Устройство не поддерживает — будет понижено автоматически",
     playbackSectionTitle = "Воспроизведение",
     gaplessSectionTitle = "Бесшовное воспроизведение",
     gaplessDescription = "Предзагрузка следующего трека для устранения пауз",

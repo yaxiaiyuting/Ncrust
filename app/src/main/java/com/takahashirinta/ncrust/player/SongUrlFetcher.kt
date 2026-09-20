@@ -1,3 +1,14 @@
+/*
+ * Ncrust —— 网易云音乐第三方客户端
+ * 原始代码 Copyright (c) 2026 Takahashi_Rinta，以 MIT 许可发布（全文见仓库根目录 LICENSE-MIT）。
+ *
+ * 本文件属于本 Fork（https://github.com/yaxiaiyuting/Ncrust）的修改部分，
+ * Copyright (c) 2026 yaxiaiyuting，以 GPLv3 许可分发；本 Fork 整体以 GPLv3 分发。
+ *
+ * 修改说明（Bug1「音质切换」）：
+ *   - 公开 deviceSupportsFlac / isFlacTier，供设置页在 API < 27 上对 FLAC 档位给出
+ *     「本机不支持该档位，将自动降级」提示，不再静默降档。 */
+
 package com.takahashirinta.ncrust.player
 
 import android.media.MediaCodecList
@@ -30,6 +41,15 @@ object SongUrlFetcher {
             }.getOrDefault(false)
         }
     }
+
+    /**
+     * 本机是否具备系统 FLAC 解码器（API < 27 没有）。
+     * 设置页据此在用户选中 FLAC 档位时提示「本机不支持该档位，将自动降级」（Bug1-C）。
+     */
+    val deviceSupportsFlac: Boolean get() = deviceCanDecodeFlac
+
+    /** [level] 是否属于必须依赖 FLAC 解码器的档位。 */
+    fun isFlacTier(level: String): Boolean = level in FLAC_TIERS
 
     // Returns null when no level yields a playable URL (e.g. VIP-only song without a
     // subscription, or no valid session). Callers must skip the song instead of playing.

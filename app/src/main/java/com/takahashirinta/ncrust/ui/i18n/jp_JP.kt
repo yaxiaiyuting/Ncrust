@@ -1,4 +1,4 @@
-﻿package com.takahashirinta.ncrust.ui.i18n
+package com.takahashirinta.ncrust.ui.i18n
 
 val jpJP = Strings(
     tabHome = "ホーム",
@@ -23,6 +23,8 @@ val jpJP = Strings(
     wifiQualityLabel = "Wi-Fi環境",
     mobileQualityLabel = "モバイルデータ環境",
     qualityOptions = listOf("圧縮", "標準", "高品質", "ロスレス", "ハイレゾ", "サラウンド", "Dolby Atmos"),
+    qualityDowngradedBadge = "降格",
+    qualityFlacUnsupportedHint = "この端末では未対応のため、自動的に下がります",
     playbackSectionTitle = "再生",
     gaplessSectionTitle = "ギャップレス再生",
     gaplessDescription = "次の曲を先読みして途切れをなくす",

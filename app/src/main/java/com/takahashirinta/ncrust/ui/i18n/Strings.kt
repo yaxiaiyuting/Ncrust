@@ -27,6 +27,10 @@ data class Strings(
     val wifiQualityLabel: String,
     val mobileQualityLabel: String,
     val qualityOptions: List<String>,
+    /** 实际档位低于偏好档位时，播放器音质标签后的角标（Bug1-B）。 */
+    val qualityDowngradedBadge: String,
+    /** API < 27 无系统 FLAC 解码器、且选中 FLAC 档位时的设置页提示（Bug1-C）。 */
+    val qualityFlacUnsupportedHint: String,
     val playbackSectionTitle: String,
     val gaplessSectionTitle: String,
     val gaplessDescription: String,

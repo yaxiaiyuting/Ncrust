@@ -1,4 +1,4 @@
-﻿package com.takahashirinta.ncrust.ui.i18n
+package com.takahashirinta.ncrust.ui.i18n
 
 val jpMY = Strings(
     tabHome = "登布",
@@ -23,6 +23,8 @@ val jpMY = Strings(
     wifiQualityLabel = "WiFi 環境",
     mobileQualityLabel = "移動 環境",
     qualityOptions = listOf("圧縮", "通常", "良", "非破壊", "高解像度", "サラウンド", "Dolby Atmos"),
+    qualityDowngradedBadge = "降格",
+    qualityFlacUnsupportedHint = "本端末は非対応、自動で下がります",
     playbackSectionTitle = "再世",
     gaplessSectionTitle = "無間 再世",
     gaplessDescription = "次 予読 隙 無",

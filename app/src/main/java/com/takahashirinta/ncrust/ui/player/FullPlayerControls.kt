@@ -1,3 +1,15 @@
+/*
+ * Ncrust —— 网易云音乐第三方客户端
+ * 原始代码 Copyright (c) 2026 Takahashi_Rinta，以 MIT 许可发布（全文见仓库根目录 LICENSE-MIT）。
+ *
+ * 本文件属于本 Fork（https://github.com/yaxiaiyuting/Ncrust）的修改部分，
+ * Copyright (c) 2026 yaxiaiyuting，以 GPLv3 许可分发；本 Fork 整体以 GPLv3 分发。
+ *
+ * 修改说明（Bug1「音质切换」）：
+ *   - 新增 qualityDowngradedFlow：实际档位低于用户偏好档位时，音质标签追加
+ *     「已降级」角标，不再让用户误以为设置没生效。
+ */
+
 package com.takahashirinta.ncrust.ui.player
 
 import androidx.compose.foundation.background
@@ -37,6 +49,7 @@ fun FullPlayerControls(
     positionFlow: StateFlow<Long>,
     durationFlow: StateFlow<Long>,
     qualityIndexFlow: StateFlow<Int>,
+    qualityDowngradedFlow: StateFlow<Boolean>,
     qualityOptions: List<String>,
     onPlayPause: () -> Unit,
     onPlayPrevious: () -> Unit = {},
@@ -219,7 +232,11 @@ fun FullPlayerControls(
                         ) { onNavigateToUser() }
                         .padding(horizontal = 8.dp, vertical = 3.dp)
                 ) {
-                    QualityLabel(qualityIndexFlow = qualityIndexFlow, options = qualityOptions)
+                    QualityLabel(
+                        qualityIndexFlow = qualityIndexFlow,
+                        qualityDowngradedFlow = qualityDowngradedFlow,
+                        options = qualityOptions
+                    )
                 }
             }
         }
@@ -248,7 +265,11 @@ fun FullPlayerControls(
                     ) { onNavigateToUser() }
                     .padding(horizontal = 8.dp, vertical = 3.dp)
             ) {
-                QualityLabel(qualityIndexFlow = qualityIndexFlow, options = qualityOptions)
+                QualityLabel(
+                    qualityIndexFlow = qualityIndexFlow,
+                    qualityDowngradedFlow = qualityDowngradedFlow,
+                    options = qualityOptions
+                )
             }
             DurationText(
                 durationFlow = durationFlow,
@@ -403,15 +424,35 @@ private fun DurationText(durationFlow: StateFlow<Long>, modifier: Modifier) {
 }
 
 @Composable
-private fun QualityLabel(qualityIndexFlow: StateFlow<Int>, options: List<String>) {
+private fun QualityLabel(
+    qualityIndexFlow: StateFlow<Int>,
+    qualityDowngradedFlow: StateFlow<Boolean>,
+    options: List<String>
+) {
     val qualityIndex by qualityIndexFlow.collectAsState()
+    val downgraded by qualityDowngradedFlow.collectAsState()
     val label = options.getOrElse(qualityIndex) { options.getOrElse(3) { "" } }
-    MetroText(
-        label,
-        color = LocalMetroColors.current.primary,
-        style = TextStyle(fontSize = 11.sp, fontWeight = FontWeight.SemiBold),
-        maxLines = 1,
-        softWrap = false,
-        overflow = TextOverflow.Ellipsis
-    )
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        MetroText(
+            label,
+            color = LocalMetroColors.current.primary,
+            style = TextStyle(fontSize = 11.sp, fontWeight = FontWeight.SemiBold),
+            maxLines = 1,
+            softWrap = false,
+            overflow = TextOverflow.Ellipsis
+        )
+        // 实际档位低于偏好档位：明确告知被降级（设备解码能力 / 会员权限 / 版权），
+        // 否则用户改了设置却听不出变化，会以为"切换音质失败"。
+        if (downgraded) {
+            Spacer(Modifier.width(4.dp))
+            MetroText(
+                LocalStrings.current.qualityDowngradedBadge,
+                color = LocalMetroColors.current.onSurfaceVariant,
+                style = TextStyle(fontSize = 10.sp),
+                maxLines = 1,
+                softWrap = false,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+    }
 }

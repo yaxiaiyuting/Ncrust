@@ -1,4 +1,4 @@
-﻿package com.takahashirinta.ncrust.ui.i18n
+package com.takahashirinta.ncrust.ui.i18n
 
 val en = Strings(
     tabHome = "Home",
@@ -23,6 +23,8 @@ val en = Strings(
     wifiQualityLabel = "On Wi-Fi",
     mobileQualityLabel = "On Mobile Data",
     qualityOptions = listOf("Low", "Fair", "Better", "Lossless", "Hi-Res", "Surround", "Dolby Atmos"),
+    qualityDowngradedBadge = "Downgraded",
+    qualityFlacUnsupportedHint = "Not supported on this device — will downgrade automatically",
     playbackSectionTitle = "Playback",
     gaplessSectionTitle = "Gapless Playback",
     gaplessDescription = "Preload next track to eliminate gaps",

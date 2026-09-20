@@ -1,4 +1,4 @@
-﻿package com.takahashirinta.ncrust.ui.i18n
+package com.takahashirinta.ncrust.ui.i18n
 
 val koNK = Strings(
     tabHome = "처음",
@@ -23,6 +23,8 @@ val koNK = Strings(
     wifiQualityLabel = "무선통신망 환경",
     mobileQualityLabel = "이동통신망 환경",
     qualityOptions = listOf("압축", "보통", "더 좋음", "비파괴", "고해상도", "서라운드", "돌비 애트모스"),
+    qualityDowngradedBadge = "강등됨",
+    qualityFlacUnsupportedHint = "이 기기에서 지원하지 않아 자동으로 낮아집니다",
     playbackSectionTitle = "재생",
     gaplessSectionTitle = "틈 없이 이어 재생",
     gaplessDescription = "다음곡 미리불러와 틈 없애기",

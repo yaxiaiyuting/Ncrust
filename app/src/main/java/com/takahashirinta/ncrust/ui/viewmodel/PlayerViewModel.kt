@@ -1,8 +1,23 @@
+/*
+ * Ncrust —— 网易云音乐第三方客户端
+ * 原始代码 Copyright (c) 2026 Takahashi_Rinta，以 MIT 许可发布（全文见仓库根目录 LICENSE-MIT）。
+ *
+ * 本文件属于本 Fork（https://github.com/yaxiaiyuting/Ncrust）的修改部分，
+ * Copyright (c) 2026 yaxiaiyuting，以 GPLv3 许可分发；本 Fork 整体以 GPLv3 分发。
+ *
+ * 修改说明（Bug1「音质切换」）：
+ *   - A：新增 onQualityPreferenceChanged()，设置页改音质后若正在播放且生效档位确实变化，
+ *        立即按新档位对当前歌重新取链播放（不再等到下一首才生效）。
+ *   - B：新增 preferredQualityIndex（偏好档位）与 qualityDowngraded（降级标记），
+ *        与 currentQualityIndex（服务端实际返回档位）区分，供播放器 UI 提示"已降级"。
+ *   - 抽出 effectivePreferredLevel()，统一设置页/播放路径的档位读取。 */
+
 package com.takahashirinta.ncrust.ui.viewmodel
 
 import android.app.Application
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
@@ -65,8 +80,27 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
     // Incremented on every explicit playSong call; lets preloadNextSong detect staleness.
     private var songPlayVersion = 0
 
+    companion object {
+        /**
+         * 音质档位。索引与 i18n `qualityOptions` 顺序、以及 eapi `level` 取值一一对应；
+         * 索引越大音质越高，因此「实际索引 < 偏好索引」即表示被降级。
+         */
+        val QUALITY_LEVELS = listOf("standard", "higher", "exhigh", "lossless", "hires", "jyeffect", "dolby")
+    }
+
+    /** 服务端**实际**返回的档位索引（可能因设备解码能力 / 会员权限 / 版权低于偏好）。 */
     val currentQualityIndex = MutableStateFlow(3)
-    private val qualityApiLevels = listOf("standard", "higher", "exhigh", "lossless", "hires", "jyeffect", "dolby")
+
+    /** 用户**偏好**档位索引（由设置页 wifi / mobile 偏好 + 当前网络决定）。 */
+    val preferredQualityIndex = MutableStateFlow(3)
+
+    /** 实际档位低于偏好档位时为 true，播放器 UI 据此提示「已降级」（Bug1-B）。 */
+    val qualityDowngraded = MutableStateFlow(false)
+
+    private val qualityApiLevels = QUALITY_LEVELS
+
+    /** 本次播放**请求**的档位；与 lastPlayedLevel（实际拿到）区分，用于判断偏好是否真的变了。 */
+    private var lastRequestedLevel = ""
 
     // 播放出错(如设备解码不了 24-bit FLAC / 高采样率)时自动降档重试的阶梯。
     // 每出错一次降一档,到 standard 仍失败才跳歌:保证「有声音,或跳歌」,绝不静默卡住。
@@ -159,6 +193,7 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                 currentSongArtwork.value = preloadedArtwork
                 val idx = qualityApiLevels.indexOf(preloadedActualLevel).coerceAtLeast(0)
                 currentQualityIndex.value = idx
+                noteActualLevel(preloadedActualLevel)
                 PlaybackStateManager.saveState(
                     getApplication(), preloadedSongId,
                     preloadedTitle, preloadedArtist, preloadedArtwork, true
@@ -242,6 +277,49 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
             .edit().putBoolean("lyrics_translation", enabled).apply()
     }
 
+    /**
+     * 读取当前**生效的偏好档位**：设置页 wifi_quality / mobile_quality 按当前网络二选一。
+     * 统一入口，避免设置页、播放路径、预载路径各写一份（Bug1 根因之一）。
+     */
+    private fun effectivePreferredLevel(prefs: SharedPreferences): String =
+        if (isOnWifi()) qualityApiLevels.getOrElse(prefs.getInt("wifi_quality", 3)) { "lossless" }
+        else qualityApiLevels.getOrElse(prefs.getInt("mobile_quality", 1)) { "higher" }
+
+    /**
+     * 记录服务端**实际**返回的档位，并据此刷新「已降级」提示（Bug1-B）。
+     * 档位表按音质从低到高排列，故 实际索引 < 偏好索引 即为降级。
+     */
+    private fun noteActualLevel(actualLevel: String) {
+        lastPlayedLevel = actualLevel
+        val actualIdx = qualityApiLevels.indexOf(actualLevel)
+        qualityDowngraded.value = actualIdx >= 0 && actualIdx < preferredQualityIndex.value
+    }
+
+    /**
+     * 设置页改动音质偏好后调用（Bug1-A）。
+     *
+     * 1. 先刷新 preferredQualityIndex / qualityDowngraded，让播放器标签立刻反映偏好变化；
+     * 2. 若当前有歌在播、**且生效档位确实变化**，按新档位对当前歌重新取链播放。
+     *    生效档位没变时直接返回——否则每次改设置都会把当前歌从头重播一次。
+     */
+    fun onQualityPreferenceChanged() {
+        val prefs = getApplication<Application>().getSharedPreferences("ncrust_settings", 0)
+        val newLevel = effectivePreferredLevel(prefs)
+        preferredQualityIndex.value = qualityApiLevels.indexOf(newLevel).coerceAtLeast(0)
+        noteActualLevel(lastPlayedLevel)
+
+        val sid = currentSongId.value ?: return
+        if (sid <= 0L) return
+        if (newLevel == lastRequestedLevel) return
+        playSong(
+            sid,
+            title = currentSongName.value ?: "",
+            artist = currentSongArtist.value ?: "",
+            artworkUrl = currentSongArtwork.value ?: "",
+            quality = newLevel
+        )
+    }
+
     private fun isOnWifi(): Boolean {
         val cm = getApplication<Application>().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         return cm.getNetworkCapabilities(cm.activeNetwork)
@@ -256,11 +334,13 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         refreshGaplessSetting()
 
         val prefs = getApplication<Application>().getSharedPreferences("ncrust_settings", 0)
-        val selectedQuality = if (quality.isNotEmpty()) quality
-        else if (isOnWifi()) qualityApiLevels.getOrElse(prefs.getInt("wifi_quality", 3)) { "lossless" }
-        else qualityApiLevels.getOrElse(prefs.getInt("mobile_quality", 1)) { "higher" }
+        val selectedQuality = if (quality.isNotEmpty()) quality else effectivePreferredLevel(prefs)
         val qIdx = qualityApiLevels.indexOf(selectedQuality).coerceAtLeast(0)
+        lastRequestedLevel = selectedQuality
+        // 显式传入 quality 的调用来自「播放失败降档重试」，那不是用户偏好，不能覆盖偏好档位。
+        if (quality.isEmpty()) preferredQualityIndex.value = qIdx
         currentQualityIndex.value = qIdx
+        qualityDowngraded.value = false
 
         // Fast path: URL was preloaded and cached for THIS requested level — skip network round-trip.
         // 缓存条目带档位:播放失败降档重试时,绝不会把上一档(可能已证明播不出声)的 URL 原样喂回。
@@ -270,9 +350,9 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         if (cachedEntry != null) {
             preloadedSongId = -1L; preloadedTitle = ""; preloadedArtist = ""
             preloadedArtwork = ""; preloadedActualLevel = ""; preloadedUrl = ""
-            lastPlayedLevel = cachedEntry.actualLevel
             val actualIdx = qualityApiLevels.indexOf(cachedEntry.actualLevel).coerceAtLeast(0)
             currentQualityIndex.value = actualIdx
+            noteActualLevel(cachedEntry.actualLevel)
             resetLyricsForNewSong()
             currentSongId.value = songId
             currentSongName.value = title
@@ -318,8 +398,8 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                 // 播放立即开始, 歌词就绪了再自动切回歌词视图。
                 viewModelScope.launch { fetchLyrics(songId) }
                 withContext(Dispatchers.Main) {
-                    lastPlayedLevel = result.actualLevel
                     currentQualityIndex.value = actualIdx
+                    noteActualLevel(result.actualLevel)
                     currentSongId.value = songId
                     currentSongName.value = title
                     currentSongArtist.value = artist
@@ -433,7 +513,8 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                             playJob?.cancel()
                             val idx = qualityApiLevels.indexOf(result.actualLevel).coerceAtLeast(0)
                             currentQualityIndex.value = idx
-                            lastPlayedLevel = result.actualLevel
+                            lastRequestedLevel = quality
+                            noteActualLevel(result.actualLevel)
                             resetLyricsForNewSong()
                             currentSongId.value = songId
                             currentSongName.value = title

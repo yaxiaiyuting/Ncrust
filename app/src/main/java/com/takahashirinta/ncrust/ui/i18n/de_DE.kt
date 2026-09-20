@@ -1,4 +1,4 @@
-﻿package com.takahashirinta.ncrust.ui.i18n
+package com.takahashirinta.ncrust.ui.i18n
 
 val deDE = Strings(
     tabHome = "Startseite",
@@ -23,6 +23,8 @@ val deDE = Strings(
     wifiQualityLabel = "Im WLAN",
     mobileQualityLabel = "Bei mobilen Daten",
     qualityOptions = listOf("Komprimiert", "Normal", "Besser", "Verlustfrei", "Hi-Res", "Surround", "Dolby Atmos"),
+    qualityDowngradedBadge = "Herabgestuft",
+    qualityFlacUnsupportedHint = "Auf diesem Gerät nicht unterstützt – wird automatisch reduziert",
     playbackSectionTitle = "Wiedergabe",
     gaplessSectionTitle = "Nahtlose Wiedergabe",
     gaplessDescription = "Nächsten Titel vorladen, um Lücken zu vermeiden",

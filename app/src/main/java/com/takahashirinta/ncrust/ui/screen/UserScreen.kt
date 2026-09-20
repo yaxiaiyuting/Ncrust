@@ -1,3 +1,16 @@
+/*
+ * Ncrust —— 网易云音乐第三方客户端
+ * 原始代码 Copyright (c) 2026 Takahashi_Rinta，以 MIT 许可发布（全文见仓库根目录 LICENSE-MIT）。
+ *
+ * 本文件属于本 Fork（https://github.com/yaxiaiyuting/Ncrust）的修改部分，
+ * Copyright (c) 2026 yaxiaiyuting，以 GPLv3 许可分发；本 Fork 整体以 GPLv3 分发。
+ *
+ * 修改说明（Bug1「音质切换」）：
+ *   - A：音质下拉 onSelect 后调用 onQualityPreferenceChanged()，正在播放时立即生效。
+ *   - C：API < 27 无系统 FLAC 解码器时，对 lossless/hires/jyeffect 档位给出
+ *        「本机不支持该档位，将自动降级」提示（MetroDropdownRow 新增 hint 参数）。
+ */
+
 package com.takahashirinta.ncrust.ui.screen
 
 import androidx.compose.foundation.background
@@ -37,6 +50,7 @@ import android.content.Context
 import android.widget.Toast
 import com.takahashirinta.ncrust.network.PlaylistApi
 import com.takahashirinta.ncrust.network.RetrofitClient
+import com.takahashirinta.ncrust.player.SongUrlFetcher
 import com.takahashirinta.ncrust.power.BackgroundActivity
 import com.takahashirinta.ncrust.ui.BottomOverlayInsetDp
 import com.takahashirinta.ncrust.ui.components.QrAuthorizeScreen
@@ -238,22 +252,34 @@ fun UserScreen(
         // 音质
         item {
             SectionTitle(strings.qualitySectionTitle)
+            // API < 27 没有系统 FLAC 解码器：选中 lossless / hires / jyeffect 会在取链阶段
+            // 被跳过、实际拿到 mp3。这里显式提示，避免"选了无损却没无损"（Bug1-C）。
+            val flacUnsupported = !SongUrlFetcher.deviceSupportsFlac
             MetroDropdownRow(
                 label = strings.wifiQualityLabel,
                 selectedIndex = wifiQuality,
                 options = strings.qualityOptions,
+                hint = if (flacUnsupported && isFlacTierIndex(wifiQuality)) {
+                    strings.qualityFlacUnsupportedHint
+                } else null,
                 onSelect = {
                     wifiQuality = it
                     prefs.edit().putInt("wifi_quality", it).apply()
+                    // Bug1-A：设置立即生效——正在播放时按新档位重新取链，而不是等下一首。
+                    playerViewModel.onQualityPreferenceChanged()
                 }
             )
             MetroDropdownRow(
                 label = strings.mobileQualityLabel,
                 selectedIndex = mobileQuality,
                 options = strings.qualityOptions,
+                hint = if (flacUnsupported && isFlacTierIndex(mobileQuality)) {
+                    strings.qualityFlacUnsupportedHint
+                } else null,
                 onSelect = {
                     mobileQuality = it
                     prefs.edit().putInt("mobile_quality", it).apply()
+                    playerViewModel.onQualityPreferenceChanged()
                 }
             )
             Spacer(Modifier.height(24.dp))
@@ -651,48 +677,69 @@ private fun MetroDropdownRow(
     label: String,
     selectedIndex: Int,
     options: List<String>,
+    hint: String? = null,
     onSelect: (Int) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
-    Box {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { expanded = true }
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            MetroText(
-                label,
-                color = LocalMetroColors.current.onBackground,
-                style = TextStyle(fontSize = 15.sp),
-                modifier = Modifier.weight(1f)
-            )
-            Spacer(Modifier.width(12.dp))
-            MetroText(
-                options.getOrElse(selectedIndex) { "" },
-                color = LocalMetroColors.current.primary,
-                style = TextStyle(fontSize = 15.sp),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.widthIn(max = 160.dp)
-            )
-            MetroIcon(
-                Icons.Default.ArrowDropDown,
-                contentDescription = null,
-                tint = LocalMetroColors.current.onSurfaceVariant,
-                sizeDp = 20.dp,
+    // Box 只包住下拉行本身：MetroSelectorFlyout 需要锚在这一行上，
+    // 提示文案放在 Box 之外，避免把弹出菜单的锚点推下去。
+    Column {
+        Box {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { expanded = true }
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                MetroText(
+                    label,
+                    color = LocalMetroColors.current.onBackground,
+                    style = TextStyle(fontSize = 15.sp),
+                    modifier = Modifier.weight(1f)
+                )
+                Spacer(Modifier.width(12.dp))
+                MetroText(
+                    options.getOrElse(selectedIndex) { "" },
+                    color = LocalMetroColors.current.primary,
+                    style = TextStyle(fontSize = 15.sp),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.widthIn(max = 160.dp)
+                )
+                MetroIcon(
+                    Icons.Default.ArrowDropDown,
+                    contentDescription = null,
+                    tint = LocalMetroColors.current.onSurfaceVariant,
+                    sizeDp = 20.dp,
+                )
+            }
+            // UWP ComboBox 移植:选中项落回锚点原位,菜单从锚点双向展开。
+            MetroSelectorFlyout(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                options = options,
+                selectedIndex = selectedIndex,
+                onSelect = onSelect,
             )
         }
-        // UWP ComboBox 移植:选中项落回锚点原位,菜单从锚点双向展开。
-        MetroSelectorFlyout(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-            options = options,
-            selectedIndex = selectedIndex,
-            onSelect = onSelect,
+    if (hint != null) {
+        MetroText(
+            hint,
+            color = LocalMetroColors.current.onSurfaceVariant,
+            style = TextStyle(fontSize = 12.sp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 16.dp, bottom = 10.dp)
         )
     }
+    }
+}
+
+/** 档位索引是否落在"依赖 FLAC 解码器"的档位（与 SongUrlFetcher 的判定同源）。 */
+private fun isFlacTierIndex(index: Int): Boolean {
+    val level = PlayerViewModel.QUALITY_LEVELS.getOrNull(index) ?: return false
+    return SongUrlFetcher.isFlacTier(level)
 }
 
 @Composable

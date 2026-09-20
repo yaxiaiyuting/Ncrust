@@ -1,4 +1,4 @@
-﻿package com.takahashirinta.ncrust.ui.i18n
+package com.takahashirinta.ncrust.ui.i18n
 
 val zhTW = Strings(
     tabHome = "首頁",
@@ -23,6 +23,8 @@ val zhTW = Strings(
     wifiQualityLabel = "無線局域網境下",
     mobileQualityLabel = "流動數據境下",
     qualityOptions = listOf("廉質", "中平", "上佳", "無損", "高清", "高清環繞聲", "杜比全景聲"),
+    qualityDowngradedBadge = "已降級",
+    qualityFlacUnsupportedHint = "本機不支援該檔位，將自動降級",
     playbackSectionTitle = "播放",
     gaplessSectionTitle = "無縫而歌",
     gaplessDescription = "預載下曲，去其隙縫",
