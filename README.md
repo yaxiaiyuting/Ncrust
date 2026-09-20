@@ -13,7 +13,8 @@
 [![API](https://img.shields.io/badge/API-24%2B-green?style=flat-square&logo=android)](https://developer.android.com)
 [![Kotlin](https://img.shields.io/badge/Kotlin-1.9.24-purple?style=flat-square&logo=kotlin)](https://kotlinlang.org)
 [![Compose](https://img.shields.io/badge/Compose-BOM%202024.12-blue?style=flat-square&logo=jetpackcompose)](https://developer.android.com/jetpack/compose)
-[![License](https://img.shields.io/badge/license-MIT-yellow?style=flat-square)](LICENSE)
+[![License](https://img.shields.io/badge/license-GPLv3-blue?style=flat-square)](LICENSE)
+[![Original](https://img.shields.io/badge/original%20code-MIT-yellow?style=flat-square)](LICENSE-MIT)
 
 [**下载安装**](https://github.com/GuitaristRin/Ncrust/releases) · [**Wiki 文档**](https://github.com/GuitaristRin/Ncrust/wiki) · [**问题反馈**](https://github.com/GuitaristRin/Ncrust/issues) · [**Kanesumi 设计库**](https://github.com/GuitaristRin/Kanesumi-sec-a)
 
@@ -217,7 +218,15 @@ app/src/main/java/com/takahashirinta/ncrust/
 
 ## 📄 许可证
 
-本项目以 **MIT** 许可发布，Copyright (c) 2026 Takahashi_Rinta。完整文本见 [LICENSE](LICENSE)。Kanesumi 库为 Apache-2.0。
+**本 Fork 整体以 GPLv3 分发，并完整保留上游原始代码的 MIT 许可。**
+
+Ncrust 原始代码 Copyright (c) 2026 Takahashi_Rinta，遵循 MIT 许可。本 Fork 的修改与新增部分，Copyright (c) 2026 yaxiaiyuting，遵循 GPLv3 许可。整体以 GPLv3 分发。
+
+- 上游项目：[GuitaristRin/Ncrust](https://github.com/GuitaristRin/Ncrust)
+- 原始 MIT 许可证全文（未作任何修改、原版权声明完整保留）：[LICENSE-MIT](LICENSE-MIT)
+- 本 Fork 整体适用的 GPLv3 全文：[LICENSE](LICENSE)
+- 第三方依赖许可证与 GPLv3 兼容性分析：[THIRD-PARTY-LICENSES.md](THIRD-PARTY-LICENSES.md)
+- UI 依赖 Kanesumi（kanesumi-core / anim / controls / structure）为 Apache-2.0，与 GPLv3 兼容。
 
 ---
 
