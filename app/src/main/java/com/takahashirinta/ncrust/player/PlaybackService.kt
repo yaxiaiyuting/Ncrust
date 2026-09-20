@@ -8,7 +8,8 @@
  * 修改说明（B2 FFmpeg 集成）：
  *   - 挂载 DefaultRenderersFactory，扩展渲染器模式设为 ON：有平台解码器时仍走平台，
  *     没有时（API < 27 的 FLAC）才回退到随包分发的 FFmpeg 软件解码器。
- *   - B3-1：缓冲策略按物理内存分档，≤3.5GB 机型峰值缓冲减半。 */
+ *   - B3-1：缓冲策略按物理内存分档，≤3.5GB 机型峰值缓冲减半。
+ *   - B3-2：禁用流内嵌 ID3 元数据（封面等）解析，显示用的元数据全部来自 API。 */
 
 package com.takahashirinta.ncrust.player
 
@@ -40,6 +41,10 @@ import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.LoadControl
 import androidx.media3.exoplayer.analytics.AnalyticsListener
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
+import androidx.media3.extractor.DefaultExtractorsFactory
+import androidx.media3.extractor.flac.FlacExtractor
+import androidx.media3.extractor.mp3.Mp3Extractor
 import androidx.media3.session.LibraryResult
 import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaLibraryService.LibraryParams
@@ -159,7 +164,16 @@ class PlaybackService : MediaLibraryService() {
         val renderersFactory = DefaultRenderersFactory(this)
             .setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON)
 
-        player = ExoPlayer.Builder(this, renderersFactory)
+        // 流内嵌的 ID3 元数据（尤其封面图，单张可达数百 KB）在本 App 里毫无用处：
+        // 标题 / 歌手 / 封面一律由网易云 API 提供，并显式写入 MediaMetadata 与通知栏
+        // （见 songItem() 与通知栏的 MediaMetadataCompat.Builder）。关掉解析可省下
+        // 这部分解析 CPU 与内存 —— 对 3GB 机型是实打实的收益，且不影响任何显示。
+        val extractorsFactory = DefaultExtractorsFactory()
+            .setMp3ExtractorFlags(Mp3Extractor.FLAG_DISABLE_ID3_METADATA)
+            .setFlacExtractorFlags(FlacExtractor.FLAG_DISABLE_ID3_METADATA)
+        val mediaSourceFactory = DefaultMediaSourceFactory(this, extractorsFactory)
+
+        player = ExoPlayer.Builder(this, renderersFactory, mediaSourceFactory)
             .setAudioAttributes(
                 AudioAttributes.Builder()
                     .setUsage(C.USAGE_MEDIA)
