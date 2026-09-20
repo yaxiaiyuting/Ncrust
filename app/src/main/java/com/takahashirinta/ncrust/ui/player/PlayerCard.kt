@@ -287,8 +287,31 @@ fun PlayerCard(
             (lyricsEnabled || queueSlideProgress.value > 0.5f) && progress.value > 0.7f
         }
     }
+    // 注意区分两个不同职责的判断，不要把语义混在一起：
+    //
+    // ① isOverPanel —— **面板语义**：点是否落在歌词/列表这类可滚动面板上。
+    //    只给下面的拖拽检测器用：落在面板内时根节点必须让路，
+    //    否则内部 LazyColumn 滚不动（历史 issue #23）。它依赖 isPanelInteractive 是正确的。
     fun isOverPanel(y: Float, x: Float) = isPanelInteractive && y > topBarBottomPx &&
         (!isWidePlayer || x > screenWidthPx / 2f)
+
+    // ② isOverCardVisibleArea —— **几何语义**：点是否落在卡片自己的可见矩形内。
+    //    只给下面「展开态吞事件」的消费者用。
+    //
+    //    旧实现这里用的是 isOverPanel，于是豁免区被绑在 isPanelInteractive 上、
+    //    进而绑在 lyricsEnabled 上：**关闭歌词后豁免区整个消失**，根节点在展开态
+    //    把事件全部吞掉，底部播放控制栏与底部导航栏一起失效（歌词开着反而正常）。
+    //    消费者要挡的只是**下层兄弟**，与自己内部显示哪个面板无关，
+    //    所以这里必须只依赖几何。
+    fun isOverCardVisibleArea(y: Float, x: Float): Boolean {
+        // 宽屏左右分栏，左半是封面区，触摸落在左半时不属于卡片内容区。
+        if (isWidePlayer && x <= screenWidthPx / 2f) return false
+        // 卡片可见上沿：收起时整体下移到 collapsedOffsetY，展开时回到 0。
+        // 用 progress 插值而不是直接读 cardRootOrigin.y —— graphicsLayer 的平移
+        // 不会重新触发布局，onGloballyPositioned 写入的坐标在动画期间会滞后。
+        val cardTopPx = cardRootOrigin.y * (1f - progress.value)
+        return y >= cardTopPx
+    }
 
     Box(
         modifier = Modifier
@@ -303,7 +326,7 @@ fun PlayerCard(
                         val event = awaitPointerEvent(PointerEventPass.Main)
                         if (progress.value > 0.99f) {
                             val pos = event.changes.firstOrNull()?.position
-                            if (pos == null || !isOverPanel(pos.y, pos.x)) {
+                            if (pos == null || !isOverCardVisibleArea(pos.y, pos.x)) {
                                 event.changes.forEach { it.consume() }
                             }
                         }
