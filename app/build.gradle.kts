@@ -32,10 +32,10 @@ android {
         applicationId = "com.takahashirinta.ncrust"
         minSdk = 24
         targetSdk = 36
-        // 本 fork 自有的版本线：基于上游 1.3.1 (versionCode 6)，fork 首发 v1.0.4-gpl。
+        // 本 fork 自有的版本线：基于上游 1.3.1 (versionCode 6)。
         // versionCode 必须严格大于上游，否则后续 fork 版本无法覆盖安装。
-        versionCode = 7
-        versionName = "1.0.4-gpl"
+        versionCode = 8
+        versionName = "1.1.0-gpl"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
