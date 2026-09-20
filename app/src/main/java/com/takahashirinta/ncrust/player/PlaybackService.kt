@@ -7,10 +7,12 @@
  *
  * 修改说明（B2 FFmpeg 集成）：
  *   - 挂载 DefaultRenderersFactory，扩展渲染器模式设为 ON：有平台解码器时仍走平台，
- *     没有时（API < 27 的 FLAC）才回退到随包分发的 FFmpeg 软件解码器。 */
+ *     没有时（API < 27 的 FLAC）才回退到随包分发的 FFmpeg 软件解码器。
+ *   - B3-1：缓冲策略按物理内存分档，≤3.5GB 机型峰值缓冲减半。 */
 
 package com.takahashirinta.ncrust.player
 
+import android.app.ActivityManager
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -36,6 +38,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.LoadControl
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.session.LibraryResult
 import androidx.media3.session.MediaLibraryService
@@ -109,6 +112,42 @@ class PlaybackService : MediaLibraryService() {
     private var pendingNextArtworkBitmap: Bitmap? = null
     private var artworkPreloadGeneration = 0
 
+    /** 低内存档阈值：≤3.5GB 视为低配（覆盖 2GB / 3GB 机型，4GB 及以上不降级）。 */
+    private val LOW_RAM_TOTAL_BYTES = 3_500L * 1024 * 1024 * 1024
+
+    /**
+     * 按设备**物理内存**分档的缓冲策略（B3-1）。
+     *
+     * 背景：默认 LoadControl 在重缓冲后仅攒 5s 就续播，网络略慢于码率时会「播一点断一点」，
+     * 所以此前把目标缓冲拉到了 30–60s。但峰值缓冲正是播放器常驻内存的主要来源：
+     * 无损 FLAC 按 ~1000 kbps 估算约 125 KB/s，60s 峰值 ≈ 7.5 MB，30s ≈ 3.7 MB。
+     *
+     * 3 GB 机型（如三星 S6 G9209）在系统内存紧张时更早被回收，因此对低内存档把峰值缓冲
+     * 减半；重缓冲续播阈值只从 15s 降到 12s —— 仍足以跨过弱网抖动，不至于退回
+     * 「播一点断一点」。
+     *
+     * 判定用 totalMem 而非 isLowRamDevice：Android 只对 ≤1GB 机型置 low-ram 标志，
+     * 3GB 机型不会被标记，达不到本次优化目标。
+     */
+    private fun buildLoadControl(): LoadControl {
+        val am = getSystemService(ACTIVITY_SERVICE) as ActivityManager
+        val memInfo = ActivityManager.MemoryInfo().also { am.getMemoryInfo(it) }
+        val lowRamProfile = memInfo.totalMem in 1..LOW_RAM_TOTAL_BYTES
+        Log.i(
+            "PlaybackService",
+            "LoadControl profile=" + (if (lowRamProfile) "low" else "default") +
+                " totalMem=" + memInfo.totalMem / (1024 * 1024) + "MB"
+        )
+        val builder = DefaultLoadControl.Builder()
+        return if (lowRamProfile) {
+            // 低内存档：峰值缓冲 60s → 30s（常驻大致减半），续播阈值 15s → 12s。
+            builder.setBufferDurationsMs(15_000, 30_000, 2_000, 12_000).build()
+        } else {
+            // 常规档：保持既有的弱网优化配置不变。
+            builder.setBufferDurationsMs(30_000, 60_000, 2_500, 15_000).build()
+        }
+    }
+
     override fun onCreate() {
         super.onCreate()
         instance = this
@@ -132,19 +171,7 @@ class PlaybackService : MediaLibraryService() {
             // 后台/熄屏播放时持有 partial wake lock，避免 CPU 休眠导致音频欠载
             // （听感是"炒豆子"爆鸣，严重时 AudioTrack 直接死掉、进度还在跑但没声）。
             .setWakeMode(C.WAKE_MODE_NETWORK)
-            // 弱网缓冲策略：默认 LoadControl 重缓冲后仅攒 5s 就续播，网络略慢于码率时
-            // 会"播一点断一点"（拖带感）。这里拉高重缓冲续播阈值到 15s、并把目标缓冲
-            // 扩到 30~60s，弱网下宁可多缓冲一小会儿，也不持续卡顿。
-            .setLoadControl(
-                DefaultLoadControl.Builder()
-                    .setBufferDurationsMs(
-                        /* minBufferMs = */ 30_000,
-                        /* maxBufferMs = */ 60_000,
-                        /* bufferForPlaybackMs = */ 2_500,
-                        /* bufferForPlaybackAfterRebufferMs = */ 15_000
-                    )
-                    .build()
-            )
+            .setLoadControl(buildLoadControl())
             .build()
 
         // media3 MediaLibrarySession：对外暴露播放控制 + 浏览树，车机
