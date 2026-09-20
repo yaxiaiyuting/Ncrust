@@ -8,7 +8,7 @@
 
 纯 Kotlin / Jetpack Compose · Media3 播放引擎 · eapi 加密直连 · 无中间服务器
 
-[![Version](https://img.shields.io/badge/version-1.3.1-brightgreen?style=flat-square)](https://github.com/GuitaristRin/Ncrust/releases)
+[![Version](https://img.shields.io/badge/version-1.0.4--gpl-brightgreen?style=flat-square)](https://github.com/yaxiaiyuting/Ncrust/releases)
 [![APK](https://img.shields.io/badge/APK-3.9%20MB-blue?style=flat-square)](https://github.com/GuitaristRin/Ncrust/releases)
 [![API](https://img.shields.io/badge/API-24%2B-green?style=flat-square&logo=android)](https://developer.android.com)
 [![Kotlin](https://img.shields.io/badge/Kotlin-1.9.24-purple?style=flat-square&logo=kotlin)](https://kotlinlang.org)
