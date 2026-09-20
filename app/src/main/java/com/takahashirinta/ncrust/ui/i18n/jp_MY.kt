@@ -113,6 +113,11 @@ val jpMY = Strings(
 
     songCountFormat = { "共 $it 首" },
     resumeFromFormat = { "$it より 再開" },
+    bgSectionTitle = "カスタム 背景",
+    bgPick = "画像 選択",
+    bgChange = "画像 変更",
+    bgRemove = "背景 解除",
+    bgImportFailed = "画像 読込 失敗",
     playNowTitle = "即 奏",
     playNowDesc = "列 空 奏 始",
     insertNextTitle = "次 挿",

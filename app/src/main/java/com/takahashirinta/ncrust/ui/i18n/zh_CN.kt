@@ -113,6 +113,11 @@ val zhCN = Strings(
 
     songCountFormat = { "共 $it 首歌曲" },
     resumeFromFormat = { "已从 $it 继续播放" },
+    bgSectionTitle = "自定义背景",
+    bgPick = "选择图片",
+    bgChange = "更换图片",
+    bgRemove = "关闭背景图",
+    bgImportFailed = "图片导入失败",
     playNowTitle = "现在播放",
     playNowDesc = "清空当前队列并开始播放",
     insertNextTitle = "插播",

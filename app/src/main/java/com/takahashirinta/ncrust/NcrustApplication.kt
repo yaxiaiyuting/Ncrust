@@ -10,6 +10,7 @@ import coil.ImageLoaderFactory
 import coil.disk.DiskCache
 import coil.memory.MemoryCache
 import com.takahashirinta.ncrust.cache.ContentCache
+import com.takahashirinta.ncrust.ui.theme.BackgroundImageManager
 
 /**
  * 全局 Application，提供 Coil ImageLoader 的分级缓存配置 + 内存压力响应。
@@ -63,6 +64,9 @@ class NcrustApplication : Application(), ImageLoaderFactory {
             level >= ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW -> {
                 ContentCache.clearAll()
                 Coil.imageLoader(this).memoryCache?.clear()
+                // v1.2.0 · B3：Coil 缓存清掉后，界面上那张背景图仍被 painter 持有；
+                // 显式隐藏它才能真正释放（回前台自动恢复）。
+                BackgroundImageManager.onMemoryPressure()
             }
             level >= ComponentCallbacks2.TRIM_MEMORY_RUNNING_MODERATE -> {
                 ContentCache.clearAll()
@@ -74,6 +78,7 @@ class NcrustApplication : Application(), ImageLoaderFactory {
         super.onLowMemory()
         ContentCache.clearAll()
         Coil.imageLoader(this).memoryCache?.clear()
+        BackgroundImageManager.onMemoryPressure()
     }
 }
 

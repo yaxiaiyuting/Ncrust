@@ -113,6 +113,11 @@ val ruRU = Strings(
 
     songCountFormat = { "Всего $it песен" },
     resumeFromFormat = { "Продолжено с $it" },
+    bgSectionTitle = "Свой фон",
+    bgPick = "Выбрать изображение",
+    bgChange = "Сменить изображение",
+    bgRemove = "Убрать фон",
+    bgImportFailed = "Не удалось импортировать изображение",
     playNowTitle = "Играть сейчас",
     playNowDesc = "Очистить текущую очередь и начать воспроизведение",
     insertNextTitle = "Следующим",

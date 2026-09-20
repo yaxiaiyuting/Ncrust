@@ -113,6 +113,11 @@ val deDE = Strings(
 
     songCountFormat = { "Insgesamt $it Songs" },
     resumeFromFormat = { "Fortgesetzt ab $it" },
+    bgSectionTitle = "Benutzerdefinierter Hintergrund",
+    bgPick = "Bild wählen",
+    bgChange = "Bild ändern",
+    bgRemove = "Hintergrund entfernen",
+    bgImportFailed = "Bild konnte nicht importiert werden",
     playNowTitle = "Jetzt abspielen",
     playNowDesc = "Aktuelle Warteschlange leeren und abspielen",
     insertNextTitle = "Als Nächstes abspielen",

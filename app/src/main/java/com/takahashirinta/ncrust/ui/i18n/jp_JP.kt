@@ -113,6 +113,11 @@ val jpJP = Strings(
 
     songCountFormat = { "全 $it 曲" },
     resumeFromFormat = { "$it から再開しました" },
+    bgSectionTitle = "カスタム背景",
+    bgPick = "画像を選択",
+    bgChange = "画像を変更",
+    bgRemove = "背景を解除",
+    bgImportFailed = "画像の読み込みに失敗しました",
     playNowTitle = "今すぐ再生",
     playNowDesc = "現在のキューをクリアして再生開始",
     insertNextTitle = "次に再生",

@@ -54,7 +54,10 @@ import com.takahashirinta.ncrust.player.SongUrlFetcher
 import com.takahashirinta.ncrust.power.BackgroundActivity
 import com.takahashirinta.ncrust.ui.BottomOverlayInsetDp
 import com.takahashirinta.ncrust.ui.components.QrAuthorizeScreen
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import com.takahashirinta.ncrust.ui.components.QrLoginDialog
+import com.takahashirinta.ncrust.ui.theme.BackgroundImageManager
 import com.takahashirinta.ncrust.ui.i18n.LocalStrings
 import com.takahashirinta.ncrust.ui.i18n.LanguagePreset
 import com.takahashirinta.ncrust.ui.i18n.getSavedLanguageCode
@@ -386,6 +389,57 @@ fun UserScreen(
                 )
             }
             Spacer(Modifier.height(24.dp))
+        }
+
+        // 自定义背景图（v1.2.0 · B3）。
+        // 选图走 SAF 只读打开，取到后立刻降采样拷进私有目录 —— 因为不再需要回读原文件，
+        // 所以**不**申请 persistable URI 权限（那会让应用长期持有用户文件的访问权）。
+        item {
+            SectionTitle(strings.bgSectionTitle)
+            val bgRevision by BackgroundImageManager.revision.collectAsState()
+            val hasCustomBg = remember(bgRevision) { BackgroundImageManager.isActive(context) }
+            val imagePicker = rememberLauncherForActivityResult(
+                ActivityResultContracts.OpenDocument()
+            ) { uri ->
+                if (uri != null) {
+                    coroutineScope.launch {
+                        if (!BackgroundImageManager.importFromUri(context, uri)) {
+                            Toast.makeText(context, strings.bgImportFailed, Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { imagePicker.launch(arrayOf("image/*")) }
+                    .padding(horizontal = 16.dp, vertical = 14.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                MetroText(
+                    if (hasCustomBg) strings.bgChange else strings.bgPick,
+                    color = LocalMetroColors.current.onBackground,
+                    style = TextStyle(fontSize = 15.sp),
+                    modifier = Modifier.weight(1f)
+                )
+            }
+            if (hasCustomBg) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { BackgroundImageManager.clear(context) }
+                        .padding(horizontal = 16.dp, vertical = 14.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    MetroText(
+                        strings.bgRemove,
+                        color = LocalMetroColors.current.primary,
+                        style = TextStyle(fontSize = 15.sp),
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+            Spacer(Modifier.height(32.dp))
         }
 
         // 存储与缓存：显示当前占用，点击后弹窗确认再清除。

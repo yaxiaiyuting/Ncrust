@@ -77,6 +77,7 @@ import com.takahashirinta.ncrust.ui.i18n.LocalStrings
 import com.takahashirinta.ncrust.ui.i18n.getSavedLanguageCode
 import com.takahashirinta.ncrust.ui.i18n.saveLanguageCode
 import com.takahashirinta.ncrust.ui.i18n.stringsForCode
+import com.takahashirinta.ncrust.ui.CustomBackgroundLayer
 import com.takahashirinta.ncrust.ui.theme.NcrustTheme
 import com.takahashirinta.ncrust.ui.theme.ThemeMode
 import com.takahashirinta.ncrust.ui.theme.getSavedThemeIndex
@@ -1027,6 +1028,10 @@ fun MainScreen(
             .background(LocalMetroColors.current.background)
             .onSizeChanged { rootHeightPx = it.height.toFloat() }
     ) {
+        // v1.2.0 · B3：自定义背景图铺在最底层。各页面自己会用
+        // LocalMetroColors.current.background 铺不透明底色，所以背景图必须垫在最下面。
+        CustomBackgroundLayer()
+
         // PlayerCardOverlay is FIRST child: processes first in Compose Main pass (siblings are
         // dispatched in composition order). Its inner consumer modifier in PlayerCard prevents
         // Scaffold's SongCards from receiving events when the player is fully expanded.

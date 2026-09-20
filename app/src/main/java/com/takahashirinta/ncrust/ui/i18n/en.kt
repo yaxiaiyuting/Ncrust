@@ -113,6 +113,11 @@ val en = Strings(
 
     songCountFormat = { "$it songs total" },
     resumeFromFormat = { "Resumed from $it" },
+    bgSectionTitle = "Custom Background",
+    bgPick = "Choose Image",
+    bgChange = "Change Image",
+    bgRemove = "Remove Background",
+    bgImportFailed = "Failed to import image",
     playNowTitle = "Play Now",
     playNowDesc = "Clear current queue and start playing",
     insertNextTitle = "Play Next",
