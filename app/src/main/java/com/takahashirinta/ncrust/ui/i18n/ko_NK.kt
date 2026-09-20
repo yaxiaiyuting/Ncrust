@@ -112,6 +112,7 @@ scanConnecting = "평판에 연결중…",
     playAllButton = "모두 재생",
 
     songCountFormat = { "모두 $it 곡" },
+    resumeFromFormat = { "${it}부터 이어 재생합니다" },
     playNowTitle = "지금 재생",
     playNowDesc = "지금 대기열 비우고 재생 시작",
     insertNextTitle = "이어 틀기",

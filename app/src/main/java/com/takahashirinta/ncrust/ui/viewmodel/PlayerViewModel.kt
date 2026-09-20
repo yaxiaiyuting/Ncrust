@@ -33,6 +33,10 @@ import com.takahashirinta.ncrust.player.PlaybackStateManager
 import com.takahashirinta.ncrust.player.PlayReporter
 import com.takahashirinta.ncrust.player.SongUrlFetcher
 import com.takahashirinta.ncrust.player.SongUrlResult
+import com.takahashirinta.ncrust.formatDuration
+import com.takahashirinta.ncrust.ui.i18n.getSavedLanguageCode
+import com.takahashirinta.ncrust.ui.i18n.stringsForCode
+import android.widget.Toast
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -77,6 +81,12 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
     // 防止同一首歌重复上报播放行为。
     private var lastReportedSongId = -1L
 
+    /** B4：本歌最近一次已落盘的进度，避免每 500ms 的采样都写一次 SharedPreferences。 */
+    private var lastSavedPositionMs = -1L
+
+    /** B4：本次起播的续播位置（0 = 从 0 分 0 秒开始）。 */
+    val resumedFromMs = MutableStateFlow(0L)
+
     // Incremented on every explicit playSong call; lets preloadNextSong detect staleness.
     private var songPlayVersion = 0
 
@@ -86,6 +96,9 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
          * 索引越大音质越高，因此「实际索引 < 偏好索引」即表示被降级。
          */
         val QUALITY_LEVELS = listOf("standard", "higher", "exhigh", "lossless", "hires", "jyeffect", "dolby")
+
+        /** B4：进度落盘间隔。2Hz 采样下最多每 5s 写一次，兼顾续播精度与 IO 开销。 */
+        private const val POSITION_SAVE_INTERVAL_MS = 5_000L
     }
 
     /** 服务端**实际**返回的档位索引（可能因设备解码能力 / 会员权限 / 版权低于偏好）。 */
@@ -160,6 +173,12 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                 PlayReporter.reportPlay(sid, pos, dur, end = "playend", isWifi = isOnWifi())
             }
 
+            // B4：每 5s 落盘一次本歌进度，供断点续播；播完会由 onPlaybackEnded 清除。
+            if (sid > 0 && kotlin.math.abs(pos - lastSavedPositionMs) >= POSITION_SAVE_INTERVAL_MS) {
+                lastSavedPositionMs = pos
+                PlaybackStateManager.saveSongPosition(getApplication(), sid, pos)
+            }
+
             // Signal the preload window once per song (guarded by !needsPreload.value).
             if (gaplessEnabled && dur > 0 && pos > 1_000L && !needsPreload.value) {
                 val remaining = dur - pos
@@ -171,6 +190,8 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         PlaybackService.onPlaybackEnded = {
             // 自然播放结束时,若尚未上报则补一条 playend。
             val sid = currentSongId.value ?: -1L
+            // B4：正常播完 = 这首歌已「听完」，清除进度记录，重播时从 0 分 0 秒对齐。
+            if (sid > 0) PlaybackStateManager.clearSongPosition(getApplication(), sid)
             if (sid > 0 && sid != lastReportedSongId) {
                 lastReportedSongId = sid
                 PlayReporter.reportPlay(sid, duration.value, duration.value, end = "playend", isWifi = isOnWifi())
@@ -185,6 +206,9 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
 
         // Called on the main thread by ExoPlayer's onMediaItemTransition (AUTO reason).
         PlaybackService.onSongTransitioned = {
+            // B4：无缝切换说明上一首已自然播完，清除其进度记录（重播从 0:00 对齐）。
+            val finishedId = currentSongId.value ?: -1L
+            if (finishedId > 0) PlaybackStateManager.clearSongPosition(getApplication(), finishedId)
             if (preloadedSongId > 0) {
                 resetLyricsForNewSong()
                 currentSongId.value = preloadedSongId
@@ -326,7 +350,17 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
             ?.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) == true
     }
 
-    fun playSong(songId: Long, title: String = "", artist: String = "", artworkUrl: String = "", quality: String = "") {
+    fun playSong(
+        songId: Long,
+        title: String = "",
+        artist: String = "",
+        artworkUrl: String = "",
+        quality: String = "",
+        // B4 续播：-1 = 自动（读这首歌的进度记录）；>= 0 = 显式指定起播位置。
+        // 显式传值的唯一场景是「播放失败降档重试」—— 那时必须沿用**当前**进度，
+        // 不能退回记录里的旧位置，否则听感上会倒退一截。
+        startPositionMs: Long = -1L,
+    ) {
         songPlayVersion++
         val fetchVersion = songPlayVersion
         latestPlaySongId = songId
@@ -337,6 +371,20 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         val selectedQuality = if (quality.isNotEmpty()) quality else effectivePreferredLevel(prefs)
         val qIdx = qualityApiLevels.indexOf(selectedQuality).coerceAtLeast(0)
         lastRequestedLevel = selectedQuality
+
+        // B4：决定这首歌的起播位置。没有记录（或已播完被清除）就是 0 —— 即
+        // 「每首歌自动从 0 分 0 秒播放对齐」；有记录则从上次退出点续播。
+        val resumeMs = if (startPositionMs >= 0) startPositionMs
+        else PlaybackStateManager.getSongPosition(getApplication(), songId)
+        lastSavedPositionMs = resumeMs
+        resumedFromMs.value = resumeMs
+        if (resumeMs > 0) {
+            // GUI 提示：明确告诉用户这是「从上次退出的时间点续播」，
+            // 而不是进度条/歌词出了错（B4）。
+            val app = getApplication<Application>()
+            val text = stringsForCode(getSavedLanguageCode(app)).resumeFromFormat(formatDuration(resumeMs))
+            Toast.makeText(app, text, Toast.LENGTH_SHORT).show()
+        }
         // 显式传入 quality 的调用来自「播放失败降档重试」，那不是用户偏好，不能覆盖偏好档位。
         if (quality.isEmpty()) preferredQualityIndex.value = qIdx
         currentQualityIndex.value = qIdx
@@ -364,6 +412,7 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                 putExtra("artist", artist)
                 putExtra("artwork", artworkUrl)
                 putExtra("songId", songId)
+                putExtra("startPositionMs", resumeMs)
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                 getApplication<Application>().startForegroundService(intent)
@@ -411,6 +460,7 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                         putExtra("artist", artist)
                         putExtra("artwork", artworkUrl)
                         putExtra("songId", songId)
+                        putExtra("startPositionMs", resumeMs)
                     }
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                         getApplication<Application>().startForegroundService(intent)
@@ -459,7 +509,9 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
             title = currentSongName.value ?: "",
             artist = currentSongArtist.value ?: "",
             artworkUrl = currentSongArtwork.value ?: "",
-            quality = nextLevel
+            quality = nextLevel,
+            // 降档重试必须从**当前**进度接着播，不能读进度记录（那是上一次退出的位置）。
+            startPositionMs = currentPosition.value
         )
     }
 
@@ -526,6 +578,11 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                                 putExtra("artist", artist)
                                 putExtra("artwork", artworkUrl)
                                 putExtra("songId", songId)
+                                // 预载接管同样遵守续播语义（这次接管就是一次开播动作）。
+                                putExtra(
+                                    "startPositionMs",
+                                    PlaybackStateManager.getSongPosition(getApplication(), songId)
+                                )
                             }
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                                 getApplication<Application>().startForegroundService(intent)

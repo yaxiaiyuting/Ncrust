@@ -112,6 +112,7 @@ val deDE = Strings(
     playAllButton = "Alle abspielen",
 
     songCountFormat = { "Insgesamt $it Songs" },
+    resumeFromFormat = { "Fortgesetzt ab $it" },
     playNowTitle = "Jetzt abspielen",
     playNowDesc = "Aktuelle Warteschlange leeren und abspielen",
     insertNextTitle = "Als Nächstes abspielen",

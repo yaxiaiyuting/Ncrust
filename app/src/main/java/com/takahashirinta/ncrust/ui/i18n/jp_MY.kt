@@ -112,6 +112,7 @@ val jpMY = Strings(
     playAllButton = "全 奏",
 
     songCountFormat = { "共 $it 首" },
+    resumeFromFormat = { "$it より 再開" },
     playNowTitle = "即 奏",
     playNowDesc = "列 空 奏 始",
     insertNextTitle = "次 挿",

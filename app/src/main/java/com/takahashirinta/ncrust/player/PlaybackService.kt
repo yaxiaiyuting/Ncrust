@@ -10,7 +10,9 @@
  *     没有时（API < 27 的 FLAC）才回退到随包分发的 FFmpeg 软件解码器。
  *   - B3-1：缓冲策略按物理内存分档，≤3.5GB 机型峰值缓冲减半。
  *   - B3-2：禁用流内嵌 ID3 元数据（封面等）解析，显示用的元数据全部来自 API。
- *   - B3-3：加入音频 offload 能力探测日志（刻意不启用，依据见 logAudioOffloadCapability）。 */
+ *   - B3-3：加入音频 offload 能力探测日志（刻意不启用，依据见 logAudioOffloadCapability）。
+ *   - B4：playUrl 支持 startPositionMs，配合「每首歌进度记忆」实现断点续播；
+ *     用 setMediaItem(item, pos) 而非 prepare 后 seekTo，保证歌词首帧即对齐。 */
 
 package com.takahashirinta.ncrust.player
 
@@ -381,6 +383,8 @@ class PlaybackService : MediaLibraryService() {
         val artist = intent?.getStringExtra("artist")
         val artwork = intent?.getStringExtra("artwork")
         val songId = intent?.getLongExtra("songId", -1L) ?: -1L
+        // B4：起播位置。0 = 从 0 分 0 秒开始；> 0 = 从上次退出的时间点续播。
+        val startPositionMs = intent?.getLongExtra("startPositionMs", 0L) ?: 0L
 
         if (title != null) mediaTitle = title
         if (artist != null) mediaArtist = artist
@@ -393,7 +397,7 @@ class PlaybackService : MediaLibraryService() {
 
         if (url != null) {
             PlaybackStateManager.saveState(this, songId, mediaTitle, mediaArtist, currentArtworkUrl ?: "", true)
-            playUrl(url)
+            playUrl(url, startPositionMs)
         } else if (!isServiceStarted && mediaTitle != "Ncrust") {
             updateNotify()
         }
@@ -502,8 +506,15 @@ class PlaybackService : MediaLibraryService() {
         return levels.getOrElse(prefs.getInt("wifi_quality", 3)) { "lossless" }
     }
 
-    private fun playUrl(url: String) {
-        Log.d("PlaybackService", "Playing: $url")
+    /**
+     * @param startPositionMs 起播位置（B4 续播）；0 表示从 0 分 0 秒开始。
+     *
+     * 用 setMediaItem(item, startPositionMs) 而不是「先 prepare 再 seekTo」：
+     * 后者会先按位置 0 解码并回调一次进度，歌词面板可能闪一下第一行再跳走。
+     * 直接带起播位置能让 position 从第一帧起就是正确值，歌词首帧即对齐。
+     */
+    private fun playUrl(url: String, startPositionMs: Long = 0L) {
+        Log.d("PlaybackService", "Playing: $url startPositionMs=$startPositionMs")
         // Clear any stale preload metadata; setMediaItem replaces the entire playlist.
         pendingNextTitle = null
         pendingNextArtist = null
@@ -513,7 +524,7 @@ class PlaybackService : MediaLibraryService() {
         pendingNextArtworkBitmap = null
         artworkPreloadGeneration++
         val mediaItem = androidx.media3.common.MediaItem.fromUri(url)
-        player.setMediaItem(mediaItem)
+        player.setMediaItem(mediaItem, startPositionMs.coerceAtLeast(0L))
         player.prepare()
         player.playWhenReady = true
     }

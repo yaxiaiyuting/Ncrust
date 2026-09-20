@@ -112,6 +112,7 @@ val jpJP = Strings(
     playAllButton = "すべて再生",
 
     songCountFormat = { "全 $it 曲" },
+    resumeFromFormat = { "$it から再開しました" },
     playNowTitle = "今すぐ再生",
     playNowDesc = "現在のキューをクリアして再生開始",
     insertNextTitle = "次に再生",
