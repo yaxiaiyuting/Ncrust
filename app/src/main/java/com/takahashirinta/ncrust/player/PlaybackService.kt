@@ -1,3 +1,14 @@
+/*
+ * Ncrust —— 网易云音乐第三方客户端
+ * 原始代码 Copyright (c) 2026 Takahashi_Rinta，以 MIT 许可发布（全文见仓库根目录 LICENSE-MIT）。
+ *
+ * 本文件属于本 Fork（https://github.com/yaxiaiyuting/Ncrust）的修改部分，
+ * Copyright (c) 2026 yaxiaiyuting，以 GPLv3 许可分发；本 Fork 整体以 GPLv3 分发。
+ *
+ * 修改说明（B2 FFmpeg 集成）：
+ *   - 挂载 DefaultRenderersFactory，扩展渲染器模式设为 ON：有平台解码器时仍走平台，
+ *     没有时（API < 27 的 FLAC）才回退到随包分发的 FFmpeg 软件解码器。 */
+
 package com.takahashirinta.ncrust.player
 
 import android.app.Notification
@@ -23,6 +34,7 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.DefaultLoadControl
+import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.session.LibraryResult
@@ -102,7 +114,13 @@ class PlaybackService : MediaLibraryService() {
         instance = this
         Log.d("PlaybackService", "onCreate")
 
-        player = ExoPlayer.Builder(this)
+        // 扩展渲染器模式 ON：优先用平台解码器（API 27+ 的 FLAC 走系统解码，省电），
+        // 只有当平台没有任何解码器支持该格式时才回退到扩展里的 FFmpeg 软件解码器。
+        // 这正是 API 24–26 播放无损 FLAC 所需要的路径。
+        val renderersFactory = DefaultRenderersFactory(this)
+            .setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON)
+
+        player = ExoPlayer.Builder(this, renderersFactory)
             .setAudioAttributes(
                 AudioAttributes.Builder()
                     .setUsage(C.USAGE_MEDIA)

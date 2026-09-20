@@ -96,10 +96,17 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.3")
     debugImplementation("androidx.compose.ui:ui-tooling")
 
-    // Media3
-    implementation("androidx.media3:media3-exoplayer:1.4.1")
-    implementation("androidx.media3:media3-session:1.4.1")
-    implementation("androidx.media3:media3-ui:1.4.1")
+    // Media3 —— 1.5.0 是能与下面 FFmpeg 扩展版本严格对齐的最低版本（扩展版本号规则为
+    // <media3版本>+<修订>，Maven Central 上没有 1.4.x 的构建）。
+    implementation("androidx.media3:media3-exoplayer:1.5.0")
+    implementation("androidx.media3:media3-session:1.5.0")
+    implementation("androidx.media3:media3-ui:1.5.0")
+
+    // FFmpeg 软件音频解码扩展（Jellyfin 构建，GPL-3.0，与本项目 GPLv3 兼容）。
+    // 目的：API 24–26（Android 7.0/7.1）系统只带 OMX.google.flac.encoder，
+    // 没有 FLAC 解码器，无损档位只能降级到 mp3；随包带 FFmpeg 后即可真正解 FLAC。
+    // 覆盖 arm64-v8a / armeabi-v7a / x86 / x86_64 四个 ABI。
+    implementation("org.jellyfin.media3:media3-ffmpeg-decoder:1.5.0+1")
 
     // Retrofit + OkHttp
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
