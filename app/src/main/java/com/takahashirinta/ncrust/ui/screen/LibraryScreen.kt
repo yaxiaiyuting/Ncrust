@@ -1,3 +1,15 @@
+/*
+ * Ncrust —— 网易云音乐第三方客户端
+ * 原始代码 Copyright (c) 2026 Takahashi_Rinta，以 MIT 许可发布（全文见仓库根目录 LICENSE-MIT）。
+ *
+ * 本文件属于本 Fork（https://github.com/yaxiaiyuting/Ncrust）的修改部分，
+ * Copyright (c) 2026 yaxiaiyuting，以 GPLv3 许可分发；本 Fork 整体以 GPLv3 分发。
+ *
+ * 修改说明（Bug2「我喜欢的歌无法全部加入播放列表」）：
+ *   - ④ 收藏单曲列表新增「播放全部」入口（复用 PlayAllDialog 二次确认）。
+ *     回调由上层补齐**整个**红心歌单，而不是当前已分页加载的部分。
+ */
+
 package com.takahashirinta.ncrust.ui.screen
 
 import androidx.compose.animation.AnimatedContent
@@ -59,6 +71,8 @@ fun LibraryScreen(
     onPlayAlbum: (Long) -> Unit,
     onPlaylistClick: (PlaylistApi.PlaylistInfo) -> Unit = {},
     onPlayPlaylist: (Long) -> Unit = {},
+    // Bug2-④：收藏单曲「播放全部」。由上层 loadAllLikedSongs 覆盖整个红心歌单。
+    onPlayAllLiked: () -> Unit = {},
     onSongInsertNext: (SongItem) -> Unit = {},
     onSongAppendToQueue: (SongItem) -> Unit = {},
     onShowSongMenu: (SongItem, List<SongMenuAction>) -> Unit = { _, _ -> },
@@ -70,6 +84,8 @@ fun LibraryScreen(
 
     var savedSongs by remember { mutableStateOf(LibraryManager.getSavedSongs(context)) }
     var savedAlbums by remember { mutableStateOf(LibraryManager.getSavedAlbums(context)) }
+    // 红心歌单总数（含尚未分页加载的部分），供「播放全部」入口显示规模。
+    var likedTotal by remember { mutableIntStateOf(LibraryManager.getLikedSongIds(context).size) }
     var selectedCategory by remember { mutableIntStateOf(0) }
     val categories = listOf(strings.categoryTracks, strings.categoryAlbums, strings.categoryPlaylists)
 
@@ -101,6 +117,7 @@ fun LibraryScreen(
     fun reloadLocal() {
         savedSongs = LibraryManager.getSavedSongs(context)
         savedAlbums = LibraryManager.getSavedAlbums(context)
+        likedTotal = LibraryManager.getLikedSongIds(context).size
     }
 
     LaunchedEffect(selectedCategory) {
@@ -197,6 +214,25 @@ fun LibraryScreen(
                             contentPadding = PaddingValues(bottom = BottomOverlayInsetDp),
                             flingBehavior = rememberMetroFlingBehavior()
                         ) {
+                            // Bug2-④：整张红心歌单的「播放全部」入口。
+                            // 显示的是 total（云端数量）而非 savedSongs.size（已加载数量），
+                            // 避免用户以为"我喜欢的歌"只有已翻页的那几十首。
+                            item {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp, vertical = 6.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    MetroText(
+                                        strings.trackCountSongs(likedTotal),
+                                        color = LocalMetroColors.current.onSurfaceVariant,
+                                        style = LocalMetroTypography.current.bodySmall
+                                    )
+                                    Spacer(Modifier.weight(1f))
+                                    PlayAllButton(onClick = onPlayAllLiked)
+                                }
+                            }
                             items(savedSongs, key = { it.id }) { song ->
                                 SongCard(
                                     song = song,

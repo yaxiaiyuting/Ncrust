@@ -1,3 +1,15 @@
+/*
+ * Ncrust —— 网易云音乐第三方客户端
+ * 原始代码 Copyright (c) 2026 Takahashi_Rinta，以 MIT 许可发布（全文见仓库根目录 LICENSE-MIT）。
+ *
+ * 本文件属于本 Fork（https://github.com/yaxiaiyuting/Ncrust）的修改部分，
+ * Copyright (c) 2026 yaxiaiyuting，以 GPLv3 许可分发；本 Fork 整体以 GPLv3 分发。
+ *
+ * 修改说明（Bug2「我喜欢的歌无法全部加载」）：
+ *   - ③ getLikedTrackIds 增加 trackCount 完整性校验：trackIds 被服务端截断时，
+ *        改用 /eapi/v3/playlist/track/all 按 limit/offset 循环补齐，批间 delay(250ms) 限流，
+ *        并以「页码上限 / 空页 / 整页重复」三重条件保证正常终止。 */
+
 package com.takahashirinta.ncrust.network
 
 import android.util.Log
@@ -15,6 +27,13 @@ object PlaylistApi {
     private const val USER_PLAYLIST_PATH = "/eapi/user/playlist"
     private const val PLAYLIST_DETAIL_PATH = "/eapi/v6/playlist/detail"
     private const val ACCOUNT_GET_PATH = "/eapi/w/nuser/account/get"
+
+    // Bug2-③：红心歌单 trackIds 被截断时的补齐参数。
+    private const val PLAYLIST_TRACK_ALL_PATH = "/eapi/v3/playlist/track/all"
+    private const val LIKED_FILL_PAGE_SIZE = 500
+    private const val LIKED_FILL_DELAY_MS = 250L
+    // 兜底上限：500 × 40 = 20000 首，足以覆盖任何真实收藏量，同时杜绝意外的无限循环。
+    private const val MAX_LIKED_FILL_PAGES = 40
 
     /**
      * 获取当前登录用户的 UID
@@ -515,7 +534,16 @@ object PlaylistApi {
         null
     }
 
-    /** 获取「我喜欢的音乐」全部单曲 ID（红心歌单 trackIds，有序、轻量、不会拉全部详情）。 */
+    /**
+     * 获取「我喜欢的音乐」全部单曲 ID（红心歌单，有序、去重）。
+     *
+     * trackIds 通常一次就完整，但服务端对大歌单可能截断。这里以响应中的 `trackCount`
+     * 为准做完整性校验，缺多少就按 limit/offset 循环补齐（Bug2-③），
+     * 避免「我喜欢的歌」只拿到前一部分却无人察觉。
+     *
+     * 终止性由三重条件保证，不会死循环：①页数上限 MAX_LIKED_FILL_PAGES；
+     * ②某页返回空；③整页都是重复 id（说明服务端不再前进）。
+     */
     suspend fun getLikedTrackIds(uid: Long): List<Long> = withContext(Dispatchers.IO) {
         val playlistId = getLikedPlaylistId(uid) ?: return@withContext emptyList()
         val payload = mapOf(
@@ -528,7 +556,46 @@ object PlaylistApi {
         val json = JSONObject(body)
         val playlistObj = json.optJSONObject("playlist") ?: return@withContext emptyList()
         val trackIds = playlistObj.optJSONArray("trackIds") ?: return@withContext emptyList()
-        return@withContext (0 until trackIds.length()).map { trackIds.getJSONObject(it).optLong("id") }
+        val head = (0 until trackIds.length()).map { trackIds.getJSONObject(it).optLong("id") }
+        val declaredCount = playlistObj.optInt("trackCount", head.size)
+        if (head.size >= declaredCount) return@withContext head.distinct()
+
+        // LinkedHashSet：保序 + 去重，重复 id 不会让结果变长。
+        val all = LinkedHashSet<Long>(maxOf(head.size, declaredCount).coerceAtLeast(16))
+        all.addAll(head)
+        var offset = head.size
+        var pages = 0
+        while (all.size < declaredCount && pages < MAX_LIKED_FILL_PAGES) {
+            pages++
+            val page = runCatching { fetchTrackIdsPage(playlistId, offset, LIKED_FILL_PAGE_SIZE) }
+                .getOrDefault(emptyList())
+            if (page.isEmpty()) break
+            val added = page.count { all.add(it) }
+            offset += page.size
+            if (added == 0) break
+            if (all.size < declaredCount) delay(LIKED_FILL_DELAY_MS)
+        }
+        Log.i(
+            "PlaylistApi",
+            "getLikedTrackIds: declared=" + declaredCount + " head=" + head.size +
+                " final=" + all.size + " pages=" + pages
+        )
+        all.toList()
+    }
+
+    /** 分页读取红心歌单第 offset 起的 limit 个单曲 id（Bug2-③ 补齐用）。 */
+    private suspend fun fetchTrackIdsPage(playlistId: Long, offset: Int, limit: Int): List<Long> {
+        val response = RetrofitClient.eapiPost(
+            PLAYLIST_TRACK_ALL_PATH,
+            mapOf(
+                "id" to playlistId.toString(),
+                "limit" to limit.toString(),
+                "offset" to offset.toString()
+            )
+        )
+        val body = response.body?.string() ?: return emptyList()
+        val songs = JSONObject(body).optJSONArray("songs") ?: return emptyList()
+        return (0 until songs.length()).map { songs.getJSONObject(it).optLong("id") }
     }
 
     /** 按 ID 批量拉取单曲详情（eapi/v3/song/detail），供收藏单曲分页 lazy 加载用。 */

@@ -1,3 +1,15 @@
+/*
+ * Ncrust —— 网易云音乐第三方客户端
+ * 原始代码 Copyright (c) 2026 Takahashi_Rinta，以 MIT 许可发布（全文见仓库根目录 LICENSE-MIT）。
+ *
+ * 本文件属于本 Fork（https://github.com/yaxiaiyuting/Ncrust）的修改部分，
+ * Copyright (c) 2026 yaxiaiyuting，以 GPLv3 许可分发；本 Fork 整体以 GPLv3 分发。
+ *
+ * 修改说明（Bug2「我喜欢的歌无法全部加入播放列表」）：
+ *   - ④ 接线 LibraryScreen 的 onPlayAllLiked：用 loadAllLikedSongs 补齐**整个**红心歌单，
+ *        再交给既有的 PlayAllDialog 做二次确认（播放 / 插入下一首）。
+ */
+
 package com.takahashirinta.ncrust
 import com.takahashirinta.ncrust.ui.theme.LocalNcrustColors
 
@@ -1173,6 +1185,17 @@ fun MainScreen(
                                         val songs = PlaylistApi.getPlaylistDetail(playlistId)
                                         if (songs.isNotEmpty()) pendingPlayAllSongs = songs
                                     } catch (_: Exception) {}
+                                }
+                            },
+                            // Bug2-④：收藏单曲「播放全部」。必须覆盖整个红心歌单，
+                            // 而不是当前已分页加载的部分，所以走 loadAllLikedSongs 补齐详情，
+                            // 再复用 PlayAllDialog 做「播放 / 插入下一首」二次确认。
+                            onPlayAllLiked = {
+                                coroutineScope.launch {
+                                    runCatching { LibraryManager.loadAllLikedSongs(context) }
+                                        .getOrNull()
+                                        ?.takeIf { it.isNotEmpty() }
+                                        ?.let { pendingPlayAllSongs = it }
                                 }
                             },
                             onSongInsertNext = { insertNext(it) },
