@@ -61,6 +61,12 @@ object ContentCache {
     fun getPlaylistSongs(id: Long): List<SongItem>? = playlistCache[id]
     fun putPlaylistSongs(id: Long, data: List<SongItem>) { playlistCache.put(id, data) }
 
+    /**
+     * v1.3.0 · B4：歌单发生写操作（增删曲/改名/删除）后丢弃该 id 的快照。
+     * 服务端的 detail 端点本身有陈旧缓存，客户端这份再不丢就会出现「改了名进详情还是旧名」。
+     */
+    fun invalidatePlaylist(id: Long) { playlistCache.remove(id) }
+
     fun getArtistAlbums(id: Long): ArtistAlbumsResponse? = artistCache[id]
     fun putArtistAlbums(id: Long, data: ArtistAlbumsResponse) { artistCache.put(id, data) }
 

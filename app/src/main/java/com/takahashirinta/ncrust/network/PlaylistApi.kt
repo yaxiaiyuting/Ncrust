@@ -118,6 +118,28 @@ object PlaylistApi {
         )
     }
 
+    /**
+     * v1.3.0 · B4：取歌单元信息（不看曲目），供「是否本人自建 → 是否显示编辑/删除入口」判定。
+     * 曲目仍走 [getPlaylistDetail]；这里用 n=0 的轻量请求，避免为了一个菜单拉 1000 首详情。
+     */
+    suspend fun fetchPlaylistInfo(playlistId: Long): PlaylistInfo? = withContext(Dispatchers.IO) {
+        val payload = mapOf("id" to playlistId.toString(), "n" to "0", "s" to "0")
+        val response = RetrofitClient.eapiPost(PLAYLIST_DETAIL_PATH, payload)
+        val body = response.body?.string() ?: return@withContext null
+        val playlist = JSONObject(body).optJSONObject("playlist") ?: return@withContext null
+        PlaylistInfo(
+            id = playlist.optLong("id", playlistId),
+            name = playlist.optString("name"),
+            coverImgUrl = playlist.optString("coverImgUrl"),
+            trackCount = playlist.optInt("trackCount"),
+            creatorUserId = playlist.optJSONObject("creator")?.optLong("userId") ?: 0,
+            specialType = playlist.optInt("specialType"),
+            privacy = playlist.optInt("privacy"),
+            subscribed = playlist.optBoolean("subscribed", false),
+            description = playlist.optString("description")
+        )
+    }
+
     suspend fun getArtistDetail(artistId: Long): String = withContext(Dispatchers.IO) {
         val payload = mapOf("id" to artistId.toString())
         val response = RetrofitClient.eapiPost("/eapi/v1/artist/detail", payload)

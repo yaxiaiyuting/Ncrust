@@ -275,6 +275,23 @@ data class Strings(
     val addToPlaylistFailed: String,
     /** 歌曲长按菜单里的入口名（v1.3.0 · B3 起是真正的功能，此前只被当成队列按钮的 contentDescription）。 */
     val actionAddToPlaylistSheet: String,
+
+    // Playlist edit / delete (v1.3.0 · B4)
+    val playlistEditTitle: String,
+    val playlistDescHint: String,
+    val playlistSave: String,
+    val playlistUpdated: String,
+    /** 含歌单名，如「确定删除「我的歌单」？」 */
+    val playlistDeleteConfirm: (String) -> String,
+    val playlistDeleteWarning: String,
+    val playlistDeleted: String,
+    val playlistDeleteFailed: String,
+    val playlistUnsubscribe: String,
+    /** 从歌单里移除这首歌（仅自建歌单显示）。 */
+    val removeFromPlaylist: String,
+    /** 移除成功的提示（与 removeFromPlaylist 这个动作名分开，避免出现「从歌单移除」当反馈）。 */
+    val removedFromPlaylist: String,
+    val playlistDelete: String,
 )
 
 /** 字节数格式化为人类可读的 B/KB/MB/GB，供 cacheSizeLabel 复用。 */

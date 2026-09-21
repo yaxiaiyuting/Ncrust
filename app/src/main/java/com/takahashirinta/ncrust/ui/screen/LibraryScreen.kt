@@ -19,6 +19,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -41,9 +42,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.takahashirinta.ncrust.auth.CookieManager
+import com.takahashirinta.ncrust.defaultPlaylistName
 import com.takahashirinta.ncrust.library.AlbumInfo
 import com.takahashirinta.ncrust.library.LibraryManager
 import com.takahashirinta.ncrust.network.PlaylistApi
+import com.takahashirinta.ncrust.network.PlaylistEditApi
+import com.takahashirinta.ncrust.network.PlaylistWriteResult
 import com.takahashirinta.ncrust.network.SongItem
 import com.takahashirinta.ncrust.network.CoverUrls
 import com.takahashirinta.ncrust.ui.BottomOverlayInsetDp
@@ -55,8 +59,11 @@ import io.github.takahashirinta.kanesumi.controls.MetroTabItem
 import io.github.takahashirinta.kanesumi.controls.MetroTabRow
 import io.github.takahashirinta.kanesumi.core.theme.LocalMetroColors
 import io.github.takahashirinta.kanesumi.core.theme.LocalMetroTypography
+import io.github.takahashirinta.kanesumi.core.theme.MetroIcon
 import io.github.takahashirinta.kanesumi.core.theme.MetroText
+import com.takahashirinta.ncrust.ui.components.CreatePlaylistDialog
 import com.takahashirinta.ncrust.ui.components.PlayAllButton
+import com.takahashirinta.ncrust.ui.components.PlaylistCreateOutcome
 import com.takahashirinta.ncrust.ui.components.SongCard
 import com.takahashirinta.ncrust.ui.components.SongCardStyle
 import com.takahashirinta.ncrust.ui.components.SongMenuAction
@@ -92,6 +99,8 @@ fun LibraryScreen(
     var playlists by remember { mutableStateOf<List<PlaylistApi.PlaylistInfo>>(emptyList()) }
     var isLoadingPlaylists by remember { mutableStateOf(false) }
     var playlistError by remember { mutableStateOf<String?>(null) }
+    // v1.3.0 · B4：收藏页的「新建歌单」入口（建空歌单），与全屏播放器的「保存队列为歌单」共用对话框。
+    var showCreatePlaylist by remember { mutableStateOf(false) }
     fun loadPlaylists() {
         coroutineScope.launch {
             isLoadingPlaylists = true
@@ -155,6 +164,32 @@ fun LibraryScreen(
                     if (more.isNotEmpty()) savedSongs = more
                 }
             }
+    }
+
+    if (showCreatePlaylist) {
+        val createStrings = strings
+        CreatePlaylistDialog(
+            defaultName = defaultPlaylistName(),
+            songCount = 0,
+            onDismiss = { showCreatePlaylist = false },
+            onCreate = { name, privacy ->
+                if (!CookieManager.hasCookie(context)) {
+                    PlaylistCreateOutcome.FAILED
+                } else {
+                    val id = PlaylistEditApi.createPlaylist(name, privacy)
+                    when {
+                        id != null -> {
+                            Toast.makeText(context, createStrings.playlistCreated(name), Toast.LENGTH_SHORT).show()
+                            loadPlaylists()
+                            PlaylistCreateOutcome.SUCCESS
+                        }
+                        PlaylistEditApi.lastError is PlaylistWriteResult.RateLimited ->
+                            PlaylistCreateOutcome.RATE_LIMITED
+                        else -> PlaylistCreateOutcome.FAILED
+                    }
+                }
+            }
+        )
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -330,6 +365,17 @@ fun LibraryScreen(
                                 contentPadding = PaddingValues(bottom = BottomOverlayInsetDp),
                                 flingBehavior = rememberMetroFlingBehavior()
                             ) {
+                                // B4：「新建歌单」作为网格第一格 —— 建空歌单的唯一入口。
+                                item(key = "create") {
+                                    NewPlaylistGridItem(
+                                        modifier = Modifier.fillMaxWidth().animateItem(
+                                            fadeInSpec = tween(150, easing = MetroDefault),
+                                            placementSpec = tween(220, easing = MetroDefault),
+                                            fadeOutSpec = tween(120, easing = MetroDefault)
+                                        ),
+                                        onClick = { showCreatePlaylist = true }
+                                    )
+                                }
                                 items(playlists, key = { it.id }) { pl ->
                                     PlaylistGridItem(
                                         playlist = pl,
@@ -350,6 +396,41 @@ fun LibraryScreen(
         }
     }
 
+    }
+}
+
+/** B4：「新建歌单」格子。与歌单格子同尺寸，直角、无圆角，只有一个居中的 +。 */
+@Composable
+fun NewPlaylistGridItem(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    val strings = LocalStrings.current
+    Column(modifier = modifier.clickable { onClick() }) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(1f)
+                .background(LocalMetroColors.current.surfaceVariant),
+            contentAlignment = Alignment.Center,
+        ) {
+            MetroIcon(
+                imageVector = Icons.Default.Add,
+                contentDescription = strings.playlistNew,
+                tint = LocalMetroColors.current.primary,
+                sizeDp = 40.dp,
+            )
+        }
+        Spacer(Modifier.height(6.dp))
+        MetroText(
+            strings.playlistNew,
+            color = LocalMetroColors.current.onBackground,
+            style = LocalMetroTypography.current.bodyMedium,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.padding(horizontal = 6.dp),
+        )
+        Spacer(Modifier.height(6.dp))
     }
 }
 
