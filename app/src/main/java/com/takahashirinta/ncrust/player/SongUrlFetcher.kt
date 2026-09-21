@@ -17,13 +17,25 @@ import android.media.MediaCodecList
 import android.os.Build
 import androidx.media3.decoder.ffmpeg.FfmpegLibrary
 import android.util.Log
+import com.takahashirinta.ncrust.BuildConfig
+import com.takahashirinta.ncrust.network.ClientIdentity
 import com.takahashirinta.ncrust.network.RetrofitClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
 
-data class SongUrlResult(val url: String, val actualLevel: String)
+/**
+ * [actualLevel] 是服务端返回的 **level 字符串**，[br] / [type] 才是实际文件参数。
+ * A1 起两者一起带出来：实测存在 granted=lossless 但 br 仍是 Hi-Res 值（1,685,762）的情况 ——
+ * 只看 level 字符串会把"其实在播 Hi-Res"误判成降级（A3 据此重写降级判定）。
+ */
+data class SongUrlResult(
+    val url: String,
+    val actualLevel: String,
+    val br: Long = 0L,
+    val type: String = "",
+)
 
 object SongUrlFetcher {
     private const val TAG = "SongUrlFetcher"
@@ -106,26 +118,36 @@ object SongUrlFetcher {
             if (tryLevel in FLAC_TIERS && !deviceCanDecodeFlac) continue
             try {
                 val payload = buildPayload(songId, tryLevel)
-                val response = RetrofitClient.eapiPost(SONG_URL_PATH, payload, useInterface = true)
+                // A1：服务端按 **Cookie 里的客户端身份** 判定音质上限。只带 MUSIC_U/__csrf 时，
+                // 请求 hires 会被静默封顶成 lossless（code 仍是 200）；追加 os/appver 后同一请求
+                // 才真正返回 hires。实测见仓库外 tools/probe-quality.py。
+                val response = RetrofitClient.eapiPost(
+                    SONG_URL_PATH,
+                    payload,
+                    useInterface = true,
+                    extraCookie = ClientIdentity.extraCookieFor(RetrofitClient.getCookie())
+                )
                 val body = response.body?.string() ?: continue
                 Log.d(TAG, "eapi response ($tryLevel): $body")
                 val json = JSONObject(body)
                 val data = json.optJSONArray("data") ?: continue
                 if (data.length() > 0) {
                     val obj = data.getJSONObject(0)
-                    // code != 200 means the level is unavailable (404 = no resource / not entitled).
-                    // There is no point accepting such an entry, so advance down the ladder.
-                    if (obj.optInt("code", 200) != 200) continue
+                    val code = obj.optInt("code", 200)
                     val url = obj.optString("url")
                     val actualLevel = obj.optString("level", tryLevel)
                     // type/br 用于诊断:type 是实际容器(mp3/flac/mp4),br 是码率,
                     // 出现"有进度没声音"时靠这两项判断拿到的到底是不是预期的文件。
                     val type = obj.optString("type", "")
                     val br = obj.optLong("br", 0L)
-                    if (!url.isNullOrEmpty()) {
-                        Log.d(TAG, "got url: $url  actualLevel: $actualLevel  type: $type  br: $br  requested: $level")
-                        return@withContext SongUrlResult(url, actualLevel)
+                    // code != 200 means the level is unavailable (404 = no resource / not entitled).
+                    // There is no point accepting such an entry, so advance down the ladder.
+                    if (code != 200 || url.isNullOrEmpty()) {
+                        logAttempt(tryLevel, actualLevel, br, type, code, accepted = false)
+                        continue
                     }
+                    logAttempt(tryLevel, actualLevel, br, type, code, accepted = true)
+                    return@withContext SongUrlResult(url, actualLevel, br, type)
                 }
             } catch (e: Exception) {
                 Log.w(TAG, "fetch failed for level=$tryLevel", e)
@@ -139,13 +161,37 @@ object SongUrlFetcher {
         null
     }
 
+    /**
+     * A1：把「请求档位 / 服务端给的 level 字符串 / 实际文件参数」分开打出来，供真机实测比对
+     * 与 A3 的降级判定使用 —— 实测存在 granted=lossless 但 br 仍是 Hi-Res 值的情况。
+     * debug 额外带 deviceId 前 4 位（确认身份是否真的生效），release 只留必要字段。
+     */
+    private fun logAttempt(
+        requested: String,
+        granted: String,
+        br: Long,
+        type: String,
+        code: Int,
+        accepted: Boolean,
+    ) {
+        val detail = "quality attempt: requested=$requested granted=$granted br=$br type=$type code=$code accepted=$accepted"
+        if (BuildConfig.DEBUG) {
+            Log.i(TAG, "$detail deviceId=${ClientIdentity.deviceId().take(4)}…")
+        } else {
+            Log.i(TAG, detail)
+        }
+    }
+
     private fun buildPayload(songId: Long, level: String): Map<String, String> {
         // 官方客户端 header 字段,声明 PC 端并携带随机 requestId,保证杜比等音质返回正常码率。
+        // A1：body header 与 Cookie 里的身份同源。实测解锁只看 **Cookie**，body 这份对音质
+        // 无用；但两处不一致会形成自相矛盾的客户端指纹（旧值 appver="" / deviceId="pyncm!"），
+        // 因此一并填成同一组值。
         val config = JSONObject()
-            .put("os", "pc")
-            .put("appver", "")
-            .put("osver", "")
-            .put("deviceId", "pyncm!")
+            .put("os", ClientIdentity.OS)
+            .put("appver", ClientIdentity.APPVER)
+            .put("osver", ClientIdentity.OSVER)
+            .put("deviceId", ClientIdentity.deviceId())
             .put("requestId", (20_000_000..30_000_000).random().toString())
 
         val base = mutableMapOf(

@@ -65,7 +65,11 @@ object RetrofitClient {
     fun eapiPost(
         path: String,
         payload: Map<String, String>,
-        useInterface: Boolean = false
+        useInterface: Boolean = false,
+        // A1：追加到用户 cookie 之后的客户端身份字段（见 ClientIdentity）。服务端按 Cookie 里
+        // 的客户端身份判定音质上限，不带身份时取链的 hires 请求会被静默封顶成 lossless。
+        // 默认 null —— 其余调用点（写接口等）行为完全不变，风控面收敛在取链这一条路径。
+        extraCookie: String? = null
     ): Response {        val host = if (useInterface) INTERFACE_URL else API_URL
         val fullUrl = host + path
         val anyPayload = payload.mapValues { it.value as Any }
@@ -75,12 +79,17 @@ object RetrofitClient {
             .add("params", params)
             .build()
 
+        val cookieHeader = listOfNotNull(
+            currentCookie?.takeIf { it.isNotBlank() },
+            extraCookie?.takeIf { it.isNotBlank() }
+        ).joinToString("; ")
+
         val request = Request.Builder()
             .url(fullUrl)
             .post(requestBody)
             .header("User-Agent", UA)
             .header("Referer", "https://music.163.com/")
-            .header("Cookie", currentCookie ?: "")
+            .header("Cookie", cookieHeader)
             .build()
 
         return plainClient.newCall(request).execute()

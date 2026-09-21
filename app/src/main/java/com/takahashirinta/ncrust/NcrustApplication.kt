@@ -10,6 +10,7 @@ import coil.ImageLoaderFactory
 import coil.disk.DiskCache
 import coil.memory.MemoryCache
 import com.takahashirinta.ncrust.cache.ContentCache
+import com.takahashirinta.ncrust.network.ClientIdentity
 import com.takahashirinta.ncrust.ui.theme.BackgroundImageManager
 
 /**
@@ -28,6 +29,13 @@ import com.takahashirinta.ncrust.ui.theme.BackgroundImageManager
  * 避免低端机后台被杀。
  */
 class NcrustApplication : Application(), ImageLoaderFactory {
+
+    override fun onCreate() {
+        super.onCreate()
+        // v1.2.0 · A1：取链请求需要稳定的客户端身份（deviceId 持久化在独立的 ncrust_device）。
+        // 放在 Application 而不是 MainActivity —— 车机 / 媒体键冷启动可能不经过 Activity。
+        ClientIdentity.init(this)
+    }
 
     override fun newImageLoader(): ImageLoader {
         val memoryBytes = memoryCacheSizeBytes(this)
