@@ -11,6 +11,10 @@
  *     索引会 +1，必须迁移，否则用户原来选的「杜比」会变成别的档位。
  *     实测（登录态 + PC 身份，tools/probe-quality.py）：jymaster 请求返回 flac、
  *     br≈5.84 Mbps；而 sky（沉浸环绕声）请求只会回落成 exhigh(320k mp3)，故本次不加。
+ *   - v1.3.0 · A：确认 sky（沉浸环绕声）**不入表**。服务端没有独立的沉浸声音频文件：
+ *     maxBrLevel=sky 的曲目上限就是 exhigh 320k mp3，level=sky 与 exhigh 取回同一个文件
+ *     （CDN 回源 6/6 一致）；有母带源的曲目请求 sky 直接给最高源。听感上的环绕声由官方
+ *     客户端 DSP 渲染，本应用无法复现，标成独立档位只会误导用户。详见 AGENTS.md「Playback」。
  */
 
 package com.takahashirinta.ncrust.player
