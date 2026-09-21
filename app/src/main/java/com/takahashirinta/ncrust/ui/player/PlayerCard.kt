@@ -252,13 +252,14 @@ fun PlayerCard(
             },
             onDragEnd = {
                 coroutineScope.launch {
-                    // 方向敏感吸附：向上推（收起）要 25% 行程；向下拉（恢复）只要 12%。
-                    // 悬浮键贴在屏幕右下角，向下可拖的距离天然很短（S6 上最多约 350px，
-                    // 而 40% 阈值约 460px）—— 统一高阈值会出现【真机上拉得回来但恢复不了】。
-                    // 微动（都没到阈值）就按出发点归位，避免误触改变状态。
+                    // 方向敏感吸附：向上推（收起）要 25% 行程；向下拉（恢复）只要 5%。
+                    // 恢复方向阈值刻意很小：收起会挡住内容、需要"故意"，而恢复只是把控制栏
+                    // 放回来、没有任何副作用，阈值大了反而会让"划不回来"（S6 真机实测：
+                    // 把手向下可拖的总行程本来就短，控制栏越高越够不到比例阈值）。
+                    // 微动（两个方向都没到阈值）按出发点归位。
                     val delta = current - from
                     val target = when {
-                        delta <= -0.12f -> 0f
+                        delta <= -0.05f -> 0f
                         delta >= 0.25f -> 1f
                         else -> if (from >= 0.5f) 1f else 0f
                     }
@@ -395,9 +396,12 @@ fun PlayerCard(
     //    只给根节点的整卡拖拽让路用：窄屏全屏态下，这一区域内向上拖是"收起控制栏"，
     //    而不是把整张卡片拖走。controlsTopInCardPx 由控制栏 onGloballyPositioned 实测，
     //    分辨率无关；未实测到（MAX_VALUE）时判断恒为 false，即退化成旧行为。
+    // 注意这里**不**按"控制栏当前是展开还是收起"分段：控制栏收起后，它让出的那块区域
+    // 属于面板（歌词的点击/滚动），而把手仍然在最底部；两种状态下这块都应该归它们，
+    // 而不是让整卡拖拽来抢（S6 真机实测：收起后向下拖把手恢复，会被整卡拖拽抢走，
+    // 结果是"控制栏没回来、整卡反而被拖下去"）。
     fun isOverCollapsibleControls(y: Float) =
-        !isWidePlayer && cardExpandedForInput && !controlsCollapsedForInput &&
-            y >= controlsTopInCardPx
+        !isWidePlayer && cardExpandedForInput && y >= controlsTopInCardPx
 
     fun isOverCardVisibleArea(y: Float, x: Float): Boolean {
         // 宽屏左右分栏，左半是封面区，触摸落在左半时不属于卡片内容区。
