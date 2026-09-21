@@ -594,6 +594,138 @@ primary，破坏过去行的弱化。
 
 单测 [YrcParserTest.kt](app/src/test/java/com/takahashirinta/ncrust/lyric/YrcParserTest.kt) 用真实样本覆盖
 绝对毫秒语义、信息行 trim、按行序对齐、少空格时的字符区间映射、定位失败放弃、行数不等放弃、乱码容错。
+### 离线下载：实测调研与架构选型（任务 D，v1.5.0 只做 D1+D2）
+
+> **结论先行：v1.5.0 不实现下载功能，只交付调研与选型。** 原因见文末「为什么不在 v1.5.0 落地」。
+> 本节所有数据都是 2026-09 真实登录态实测 + 逐行源码审计，不是文档推断，可直接作为 v1.5.1 的施工依据。
+
+#### D1-1 现有下载能力：**零**
+
+| 检索 | 命中 |
+|---|---|
+| `下载` / `离线` / `(?i)offline` | **0** |
+| `(?i)download` | **1** —— [PlayReporter.kt](app/src/main/java/com/takahashirinta/ncrust/player/PlayReporter.kt) 的 webLog 上报字段 `.put("download", 0)`，与下载无关 |
+
+**没有磁盘音频缓存（已用代码证实，不是猜）**：`PlaybackService.kt` 全文 918 行的 media3 import 里没有
+`androidx.media3.datasource.cache.*`（无 `Cache`/`SimpleCache`/`CacheDataSource`）、也没有 `androidx.media3.exoplayer.offline.*`；
+ExoPlayer 构造时只设 `DefaultRenderersFactory`（FFmpeg）/`DefaultExtractorsFactory`/`setLoadControl`/`setWakeMode`，**没挂任何缓存数据源**。
+全仓库 grep `SimpleCache|CacheDataSource|DownloadManager|DownloadRequest|androidx.work|androidx.room` → **0 命中**。
+
+真正的磁盘占用只有三处，都不含音频：封面图磁盘缓存（`cacheDir/image_cache`，100 MB）、6 个 SharedPreferences、自定义背景图（`filesDir/`）。
+
+→ **在线播放完全依赖每次现场取链的临时 URL，离线零可用性。**
+
+#### D1-2 `/eapi/song/enhance/download/url/v1` 实测结构
+
+⚠️ **先记一条会让全部 eapi 请求 404 的坑**：签名/明文里的路径必须是 `/api/...`，而 HTTP URL 是 `/eapi/...`
+（[EapiCrypto.kt](app/src/main/java/com/takahashirinta/ncrust/network/crypto/EapiCrypto.kt) 的 `urlPath = parsedUrl.path.replace("/eapi/", "/api/")`）。
+照抄「两处路径相同」的直觉写法会拿到 `{"code":404,"message":"接口未找到！"}`。
+
+请求：`POST /eapi/song/enhance/download/url/v1`，body `{"id": <long>, "level": "<档位>"}`。
+
+| 参数 | 必填 | 实测 |
+|---|---|---|
+| `id` | ✅ | **单值**。传 `ids`（复数数组串）→ `{"msg":"参数错误","code":400}` |
+| `level` | ✅ | 缺 → 400；用 `br` 代替也 400 |
+| `encodeType` | ❌ | **被完全忽略**：`mp3`/`flac`/`aac`/`mp4` 四种取值响应逐字节相同；响应里的 `encodeType` 恒为 `"mp3"`，**不能拿来判格式** |
+| `header` | ❌ | 带上与不带响应逐字节相同 |
+
+响应只有两个顶层 key：`{"code":..., "data":{...}}`。**`data` 是对象**（不同于 player 端点的数组），
+且**恒为 36 个字段**（成功/`-105`/`-110` 都一样，失败时全部置 0/null，字段不消失）—— 解析器可以无条件按 36 字段读。
+
+关键字段：`url`（**http 不是 https**）、`br`、`size`（实测与实际下载字节数一致）、`md5`（实测与实际内容一致）、
+`code`、`type`（**权威容器字段**）、`level`（**实际授予档位**）、`time`、`fee`、`payed`、`freeTrialInfo`（**download 端点恒 null**）、
+**`expi` = 1200**（URL 有效期 20 分钟）、`sr`、`gain`、`peak`、`freeTrialPrivilege`、`musicId`。
+
+**两条硬结论**：
+
+1. **超出该曲上限的档位被静默封顶**，不报错也不给降级标记 —— 响应 `level` 回落到实际授予档位。
+   下载必须持久化 `data.level`（实际值），不能存用户请求的档位。`level=sky` 恒失败（`-110`），与既有结论一致。
+2. **`download` 端点「要么给完整文件、要么什么都不给」**：未登录 + VIP 曲给 `data.code=-105` + `url=null`，
+   **永不返回 45 秒试听片段**（`player/url/v1` 对同一首会给 45 s 试听）。这正是离线下载需要的语义 ——
+   否则会存下一个 45 秒的坏文件。
+
+与现有 `player/url/v1` 的差异：**字段集合完全相同（36/36，双向差集为空）**，差异只在请求/响应形状与权限语义 ——
+
+| 维度 | `download/url/v1` | `player/url/v1` |
+|---|---|---|
+| 请求体 | `{"id": <long>}` 单值 | `{"ids": "[...]"}` 数组串，可批量 |
+| `data` 形状 | **对象** | **数组** |
+| 完全无 cookie | 顶层 `{"data":null,"code":301}`（一律拒绝） | 免费曲仍 200 + url |
+| 有身份无 `MUSIC_U` + VIP 曲 | `data.code=-105`，`url=null`，**无试听** | 200 + 45 s 试听片段 |
+| 无版权曲（`st=-200`） | `data.code=**-110**` | `data.code=**404**`（**码不同，别混用判定**） |
+
+#### D1-3 断点续传：**完全可行，且 URL 轮换不影响续传**（实测）
+
+| 实验 | 结果 |
+|---|---|
+| `Range: bytes=0-1023` / `bytes=1000000-1001023` / `bytes=-1024` / `bytes=0-` | **全部 206** + 正确 `Content-Range`；但**没有 `Accept-Ranges` 头**（不能靠探测它，直接发 Range） |
+| `md5` / `size` 是否可信 | 全量下载 5,217,010 字节后比对：`size` 一致、`md5` 一致 ⇒ **服务端白送完整性校验** |
+| 同 URL 分段拼接 | `cat part1 part2` 的 md5 与 `data.md5` 一致 |
+| **跨 URL 续传**（下到一半换新 URL 继续） | 用 URL_A 下 `0-1999999`、URL_B 下 `2000000-`，拼接后 **size 与 md5 都一致** ⇒ **URL 过期只需重新取链，不用重下** |
+| URL 是否稳定 | 每次都变（host 在 `m704`/`m804` 间轮换、路径时间戳每次不同）⇒ **绝不能把 URL 当持久标识** |
+| URL 过期机制 | 签名在**路径**里（14 位时间戳恒 = 签发时刻+1500 s；篡改任一字节即 403）；**query 参数是装饰**（删掉/篡改仍 206） |
+| CDN 是否自鉴权 | 是（不带 Cookie/Referer 直接 curl 也能下）；**https 同样可用**（建议升级，避免明文） |
+
+→ 施工要点：持久化 `(songId, requestedLevel, actualLevel, type, br, size, md5)`，**不持久化 URL**；
+每次开始/恢复都重新取一次链，再按已下载偏移发 `Range`；下完比对 `size` + `md5`。
+
+#### D1-4 两条容易被忽略的既有约束
+
+- **共享 OkHttp 客户端的 read timeout 只有 30 s**（[RetrofitClient.kt](app/src/main/java/com/takahashirinta/ncrust/network/RetrofitClient.kt)）——
+  32 MB 无损在弱网下必然超时。下载**必须自建 OkHttpClient**（长 read timeout），不要复用。
+- **离线音频应放 `filesDir/offline` 而不是 `cacheDir`**：「清除缓存」只删 `cacheDir/{WebView,http}`（不会误删），
+  但「缓存占用」统计的是**整个 cacheDir**（会把离线音频算成缓存 → 用户以为可清、实际清不掉）。
+- 下载**不应套用 `SongUrlFetcher` 的 FLAC 设备门控**：下载只是写字节、不经 ExoPlayer，API<27 设备也能下无损。
+
+#### D2 架构选型：**WorkManager + Room**（官方推荐，断点续传友好，Android 7.0 兼容）
+
+实测事实支撑这个选择：
+
+| 判断项 | 依据 | 结论 |
+|---|---|---|
+| 后端是否支持离线 | Range 206 + md5/size 校验 + 跨 URL 续传通过 | ✅ |
+| 是否需要新存储 | `SongItem` 只有 5 个展示字段（无 size/md5/level），SharedPreferences 整表 Gson 不适合大规模清单 | ✅ 需要 Room |
+| 是否需要后台调度 | 无任何既有 Work/Job 调度基础设施 | ✅ 需要 WorkManager |
+| 许可证 | 实查 Google Maven POM：`room-runtime` 与 `work-runtime-ktx` 均为 **Apache-2.0**；Apache 官方 GPL 兼容性页原文「Apache 2 software can therefore be included in GPLv3 projects」⇒ **单向兼容** | ✅ 可引入 |
+
+**唯一未验证的工程风险（必须在 v1.5.1 第一步解决）**：本仓库是 Kotlin **1.9.24** / AGP **8.5.0** / jvmTarget 11，
+而 Room 2.7+/2.8+ 与 WorkManager 2.10+ 通常要求更新的 AGP/Kotlin；引入时很可能需要**降级选版**
+（如 Room 2.6.x + WorkManager 2.9.x）或同步升级 AGP/Kotlin。**没有跑过真实构建之前不要合并依赖改动。**
+另外 Room 需要注解处理器（KSP 或 kapt），本仓库当前两者都未配置。
+
+表结构（草案）：
+
+```
+download_task(
+  songId INTEGER PK, name TEXT, artist TEXT, album TEXT, coverUrl TEXT,
+  requestedLevel TEXT, actualLevel TEXT, type TEXT, br INTEGER, size INTEGER, md5 TEXT,
+  filePath TEXT, downloadedBytes INTEGER, status INTEGER,   -- 0 排队/1 下载中/2 完成/3 失败/4 已删除
+  error TEXT, createdAt INTEGER, updatedAt INTEGER
+)
+```
+
+落地顺序（对应任务书的 4 个 commit）：
+
+1. `feat(download): 下载管理器核心` —— `DownloadApi`（复用 `EapiCrypto` + download 端点）、`DownloadStore`（Room）、
+   `DownloadWorker`（WorkManager，Wi-Fi 约束 + 前台通知 + Range 续传 + md5 校验）、自建 OkHttpClient；
+2. `feat(download): 批量下载入口` —— 在 `MainActivity` 的 `[加入歌单] + menuSongActions + [转到歌手/专辑]` 拼接处插全局「下载」，
+   一处改动覆盖全部 7 个页面；歌单/专辑详情页的批量下载要先**把 `DetailScaffold.onTopEndAction` 泛化成多动作**
+   （现在只支持一个右上角动作，歌单页已被「编辑歌单 ⋮」占用），且**不能**放 `DetailHeader.headerActions`（在播放器死带里）；
+3. `feat(download): 下载队列页` —— 复用 `DetailScaffold`；
+4. `feat(download): 存储管理页` —— 已下载列表 + 占用统计 + 删除，与设置页「缓存占用」口径分开。
+
+播放侧接入（**这才是「支持离线播放」的真正开关**）：`PlaybackService` 收到播放请求时先查 Room 有没有已完成的本地文件，
+有就播 `fileUri`，没有才走 `SongUrlFetcher`。当前完全没有这条路径。
+
+#### 为什么不在 v1.5.0 落地
+
+1. 引入 Room + WorkManager 需要先解决 Kotlin 1.9.24 / AGP 8.5.0 的版本兼容并新配注解处理器 ——
+   这是**唯一未验证的工程风险**，而任务书的红线是「引入新依赖但无法确认兼容性时停下」；
+2. 任务书明确允许：「如果上下文不足：只做 D1 + D2 调研报告，实现留 v1.5.1」；
+3. 与其塞一个未在真机验证过的下载器进 v1.5.0，不如把已实测的协议结论与表结构沉淀下来，
+   让 v1.5.1 从「已知可行」起步。
+
 ## Key Constraints & Pitfalls
 
 - **Kanesumi Design**: no rounded corners in the player; no spring/bounce; cover always fills the full screen width (`fillMaxWidth().aspectRatio(1f)`, scale 1.0 in large mode).
