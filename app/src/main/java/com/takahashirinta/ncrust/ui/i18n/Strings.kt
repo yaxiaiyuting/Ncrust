@@ -48,6 +48,9 @@ data class Strings(
 
     /** E：榜单区块标题。 */
     val toplistSectionTitle: String,
+    // v1.4.0 · 音乐人推荐卡片（首页分节标题 + 卡片副标题）
+    val artistRecoTitle: String,
+    val artistRecoDesc: String,
     /** API < 27 无系统 FLAC 解码器、且选中 FLAC 档位时的设置页提示（Bug1-C）。 */
     val qualityFlacUnsupportedHint: String,
     val playbackSectionTitle: String,

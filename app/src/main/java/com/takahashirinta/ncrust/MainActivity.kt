@@ -64,6 +64,7 @@ import com.takahashirinta.ncrust.network.RetrofitClient
 import com.takahashirinta.ncrust.network.SongItem
 import com.takahashirinta.ncrust.network.model.AlbumItem
 import com.takahashirinta.ncrust.network.model.ArtistItem
+import com.takahashirinta.ncrust.reco.ArtistReco
 import com.takahashirinta.ncrust.player.PlaybackStateManager
 import com.takahashirinta.ncrust.power.BackgroundActivity
 import com.takahashirinta.ncrust.ui.components.BackgroundActivityDialog
@@ -433,6 +434,18 @@ fun MainScreen(
     var songTransitioned by remember { mutableStateOf(false) }
     // 点击 lambda / 协程里不能读 CompositionLocal，提示文案在组合期取好。
     val mainStrings = LocalStrings.current
+    // v1.4.0 · 音乐人推荐：每次回到首页 / 切换设置后重算一次口味命中（纯本地，无请求）。
+    // 自动锚点（目标艺人热门曲 → simiSong 推导）只在需要时后台刷新，带 7 天 TTL。
+    var artistRecoArtistId by remember { mutableStateOf<Long?>(null) }
+    LaunchedEffect(selectedTab) {
+        artistRecoArtistId = if (ArtistReco.shouldShow(context)) ArtistReco.targetId(context) else null
+        if (ArtistReco.isEnabled(context) && ArtistReco.targetId(context) != 0L &&
+            ArtistReco.manualAnchors(context).isEmpty()
+        ) {
+            withContext(Dispatchers.IO) { ArtistReco.refreshAutoAnchors(context) }
+            artistRecoArtistId = if (ArtistReco.shouldShow(context)) ArtistReco.targetId(context) else null
+        }
+    }
     var playMode by remember { mutableIntStateOf(0) }
     var shuffledIndices by remember { mutableStateOf<List<Int>>(emptyList()) }
     var shuffledPosition by remember { mutableIntStateOf(0) }
@@ -1310,7 +1323,11 @@ fun MainScreen(
                             onSongAppendToQueue = { appendToQueue(it) },
                             onShowSongMenu = { song, actions -> showSongMenu(song, actions) },
                             // 主页「我的电台」入口: 之前一直没传, HomeScreen 的 FM 卡因此永不渲染
-                            onPlayFm = { startFm() }
+                            onPlayFm = { startFm() },
+                            // v1.4.0 · 音乐人推荐：本地口味命中才给 id，否则 null（卡片整块不渲染）。
+                            // 判定纯本地（收藏单曲艺人 ∩ 锚点），不发请求；配置默认空 → 其他用户看不到。
+                            artistRecoArtistId = artistRecoArtistId,
+                            onArtistRecoClick = { id -> navController.navigate(NavRoutes.artist(id)) }
                         )
 
                         1 -> LibraryScreen(

@@ -48,6 +48,7 @@ import io.github.takahashirinta.kanesumi.core.theme.LocalMetroColors
 import io.github.takahashirinta.kanesumi.core.theme.LocalMetroTypography
 import io.github.takahashirinta.kanesumi.core.theme.MetroIcon
 import io.github.takahashirinta.kanesumi.core.theme.MetroText
+import com.takahashirinta.ncrust.ui.components.ArtistRecoCard
 import com.takahashirinta.ncrust.ui.components.PlayAllButton
 import com.takahashirinta.ncrust.ui.components.SongCard
 import com.takahashirinta.ncrust.ui.components.SongCardStyle
@@ -71,7 +72,10 @@ fun HomeScreen(
     onSongInsertNext: (SongItem) -> Unit = {},
     onSongAppendToQueue: (SongItem) -> Unit = {},
     onShowSongMenu: (SongItem, List<SongMenuAction>) -> Unit = { _, _ -> },
-    onPlayFm: (() -> Unit)? = null
+    onPlayFm: (() -> Unit)? = null,
+    // v1.4.0 · 音乐人推荐：非空时在推荐流里插入一张艺人卡（取值见 ArtistReco.shouldShow）。
+    artistRecoArtistId: Long? = null,
+    onArtistRecoClick: (Long) -> Unit = {}
 ) {
     val strings = LocalStrings.current
     // 初始 state 从 ContentCache 读取。有缓存则立即渲染，无需 spinner。
@@ -284,6 +288,20 @@ fun HomeScreen(
                             }
                         }
                         item(span = { GridItemSpan(maxLineSpan) }) { Spacer(Modifier.height(16.dp)) }
+                    }
+
+                    // v1.4.0 · 音乐人推荐：与「推荐歌单」同一套分节样式，融进推荐流不突兀。
+                    // 是否显示完全由 ArtistReco.shouldShow（本地口味命中）决定，默认配置为空 → 不显示。
+                    if (artistRecoArtistId != null) {
+                        item(span = { GridItemSpan(maxLineSpan) }) {
+                            SectionHeader(title = strings.artistRecoTitle)
+                        }
+                        item(span = { GridItemSpan(maxLineSpan) }) {
+                            ArtistRecoCard(
+                                artistId = artistRecoArtistId,
+                                onClick = onArtistRecoClick
+                            )
+                        }
                     }
 
                     // 推荐歌单：横滑大 tile。私人 FM 电台卡**常驻首位**——

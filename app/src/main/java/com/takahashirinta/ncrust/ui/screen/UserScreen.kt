@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import io.github.takahashirinta.kanesumi.anim.sokuou.rememberMetroFlingBehavior
 import io.github.takahashirinta.kanesumi.controls.MetroSelectorFlyout
+import com.takahashirinta.ncrust.reco.ArtistReco
 import io.github.takahashirinta.kanesumi.controls.MetroSwitch
 import io.github.takahashirinta.kanesumi.core.theme.LocalMetroColors
 import io.github.takahashirinta.kanesumi.core.theme.LocalMetroTypography
@@ -112,6 +113,8 @@ fun UserScreen(
     var mobileQuality by remember { mutableIntStateOf(prefs.getInt("mobile_quality", 1)) }
     var gaplessEnabled by remember { mutableStateOf(prefs.getBoolean("gapless_playback", true)) }
     var lyricsTranslation by remember { mutableStateOf(prefs.getBoolean("lyrics_translation", true)) }
+    // v1.4.0 · 音乐人推荐开关
+    var artistRecoEnabled by remember { mutableStateOf(ArtistReco.isEnabled(context)) }
 
     var selectedLanguageCode by remember { mutableStateOf(getSavedLanguageCode(context)) }
 
@@ -309,6 +312,16 @@ fun UserScreen(
                     // 即时生效: VM 缓存的 gaplessEnabled 不刷新的话,
                     // 本首歌的预载状态与开关不一致, 要等下一首歌才对上
                     playerViewModel.refreshGaplessSetting()
+                }
+            )
+            // v1.4.0 · 音乐人推荐卡片开关。默认关；目标艺人与锚点配置存在 prefs 且默认空，
+            // 因此其他用户安装后既看不到卡片、也不会为它发任何请求。
+            SettingSwitchRow(
+                title = strings.artistRecoTitle,
+                checked = artistRecoEnabled,
+                onCheckedChange = {
+                    artistRecoEnabled = it
+                    ArtistReco.setEnabled(context, it)
                 }
             )
             // 歌词翻译开关(Spotify 式双语:原句下方小号译文)。切了立即生效,播放器常挂载无需重进。

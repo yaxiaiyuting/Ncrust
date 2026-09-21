@@ -146,6 +146,26 @@ object PlaylistApi {
         response.body?.string() ?: throw Exception("empty response")
     }
 
+    /**
+     * 目标艺人的热门曲 id（v1.4.0 · 音乐人推荐卡片的锚点推导用）。
+     * 实测 `/eapi/v1/artist/songs` 对任意艺人都返回 200（周杰伦/小众艺人都可），
+     * 而 `/eapi/v1/artist/detail` 与 `/eapi/artist/albums` 已 400 失效（别用）。
+     */
+    suspend fun getArtistTopSongIds(artistId: Long, limit: Int = 3): List<Long> = withContext(Dispatchers.IO) {
+        val payload = mapOf(
+            "id" to artistId.toString(),
+            "limit" to limit.toString(),
+            "offset" to "0",
+            "order" to "hot"
+        )
+        val response = RetrofitClient.eapiPost("/eapi/v1/artist/songs", payload)
+        val root = JSONObject(response.body?.string() ?: return@withContext emptyList())
+        val arr = root.optJSONArray("songs") ?: return@withContext emptyList()
+        (0 until arr.length()).mapNotNull { i ->
+            arr.optJSONObject(i)?.optLong("id")?.takeIf { it > 0L }
+        }
+    }
+
     suspend fun getArtistAlbums(artistId: Long): String = withContext(Dispatchers.IO) {
         val payload = mapOf(
             "id" to artistId.toString(),
