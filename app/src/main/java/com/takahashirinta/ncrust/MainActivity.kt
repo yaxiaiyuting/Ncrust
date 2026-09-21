@@ -105,6 +105,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class MainActivity : ComponentActivity() {
+    /**
+     * B2-D：系统强调色会在用户换壁纸/换主题后变化，系统此时会重发 Configuration。
+     * 这里只维护一个"第几次读取"的计数器 —— 颜色本身永远从当前 Context 现读，
+     * 绝不缓存成 Activity 级字段/单例，否则换壁纸后拿到的还是旧色。
+     */
+    private val systemAccentTick = mutableIntStateOf(0)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // 手机锁竖屏、大屏(平板/折叠展开/车机)放开方向。见 applyOrientationPolicy。
@@ -140,15 +147,20 @@ class MainActivity : ComponentActivity() {
                 mutableStateOf(getSavedAccentSource(this@MainActivity))
             }
             val coverAccentRgb by playerViewModel.coverAccentRgb.collectAsState()
+            // B2-D：配置变化或手动刷新都会让 tick +1，触发重新读取系统色。
+            val accentTick = systemAccentTick.intValue
+            val composeContext = androidx.compose.ui.platform.LocalContext.current
+            // 现读：Activity 重建后 composeContext 是新实例，拿到的就是新 Resource 值。
+            val systemAccent = remember(composeContext, accentTick) { systemAccentColor(composeContext) }
             // 优先级合并：可用的动态来源覆盖预设色，任一环节拿不到都回落 themeColorForIndex。
             // remember 键刻意含 isDark —— 深/浅色的亮度锚定区间不同，同一张封面必须重算。
-            val accentColor = remember(accentSource, themeIndex, coverAccentRgb, isDark) {
+            val accentColor = remember(accentSource, themeIndex, coverAccentRgb, isDark, systemAccent) {
                 when (accentSource) {
                     AccentSource.COVER -> coverAccentRgb?.let { processAccentColor(it, isDark) }
                         ?: themeColorForIndex(themeIndex)
-                    // systemAccentColor 在 API < 31 返回 null（跨设备同步 prefs 的防御）。
-                    AccentSource.SYSTEM -> systemAccentColor(this@MainActivity)
-                        ?.let { processAccentColor(it.toArgb(), isDark) }
+                    // systemAccentColor 在 API < 31 返回 null（跨设备同步 prefs 的防御），
+                    // 拿不到就回落预设色 —— 不静默改变现有颜色。
+                    AccentSource.SYSTEM -> systemAccent?.let { processAccentColor(it.toArgb(), isDark) }
                         ?: themeColorForIndex(themeIndex)
                     AccentSource.PRESET -> themeColorForIndex(themeIndex)
                 }
@@ -188,6 +200,7 @@ class MainActivity : ComponentActivity() {
                                 accentSource = newSource
                                 saveAccentSource(this@MainActivity, newSource)
                             },
+                            onRefreshSystemAccent = { systemAccentTick.intValue++ },
                             onLanguageChange = { newCode ->
                                 saveLanguageCode(this@MainActivity, newCode)
                                 languageCode = newCode
@@ -242,6 +255,8 @@ class MainActivity : ComponentActivity() {
         super.onConfigurationChanged(newConfig)
         // 折叠展开/合拢会改变 smallestScreenWidthDp，需重新判定手机/大屏。
         applyOrientationPolicy()
+        // B2-D：配置变化后重新读取系统强调色（部分 ROM 换壁纸只发配置变更，不重启进程）。
+        systemAccentTick.intValue++
     }
 
     /**
@@ -288,7 +303,9 @@ fun MainScreen(
     // B2-C：主题色来源（设置页三选一）。状态由 MainActivity 持有（主题在更外层应用），
     // 这里只做透传给设置页。
     accentSource: AccentSource = AccentSource.PRESET,
-    onAccentSourceChange: (AccentSource) -> Unit = {}
+    onAccentSourceChange: (AccentSource) -> Unit = {},
+    // B2-D：手动重新读取系统色（应对部分 ROM 换壁纸后不发配置变更）。
+    onRefreshSystemAccent: () -> Unit = {}
 ) {
     var selectedTab by remember { mutableIntStateOf(1) }
     // 根布局实测高度(px)：车机会把窗口内容区 inset 到系统栏之间，但 WindowInsets
@@ -1303,6 +1320,7 @@ fun MainScreen(
                             onThemeModeChange = onThemeModeChange,
                             accentSource = accentSource,
                             onAccentSourceChange = onAccentSourceChange,
+                            onRefreshSystemAccent = onRefreshSystemAccent,
                             onShowWebLogin = { showWebLogin = true },
                             refreshTrigger = cookieRefreshTrigger,
                             onLanguageChange = onLanguageChange

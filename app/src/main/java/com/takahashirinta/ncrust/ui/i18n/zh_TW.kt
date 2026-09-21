@@ -31,6 +31,7 @@ val zhTW = Strings(
     accentSourceCover = "跟隨封面",
     accentSourceSystem = "跟隨系統",
     accentSourceSystemHint = "系統取色需要 Android 12 以上",
+    accentSystemRefresh = "重新讀取系統色",
     qualityFlacUnsupportedHint = "本機不支援該檔位，將自動降級",
     playbackSectionTitle = "播放",
     gaplessSectionTitle = "無縫而歌",

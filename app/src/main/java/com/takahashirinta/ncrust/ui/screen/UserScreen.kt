@@ -82,6 +82,7 @@ fun UserScreen(
     onThemeModeChange: (ThemeMode) -> Unit = {},
     accentSource: AccentSource = AccentSource.PRESET,
     onAccentSourceChange: (AccentSource) -> Unit = {},
+    onRefreshSystemAccent: () -> Unit = {},
     onShowWebLogin: () -> Unit = {},
     refreshTrigger: Int = 0,
     onLanguageChange: (String) -> Unit = {}
@@ -360,6 +361,23 @@ fun UserScreen(
                 systemHint = strings.accentSourceSystemHint,
                 onSelect = onAccentSourceChange
             )
+            // B2-D：部分 ROM 换壁纸后不发配置变更，给一个手动重读入口。
+            if (accentSource == AccentSource.SYSTEM && systemAccentSupported) {
+                Spacer(Modifier.height(8.dp))
+                Box(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .border(1.dp, LocalMetroColors.current.divider)
+                        .clickable { onRefreshSystemAccent() }
+                        .padding(horizontal = 12.dp, vertical = 8.dp)
+                ) {
+                    MetroText(
+                        strings.accentSystemRefresh,
+                        color = LocalMetroColors.current.primary,
+                        style = TextStyle(fontSize = 12.sp)
+                    )
+                }
+            }
             Spacer(Modifier.height(24.dp))
 
             SectionTitle(strings.languageSectionTitle)

@@ -31,6 +31,7 @@ val jpMY = Strings(
     accentSourceCover = "画帳 に 従う",
     accentSourceSystem = "系統 に 従う",
     accentSourceSystemHint = "系統 の 色 は Android 12 より 要す",
+    accentSystemRefresh = "系統 の 色 を 再読",
     qualityFlacUnsupportedHint = "本端末は非対応、自動で下がります",
     playbackSectionTitle = "再世",
     gaplessSectionTitle = "無間 再世",

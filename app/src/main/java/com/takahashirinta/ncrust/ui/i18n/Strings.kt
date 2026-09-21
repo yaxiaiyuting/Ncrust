@@ -42,6 +42,9 @@ data class Strings(
     val accentSourceCover: String,
     val accentSourceSystem: String,
     val accentSourceSystemHint: String,
+
+    /** B2-D：手动重新读取系统强调色。 */
+    val accentSystemRefresh: String,
     /** API < 27 无系统 FLAC 解码器、且选中 FLAC 档位时的设置页提示（Bug1-C）。 */
     val qualityFlacUnsupportedHint: String,
     val playbackSectionTitle: String,
