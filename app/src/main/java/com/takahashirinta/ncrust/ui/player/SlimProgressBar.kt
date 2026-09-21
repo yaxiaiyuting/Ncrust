@@ -23,6 +23,7 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -80,9 +81,16 @@ fun SlimProgressBar(
     var seekTargetProgress by remember { mutableFloatStateOf(-1f) }
     val isSeeking = seekTargetProgress >= 0f
 
-    // 缓冲完成（isBuffering 变 false）后清除 seek 悬挂态
-    LaunchedEffect(isBuffering) {
-        if (!isBuffering) seekTargetProgress = -1f
+    // 位置流追平 seek 目标后清除悬挂态。
+    // 旧实现靠 isBuffering 翻转来清：暂停态下 ExoPlayer 不会发任何 buffering 回调，
+    // 只能等下面那条 5 秒超时，于是表现为"拖完进度条先跳回旧位置、按播放才跳过去"。
+    // 现在只要位置流到达目标（PlayerViewModel.seekTo 里已做乐观更新）就立刻退出悬挂态。
+    LaunchedEffect(Unit) {
+        snapshotFlow { progressState.value }.collect { p ->
+            if (seekTargetProgress >= 0f && abs(p - seekTargetProgress) < 0.005f) {
+                seekTargetProgress = -1f
+            }
+        }
     }
     // 安全超时：若 ExoPlayer 未触发 BUFFERING（已缓存该位置），5秒后自动退出
     LaunchedEffect(isSeeking) {
@@ -92,7 +100,11 @@ fun SlimProgressBar(
         }
     }
 
-    val showBuffering = (isBuffering || isSeeking) && !isDragging
+    // 只有真正的缓冲才显示脉动动画。
+    // 旧实现把"刚 seek 完"也算作缓冲（isSeeking），于是**点一下进度条就会看到一段
+    // 从左滑到右的脉冲**，用户视角是"不必要的动画"。seek 的即时反馈由
+    // seekTargetProgress 保住的填充位置给出，脉冲留给真实的 buffering。
+    val showBuffering = isBuffering && !isDragging
 
     // 缓冲动画懒启动：只有当 showBuffering 为 true 时才创建 rememberInfiniteTransition。
     // 旧实现无论是否缓冲都常驻两条无限循环，Compose 每帧都会 invalidate 本 composable，

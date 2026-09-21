@@ -839,6 +839,13 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun seekTo(position: Long) {
+        // 乐观更新：startService 是异步的，等 PlaybackService 回调会有可感知延迟；
+        // 暂停态下 ticker 又不广播，不在这里更新就会"拖了没反应"。
+        // 服务端 seek 完成后会再广播一次权威值，覆盖这里的估算。
+        val dur = duration.value
+        currentPosition.value = position
+        if (dur > 0) progress.value = (position.toFloat() / dur.toFloat()).coerceIn(0f, 1f)
+
         val intent = Intent(getApplication(), PlaybackService::class.java).apply {
             putExtra("action", "seek")
             putExtra("position", position)

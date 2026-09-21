@@ -269,7 +269,10 @@ class PlaybackService : MediaLibraryService() {
                 override fun onPause() { player.pause() }
                 override fun onSkipToNext() { onPlaybackEnded?.invoke() }
                 override fun onSkipToPrevious() { onPlaybackPrevious?.invoke() }
-                override fun onSeekTo(pos: Long) { player.seekTo(pos) }
+                override fun onSeekTo(pos: Long) {
+                    player.seekTo(pos)
+                    publishProgressNow()
+                }
             })
             isActive = true
         }
@@ -398,6 +401,7 @@ class PlaybackService : MediaLibraryService() {
             "seek" -> {
                 val pos = intent.getLongExtra("position", 0L)
                 player.seekTo(pos)
+                publishProgressNow()
             }
             "previous" -> onPlaybackPrevious?.invoke()
             "next" -> onPlaybackEnded?.invoke()
@@ -773,6 +777,19 @@ class PlaybackService : MediaLibraryService() {
             lastMetadataArtwork = currentArtworkUrl
             lastMetadataBitmap = currentArtworkBitmap
         }
+    }
+
+    /**
+     * 立刻广播一次当前进度。
+     *
+     * 进度 ticker 只在 `player.isPlaying` 时广播（见 [startProgressUpdates]），
+     * 于是**暂停态 seek 后 UI 永远收不到新位置**：进度条停在旧位置，用户要按一次
+     * 播放键才看到跳转。seek 属于"用户显式改变位置"的事件，与播放状态无关，
+     * 必须在 seek 后立刻广播一次。
+     */
+    private fun publishProgressNow() {
+        val dur = player.duration
+        if (dur > 0) onProgressUpdate?.invoke(player.currentPosition, dur)
     }
 
     private fun startProgressUpdates() {
