@@ -1,3 +1,22 @@
+/*
+ * Ncrust —— 网易云音乐第三方客户端
+ * 原始代码 Copyright (c) 2026 Takahashi_Rinta，以 MIT 许可发布（全文见仓库根目录 LICENSE-MIT）。
+ *
+ * 本文件属于本 Fork（https://github.com/yaxiaiyuting/Ncrust）的修改部分，
+ * Copyright (c) 2026 yaxiaiyuting，以 GPLv3 许可分发；本 Fork 整体以 GPLv3 分发。
+ *
+ * v1.3.0 · B4/B5：歌单编辑（名称/简介/隐私）与删除入口放**顶部 scrim 右上角**
+ * （DetailScaffold 的 onTopEndAction），不再放页面内容里。
+ *
+ * ⚠️ 死区：折叠态播放器卡片的 fillMaxSize + translationY(collapsedOffsetY) 在屏幕
+ * y≈collapsedOffsetY 以下形成「不可见、但仍参与命中测试、且先于本页拿到事件」的死带。
+ * 实测：同一个 ⋮ 放 header 里（y≈1842–2016）时 y=1850 能点、y=1938 连本页 Initial pass
+ * 都收不到。详情页的交互元素不得落在该带内；需要底部操作时用顶部 scrim 或列表行承载。
+ *
+ * 也因此不用「⋮ → 底部菜单」两跳：MetroBottomSheet 在本页 LazyColumn 之下会被盖住，
+ * 且自身就在死带里。改为 ⋮ 直接开 EditPlaylistDialog（删除在该对话框底部，仍二次确认）。
+ */
+
 package com.takahashirinta.ncrust.ui.screen
 
 import androidx.compose.foundation.clickable
@@ -30,7 +49,6 @@ import com.takahashirinta.ncrust.ui.components.SongCard
 import com.takahashirinta.ncrust.ui.components.SongCardStyle
 import com.takahashirinta.ncrust.ui.components.SongMenuAction
 import com.takahashirinta.ncrust.ui.i18n.LocalStrings
-import io.github.takahashirinta.kanesumi.controls.MetroBottomSheet
 import io.github.takahashirinta.kanesumi.controls.MetroDialog
 import io.github.takahashirinta.kanesumi.controls.MetroDivider
 import io.github.takahashirinta.kanesumi.controls.MetroIconButton
@@ -61,7 +79,6 @@ fun PlaylistDetailScreen(
     // v1.3.0 · B4：编辑/删除入口只在**本人自建**歌单上出现。
     var info by remember(playlistId) { mutableStateOf<PlaylistApi.PlaylistInfo?>(null) }
     var ownerUid by remember { mutableLongStateOf(0L) }
-    var showActions by remember { mutableStateOf(false) }
     var showEdit by remember { mutableStateOf(false) }
     var showDeleteConfirm by remember { mutableStateOf(false) }
     // 顶部标题优先用路由带进来的名字；改名成功后要立刻反映，故用信息里的名字覆盖。
@@ -123,6 +140,7 @@ fun PlaylistDetailScreen(
             initialDesc = current.description,
             initialPrivacy = current.privacy,
             onDismiss = { showEdit = false },
+            onDelete = { showDeleteConfirm = true },
             onSave = { name, desc, privacy ->
                 var changed = false
                 var ok = true
@@ -214,49 +232,6 @@ fun PlaylistDetailScreen(
         }
     }
 
-    if (showActions) {
-        MetroBottomSheet(
-            onDismiss = { showActions = false },
-            // 首行当 dragHandle，与 SongMenuSheet 一致：只有 handle 区挂纵向拖拽手势。
-            dragHandle = {
-                PlaylistActionRow(strings.playlistEditTitle) { showEdit = true; showActions = false }
-            },
-        ) {
-            MetroDivider()
-            PlaylistActionRow(strings.playlistEditTitle) {
-                showActions = false
-                showEdit = true
-            }
-            PlaylistActionRow(
-                if (info?.privacy == PlaylistEditApi.PRIVACY_PRIVATE) {
-                    strings.playlistPrivacyPublic
-                } else {
-                    strings.playlistPrivacyPrivate
-                }
-            ) {
-                showActions = false
-                val target = if (info?.privacy == PlaylistEditApi.PRIVACY_PRIVATE) {
-                    PlaylistEditApi.PRIVACY_PUBLIC
-                } else {
-                    PlaylistEditApi.PRIVACY_PRIVATE
-                }
-                coroutineScope.launch {
-                    if (PlaylistEditApi.updatePlaylistPrivacy(playlistId, target)) {
-                        info = info?.copy(privacy = target)
-                        ContentCache.invalidatePlaylist(playlistId)
-                        Toast.makeText(context, strings.playlistUpdated, Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(context, strings.playlistCreateFailed, Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
-            PlaylistActionRow(strings.playlistDelete) {
-                showActions = false
-                showDeleteConfirm = true
-            }
-        }
-    }
-
     DetailScaffold(
         title = strings.playlistDetailTitle,
         onBack = onBack,
@@ -265,32 +240,25 @@ fun PlaylistDetailScreen(
         error = error,
         onRetry = { loadSongs() },
         header = {
+            // ⚠️ 死区：折叠态播放器卡片的 fillMaxSize + translationY(collapsedOffsetY)
+            // 在屏幕 y≈collapsedOffsetY 以下形成不可见但仍参与命中测试、且先于本页拿到
+            // 事件的死带。所有详情页的交互元素不得落在该带内。
+            // 已踩坑：本页的「编辑歌单」⋮（v1.3.0，实测 y=1850 可点、y=1938 连页面级
+            // Initial pass 都收不到）、AlbumDetail 的收藏按钮（侥幸落在带子上沿之上）。
+            // 需要底部操作时用列表行入口或顶部 scrim 承载 —— 故 ⋮ 已移到 TopScrim 右上。
             DetailHeader(
                 coverUrl = coverUrl,
                 title = displayName.ifEmpty { strings.categoryPlaylists },
                 subtitle = null,
                 infoLines = listOf(strings.trackCountSongs(songs.size)),
                 onPlayAll = if (songs.isNotEmpty()) ({ showPlayAllDialog = true }) else null,
-                headerActions = {
-                    if (isOwned) {
-                        Spacer(Modifier.height(8.dp))
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.End,
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            MetroIconButton(onClick = { showActions = true }) {
-                                MetroIcon(
-                                    imageVector = Icons.Default.MoreVert,
-                                    contentDescription = strings.playlistEditTitle,
-                                    tint = LocalMetroColors.current.onBackground,
-                                )
-                            }
-                        }
-                    }
-                }
             )
         },
+        // 编辑入口放顶部 scrim 右上（与返回箭头同一带，实测不在死区内）。
+        // 只保留这一个入口：header 里再放一个会让窄屏同时出现两个 ⋮。
+        onTopEndAction = if (isOwned) ({ showEdit = true }) else null,
+        topEndIcon = Icons.Default.MoreVert,
+        topEndContentDescription = strings.playlistEditTitle,
         content = {
             items(songs, key = { it.id }) { song ->
                 SongCard(

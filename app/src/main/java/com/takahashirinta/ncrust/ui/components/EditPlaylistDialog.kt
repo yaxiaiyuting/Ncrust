@@ -37,6 +37,8 @@ fun EditPlaylistDialog(
     initialPrivacy: Int,
     onDismiss: () -> Unit,
     onSave: suspend (name: String, desc: String, privacy: Int) -> EditPlaylistOutcome,
+    /** 可选：对话框底部追加「删除歌单」（仅自建歌单传）。点击后由调用方开二次确认。 */
+    onDelete: (() -> Unit)? = null,
 ) {
     val strings = LocalStrings.current
     val colors = LocalMetroColors.current
@@ -125,6 +127,22 @@ fun EditPlaylistDialog(
         }
 
         MetroDivider()
+        // v1.3.0：编辑入口放在顶部 scrim 后，原来「⋮ → 底部菜单 → 编辑」的两跳收敛成
+        // 「⋮ → 本对话框」一跳；删除作为次要动作直接挂在底部，仍走调用方的二次确认。
+        if (onDelete != null) {
+            MetroButton(
+                text = strings.playlistDelete,
+                onClick = {
+                    onDismiss()
+                    onDelete()
+                },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !saving,
+                containerColor = Color.Transparent,
+                contentColor = LocalMetroColors.current.primary,
+            )
+            MetroDivider()
+        }
         Row(Modifier.fillMaxWidth()) {
             MetroButton(
                 text = strings.cancel,

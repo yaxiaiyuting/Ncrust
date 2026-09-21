@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -59,6 +60,19 @@ fun DetailScaffold(
     error: String? = null,
     onRetry: (() -> Unit)? = null,
     header: @Composable () -> Unit,
+    /**
+     * v1.3.0：顶部 scrim 右上角的可选动作（如歌单详情页的「编辑歌单」）。
+     *
+     * ⚠️ 详情页的**页面内**操作按钮必须避开「播放器死带」——折叠态播放器卡片
+     * （[com.takahashirinta.ncrust.ui.player.PlayerCardOverlay] 的 fillMaxSize +
+     * translationY = collapsedOffsetY）会在屏幕 y≈collapsedOffsetY 以下形成一条
+     * **不可见但仍参与命中测试、且会先于本页拿到事件**的死带；落在带内的按钮点不动
+     * （事件连页面级的 Initial pass 都收不到）。所以详情页的底部/低位操作一律走
+     * 顶部 scrim 或列表行，不要放进 headerActions 的下半部分。
+     */
+    onTopEndAction: (() -> Unit)? = null,
+    topEndIcon: ImageVector = Icons.Default.MoreVert,
+    topEndContentDescription: String = "",
     content: LazyListScope.() -> Unit
 ) {
     val strings = LocalStrings.current
@@ -143,6 +157,15 @@ fun DetailScaffold(
             contentDescription = strings.back,
             onClick = onBack
         )
+        // 右上角动作与返回箭头同处顶部 scrim：这一带（y≈208–400）实测不在播放器死带内。
+        if (onTopEndAction != null) {
+            TopScrimIconButton(
+                icon = topEndIcon,
+                contentDescription = topEndContentDescription,
+                onClick = onTopEndAction,
+                alignment = Alignment.TopEnd
+            )
+        }
     }
 }
 

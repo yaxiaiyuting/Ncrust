@@ -222,6 +222,37 @@ Two API styles coexist:
 
 `WeapiCrypto`: random 16-char secret, double AES-128-CBC/PKCS5 with preset key `0CoJUm6Qyw8W8jud` then the secret, and `encSecKey` = raw RSA of the reversed secret (256 hex, no PKCS#1 padding, not base64).
 
+### ⚠️ 详情页播放器死带（v1.3.0 实测，放交互元素前必读）
+
+折叠态播放器卡片的 `Box(Modifier.fillMaxSize())` + `graphicsLayer { translationY = collapsedOffsetY }`
+（[PlayerCard.kt:404-422](app/src/main/java/com/takahashirinta/ncrust/ui/player/PlayerCard.kt)、
+[PlayerCardOverlay.kt:37-43](app/src/main/java/com/takahashirinta/ncrust/ui/player/PlayerCardOverlay.kt)）
+会在屏幕 **y ≳ collapsedOffsetY**（本机 S6/G9209 实测 ≈1872px）以下形成一条**死带**：肉眼看不见，
+**但仍参与命中测试，且先于下层详情页拿到事件**（Alpha=0 在 Compose 里不会退出命中测试）。
+
+实测证据（同一页面、同一 ⋮ 按钮）：
+
+| 触摸 y | 按钮节点收到事件 | 页面级 Initial pass | 结果 |
+|---|---|---|---|
+| 1850（带上沿之上） | ✅ pressed → CLICK | — | 菜单弹出 |
+| 1938（带内） | ❌ 一条都没有 | ❌ 也没有 | 完全无响应 |
+
+**规则**：详情页（歌单/专辑/歌手）的交互元素不得落在该带内。需要底部操作时用**顶部 scrim**
+（y≈208–400，实测可用）或**列表行入口**承载。
+
+**已踩坑**：
+
+- 歌单详情页「编辑歌单」⋮ 原本放在 `DetailHeader.headerActions`（y≈1842–2016）→ 点不动
+  （2/6 命中，全在带上沿）；现已移到 `DetailScaffold.onTopEndAction`（TopScrim 右上）。
+- AlbumDetail 的收藏按钮（y≈1616–1808）侥幸落在带上沿之上，**能点但不可靠** —— 换首歌单、
+  换封面高度就可能落进带内。
+- 同一原因：`MetroBottomSheet`（如歌单操作菜单）画在本页 `LazyColumn` 之下会被盖住，
+  且自身也落在带里 —— 详情页不要用底部菜单承载操作，改用 `MetroDialog`。
+
+**待办（独立问题，未修）**：播放器层为什么吃事件（`alpha≈0` 的隐藏内容仍参与命中，还是某个
+子节点在消费），以及「清空队列没有真正移除 overlay 层」。修它要碰三层图形架构，需单独一轮
+真机回归。
+
 ### Playlist 管理（v1.3.0 · B2–B5）
 
 歌单的创建/编辑/删除/增删曲全部走 `PlaylistEditApi`，UI 入口固定四处：
