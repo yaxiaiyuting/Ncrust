@@ -6,8 +6,9 @@
  * Copyright (c) 2026 yaxiaiyuting，以 GPLv3 许可分发；本 Fork 整体以 GPLv3 分发。
  *
  * 修改说明（Bug2「我喜欢的歌无法全部加入播放列表」）：
- *   - ④ 接线 LibraryScreen 的 onPlayAllLiked：用 loadAllLikedSongs 补齐**整个**红心歌单，
- *        再交给既有的 PlayAllDialog 做二次确认（播放 / 插入下一首）。
+ *   - ④ 接线 LibraryScreen 的 onPlayAllLiked：v1.3.0 用 loadAllLikedSongs 补齐**整个**红心歌单
+ *        后弹 PlayAllDialog 二次确认；v1.4.0 改为「本地缓存立即开播 + 后台补齐追加队尾」，
+ *        点击即出声，不再出现"数秒无反馈 + 冗余二次确认"。
  */
 
 package com.takahashirinta.ncrust
@@ -66,7 +67,6 @@ import com.takahashirinta.ncrust.network.model.ArtistItem
 import com.takahashirinta.ncrust.player.PlaybackStateManager
 import com.takahashirinta.ncrust.power.BackgroundActivity
 import com.takahashirinta.ncrust.ui.components.BackgroundActivityDialog
-import com.takahashirinta.ncrust.ui.components.PlayAllDialog
 import io.github.takahashirinta.kanesumi.structure.bottomnav.MetroBottomNav
 import io.github.takahashirinta.kanesumi.structure.bottomnav.MetroBottomNavItem
 import io.github.takahashirinta.kanesumi.structure.sidebar.MetroSidebar
@@ -431,7 +431,8 @@ fun MainScreen(
     var currentQueueIndex by remember { mutableIntStateOf(-1) }
     var songEnded by remember { mutableStateOf(false) }
     var songTransitioned by remember { mutableStateOf(false) }
-    var pendingPlayAllSongs by remember { mutableStateOf<List<SongItem>?>(null) }
+    // 点击 lambda / 协程里不能读 CompositionLocal，提示文案在组合期取好。
+    val mainStrings = LocalStrings.current
     var playMode by remember { mutableIntStateOf(0) }
     var shuffledIndices by remember { mutableStateOf<List<Int>>(emptyList()) }
     var shuffledPosition by remember { mutableIntStateOf(0) }
@@ -928,6 +929,50 @@ fun MainScreen(
         PlaybackStateManager.saveQueue(context, playbackQueue, currentQueueIndex)
     }
 
+    /**
+     * 「▶ 播放全部」（首页/库页的歌单·榜单卡片）统一入口：**先播、不等网络、不弹二次确认**。
+     *
+     * v1.3.0 实测问题：点 ▶ 后数秒毫无反馈，之后才弹出「共 N 首歌曲 / 现在播放 / 插播」。
+     * 而 ▶ 的语义就是"立即播放"，二次确认对一键播放是冗余的（插播仍可在歌曲长按菜单里用）。
+     * 现在：命中 [ContentCache] 直接开播（零等待、有反馈）；未命中先 Toast 再拉取后播放。
+     */
+    fun playPlaylistNow(playlistId: Long) {
+        val cached = ContentCache.getPlaylistSongs(playlistId)
+        if (!cached.isNullOrEmpty()) {
+            replaceQueueAndPlay(cached)
+            return
+        }
+        Toast.makeText(context, mainStrings.loading, Toast.LENGTH_SHORT).show()
+        coroutineScope.launch {
+            val songs = runCatching { PlaylistApi.getPlaylistDetail(playlistId) }.getOrDefault(emptyList())
+            if (songs.isNotEmpty()) replaceQueueAndPlay(songs)
+        }
+    }
+
+    /**
+     * 「▶ 播放全部」（库页的专辑卡片）：专辑曲目通常在本地收藏单曲里，直接开播；
+     * 云端收藏但本地没有时才回落网络（先 Toast 反馈，不再让点击"石沉大海"）。
+     */
+    fun playAlbumNow(albumId: Long) {
+        val local = LibraryManager.getSongsByAlbumId(context, albumId)
+        if (local.isNotEmpty()) {
+            replaceQueueAndPlay(local)
+            return
+        }
+        Toast.makeText(context, mainStrings.loading, Toast.LENGTH_SHORT).show()
+        coroutineScope.launch {
+            val songs = runCatching {
+                RetrofitClient.api.getAlbumDetail(albumId).songs?.map {
+                    SongItem(
+                        id = it.id, name = it.name, artists = it.artists,
+                        album = it.album, duration = it.getDurationMs()
+                    )
+                }.orEmpty()
+            }.getOrDefault(emptyList())
+            if (songs.isNotEmpty()) replaceQueueAndPlay(songs)
+        }
+    }
+
     // 切换播放模式：顺序循环 → 单曲 → 乱序 → 顺序线性 → 相似无限(FM)，循环。
     val onTogglePlayMode: () -> Unit = {
         fmMode = false
@@ -1253,14 +1298,8 @@ fun MainScreen(
                             onPlaylistClick = { playlistId ->
                                 navController.navigate(NavRoutes.playlist(playlistId))
                             },
-                            onPlayPlaylist = { playlistId ->
-                                coroutineScope.launch {
-                                    try {
-                                        val songs = PlaylistApi.getPlaylistDetail(playlistId)
-                                        if (songs.isNotEmpty()) pendingPlayAllSongs = songs
-                                    } catch (_: Exception) {}
-                                }
-                            },
+                            // ▶ 立即播放（缓存优先，未命中先提示再拉取）——不再弹二次确认。
+                            onPlayPlaylist = { playlistId -> playPlaylistNow(playlistId) },
                             onPlayDailyAll = { songs ->
                                 // 直接替换队列并从头播放。
                                 // 旧实现循环 addToQueue → 每次都把 currentQueueIndex 推到队尾，
@@ -1277,43 +1316,37 @@ fun MainScreen(
                         1 -> LibraryScreen(
                             onSongClick = { playSongItem(it) },
                             onAlbumClick = { albumId -> navController.navigate(NavRoutes.album(albumId)) },
-                            onPlayAlbum = { albumId ->
-                                val albumSongs = LibraryManager.getSongsByAlbumId(context, albumId)
-                                if (albumSongs.isNotEmpty()) {
-                                    pendingPlayAllSongs = albumSongs
-                                } else {
-                                    // 云端收藏的专辑可能不在收藏单曲缓存里，兜底拉专辑详情播放
-                                    coroutineScope.launch {
-                                        try {
-                                            val detail = RetrofitClient.api.getAlbumDetail(albumId)
-                                            val songs = detail.songs?.map {
-                                                SongItem(id = it.id, name = it.name, artists = it.artists, album = it.album, duration = it.getDurationMs())
-                                            }
-                                            if (!songs.isNullOrEmpty()) pendingPlayAllSongs = songs
-                                        } catch (_: Exception) {}
-                                    }
-                                }
-                            },
+                            // ▶ 立即播放：本地收藏单曲里有就直接播（秒开），否则提示后走网络。
+                            onPlayAlbum = { albumId -> playAlbumNow(albumId) },
                             onPlaylistClick = { pl ->
                                 navController.navigate(NavRoutes.playlist(pl.id, pl.name, pl.coverImgUrl))
                             },
-                            onPlayPlaylist = { playlistId ->
-                                coroutineScope.launch {
-                                    try {
-                                        val songs = PlaylistApi.getPlaylistDetail(playlistId)
-                                        if (songs.isNotEmpty()) pendingPlayAllSongs = songs
-                                    } catch (_: Exception) {}
-                                }
-                            },
-                            // Bug2-④：收藏单曲「播放全部」。必须覆盖整个红心歌单，
-                            // 而不是当前已分页加载的部分，所以走 loadAllLikedSongs 补齐详情，
-                            // 再复用 PlayAllDialog 做「播放 / 插入下一首」二次确认。
+                            onPlayPlaylist = { playlistId -> playPlaylistNow(playlistId) },
+                            // 收藏单曲「播放全部」：**先播、后补**。
+                            // 用本地已加载的收藏单曲立即开播（点击即出声、有反馈），剩余详情在
+                            // 后台补齐后按红心顺序追加到队尾，避免为了"共 N 首"空等数秒网络。
+                            // 也不再弹「现在播放 / 插播」——▶ 就是立即播放。
                             onPlayAllLiked = {
-                                coroutineScope.launch {
-                                    runCatching { LibraryManager.loadAllLikedSongs(context) }
-                                        .getOrNull()
-                                        ?.takeIf { it.isNotEmpty() }
-                                        ?.let { pendingPlayAllSongs = it }
+                                val cached = LibraryManager.getSavedSongs(context)
+                                if (cached.isNotEmpty()) {
+                                    replaceQueueAndPlay(cached)
+                                    coroutineScope.launch {
+                                        val all = runCatching { LibraryManager.loadAllLikedSongs(context) }
+                                            .getOrNull().orEmpty()
+                                        // 期间用户若换了队列就不追加，避免把红心歌单灌进别的播放上下文。
+                                        if (playbackQueue.firstOrNull()?.id == cached.first().id) {
+                                            val known = playbackQueue.map { it.id }.toHashSet()
+                                            val rest = all.filter { it.id !in known }
+                                            if (rest.isNotEmpty()) appendAllToQueue(rest)
+                                        }
+                                    }
+                                } else {
+                                    Toast.makeText(context, mainStrings.loading, Toast.LENGTH_SHORT).show()
+                                    coroutineScope.launch {
+                                        val all = runCatching { LibraryManager.loadAllLikedSongs(context) }
+                                            .getOrNull().orEmpty()
+                                        if (all.isNotEmpty()) replaceQueueAndPlay(all)
+                                    }
                                 }
                             },
                             onSongInsertNext = { insertNext(it) },
@@ -1404,14 +1437,10 @@ fun MainScreen(
             }
         }
 
-        pendingPlayAllSongs?.let { songs ->
-            PlayAllDialog(
-                songCount = songs.size,
-                onDismiss = { pendingPlayAllSongs = null },
-                onReplaceAndPlay = { replaceQueueAndPlay(songs); pendingPlayAllSongs = null },
-                onInsertNext = { insertAllNext(songs); pendingPlayAllSongs = null }
-            )
-        }
+        // 注：首页/库页的「▶ 播放全部」已改为直接播放（见 playPlaylistNow / playAlbumNow /
+        // onPlayAllLiked），不再经过全局的 PlayAllDialog —— 该二次确认在这几处既慢又冗余。
+        // 专辑详情 / 歌单详情页仍保留各自的 PlayAllDialog（那里是"整张播放"的显式选择，
+        // 且数据已在内存里、弹窗零等待）。
 
         // zIndex(1.5f) renders PivotNav above PlayerCardOverlay (zIndex=1f),
         // so it appears on top of the mini player bar when the player is collapsed.
