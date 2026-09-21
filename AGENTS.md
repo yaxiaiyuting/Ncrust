@@ -86,7 +86,7 @@ Ncrust is a third-party NetEase Cloud Music (网易云音乐) Android client bui
 2. **GPU zero-recomposition** — animations driven by a single `progress: Float` through `graphicsLayer`, not state-driven recomposition.
 3. **Three-layer graphics architecture** — main page / player card / navigation bar are independent composable layers, enabling gesture transitions without interference.
 
-Feature surface at v1.3.1: home discovery (daily songs / recommended playlists / new songs / private FM), three-type search with 500 ms debounce + history, cloud-synced library (liked songs / subscribed albums / user playlists), full-screen player with gapless playback and a 7-level quality ladder, 5 playback modes, bilingual lyrics, system media controls + Android Auto / Automotive, WebView + QR login, runtime theming (6 colors × 3 modes), and 8 runtime languages.
+Feature surface at v1.3.1: home discovery (daily songs / recommended playlists / new songs / private FM), three-type search with 500 ms debounce + history, cloud-synced library (liked songs / subscribed albums / user playlists), full-screen player with gapless playback and an 8-level quality ladder, 5 playback modes, bilingual lyrics, system media controls + Android Auto / Automotive, WebView + QR login, runtime theming (6 colors × 3 modes), and 8 runtime languages.
 
 ## Terminology: Kanesumi Design
 
@@ -208,6 +208,7 @@ Two API styles coexist:
 
 ```
 dolby    -> dolby, hires, lossless, exhigh, higher, standard
+jymaster -> jymaster, hires, lossless, exhigh, higher, standard
 jyeffect -> jyeffect, lossless, exhigh, higher, standard
 hires    -> hires, lossless, exhigh, higher, standard
 lossless -> lossless, exhigh, higher, standard
@@ -216,12 +217,12 @@ higher   -> higher, standard
 standard -> standard
 ```
 
-- **Device FLAC gate**: skips `lossless`/`hires`/`jyeffect` when no MediaCodec `audio/flac` decoder exists (API < 27 or stripped ROM), so ExoPlayer never gets a FLAC stream it can only render as silence.
+- **Device FLAC gate**: skips `lossless`/`hires`/`jyeffect`/`jymaster` when no MediaCodec `audio/flac` decoder exists (API < 27 or stripped ROM), so ExoPlayer never gets a FLAC stream it can only render as silence.
 - **Auto quality downgrade**: `PlayerViewModel.handlePlaybackError` retries the same song one rung lower on `qualityRetryLadder` (reverse order, deduped 3 s per `songId@level`), skipping to the next song only when even `standard` fails. `AudioSink` failures are covered too.
 - **Level-aware preload cache**: `PreloadCacheEntry` records `requestedLevel`; a downgrade retry never replays an already-failed higher-tier URL. TTL = 5 min. Gapless preload window = **60 s** (`PRELOAD_THRESHOLD_MS`), despite some older comments saying 20 s.
 - A song that yields no playable URL at any tier is skipped — **never** fall back to `.../song/media/outer/url?id=X.mp3` (it 302→404s HTML and buffers forever).
 
-Quality preferences (indices into the 7-level ladder) live in `ncrust_settings`:
+Quality preferences (indices into the 8-level ladder) live in `ncrust_settings` (migrated once by `QualityLadder.migrate` at app start):
 
 | Index | Display (zh) | API level |
 |---|---|---|
@@ -231,7 +232,8 @@ Quality preferences (indices into the 7-level ladder) live in `ncrust_settings`:
 | 3 | 无损 | `lossless` |
 | 4 | 高解析 | `hires` |
 | 5 | 高清环绕声 | `jyeffect` |
-| 6 | 杜比全景声 | `dolby` |
+| 6 | 超清母带 | `jymaster` |
+| 7 | 杜比全景声 | `dolby` |
 
 Defaults: Wi-Fi = 3 (lossless), Mobile = 1 (higher). The selected label shows as a badge in `FullPlayerControls`.
 

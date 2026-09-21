@@ -24,6 +24,7 @@ import android.os.Build
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.takahashirinta.ncrust.player.QualityLadder
 import com.takahashirinta.ncrust.lyric.LrcLine
 import com.takahashirinta.ncrust.lyric.LrcParser
 import com.takahashirinta.ncrust.lyric.LyricsCache
@@ -92,10 +93,11 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
 
     companion object {
         /**
-         * 音质档位。索引与 i18n `qualityOptions` 顺序、以及 eapi `level` 取值一一对应；
-         * 索引越大音质越高，因此「实际索引 < 偏好索引」即表示被降级。
+         * 音质档位（低 → 高）。索引与 i18n qualityOptions 顺序、以及 eapi level 取值一一对应；
+         * 索引越大音质越高，因此「实际索引 < 偏好索引」表示可能被降级（A3 起改用实际文件参数判定）。
+         * A2 起档位表由 QualityLadder 提供，并新增 jymaster（超清母带）。
          */
-        val QUALITY_LEVELS = listOf("standard", "higher", "exhigh", "lossless", "hires", "jyeffect", "dolby")
+        val QUALITY_LEVELS = QualityLadder.LEVELS
 
         /** B4：进度落盘间隔。2Hz 采样下最多每 5s 写一次，兼顾续播精度与 IO 开销。 */
         private const val POSITION_SAVE_INTERVAL_MS = 5_000L
@@ -117,7 +119,9 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
 
     // 播放出错(如设备解码不了 24-bit FLAC / 高采样率)时自动降档重试的阶梯。
     // 每出错一次降一档,到 standard 仍失败才跳歌:保证「有声音,或跳歌」,绝不静默卡住。
-    private val qualityRetryLadder = listOf("dolby", "jyeffect", "hires", "lossless", "exhigh", "higher", "standard")
+    private val qualityRetryLadder = listOf(
+        "jymaster", "dolby", "jyeffect", "hires", "lossless", "exhigh", "higher", "standard",
+    )
     // 上一次交给 PlaybackService 的 URL 的实际档位(fetch 内部可能已降级)。
     private var lastPlayedLevel = ""
     // 已处理过的出错点 (songId@level),配合时间窗防止同一错误反复触发重试。

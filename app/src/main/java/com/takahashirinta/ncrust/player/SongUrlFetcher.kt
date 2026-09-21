@@ -41,7 +41,7 @@ object SongUrlFetcher {
     private const val TAG = "SongUrlFetcher"
     private const val SONG_URL_PATH = "/eapi/song/enhance/player/url/v1"
 
-    private val FLAC_TIERS = setOf("lossless", "hires", "jyeffect")
+    private val FLAC_TIERS = setOf("lossless", "hires", "jyeffect", "jymaster")
 
     /**
      * 平台自带的 FLAC **解码**器（API 27+ 才有）。
@@ -104,6 +104,7 @@ object SongUrlFetcher {
         // Try the requested level first, then fall back down the quality ladder.
         val fallbackLevels = when (level) {
             "dolby"    -> listOf("dolby", "hires", "lossless", "exhigh", "higher", "standard")
+            "jymaster" -> listOf("jymaster", "hires", "lossless", "exhigh", "higher", "standard")
             "jyeffect" -> listOf("jyeffect", "lossless", "exhigh", "higher", "standard")
             "hires"    -> listOf("hires", "lossless", "exhigh", "higher", "standard")
             "lossless" -> listOf("lossless", "exhigh", "higher", "standard")

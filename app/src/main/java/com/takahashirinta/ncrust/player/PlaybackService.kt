@@ -502,8 +502,8 @@ class PlaybackService : MediaLibraryService() {
 
     private fun currentQualityLevel(): String {
         val prefs = getSharedPreferences("ncrust_settings", 0)
-        val levels = listOf("standard", "higher", "exhigh", "lossless", "hires", "jyeffect", "dolby")
-        return levels.getOrElse(prefs.getInt("wifi_quality", 3)) { "lossless" }
+        // A2：档位表收敛到 QualityLadder —— 之前车机路径和手机路径各写一份，加档位时容易漂移。
+        return QualityLadder.levelAt(prefs.getInt("wifi_quality", 3), "lossless")
     }
 
     /**

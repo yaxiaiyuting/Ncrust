@@ -11,6 +11,7 @@ import coil.disk.DiskCache
 import coil.memory.MemoryCache
 import com.takahashirinta.ncrust.cache.ContentCache
 import com.takahashirinta.ncrust.network.ClientIdentity
+import com.takahashirinta.ncrust.player.QualityLadder
 import com.takahashirinta.ncrust.ui.theme.BackgroundImageManager
 
 /**
@@ -35,6 +36,8 @@ class NcrustApplication : Application(), ImageLoaderFactory {
         // v1.2.0 · A1：取链请求需要稳定的客户端身份（deviceId 持久化在独立的 ncrust_device）。
         // 放在 Application 而不是 MainActivity —— 车机 / 媒体键冷启动可能不经过 Activity。
         ClientIdentity.init(this)
+        // v1.2.0 · A2：档位表 7 → 8 档（新增 jymaster），把旧的档位索引一次性迁移过来。
+        QualityLadder.migrate(getSharedPreferences(QualityLadder.PREFS, Context.MODE_PRIVATE))
     }
 
     override fun newImageLoader(): ImageLoader {
