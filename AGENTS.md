@@ -402,9 +402,45 @@ To add a locale: create `xx_XX.kt` with a `Strings(...)` and add a `LanguagePres
 | 底部控制栏可收起 | 窄屏全屏播放器下向上拖控制栏 → 控制栏滑出、面板长高到全屏；右下角悬浮播放键向下拖恢复。controlsCollapse(Animatable) + graphicsLayer 平移 + Modifier.collapsibleHeight（layout 阶段读 Animatable，零重组）；控制栏区域的整卡拖拽由 isOverCollapsibleControls 让路。宽屏不启用。 |
 | 暂停态 seek 立即生效 | 进度 ticker 只在 isPlaying 时广播，暂停态 seek 后 UI 收不到新位置。修法：PlaybackService 两条 seek 路径后 publishProgressNow() + PlayerViewModel.seekTo 乐观更新；showBuffering 不再把 isSeeking 当缓冲（点进度条不再有脉冲动画）。 |
 | 播放全部先播后补 | 首页/库页的 ▶ 直接播放：命中 ContentCache / 本地收藏单曲立即开播，未命中先 Toast 再拉取；收藏单曲剩余详情后台补齐后追加队尾。移除全局 pendingPlayAllSongs 二次确认（详情页各自的 PlayAllDialog 保留）。 |
-| 音乐人推荐卡片 | 首页推荐流按「收藏艺人 ∩ 风格锚点」本地判定插入一张艺人卡（点击进 ArtistDetailScreen）。配置在 ncrust_settings：artist_reco_enabled / artist_reco_target_id / artist_reco_anchor_ids(CSV)，默认全空 → 其他用户不显示也不发请求。自动锚点：目标艺人热门曲 → simiSong → 同风格艺人（7 天 TTL）。 |
+| 音乐人推荐卡片 | 首页推荐流按「收藏艺人 ∩ 风格锚点」本地判定插入一张艺人卡（点击进 ArtistDetailScreen）。配置在 ncrust_settings：artist_reco_enabled / artist_reco_target_id / artist_reco_anchor_ids(CSV)，默认全空 → 其他用户不显示也不发请求。自动锚点：目标艺人热门曲 → simiSong → 同风格艺人（7 天 TTL）。**v1.5.0 起**自动锚点按频次排序 + 截断到 20 个 + 空结果不冲缓存，见下节。 |
 | 相似艺人端点纠正 | 任务里写的 /eapi/simi/artist 不存在（404）；真实端点是 /eapi/discovery/simiArtist，参数名 artistid，匿名 301、需登录，返回 artists[]（≤20，平均约 300ms）。B0 实测目标艺人 122618229 自己的相似列表为空、在 top20 收藏艺人的相似列表里 0 次命中 → 原方案不可行，改走锚点降级方案。 |
 | 艺人端点可用性 | GET /api/artist/{id} 与 GET /api/artist/albums/{id} 可用；/eapi/v1/artist/detail、/eapi/artist/albums（PlaylistApi 里那两个旧函数）已 400 失效（当前无人调用，ArtistDetailScreen 走 Retrofit 的 REST 路径）。 |
+
+## v1.5.0 新增（本 fork）
+
+### 音乐人推荐：自动锚点推导的实测与收敛（任务 A）
+
+**S6 真机实测（SM-G9209 / Android 7.0 / 登录态，2026-09-22）**——本节所有结论都来自这次实测，不是推断。
+方法：root 写入 `artist_reco_enabled=true` + `artist_reco_target_id=122618229`、清空
+`artist_reco_anchor_ids`，冷启一次后读回 `ncrust_settings.xml`。
+
+| 项 | 实测值 |
+|---|---|
+| 目标艺人 | `122618229` = **SKULLCHAIN颅链**（musicSize 13，热门曲 Home تۋعان جەر / CALL THE FATALITY / JAR JAR PHONK） |
+| 推导结果（9 个，落盘顺序） | `60952064,53432819,1132066,12003027,29878,93805,99989,13518632,99999` |
+| 反解艺人名 | PFJ_5 / 333xd / Fayzz / 奈热乐队 / Boris Brejcha / HIM / Sum 41 / Charix / System of a Down |
+| 推导耗时 | 冷启后 12 s 内完成并落盘（`artist_reco_auto_anchor_at` 刷新） |
+| 目标艺人是否被误收进锚点 | 否（`aid != target` 生效） |
+| 卡片是否触发 | **是** —— 该账号收藏单曲里有 `PFJ_5(60952064)`，`shouldShow` 命中，首页「音乐人推荐」渲染出 **SKULLCHAIN颅链**（截图复核） |
+
+结论：**推导合理**（全部是真实艺人，风格上扎堆在摇滚/金属/电子，且确实在真实收藏上命中），
+因此保留自动推导并做三点收敛，而不是降级成「默认关闭自动推导、只留手动锚点」：
+
+1. **去重**：以艺人 id 为 key 收进 `LinkedHashMap`，同一艺人无论命中多少次只留一个；
+2. **排序 + 截断**：按「在几首种子曲的相似列表里出现过」降序（`sortedByDescending` 是**稳定**排序，
+   同频次保持首次出现顺序 → 同一份服务端数据每次结果完全一致），再截断到 `AUTO_MAX_ANCHORS = 20`。
+   原实现没有上限，3 种子曲 × 20 相似曲最多能收 60 个；锚点集就是命中判定集，越大越容易误命中。
+   S6 实测只有 9 个，**低于上限 → 对现有账号是零行为变化**；
+3. **缓存**：7 天 TTL 不变，另加两点 —— ① `Mutex` 单飞，快速连续切页只推导一次（此前 TTL 写回前
+   每个并发调用都会各跑一遍网络）；② **推导结果为空时保留旧缓存**，不再把好数据冲成空、让卡片
+   静默消失到 TTL 结束。
+
+顺带补了可观测性：推导成功打 `Log.i(ArtistReco)`（此前只有失败才 `Log.e`，线上无法判断卡片为何不出现）。
+纯逻辑抽成 `ArtistReco.rankAnchors(hits, target, max)`，由 JVM 单测
+[ArtistRecoTest.kt](app/src/test/java/com/takahashirinta/ncrust/reco/ArtistRecoTest.kt) 覆盖去重/排序/稳定性/截断/过滤。
+
+**S6 上的复现方式**（S6 已 root，Magisk）：改 prefs 前先 `su -c cp` 备份 `ncrust_settings.xml`，
+`am force-stop` 之后再写入，冷启后读回；登录态（`ncrust_prefs.xml` 的 `user_cookie`）全程不动。
 
 ## Key Constraints & Pitfalls
 
