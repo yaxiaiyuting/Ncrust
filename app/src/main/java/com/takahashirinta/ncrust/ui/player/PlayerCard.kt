@@ -252,12 +252,15 @@ fun PlayerCard(
             },
             onDragEnd = {
                 coroutineScope.launch {
-                    // 方向敏感吸附：从收起态往回拉，过半就恢复；从展开态往上推，过半才收起。
-                    // 只按固定阈值判会出问题——收起态下拉 40% 抬头又落回收起态（实测）。
-                    val target = if (from >= 0.5f) {
-                        if (current <= 0.6f) 0f else 1f
-                    } else {
-                        if (current >= 0.4f) 1f else 0f
+                    // 方向敏感吸附：向上推（收起）要 25% 行程；向下拉（恢复）只要 12%。
+                    // 悬浮键贴在屏幕右下角，向下可拖的距离天然很短（S6 上最多约 350px，
+                    // 而 40% 阈值约 460px）—— 统一高阈值会出现【真机上拉得回来但恢复不了】。
+                    // 微动（都没到阈值）就按出发点归位，避免误触改变状态。
+                    val delta = current - from
+                    val target = when {
+                        delta <= -0.12f -> 0f
+                        delta >= 0.25f -> 1f
+                        else -> if (from >= 0.5f) 1f else 0f
                     }
                     controlsCollapse.animateTo(target, tween(260, easing = FastOutSlowInEasing))
                 }
