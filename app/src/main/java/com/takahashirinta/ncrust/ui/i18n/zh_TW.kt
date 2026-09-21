@@ -205,4 +205,16 @@ scanConnecting = "正在連接平板…",
 
     addedToLibrary = "已納入庫房",
     removedFromLibrary = "已從庫中移除",
+
+    // Playlist management
+    playlistCreateTitle = "新增歌單",
+    playlistNameHint = "歌單名稱",
+    playlistPrivacy = "隱私",
+    playlistPrivacyPublic = "公開",
+    playlistPrivacyPrivate = "私密",
+    playlistCreateConfirm = "建立",
+    playlistCreated = { name -> "已建立「$name」" },
+    playlistSongsAdded = { count -> "已加入 $count 首" },
+    playlistCreateFailed = "建立失敗，請稍後再試",
+    playlistOpTooFrequent = "操作過於頻繁，請稍後再試",
 )

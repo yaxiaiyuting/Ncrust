@@ -204,4 +204,16 @@ scanConnecting = "평판에 연결중…",
 
     addedToLibrary = "저장소에 추가됨",
     removedFromLibrary = "저장소에서 제거됨",
+
+    // Playlist management
+    playlistCreateTitle = "새 노래목록",
+    playlistNameHint = "노래목록 이름",
+    playlistPrivacy = "공개 범위",
+    playlistPrivacyPublic = "공개",
+    playlistPrivacyPrivate = "비공개",
+    playlistCreateConfirm = "만들기",
+    playlistCreated = { name -> "「$name」 만들었습니다" },
+    playlistSongsAdded = { count -> "${count}곡 추가됨" },
+    playlistCreateFailed = "만들기 실패, 나중에 다시 시도하세요",
+    playlistOpTooFrequent = "조작이 너무 잦습니다, 나중에 다시 시도하세요",
 )

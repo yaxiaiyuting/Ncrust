@@ -249,6 +249,21 @@ data class Strings(
     // Feedback toasts
     val addedToLibrary: String,
     val removedFromLibrary: String,
+
+    // Playlist management (v1.3.0 · B2)
+    val playlistCreateTitle: String,
+    val playlistNameHint: String,
+    val playlistPrivacy: String,
+    val playlistPrivacyPublic: String,
+    val playlistPrivacyPrivate: String,
+    val playlistCreateConfirm: String,
+    /** 含歌单名，如「已创建「我的歌单」」。 */
+    val playlistCreated: (String) -> String,
+    /** 创建成功后往歌单里塞歌的结果，count = 实际提交的曲目数。 */
+    val playlistSongsAdded: (Int) -> String,
+    val playlistCreateFailed: String,
+    /** 服务端 405 限流，冷却可能超过 10 分钟。 */
+    val playlistOpTooFrequent: String,
 )
 
 /** 字节数格式化为人类可读的 B/KB/MB/GB，供 cacheSizeLabel 复用。 */

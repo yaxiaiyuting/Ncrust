@@ -204,4 +204,16 @@ val en = Strings(
 
     addedToLibrary = "Added to Library",
     removedFromLibrary = "Removed from Library",
+
+    // Playlist management
+    playlistCreateTitle = "New Playlist",
+    playlistNameHint = "Playlist name",
+    playlistPrivacy = "Privacy",
+    playlistPrivacyPublic = "Public",
+    playlistPrivacyPrivate = "Private",
+    playlistCreateConfirm = "Create",
+    playlistCreated = { name -> "Created \"$name\"" },
+    playlistSongsAdded = { count -> "Added $count song(s)" },
+    playlistCreateFailed = "Create failed, try again later",
+    playlistOpTooFrequent = "Too many operations, try again later",
 )

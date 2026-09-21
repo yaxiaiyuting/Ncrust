@@ -204,4 +204,16 @@ val deDE = Strings(
 
     addedToLibrary = "Zur Bibliothek hinzugefügt",
     removedFromLibrary = "Aus der Bibliothek entfernt",
+
+    // Playlist management
+    playlistCreateTitle = "Neue Playlist",
+    playlistNameHint = "Playlist-Name",
+    playlistPrivacy = "Sichtbarkeit",
+    playlistPrivacyPublic = "Öffentlich",
+    playlistPrivacyPrivate = "Privat",
+    playlistCreateConfirm = "Erstellen",
+    playlistCreated = { name -> "\"$name\" erstellt" },
+    playlistSongsAdded = { count -> "$count Titel hinzugefügt" },
+    playlistCreateFailed = "Erstellen fehlgeschlagen, später erneut versuchen",
+    playlistOpTooFrequent = "Zu viele Aktionen, später erneut versuchen",
 )

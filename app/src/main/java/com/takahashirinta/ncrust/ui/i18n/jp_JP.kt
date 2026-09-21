@@ -205,4 +205,16 @@ val jpJP = Strings(
 
     addedToLibrary = "ライブラリに追加しました",
     removedFromLibrary = "ライブラリから削除しました",
+
+    // Playlist management
+    playlistCreateTitle = "プレイリスト新規作成",
+    playlistNameHint = "プレイリスト名",
+    playlistPrivacy = "公開範囲",
+    playlistPrivacyPublic = "公開",
+    playlistPrivacyPrivate = "非公開",
+    playlistCreateConfirm = "作成",
+    playlistCreated = { name -> "「$name」を作成しました" },
+    playlistSongsAdded = { count -> "$count 曲を追加しました" },
+    playlistCreateFailed = "作成に失敗しました。後でもう一度お試しください",
+    playlistOpTooFrequent = "操作が多すぎます。しばらくしてからお試しください",
 )

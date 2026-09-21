@@ -205,4 +205,16 @@ val zhCN = Strings(
 
     addedToLibrary = "已加入库",
     removedFromLibrary = "已从库中移除",
+
+    // Playlist management
+    playlistCreateTitle = "新建歌单",
+    playlistNameHint = "歌单名称",
+    playlistPrivacy = "隐私",
+    playlistPrivacyPublic = "公开",
+    playlistPrivacyPrivate = "私密",
+    playlistCreateConfirm = "创建",
+    playlistCreated = { name -> "已创建「$name」" },
+    playlistSongsAdded = { count -> "已加入 $count 首" },
+    playlistCreateFailed = "创建失败，请稍后重试",
+    playlistOpTooFrequent = "操作过于频繁，请稍后再试",
 )

@@ -204,4 +204,16 @@ val ruRU = Strings(
 
     addedToLibrary = "Добавлено в медиатеку",
     removedFromLibrary = "Удалено из медиатеки",
+
+    // Playlist management
+    playlistCreateTitle = "Новый плейлист",
+    playlistNameHint = "Название плейлиста",
+    playlistPrivacy = "Доступ",
+    playlistPrivacyPublic = "Публичный",
+    playlistPrivacyPrivate = "Приватный",
+    playlistCreateConfirm = "Создать",
+    playlistCreated = { name -> "Создан «$name»" },
+    playlistSongsAdded = { count -> "Добавлено треков: $count" },
+    playlistCreateFailed = "Не удалось создать, попробуйте позже",
+    playlistOpTooFrequent = "Слишком много действий, попробуйте позже",
 )

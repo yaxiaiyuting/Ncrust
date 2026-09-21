@@ -204,4 +204,16 @@ val jpMY = Strings(
 
     addedToLibrary = "庫 追加",
     removedFromLibrary = "庫 刪除",
+
+    // Playlist management
+    playlistCreateTitle = "曲目 新規",
+    playlistNameHint = "曲目 名",
+    playlistPrivacy = "公開",
+    playlistPrivacyPublic = "公開",
+    playlistPrivacyPrivate = "秘匿",
+    playlistCreateConfirm = "作成",
+    playlistCreated = { name -> "「$name」 作成" },
+    playlistSongsAdded = { count -> "$count 曲 追加" },
+    playlistCreateFailed = "作成 失敗",
+    playlistOpTooFrequent = "操作 過多",
 )

@@ -14,6 +14,7 @@ package com.takahashirinta.ncrust
 import com.takahashirinta.ncrust.ui.theme.LocalNcrustColors
 
 import android.Manifest
+import android.widget.Toast
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.os.Build
@@ -53,7 +54,10 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.takahashirinta.ncrust.library.LibraryManager
 import com.takahashirinta.ncrust.cache.ContentCache
+import com.takahashirinta.ncrust.auth.CookieManager
 import com.takahashirinta.ncrust.network.PlaylistApi
+import com.takahashirinta.ncrust.network.PlaylistEditApi
+import com.takahashirinta.ncrust.network.PlaylistWriteResult
 import com.takahashirinta.ncrust.network.RetrofitClient
 import com.takahashirinta.ncrust.network.SongItem
 import com.takahashirinta.ncrust.network.model.AlbumItem
@@ -66,6 +70,8 @@ import io.github.takahashirinta.kanesumi.structure.bottomnav.MetroBottomNav
 import io.github.takahashirinta.kanesumi.structure.bottomnav.MetroBottomNavItem
 import io.github.takahashirinta.kanesumi.structure.sidebar.MetroSidebar
 import io.github.takahashirinta.kanesumi.structure.sidebar.MetroSidebarItem
+import com.takahashirinta.ncrust.ui.components.CreatePlaylistDialog
+import com.takahashirinta.ncrust.ui.components.PlaylistCreateOutcome
 import com.takahashirinta.ncrust.ui.components.SongMenuAction
 import com.takahashirinta.ncrust.ui.components.SongMenuSheet
 import com.takahashirinta.ncrust.ui.components.TopScrimIconButton
@@ -277,6 +283,14 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+/**
+ * v1.3.0 · B2：新建歌单的默认名。用日期而不是「我的歌单」——同名歌单在收藏页里
+ * 完全无法区分，而服务端允许重名。用户可以随时改名。
+ */
+fun defaultPlaylistName(): String =
+    "歌单 " + java.text.SimpleDateFormat("MM-dd HH:mm", java.util.Locale.getDefault())
+        .format(java.util.Date())
+
 fun formatDuration(ms: Long): String {
     val totalSeconds = ms / 1000
     val minutes = totalSeconds / 60
@@ -380,6 +394,9 @@ fun MainScreen(
     val progress = remember { Animatable(0f) }
 
     var menuSong by remember { mutableStateOf<SongItem?>(null) }
+    // v1.3.0 · B2：保存为歌单。playlistSnapshot 是点按钮那一刻的队列快照。
+    var showCreatePlaylist by remember { mutableStateOf(false) }
+    var playlistSnapshot by remember { mutableStateOf<List<SongItem>>(emptyList()) }
     var menuSongActions by remember { mutableStateOf<List<SongMenuAction>>(emptyList()) }
 
     var playbackQueue by remember { mutableStateOf<List<SongItem>>(emptyList()) }
@@ -1135,7 +1152,11 @@ fun MainScreen(
                 // 全屏播放器点歌名: 上拉"转到歌手/转到专辑"菜单(复用长按菜单 sheet)
                 currentSong?.let { menuSong = it; menuSongActions = emptyList() }
             },
-            onSavePlaylist = { /* TODO: 保存歌单 */ },
+            // B2：保存当前队列为云歌单（创建 + 批量加歌两步走，写操作由 PlaylistWriteGate 串行）。
+            onSavePlaylist = {
+                playlistSnapshot = playbackQueue
+                showCreatePlaylist = true
+            },
             onNavigateToUser = {
                 selectedTab = 3
                 if (!isInMain) navController.popBackStack(NavRoutes.HOME, false)
@@ -1401,6 +1422,61 @@ fun MainScreen(
                     onDismiss = { menuSong = null }
                 )
             }
+        }
+
+        // v1.3.0 · B2：「保存为歌单」对话框。队列在打开时快照一次 —— 创建/加歌是两次
+        // 网络往返（写闸门间隔 2s），期间用户可能换歌，快照保证存的是点按钮那一刻的队列。
+        if (showCreatePlaylist) {
+            // strings 必须在组合期取出：onCreate 是 suspend lambda，里面不能调 @Composable。
+            val createStrings = LocalStrings.current
+            CreatePlaylistDialog(
+                defaultName = defaultPlaylistName(),
+                songCount = playlistSnapshot.size,
+                onDismiss = { showCreatePlaylist = false },
+                onCreate = { name, privacy ->
+                    if (CookieManager.getCookie(context).isNullOrBlank()) {
+                        PlaylistCreateOutcome.FAILED
+                    } else {
+                        val playlistId = PlaylistEditApi.createPlaylist(name, privacy)
+                        when {
+                            playlistId == null -> {
+                                val err = PlaylistEditApi.lastError
+                                if (err is PlaylistWriteResult.RateLimited) {
+                                    PlaylistCreateOutcome.RATE_LIMITED
+                                } else {
+                                    PlaylistCreateOutcome.FAILED
+                                }
+                            }
+                            playlistSnapshot.isNotEmpty() -> {
+                                val ids = playlistSnapshot.map { it.id }
+                                val count = PlaylistEditApi.addSongs(playlistId, ids)
+                                Toast.makeText(
+                                    context,
+                                    if (count != null) {
+                                        createStrings.playlistSongsAdded(ids.distinct().size)
+                                    } else {
+                                        createStrings.playlistCreateFailed
+                                    },
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                if (count != null) {
+                                    PlaylistCreateOutcome.SUCCESS
+                                } else {
+                                    PlaylistCreateOutcome.CREATED_SONGS_FAILED
+                                }
+                            }
+                            else -> {
+                                Toast.makeText(
+                                    context,
+                                    createStrings.playlistCreated(name),
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                PlaylistCreateOutcome.SUCCESS
+                            }
+                        }
+                    }
+                }
+            )
         }
 
         // 全屏播放器展开时拦截系统返回：先收起播放器而不是直接退出应用。
