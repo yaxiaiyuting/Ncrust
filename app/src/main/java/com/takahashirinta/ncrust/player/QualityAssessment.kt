@@ -12,6 +12,12 @@
  *       ② 请求杜比全景声时服务端给了 jyeffect —— 沉浸声是不同容器/格式，不是降级。
  *     现在改为按**实际文件参数**（br/type）推算真实档位，再结合该曲的档位上限
  *     （privilege.maxBrLevel）区分「无权限」与「该曲无此档位」。
+ *   - v1.3.0 · B4：能力上限归一化。服务端存在不在档位表里的能力标签（sky／沉浸环绕声），
+ *     旧逻辑拿它查 LEVELS 得到 -1，于是选 hires/无损播 sky 上限的曲子会落到兜底的
+ *     「已降级」——而服务端给的本来就是该曲最高源（exhigh 320k mp3），属于误报。
+ *     现在 sky 归一化成 exhigh 参与比较，并用 capFromAlias 标记"上限来自别名"，
+ *     避免归一化后被误判成「无权限」。展示档位同时改为按**请求档位**封顶，
+ *     未知标签不会再被推成杜比/母带。
  */
 
 package com.takahashirinta.ncrust.player
@@ -36,6 +42,28 @@ data class QualityVerdict(val displayIndex: Int, val status: QualityStatus)
 object QualityAssessment {
     /** 沉浸声档位：与立体声档位不是同一坐标系，不能按 br 直接比较。 */
     private val IMMERSIVE_TIERS = setOf("dolby", "jyeffect")
+
+    /**
+     * 档位**别名**：服务端会给出不在 [QualityLadder.LEVELS] 里的能力标签
+     * （目前只有 sky／沉浸环绕声）。它们不是独立音质、也没有独立的音频文件，
+     * 只是在**更高档位缺失时**等价于某个基础档位，所以比较前必须先归一化。
+     *
+     * v1.3.0 实测（登录态 + PC 身份）：账号态 36 首 maxBrLevel=sky 的曲目，
+     * privilege 里 maxbr/pl 上限就是 320000、song.sq / song.hr 均为 null ——
+     * 这些曲子的最高源就是 exhigh 320k mp3，level=sky 与 exhigh 取回同一个文件
+     * （CDN 回源 6/6 一致）。详见 AGENTS.md「Playback」。
+     */
+    private val CAPABILITY_ALIASES = mapOf("sky" to "exhigh")
+
+    /** 把能力标签归一化成基础档位；不在档位表里且无别名时返回 null。 */
+    private fun capabilityIndex(level: String?): Int? {
+        if (level.isNullOrEmpty()) return null
+        val levels = QualityLadder.LEVELS
+        val idx = levels.indexOf(level)
+        if (idx >= 0) return idx
+        val alias = CAPABILITY_ALIASES[level] ?: return null
+        return levels.indexOf(alias).takeIf { it >= 0 }
+    }
 
     // 实测锚点（2026-09，登录态）：母带 4.7–5.8 Mbps、jyeffect 2.8–3.1 Mbps、
     // Hi-Res 1.69 Mbps、无损 0.87–0.92 Mbps，均为 flac；320k 为 mp3。
@@ -94,15 +122,20 @@ object QualityAssessment {
         val levels = QualityLadder.LEVELS
         val requestedIdx = levels.indexOf(requested).takeIf { it >= 0 } ?: 0
         val grantedIdx = levels.indexOf(granted)
+        // 能力上限归一化：sky 这类别名按等价基础档位（exhigh）参与比较，
+        // 否则 capIdx=-1 会落到兜底的「已降级」，把"该曲没有更高档位"误报成服务端降级。
+        val capIdx = capabilityIndex(songMaxLevel)
+        // 上限来自别名时，即使归一化后仍 >= 请求档位，也不能断言"服务端没给"：
+        // sky 只是"没有更高档位"的标记，不代表账号拿到了 exhigh 以上的权限。
+        val capFromAlias = songMaxLevel != null &&
+            levels.indexOf(songMaxLevel) < 0 && capIdx != null
         val measuredIdx = measuredLevel(br, type)?.let { levels.indexOf(it) } ?: -1
-        val capIdx = songMaxLevel?.let { levels.indexOf(it) } ?: -1
 
         // 展示档位取「标签」与「实际文件」中更高者：标签写低了不该跟着写低。
-        // 未知标签（如未来的 sky）走 requestedIdx，绝不退化成索引 0（旧逻辑会显示成"压缩"）。
-        val displayIdx = maxOf(
-            if (grantedIdx >= 0) grantedIdx else requestedIdx,
-            measuredIdx,
-        ).coerceIn(0, levels.lastIndex)
+        // 未知标签（如 sky）不参与 maxOf，而是退回**请求档位**——它本身就是服务端
+        // 对该强度的等价回复；上限用请求档位封顶，避免未知标签把展示推到杜比/母带。
+        val floorIdx = if (grantedIdx >= 0) grantedIdx else requestedIdx
+        val displayIdx = maxOf(floorIdx, measuredIdx).coerceIn(0, maxOf(requestedIdx, 0))
 
         val status = when {
             // 拿不到实际文件参数：不妄下结论，保持安静
@@ -111,10 +144,11 @@ object QualityAssessment {
             measuredIdx >= requestedIdx -> QualityStatus.NORMAL
             // 沉浸声换格式：请求杜比/环绕，实际拿到 >= 无损的沉浸声文件，不算降级
             requested in IMMERSIVE_TIERS && measuredIdx >= levels.indexOf("lossless") -> QualityStatus.NORMAL
-            // 该曲自己就没有这个档位
-            capIdx in 0 until requestedIdx -> QualityStatus.SONG_LACKS_TIER
-            // 该曲有，但服务端没给
-            capIdx >= requestedIdx -> QualityStatus.NO_ENTITLEMENT
+            // 该曲自己就没有这个档位（含 sky 上限归一化后仍低于请求档位的情况）
+            capIdx != null && capIdx < requestedIdx -> QualityStatus.SONG_LACKS_TIER
+            // 该曲有（且该上限不是别名），但服务端没给
+            capIdx != null && capIdx >= requestedIdx && !capFromAlias -> QualityStatus.NO_ENTITLEMENT
+            // 其余才是真降级（服务端临时策略、解码器受限等）
             else -> QualityStatus.DOWNGRADED
         }
         return QualityVerdict(displayIdx, status)

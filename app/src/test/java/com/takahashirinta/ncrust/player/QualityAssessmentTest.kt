@@ -2,6 +2,7 @@ package com.takahashirinta.ncrust.player
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -81,6 +82,71 @@ class QualityAssessmentTest {
         assertEquals(idx("hires"), v.displayIndex)
     }
 
+    // ===== sky（沉浸环绕声）上限曲目：v1.3.0 实测 =====
+    // 服务端没有独立的沉浸声音频文件，maxBrLevel=sky 的曲子最高源就是 exhigh 320k mp3
+    // （level=sky 与 exhigh 逐字节同文件）。因此 sky 这个上限标签要归一化成 exhigh 再比较，
+    // 否则 sky 不在档位表里 → capIdx=-1 → 落到兜底的「已降级」，把「该曲没有更高档位」
+    // 误报成服务端降级。
+
+    /** sky 上限 + 请求 exhigh 320k mp3：拿到该曲最高源，不加任何角标。 */
+    @Test
+    fun `sky capped song at exhigh request is normal`() {
+        val v = QualityAssessment.assess(
+            requested = "exhigh", granted = "exhigh",
+            br = 320_000, type = "mp3", songMaxLevel = "sky",
+        )
+        assertEquals(QualityStatus.NORMAL, v.status)
+        assertEquals(idx("exhigh"), v.displayIndex)
+    }
+
+    /** sky 上限 + 请求 hires：该曲根本没有更高档位，不是降级、更不是无权限。 */
+    @Test
+    fun `sky capped song at hires request lacks tier`() {
+        val v = QualityAssessment.assess(
+            requested = "hires", granted = "exhigh",
+            br = 320_000, type = "mp3", songMaxLevel = "sky",
+        )
+        assertEquals(QualityStatus.SONG_LACKS_TIER, v.status)
+        assertEquals(idx("exhigh"), v.displayIndex)
+    }
+
+    /** sky 上限 + 请求无损：同上，唯一正确语义是「该曲无此档位」。 */
+    @Test
+    fun `sky capped song at lossless request lacks tier`() {
+        val v = QualityAssessment.assess(
+            requested = "lossless", granted = "exhigh",
+            br = 320_000, type = "mp3", songMaxLevel = "sky",
+        )
+        assertEquals(QualityStatus.SONG_LACKS_TIER, v.status)
+    }
+
+    /** 归一化只认「别名 = 更高档位的等价物」：sky 等价 exhigh，落到 exhigh 是正常，绝不报无权限。 */
+    @Test
+    fun `sky cap never reports no entitlement when granted matches its real ceiling`() {
+        val v = QualityAssessment.assess(
+            requested = "hires", granted = "exhigh",
+            br = 320_000, type = "mp3", songMaxLevel = "sky",
+        )
+        assertNotEquals(QualityStatus.NO_ENTITLEMENT, v.status)
+        assertNotEquals(QualityStatus.DOWNGRADED, v.status)
+    }
+
+    /**
+     * 对照组：与 sky 场景同样是「请求高于实际文件、上限低于请求」，但上限本身
+     * **高于已拿到的文件**（cap=hires，实测只有 exhigh）—— 服务端明明能给更高却没给，
+     * 必须是「无权限」而不是「该曲无此档位」。sky 场景（cap=exhigh=实测）则为后者。
+     * 这保证上限归一化没有把两种语义混成同一种。
+     */
+    @Test
+    fun `hires capped song granted only exhigh is still no entitlement`() {
+        val v = QualityAssessment.assess(
+            requested = "lossless", granted = "exhigh",
+            br = 320_000, type = "mp3", songMaxLevel = "hires",
+        )
+        assertEquals(QualityStatus.NO_ENTITLEMENT, v.status)
+        assertEquals(idx("exhigh"), v.displayIndex)
+    }
+
     /** 拿不到 br/type 时保持安静，不误报。 */
     @Test
     fun `missing file parameters stay normal`() {
@@ -113,6 +179,19 @@ class QualityAssessmentTest {
     @Test
     fun `capability fetched when immersive degrades to mp3`() {
         assertTrue(QualityAssessment.needsSongCapability("dolby", 320_000, "mp3"))
+    }
+
+    /** sky 上限的曲子只给到 320k：仍要问一次上限，判定才能落到「该曲无此档位」。 */
+    @Test
+    fun `capability fetched for sky capped song measured below request`() {
+        assertTrue(QualityAssessment.needsSongCapability("hires", 320_000, "mp3"))
+        assertTrue(QualityAssessment.needsSongCapability("lossless", 320_000, "mp3"))
+    }
+
+    /** 已拿到该曲最高源（320k mp3）而偏好就是 exhigh：无需再问上限。 */
+    @Test
+    fun `capability skipped when exhigh preference already served`() {
+        assertFalse(QualityAssessment.needsSongCapability("exhigh", 320_000, "mp3"))
     }
 
     /** 请求母带、实际给 320k（该曲其实有母带）—— 属于无权限。 */
