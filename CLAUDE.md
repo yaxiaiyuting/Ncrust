@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code when working in this repository. It is a mirror of **`AGENTS.md`** — that file is the canonical agent guide and the single source of truth. **When the two disagree, `AGENTS.md` wins** (or just re-copy it). Reflects the code as of **v1.3.1** (`versionCode = 6`). When in doubt, the source wins — update `AGENTS.md` first, then sync this file.
+This file provides guidance to Claude Code when working in this repository. It is a mirror of **`AGENTS.md`** - that file is the canonical agent guide and the single source of truth. **When the two disagree, `AGENTS.md` wins** (or just re-copy it). When in doubt, the source wins - update `AGENTS.md` first, then sync this file.
 
 ## Build & Test Commands
 
@@ -395,6 +395,90 @@ To add a locale: create `xx_XX.kt` with a `Strings(...)` and add a `LanguagePres
 - Wide screens (`windowWidthDp >= 600`) replace the bottom nav with a 200dp `MetroSidebar`; the content column gets `padding(start = 200.dp)`.
 - `BottomOverlayInsetDp` = **144dp** narrow (80 nav + 56 mini + 8 buffer) / **64dp** wide (56 mini + 8). All scrollable content must use it as `contentPadding`; **never** append a manual end-of-list `Spacer`.
 
+## Compose 触摸陷阱（实测汇编 · v1.5.0 整理）
+
+> 这一节是本 fork 踩过的**全部**触摸/命中测试坑，每条都给：症状 → 根因 → 修法 → 触发版本 → 相关文件。
+> 「触发版本」是 `git log -S` 反查出来的**实际引入/修复版本**，不是回忆；与口头描述不符的地方以本节为准。
+> 背景：本应用的播放器卡片是 `fillMaxSize` + `graphicsLayer` 平移到屏幕底部的独立图层，
+> 详情页/导航栏都在它下面 —— 这是全部坑的共同温床。
+
+### 1. `alpha = 0` 不会退出命中测试
+
+| | |
+|---|---|
+| **症状** | 肉眼什么都看不见的地方照样吃事件：折叠态在底部导航栏附近乱按会点到**不可见的**歌词行/队列行；详情页底部按钮「点了没反应」 |
+| **根因** | Compose 的命中测试只看布局与 `pointerInput`，**不看 `alpha`**。`graphicsLayer { alpha = 0f }` 只影响绘制，节点仍然是可命中的；`Modifier.alpha()` 同理 |
+| **修法** | 隐藏必须走「不挂载」或「收窄命中区」，不能只改透明度。播放器里 mini bar 是**故意**保留 alpha 渐隐的（它在 Composition 中常驻、透明度只在绘制阶段控制，动画期零重组），代价是它始终可命中 —— 所以它必须永远可见可用，不能当「隐藏层」用 |
+| **触发版本** | 自播放器卡片分层架构（v1.0.x 上游）起存在；v1.3.0（`5d93ae3`）修掉展开态子树的这一份 |
+| **相关文件** | [PlayerCard.kt](app/src/main/java/com/takahashirinta/ncrust/ui/player/PlayerCard.kt)（mini bar 叠加层、`graphicsLayer { alpha = ... }`） |
+
+### 2. `fillMaxSize` + `translationY` 形成「屏幕坐标死带」
+
+| | |
+|---|---|
+| **症状** | 有歌在播时，详情页 **y ≳ collapsedOffsetY** 一带的交互元素完全收不到事件（S6/G9209 实测 y≈1938 的歌单详情 ⋮ 点不动；API 24 模拟器同一坐标上滑也不生效） |
+| **根因** | 卡片是 `Box(Modifier.fillMaxSize())`，用 `graphicsLayer { translationY = collapsedOffsetY }` 整体下移。**`graphicsLayer` 的平移同时作用于绘制与命中测试** —— 卡片的逻辑布局仍在 (0,0)-(W,H)，但命中区跟着视觉一起被推到屏幕下半部，整块压在详情页之上且先于下层拿到事件 |
+| **修法** | ① 折叠态不再挂载展开态子树；② 折叠态给根 Box 加 `statusBar` 高的 top padding 收窄两个 `pointerInput` 的命中区，再用等量 `offset(y = -inset)` 把子节点放回原位（视觉与子节点布局零变化）。见第 6 条 |
+| **触发版本** | 随分层架构引入；v1.3.0（`5d93ae3`）修复。S6 实测 `collapsedOffsetY = 1920px`、mini bar 内容上沿 `2016px`，死带正好是中间 24dp |
+| **相关文件** | [PlayerCard.kt](app/src/main/java/com/takahashirinta/ncrust/ui/player/PlayerCard.kt)、[PlayerCardOverlay.kt](app/src/main/java/com/takahashirinta/ncrust/ui/player/PlayerCardOverlay.kt) |
+
+### 3. `graphicsLayer` 平移参与命中测试，且 `onGloballyPositioned` 在动画期间滞后
+
+| | |
+|---|---|
+| **症状** | 展开态下关掉歌词后，**底部播放控制栏与底部导航栏一起失效**（歌词开着反而正常）；动画进行中判断「点是否落在卡片可见区」会得到旧值 |
+| **根因** | 两个独立问题叠在一起：① 根节点在 `progress > 0.99f` 时吞掉所有事件，唯一的豁免区 `isOverPanel` 却挂在 `isPanelInteractive` 上、进而挂在 `lyricsEnabled` 上 —— 关歌词 ⇒ 豁免区整个消失 ⇒ 全吞；② `graphicsLayer` 的平移**不重新触发布局**，`onGloballyPositioned` 写下的坐标在动画期间是滞后的，直接读它算可见区会在动画中判错 |
+| **修法** | 把「豁免区」按**语义**拆成两个函数，绝不混用：`isOverPanel`（面板语义，只给拖拽检测器用，依赖 `isPanelInteractive` 是对的）与 `isOverCardVisibleArea`（几何语义，只给「展开态吞事件」的消费者用）。几何计算用 `cardRootOrigin.y * (1f - progress.value)` **插值**，不直接读 `cardRootOrigin.y` |
+| **触发版本** | 自展开态吞事件引入；v1.1.1（`709c20b`）修复 |
+| **相关文件** | [PlayerCard.kt](app/src/main/java/com/takahashirinta/ncrust/ui/player/PlayerCard.kt)（`isOverPanel` / `isOverCardVisibleArea` / `isOverCollapsibleControls` 三个语义注释块） |
+
+### 4. 隐藏层用「条件挂载」而不是 `alpha`（B-1 的取舍）
+
+| | |
+|---|---|
+| **症状** | 同第 1 条。折叠态在屏幕下半部乱按会点到看不见的歌词行/队列行 |
+| **根因** | 折叠态只把展开态子树用 `alpha≈0` 隐藏，子树仍然参与命中测试 |
+| **修法** | `progress < 0.01f` 时**整棵展开态子树不挂载**（顶部标题栏 / 歌词·队列双面板 / 底部播放控件 / 大封面信息），mini bar 永远挂载。**代价（有意接受）**：首次展开要付一次 composition + layout + draw，压不进单帧时会看到一次轻微掉帧（冷启动由 Splash + AppWarmup 兜底） |
+| **触发版本** | v1.3.0（`5d93ae3`）。**任务书把这条记在 v1.1.1，实际是 v1.3.0** |
+| **相关文件** | [PlayerCard.kt](app/src/main/java/com/takahashirinta/ncrust/ui/player/PlayerCard.kt)、[PlayerCardOverlay.kt](app/src/main/java/com/takahashirinta/ncrust/ui/player/PlayerCardOverlay.kt) |
+
+### 5. 折叠态「隐藏子树的命中区」比可视区大
+
+| | |
+|---|---|
+| **症状** | 明明已经没有可视子节点的那一段（死带），事件还是被卡片吃掉 |
+| **根因** | 那一段里**一个子节点都没有** —— mini bar 与 Column 的内容都被 `statusBarsPadding()` 下推到 2016，而吃事件的是卡片**根 Box 自己**的那两个 `pointerInput`（上拉手势 / 展开态吞事件），命中区就是整个 `fillMaxSize` 根 Box。所以「不挂载子树」单独用**修不掉** |
+| **修法** | 见第 6 条（命中区让位）。判据是「有没有子节点」不够，必须看「有没有 `pointerInput` 挂在被平移过的根节点上」 |
+| **触发版本** | 随分层架构引入；v1.3.0（`5d93ae3`）修复 |
+| **相关文件** | [PlayerCard.kt](app/src/main/java/com/takahashirinta/ncrust/ui/player/PlayerCard.kt)（根 Box 的 `collapsedHitGate` 与两个 `pointerInput`） |
+
+### 6. `padding` + 等量 `offset` 收窄命中区（视觉零变化）
+
+| | |
+|---|---|
+| **症状** | 需要一个「只改命中区、不改任何视觉与布局」的手段 |
+| **根因** | —（这是修法本身） |
+| **修法** | 折叠态给根 Box 加 `Modifier.padding(top = hitGateInsetDp)`（只收窄挂在**同一节点**上的 `pointerInput` 命中区），再用 `Modifier.offset(y = -hitGateInsetDp)` 把子节点放回原位。子节点的最终位置、卡片背景的 `graphicsLayer` 平移都不受影响 ⇒ **视觉与子节点布局零变化**。展开态与动画中段不加 padding，「整屏吞事件」的行为原样保留 |
+| **触发版本** | v1.3.0（`5d93ae3`）。API 24 模拟器实测：同一坐标 y=1188 同长度上滑，修复前把整卡拉起、修复后事件还给下层；mini bar 上滑展开与点按展开均无回归 |
+| **相关文件** | [PlayerCard.kt](app/src/main/java/com/takahashirinta/ncrust/ui/player/PlayerCard.kt)（`collapsedHitGate` / `hitGateInsetDp`） |
+
+### 7. 小控件要把触摸区扩到 ≥48×24dp，且必须能被无障碍服务看见
+
+| | |
+|---|---|
+| **症状** | 全屏播放器底部的控制栏把手（视觉 40×3dp 的小横条）用户「找不到 / 划不动」；TalkBack 用户把控制栏收起后**再也拿不回来** |
+| **根因** | 视觉元素做得再小，命中区也不能跟着变小；此外只画一个 `Box` 而不加 `clickable`/语义，等于对无障碍服务不存在 |
+| **修法** | 视觉保持 40×3dp，**命中区只增不减**：外层全宽 × 24dp 拖拽带（保持既有手感，宽度故意不缩到 48dp —— 1440px 宽的 S6 上 48dp 只有 192px，v1.4.2 的用户反馈正是「划下去就划不上来」）+ 内层显式 48×24dp 点按命中盒；并加 `semantics { contentDescription = ... }`。触摸契约写进注释，防止后续被「优化」掉 |
+| **触发版本** | 把手本身 v1.4.2（`094675e`）加入，v1.4.2（`b513359`）修「恢复手势被整卡拖拽抢走」；命中区显式化 + 无障碍语义 v1.5.0 · C2（`fd15b89`） |
+| **相关文件** | [PlayerCard.kt](app/src/main/java/com/takahashirinta/ncrust/ui/player/PlayerCard.kt)（控制栏把手 Box） |
+
+### 一句话总结（给改播放器的自己）
+
+`graphicsLayer` 的 `translationY`/`scale`/`alpha` 里，**只有 `alpha` 不影响命中测试**；
+`translationY` 会把命中区一起搬走，`fillMaxSize` 的根节点即使一个子节点都没有也照样吃事件。
+凡是「看不见的地方还能点」或「看得见的地方点不到」，先问三件事：
+**这个节点挂载了吗？它的 `pointerInput` 在哪一层？它的命中区被 `graphicsLayer` 搬到哪去了？**
+
 ## v1.4.0 新增（本 fork）
 
 | 项 | 说明 |
@@ -402,10 +486,114 @@ To add a locale: create `xx_XX.kt` with a `Strings(...)` and add a `LanguagePres
 | 底部控制栏可收起 | 窄屏全屏播放器下向上拖控制栏 → 控制栏滑出、面板长高到全屏；右下角悬浮播放键向下拖恢复。controlsCollapse(Animatable) + graphicsLayer 平移 + Modifier.collapsibleHeight（layout 阶段读 Animatable，零重组）；控制栏区域的整卡拖拽由 isOverCollapsibleControls 让路。宽屏不启用。 |
 | 暂停态 seek 立即生效 | 进度 ticker 只在 isPlaying 时广播，暂停态 seek 后 UI 收不到新位置。修法：PlaybackService 两条 seek 路径后 publishProgressNow() + PlayerViewModel.seekTo 乐观更新；showBuffering 不再把 isSeeking 当缓冲（点进度条不再有脉冲动画）。 |
 | 播放全部先播后补 | 首页/库页的 ▶ 直接播放：命中 ContentCache / 本地收藏单曲立即开播，未命中先 Toast 再拉取；收藏单曲剩余详情后台补齐后追加队尾。移除全局 pendingPlayAllSongs 二次确认（详情页各自的 PlayAllDialog 保留）。 |
-| 音乐人推荐卡片 | 首页推荐流按「收藏艺人 ∩ 风格锚点」本地判定插入一张艺人卡（点击进 ArtistDetailScreen）。配置在 ncrust_settings：artist_reco_enabled / artist_reco_target_id / artist_reco_anchor_ids(CSV)，默认全空 → 其他用户不显示也不发请求。自动锚点：目标艺人热门曲 → simiSong → 同风格艺人（7 天 TTL）。 |
+| 音乐人推荐卡片 | 首页推荐流按「收藏艺人 ∩ 风格锚点」本地判定插入一张艺人卡（点击进 ArtistDetailScreen）。配置在 ncrust_settings：artist_reco_enabled / artist_reco_target_id / artist_reco_anchor_ids(CSV)，默认全空 → 其他用户不显示也不发请求。自动锚点：目标艺人热门曲 → simiSong → 同风格艺人（7 天 TTL）。**v1.5.0 起**自动锚点按频次排序 + 截断到 20 个 + 空结果不冲缓存，见下节。 |
 | 相似艺人端点纠正 | 任务里写的 /eapi/simi/artist 不存在（404）；真实端点是 /eapi/discovery/simiArtist，参数名 artistid，匿名 301、需登录，返回 artists[]（≤20，平均约 300ms）。B0 实测目标艺人 122618229 自己的相似列表为空、在 top20 收藏艺人的相似列表里 0 次命中 → 原方案不可行，改走锚点降级方案。 |
 | 艺人端点可用性 | GET /api/artist/{id} 与 GET /api/artist/albums/{id} 可用；/eapi/v1/artist/detail、/eapi/artist/albums（PlaylistApi 里那两个旧函数）已 400 失效（当前无人调用，ArtistDetailScreen 走 Retrofit 的 REST 路径）。 |
 
+## v1.5.0 新增（本 fork）
+
+### 音乐人推荐：自动锚点推导的实测与收敛（任务 A）
+
+**S6 真机实测（SM-G9209 / Android 7.0 / 登录态，2026-09-22）**——本节所有结论都来自这次实测，不是推断。
+方法：root 写入 `artist_reco_enabled=true` + `artist_reco_target_id=122618229`、清空
+`artist_reco_anchor_ids`，冷启一次后读回 `ncrust_settings.xml`。
+
+| 项 | 实测值 |
+|---|---|
+| 目标艺人 | `122618229` = **SKULLCHAIN颅链**（musicSize 13，热门曲 Home تۋعان جەر / CALL THE FATALITY / JAR JAR PHONK） |
+| 推导结果（9 个，落盘顺序） | `60952064,53432819,1132066,12003027,29878,93805,99989,13518632,99999` |
+| 反解艺人名 | PFJ_5 / 333xd / Fayzz / 奈热乐队 / Boris Brejcha / HIM / Sum 41 / Charix / System of a Down |
+| 推导耗时 | 冷启后 12 s 内完成并落盘（`artist_reco_auto_anchor_at` 刷新） |
+| 目标艺人是否被误收进锚点 | 否（`aid != target` 生效） |
+| 卡片是否触发 | **是** —— 该账号收藏单曲里有 `PFJ_5(60952064)`，`shouldShow` 命中，首页「音乐人推荐」渲染出 **SKULLCHAIN颅链**（截图复核） |
+
+结论：**推导合理**（全部是真实艺人，风格上扎堆在摇滚/金属/电子，且确实在真实收藏上命中），
+因此保留自动推导并做三点收敛，而不是降级成「默认关闭自动推导、只留手动锚点」：
+
+1. **去重**：以艺人 id 为 key 收进 `LinkedHashMap`，同一艺人无论命中多少次只留一个；
+2. **排序 + 截断**：按「在几首种子曲的相似列表里出现过」降序（`sortedByDescending` 是**稳定**排序，
+   同频次保持首次出现顺序 → 同一份服务端数据每次结果完全一致），再截断到 `AUTO_MAX_ANCHORS = 20`。
+   原实现没有上限，3 种子曲 × 20 相似曲最多能收 60 个；锚点集就是命中判定集，越大越容易误命中。
+   S6 实测只有 9 个，**低于上限 → 对现有账号是零行为变化**；
+3. **缓存**：7 天 TTL 不变，另加两点 —— ① `Mutex` 单飞，快速连续切页只推导一次（此前 TTL 写回前
+   每个并发调用都会各跑一遍网络）；② **推导结果为空时保留旧缓存**，不再把好数据冲成空、让卡片
+   静默消失到 TTL 结束。
+
+顺带补了可观测性：推导成功打 `Log.i(ArtistReco)`（此前只有失败才 `Log.e`，线上无法判断卡片为何不出现）。
+纯逻辑抽成 `ArtistReco.rankAnchors(hits, target, max)`，由 JVM 单测
+[ArtistRecoTest.kt](app/src/test/java/com/takahashirinta/ncrust/reco/ArtistRecoTest.kt) 覆盖去重/排序/稳定性/截断/过滤。
+
+**S6 上的复现方式**（S6 已 root，Magisk）：改 prefs 前先 `su -c cp` 备份 `ncrust_settings.xml`，
+`am force-stop` 之后再写入，冷启后读回；登录态（`ncrust_prefs.xml` 的 `user_cookie`）全程不动。
+
+### 歌词增强：逐字（yrc）+ 翻译（任务 B）
+
+#### 实测结论（2026-09，真实响应，非文档推断）
+
+| 项 | 结论 |
+|---|---|
+| 端点 | `POST /api/song/lyric`（REST，应用现有路径）。**`/eapi/song/lyric` 也能用，但必须做 `/eapi/`→`/api/` 的签名路径重写**；`/eapi/song/lyric/v1` 会混入富文本 JSON 格式，不要用 |
+| 逐字字段 | `yrc`，格式 `[行起始ms,行时长ms](词起始ms,词时长ms,0)词文本...`。**词起始是绝对毫秒**（首词=行首、末词+时长=行尾，实测首尾都对得上）；括号里第三个数字恒为 0 无语义 |
+| 参数语义 | 是**开关**：传 `lv`→lrc、`kv`→klyric、`tv`→tlyric、`rv`→romalrc、**`yv`→yrc + ytlrc + yromalrc 三个一起**。单独传 `ytv`/`yrv` 什么都不返回；不传 `yv` 时响应里**连 `yrc` 这个 key 都不存在** |
+| `ytlrc` 不是逐字 | 它是**行级** LRC（`[MM:SS.mmm]整行译文`），实测 23 首有 ytlrc 的歌 100% 命中行级文法、0 行命中 yrc 文法。所以唯一的逐字数据源就是 `yrc` |
+| 匿名可用 | 完全不带 Cookie 与登录态返回**逐字节相同**（code 200）。歌词接口不需要登录 |
+| 覆盖率 | yrc 与发行年份**不严格相关**：2024-2025 首发新歌（周深《小美满》、Billie Eilish《CHIHIRO》、Taylor Swift《Fortnight》等）大多**没有** yrc；而《屋顶》《修炼爱情》《演员》《浮夸》《孤勇者》《后来的我们》等有 |
+| 「确无歌词」 | code 仍是 200，靠 `uncollected:true` / `pureMusic:true` 与 `lrc.lyric="[00:00.00]暂无歌词"` 判别，此时响应里没有 yrc/tlyric 等 key |
+
+#### 对齐：**不能按时间戳匹配**（踩坑记录）
+
+直觉做法「按时间戳把 yrc 行挂到 lrc 行上」**实测不成立**：《屋顶》55 行里只有 3 行时间戳完全相同，其余相差 20–310 ms（yrc 是逐字轨，本来就更精确）。
+
+但实测同时确认了更强的事实 —— **yrc 与 lrc 的「行」是一一对应的**：
+
+| 歌曲 | lrc 行数 | yrc 行数 | 按文本命中 | 时间差 |
+|---|---|---|---|---|
+| 屋顶 `5257138` | 55 | 55 | 55/55 | +20…+310 ms |
+| 遇见 `287035` | 28 | 28 | 11/28（其余只差空格） | −269…+530 ms |
+
+所以 [YrcParser](app/src/main/java/com/takahashirinta/ncrust/lyric/YrcParser.kt) 按 **行序**对齐：行数必须相等 + 时间漂移抽样达标（`MAX_LINE_DRIFT_MS=2000`、`MIN_ALIGN_RATIO=0.8`），否则整首放弃逐字。
+
+文本也要重新映射：yrc 拼出来的是「词的原始拼接」，LRC 那份是「补回空格的美化版」
+（`听见冬天的离开` vs `听见 冬天的离开`）。**展示文本仍用 LRC 的**（与 v1.4.1 完全一致），词的字符区间用
+「游标 + indexOf」映射到 LRC 文本上；任何一个词定位失败就放弃该行的逐字 —— 宁可没有逐字，也不给错位高亮。
+
+#### 渲染：`drawWithContent` 两层（零重组）
+
+`MetroLyricsPanel`（Kanesumi）只接受纯文本、无法从外部注入单行渲染，所以逐字高亮需要面板本身参与。
+本仓库**把面板整体搬了进来**：`ui/player/NcrustLyricsPanel.kt`（派生自 Kanesumi `MetroLyricsPanel`，Apache-2.0）。
+为什么是复制而不是改 Kanesumi：Kanesumi 走组合构建、不在本仓库版本控制内，改它会让 v1.5.0 的发布产物**不可复现**
+（`git clone Ncrust` 不再足以构建）。除单行渲染外，滚动 / 定位 / 缩放 / 渐入 / a11y 行为与原版逐行一致。
+
+单行渲染 `LyricLineBody`：底色用 `BasicText` 正常画一遍（未唱部分弱化到 45% α），再在 `drawWithContent` 里
+**在 draw 阶段**读播放位置，用 `TextLayoutResult.getPathForRange(0, 已唱字符数)` 取出已唱字符的版面路径，
+`clipPath` 之后把同一份 layout 用高亮色重画一遍。三个好处：
+
+1. **零重组** —— 逐字推进只让这一行重绘，不触发任何重组，与面板既有的 `graphicsLayer` 缩放动画、
+   以及播放器整体的 GPU 零重组原则一致；
+2. **不自己排版** —— 换行 / 断字 / CJK 避头尾全部交给 Compose，逐字高亮天然跟着版面走；
+3. **一次画完** —— `getPathForRange` 把跨行的一段字符合成一条 Path，开销不随词数增长。
+
+只有**当前行**做逐字高亮：已唱完的行会切成 `pastLineColor`，若在那些行上再叠高亮色会把整行重新点亮成
+primary，破坏过去行的弱化。
+
+#### 与 v1.4.1 的 2Hz 采样 / 漂移外推如何共存（B3）
+
+`LyricsView` 的「按需唤醒」循环（v1.4.1 引入，用于跨行精确对齐 + 暂停态 seek 立即同步）原本只按
+**行时间戳**唤醒。逐字高亮要求精度到「词」，但**不能改成逐帧轮询** —— 现在把唤醒表从「行边界」细化成
+「行边界 ∪ 词边界」（`TreeSet` 去重升序），仍然是按需唤醒：静态时零状态写入、零帧调度，只在真正跨行/跨词
+的那一刻动一次（词密度约每秒 3–8 个，远低于 60 fps）。2Hz 采样到达时外推锚点被重置回真实值，
+所以细粒度外推不会累积误差。**v1.4.1 的漂移对齐逻辑一行未动。**
+
+#### 开关与降级
+
+- 设置项 `lyrics_word_by_word`（默认**开**），8 语言文案 `lyricsWordByWordLabel` 已补齐；
+- 关掉、或该曲没有 yrc、或某一行对齐失败 → 行内渲染退回与 v1.4.1 **逐字节一致**的整行 `MetroText`；
+- `YrcParser.attachWords` **不增删任何一行、不改任何一行的文本与时间戳**，这是「关掉开关等于没这功能」的保证；
+- `LyricsCache.CachedLyrics` 新增 `yrc`，声明为可空并在读取处 `orEmpty()` —— 老缓存（无该字段）命中时
+  退化成「没有逐字数据」，不会因 Gson 走 Unsafe 反序列化而 NPE。
+
+单测 [YrcParserTest.kt](app/src/test/java/com/takahashirinta/ncrust/lyric/YrcParserTest.kt) 用真实样本覆盖
+绝对毫秒语义、信息行 trim、按行序对齐、少空格时的字符区间映射、定位失败放弃、行数不等放弃、乱码容错。
 ## Key Constraints & Pitfalls
 
 - **Kanesumi Design**: no rounded corners in the player; no spring/bounce; cover always fills the full screen width (`fillMaxWidth().aspectRatio(1f)`, scale 1.0 in large mode).
