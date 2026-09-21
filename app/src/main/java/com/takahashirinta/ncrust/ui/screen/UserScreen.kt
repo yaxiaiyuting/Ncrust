@@ -62,7 +62,10 @@ import com.takahashirinta.ncrust.ui.i18n.LocalStrings
 import com.takahashirinta.ncrust.ui.i18n.LanguagePreset
 import com.takahashirinta.ncrust.ui.i18n.getSavedLanguageCode
 import com.takahashirinta.ncrust.ui.i18n.languagePresets
+import com.takahashirinta.ncrust.ui.theme.AccentSource
+import com.takahashirinta.ncrust.ui.theme.AccentSourceSelector
 import com.takahashirinta.ncrust.ui.theme.ThemeColorSelector
+import com.takahashirinta.ncrust.ui.theme.systemAccentSupported
 import com.takahashirinta.ncrust.ui.theme.ThemeMode
 import com.takahashirinta.ncrust.ui.theme.themeColorPresets
 import com.takahashirinta.ncrust.ui.viewmodel.PlayerViewModel
@@ -77,6 +80,8 @@ fun UserScreen(
     onThemeChange: (Int) -> Unit = {},
     themeMode: ThemeMode = ThemeMode.SYSTEM,
     onThemeModeChange: (ThemeMode) -> Unit = {},
+    accentSource: AccentSource = AccentSource.PRESET,
+    onAccentSourceChange: (AccentSource) -> Unit = {},
     onShowWebLogin: () -> Unit = {},
     refreshTrigger: Int = 0,
     onLanguageChange: (String) -> Unit = {}
@@ -340,6 +345,21 @@ fun UserScreen(
                     onSelect = onThemeChange
                 )
             }
+            Spacer(Modifier.height(24.dp))
+
+            // B2-C：主题色来源三选一。跟随封面/跟随系统都是"动态来源"，拿不到就回落预设色。
+            SectionTitle(strings.accentSourceSectionTitle)
+            AccentSourceSelector(
+                selected = accentSource,
+                systemEnabled = systemAccentSupported,
+                labels = Triple(
+                    strings.accentSourcePreset,
+                    strings.accentSourceCover,
+                    strings.accentSourceSystem
+                ),
+                systemHint = strings.accentSourceSystemHint,
+                onSelect = onAccentSourceChange
+            )
             Spacer(Modifier.height(24.dp))
 
             SectionTitle(strings.languageSectionTitle)

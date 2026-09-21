@@ -118,6 +118,13 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
      */
     val qualityStatus = MutableStateFlow(QualityStatus.NORMAL)
 
+    /**
+     * B2-C：跟随封面时的原始主题色（ARGB）。由 PlaybackService 的 Palette 结果静态回调推送，
+     * null = 无封面 / 提取失败 → UI 回落预设色。饱和度压制与亮度锚定在 UI 侧按当前明暗处理
+     * （同一张封面在深色/浅色下锚定区间不同，不能只按 URL 缓存处理结果）。
+     */
+    val coverAccentRgb = MutableStateFlow<Int?>(null)
+
     private val qualityApiLevels = QUALITY_LEVELS
 
     /** 本次播放**请求**的档位；与 lastPlayedLevel（实际拿到）区分，用于判断偏好是否真的变了。 */
@@ -220,6 +227,8 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         PlaybackService.onPlaybackPrevious = { onSongPreviousCallback?.invoke() }
         PlaybackService.onIsPlayingChanged = { playing -> isPlaying.value = playing }
         PlaybackService.onBufferingChanged = { buffering -> isBuffering.value = buffering }
+        // B2-C：封面 Palette 提取出的主题色（null = 无封面 / 提取失败 → UI 回落预设色）。
+        PlaybackService.onCoverAccent = { rgb -> coverAccentRgb.value = rgb }
         // ExoPlayer 主线程回调。播放失败 → 降档重试,而不是无声地停在 IDLE。
         PlaybackService.onPlaybackError = { sid -> handlePlaybackError(sid) }
 
@@ -861,6 +870,7 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         PlaybackService.onIsPlayingChanged = null
         PlaybackService.onSongTransitioned = null
         PlaybackService.onBufferingChanged = null
+        PlaybackService.onCoverAccent = null
         PlaybackService.onPlaybackError = null
         super.onCleared()
     }

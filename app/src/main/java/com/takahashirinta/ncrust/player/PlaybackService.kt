@@ -101,6 +101,13 @@ class PlaybackService : MediaLibraryService() {
     /** 通知栏 / 锁屏封面只用到几百像素：统一降到这个边长，两张位图内存约为原来的 1/4。 */
     private val ARTWORK_MAX_PX = 512
 
+    // B2-C：Palette 采样边长。取色只需判断"什么色"，112×112 足够，且与小图解码成本正相关。
+    private val PALETTE_SAMPLE_PX = 112
+    // 同一张封面不重复取色（URL 未变直接复用上次结果）。
+    private var paletteUrl: String? = null
+    private var paletteRgb: Int? = null
+    private var paletteDominant: Int = 0xFF1DB954.toInt()
+
     companion object {
         // 车机浏览树节点 id。
         const val ROOT_ID = "ncrust_root"
@@ -119,6 +126,9 @@ class PlaybackService : MediaLibraryService() {
         // Fired on the main thread when ExoPlayer auto-transitions to a preloaded next item.
         var onSongTransitioned: (() -> Unit)? = null
         var onBufferingChanged: ((Boolean) -> Unit)? = null
+        // B2-C：封面 Palette 提取出的主题色（ARGB）。null = 当前歌无封面，UI 回落预设色。
+        // 由 PlaybackService 静态回调推给 PlayerViewModel.coverAccentRgb。
+        var onCoverAccent: ((Int?) -> Unit)? = null
         var mediaTitle: String = "Ncrust"
         var mediaArtist: String = ""
         var mediaSongId: Long? = null
@@ -408,6 +418,11 @@ class PlaybackService : MediaLibraryService() {
         if (artwork != null && artwork != currentArtworkUrl) {
             currentArtworkUrl = artwork
             loadArtwork(artwork)
+        } else if (artwork != null && artwork.isEmpty()) {
+            // 这首歌没有封面：清掉主题色，UI 回落预设色（不然会沿用上一首的颜色）。
+            paletteUrl = null
+            paletteRgb = null
+            onCoverAccent?.invoke(null)
         }
 
         if (url != null) {
@@ -588,6 +603,46 @@ class PlaybackService : MediaLibraryService() {
         if (currentArtworkBitmap == null) currentArtworkUrl?.let { loadArtwork(it) }
     }
 
+    /**
+     * B2-C：从封面提取主题色。采样降到 112×112，createScaledBitmap + Palette 都在
+     * Dispatchers.Default 上跑（都是 CPU 活，不能占主线程）；同一张封面（URL 未变，
+     * 例如空闲释放后恢复播放触发的重载）直接复用上次结果，不重复取色。
+     */
+    private fun applyCoverAccent(bitmap: Bitmap, url: String, gen: Int) {
+        if (url == paletteUrl) {
+            paletteRgb?.let { onCoverAccent?.invoke(it) }
+            return
+        }
+        scope.launch(Dispatchers.Default) {
+            val palette = try {
+                Palette.from(
+                    Bitmap.createScaledBitmap(bitmap, PALETTE_SAMPLE_PX, PALETTE_SAMPLE_PX, true)
+                ).generate()
+            } catch (e: Exception) {
+                Log.w("PlaybackService", "palette extraction failed", e)
+                null
+            }
+            // 取色期间又切了歌：结果作废，别把上一首的颜色推给新歌。
+            if (gen != artworkGeneration) return@launch
+            if (palette == null) {
+                onCoverAccent?.invoke(null)
+                return@launch
+            }
+            val dominant = palette.getDominantColor(0xFF1DB954.toInt())
+            // 主题色优先取 vibrant（更鲜亮，随后会被 processAccentColor 压饱和度）；
+            // 通知栏着色沿用 dominant，保持原观感。
+            val accent = palette.vibrantSwatch?.rgb
+                ?: palette.dominantSwatch?.rgb
+                ?: palette.mutedSwatch?.rgb
+            paletteUrl = url
+            paletteDominant = dominant
+            paletteRgb = accent
+            currentDominantColor = dominant
+            onCoverAccent?.invoke(accent)
+            scope.launch(Dispatchers.Main) { updateNotify() }
+        }
+    }
+
     private fun preloadArtwork(url: String) {
         val gen = ++artworkPreloadGeneration
         scope.launch(Dispatchers.IO) {
@@ -638,16 +693,9 @@ class PlaybackService : MediaLibraryService() {
                         updateNotify()
                     }
 
-                    Palette.from(bitmap).generate { palette ->
-                        // palette 回调是异步的, 同样做代数校验
-                        if (gen != artworkGeneration) return@generate
-                        palette?.getDominantColor(0xFF1DB954.toInt())?.let {
-                            currentDominantColor = it
-                        }
-                        scope.launch(Dispatchers.Main) {
-                            updateNotify()
-                        }
-                    }
+                    // B2-C：取色统一走 applyCoverAccent —— 112×112 采样、Dispatchers.Default
+                    // 计算、按封面 URL 去重。
+                    applyCoverAccent(bitmap, url, gen)
                 }
             } catch (e: Exception) {
                 Log.e("PlaybackService", "Load artwork failed", e)

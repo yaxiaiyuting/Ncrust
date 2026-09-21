@@ -14,6 +14,8 @@ import io.github.takahashirinta.kanesumi.core.theme.MetroColors
 @Immutable
 data class NcrustColors(
     val primary: Color,
+    // B2-C：与 primary 搭配的前景色。默认白色（保持既有观感），由 NcrustTheme 随主题色推导。
+    val onPrimary: Color = Color(0xFFFFFFFF),
     val background: Color,
     val surface: Color,
     val surfaceVariant: Color,
@@ -61,7 +63,9 @@ fun NcrustColors.toMetroColors(isDark: Boolean): MetroColors = MetroColors(
     surface = surface,
     surfaceVariant = surfaceVariant,
     primary = primary,
-    onPrimary = Color(0xFFFFFFFF),
+    // B2-C：跟随 NcrustColors 的推导结果 —— 原先硬编码白色会把 NcrustTheme 的
+    // onPrimary 覆盖回去，导致 Kanesumi 组件（按钮文字/图标）仍是白字。
+    onPrimary = onPrimary,
     onBackground = onBackground,
     onSurface = onSurface,
     onSurfaceVariant = onSurfaceVariant,

@@ -35,6 +35,13 @@ data class Strings(
 
     /** A3：该曲本身就没有请求的档位。 */
     val qualitySongLacksTierBadge: String,
+
+    // B2-C：主题色来源三选一
+    val accentSourceSectionTitle: String,
+    val accentSourcePreset: String,
+    val accentSourceCover: String,
+    val accentSourceSystem: String,
+    val accentSourceSystemHint: String,
     /** API < 27 无系统 FLAC 解码器、且选中 FLAC 档位时的设置页提示（Bug1-C）。 */
     val qualityFlacUnsupportedHint: String,
     val playbackSectionTitle: String,

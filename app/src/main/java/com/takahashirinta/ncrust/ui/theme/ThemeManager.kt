@@ -84,7 +84,12 @@ fun NcrustTheme(
     content: @Composable () -> Unit
 ) {
     val colors = remember(primaryColor, isDark) {
-        (if (isDark) DefaultNcrustColors else LightNcrustColors).copy(primary = primaryColor)
+        (if (isDark) DefaultNcrustColors else LightNcrustColors).copy(
+            primary = primaryColor,
+            // B2-C：onPrimary 随主题色推导。原先恒为白色，浅色主题色（如琥珀）上
+            // 文字/图标对比度不足 —— 这是 4.5:1 要求的前提。
+            onPrimary = onAccentColor(primaryColor),
+        )
     }
     CompositionLocalProvider(
         LocalNcrustColors provides colors,

@@ -80,7 +80,14 @@ import com.takahashirinta.ncrust.ui.i18n.stringsForCode
 import com.takahashirinta.ncrust.ui.CustomBackgroundLayer
 import com.takahashirinta.ncrust.ui.theme.NcrustTheme
 import com.takahashirinta.ncrust.ui.theme.ThemeMode
+import com.takahashirinta.ncrust.ui.theme.AccentSource
+import com.takahashirinta.ncrust.ui.theme.getSavedAccentSource
+import com.takahashirinta.ncrust.ui.theme.saveAccentSource
 import com.takahashirinta.ncrust.ui.theme.getSavedThemeIndex
+import com.takahashirinta.ncrust.ui.theme.processAccentColor
+import com.takahashirinta.ncrust.ui.theme.systemAccentColor
+import androidx.compose.ui.graphics.toArgb
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.takahashirinta.ncrust.ui.theme.getSavedThemeMode
 import com.takahashirinta.ncrust.ui.theme.saveThemeIndex
 import com.takahashirinta.ncrust.ui.theme.saveThemeMode
@@ -126,6 +133,27 @@ class MainActivity : ComponentActivity() {
                 ThemeMode.LIGHT -> false
             }
 
+            // B2-C：主题色来源三选一（预设 / 封面 / 系统）。封面色由 PlaybackService 的
+            // Palette 结果静态推送到 ViewModel；系统色仅 API 31+ 可用。
+            val playerViewModel: PlayerViewModel = viewModel()
+            var accentSource by remember {
+                mutableStateOf(getSavedAccentSource(this@MainActivity))
+            }
+            val coverAccentRgb by playerViewModel.coverAccentRgb.collectAsState()
+            // 优先级合并：可用的动态来源覆盖预设色，任一环节拿不到都回落 themeColorForIndex。
+            // remember 键刻意含 isDark —— 深/浅色的亮度锚定区间不同，同一张封面必须重算。
+            val accentColor = remember(accentSource, themeIndex, coverAccentRgb, isDark) {
+                when (accentSource) {
+                    AccentSource.COVER -> coverAccentRgb?.let { processAccentColor(it, isDark) }
+                        ?: themeColorForIndex(themeIndex)
+                    // systemAccentColor 在 API < 31 返回 null（跨设备同步 prefs 的防御）。
+                    AccentSource.SYSTEM -> systemAccentColor(this@MainActivity)
+                        ?.let { processAccentColor(it.toArgb(), isDark) }
+                        ?: themeColorForIndex(themeIndex)
+                    AccentSource.PRESET -> themeColorForIndex(themeIndex)
+                }
+            }
+
             val baseViewConfig = LocalViewConfiguration.current
             val metroConfig = remember(baseViewConfig) { metroViewConfiguration(baseViewConfig) }
             CompositionLocalProvider(
@@ -134,7 +162,7 @@ class MainActivity : ComponentActivity() {
                 // 消除"神经质"输入印象。配合 MetroFlingBehavior 覆盖 fling 阶段。
                 LocalViewConfiguration provides metroConfig,
             ) {
-                NcrustTheme(primaryColor = themeColorForIndex(themeIndex), isDark = isDark) {
+                NcrustTheme(primaryColor = accentColor, isDark = isDark) {
                     // Kanesumi Metro* 组件读 LocalMetroColors / LocalMetroTypography,
                     // 并通过 MetroTheme 注入的 LocalIndication -> MetroIndication 拿到直角
                     // 闪切反馈。这里从 NcrustColors 派生 MetroColors,让两套主题源共享同一
@@ -154,6 +182,11 @@ class MainActivity : ComponentActivity() {
                             onThemeModeChange = { newMode ->
                                 themeMode = newMode
                                 saveThemeMode(this@MainActivity, newMode)
+                            },
+                            accentSource = accentSource,
+                            onAccentSourceChange = { newSource ->
+                                accentSource = newSource
+                                saveAccentSource(this@MainActivity, newSource)
                             },
                             onLanguageChange = { newCode ->
                                 saveLanguageCode(this@MainActivity, newCode)
@@ -251,7 +284,11 @@ fun MainScreen(
     onThemeChange: (Int) -> Unit = {},
     themeMode: ThemeMode = ThemeMode.SYSTEM,
     onThemeModeChange: (ThemeMode) -> Unit = {},
-    onLanguageChange: (String) -> Unit = {}
+    onLanguageChange: (String) -> Unit = {},
+    // B2-C：主题色来源（设置页三选一）。状态由 MainActivity 持有（主题在更外层应用），
+    // 这里只做透传给设置页。
+    accentSource: AccentSource = AccentSource.PRESET,
+    onAccentSourceChange: (AccentSource) -> Unit = {}
 ) {
     var selectedTab by remember { mutableIntStateOf(1) }
     // 根布局实测高度(px)：车机会把窗口内容区 inset 到系统栏之间，但 WindowInsets
@@ -1264,6 +1301,8 @@ fun MainScreen(
                             onThemeChange = onThemeChange,
                             themeMode = themeMode,
                             onThemeModeChange = onThemeModeChange,
+                            accentSource = accentSource,
+                            onAccentSourceChange = onAccentSourceChange,
                             onShowWebLogin = { showWebLogin = true },
                             refreshTrigger = cookieRefreshTrigger,
                             onLanguageChange = onLanguageChange
