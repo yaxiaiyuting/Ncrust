@@ -1135,6 +1135,15 @@ fun MainScreen(
         // dispatched in composition order). Its inner consumer modifier in PlayerCard prevents
         // Scaffold's SongCards from receiving events when the player is fully expanded.
         // zIndex(1f) ensures it renders above Scaffold (default zIndex=0) despite being listed first.
+        //
+        // v1.3.0 · 死带修复 A：**没有歌就不挂载这一层**。
+        // 这层是全屏 fillMaxSize + translationY(collapsedOffsetY)，以前无论有没有歌都常驻，
+        // 于是「清空队列」只清了内部的 mini bar，外层命中区照旧留在屏幕下半部（实测
+        // 详情页 y≥1872 的交互元素会被它吞掉）。条件挂载让清空队列/冷启动无歌时这一层
+        // 彻底不存在。
+        // 副作用（已与维护者确认可接受）：清空队列后不再有「暂无播放 + 一键开播」入口
+        // （PlayerCard 里 hasSong=false 的那个播放键）。v1.3.1 计划以首页/库页空态替代。
+        if (currentSong != null) {
         Box(modifier = Modifier.fillMaxSize().zIndex(1f)) {
         PlayerCardOverlay(
             song = currentSong,
@@ -1194,6 +1203,7 @@ fun MainScreen(
             }
         )
         } // end PlayerCardOverlay wrapper
+        } // end if (currentSong != null) —— 死带修复 A：无播放时不挂载
 
         // 宽屏左侧常驻导航（Apple Music 式）：背景铺满整高(含状态栏后)，内容自行
         // 避让系统栏；底部 miniBar 仍整宽叠加，自然盖住侧栏空余的底部。
