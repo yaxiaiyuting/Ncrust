@@ -216,4 +216,13 @@ val jpMY = Strings(
     playlistSongsAdded = { count -> "$count 曲 追加" },
     playlistCreateFailed = "作成 失敗",
     playlistOpTooFrequent = "操作 過多",
+
+    // Add-to-playlist sheet
+    addToPlaylistTitle = "曲目 加",
+    playlistNew = "曲目 新規",
+    playlistNoOwned = "自 曲目 無し",
+    addToPlaylistSuccess = "曲目 追加",
+    addToPlaylistDuplicate = "既 曲目 在",
+    actionAddToPlaylistSheet = "曲目 加",
+    addToPlaylistFailed = "追加 失敗",
 )

@@ -216,4 +216,13 @@ val deDE = Strings(
     playlistSongsAdded = { count -> "$count Titel hinzugefügt" },
     playlistCreateFailed = "Erstellen fehlgeschlagen, später erneut versuchen",
     playlistOpTooFrequent = "Zu viele Aktionen, später erneut versuchen",
+
+    // Add-to-playlist sheet
+    addToPlaylistTitle = "Zur Playlist hinzufügen",
+    playlistNew = "Neue Playlist",
+    playlistNoOwned = "Noch keine eigenen Playlists",
+    addToPlaylistSuccess = "Zur Playlist hinzugefügt",
+    addToPlaylistDuplicate = "Bereits in der Playlist",
+    actionAddToPlaylistSheet = "Zur Playlist hinzufügen",
+    addToPlaylistFailed = "Hinzufügen fehlgeschlagen, später erneut versuchen",
 )

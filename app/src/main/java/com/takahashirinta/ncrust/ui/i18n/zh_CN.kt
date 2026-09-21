@@ -217,4 +217,13 @@ val zhCN = Strings(
     playlistSongsAdded = { count -> "已加入 $count 首" },
     playlistCreateFailed = "创建失败，请稍后重试",
     playlistOpTooFrequent = "操作过于频繁，请稍后再试",
+
+    // Add-to-playlist sheet
+    addToPlaylistTitle = "加入歌单",
+    playlistNew = "新建歌单",
+    playlistNoOwned = "还没有自建歌单",
+    addToPlaylistSuccess = "已加入歌单",
+    addToPlaylistDuplicate = "已在歌单中",
+    actionAddToPlaylistSheet = "加入歌单",
+    addToPlaylistFailed = "加入失败，请稍后重试",
 )

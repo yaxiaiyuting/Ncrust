@@ -217,4 +217,13 @@ val jpJP = Strings(
     playlistSongsAdded = { count -> "$count 曲を追加しました" },
     playlistCreateFailed = "作成に失敗しました。後でもう一度お試しください",
     playlistOpTooFrequent = "操作が多すぎます。しばらくしてからお試しください",
+
+    // Add-to-playlist sheet
+    addToPlaylistTitle = "プレイリストに追加",
+    playlistNew = "プレイリスト新規作成",
+    playlistNoOwned = "作成したプレイリストはまだありません",
+    addToPlaylistSuccess = "プレイリストに追加しました",
+    addToPlaylistDuplicate = "すでにプレイリストにあります",
+    actionAddToPlaylistSheet = "プレイリストに追加",
+    addToPlaylistFailed = "追加に失敗しました。後でもう一度お試しください",
 )

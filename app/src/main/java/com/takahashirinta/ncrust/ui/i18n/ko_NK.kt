@@ -216,4 +216,13 @@ scanConnecting = "평판에 연결중…",
     playlistSongsAdded = { count -> "${count}곡 추가됨" },
     playlistCreateFailed = "만들기 실패, 나중에 다시 시도하세요",
     playlistOpTooFrequent = "조작이 너무 잦습니다, 나중에 다시 시도하세요",
+
+    // Add-to-playlist sheet
+    addToPlaylistTitle = "노래목록에 추가",
+    playlistNew = "새 노래목록",
+    playlistNoOwned = "만든 노래목록이 없습니다",
+    addToPlaylistSuccess = "노래목록에 추가됨",
+    addToPlaylistDuplicate = "이미 노래목록에 있음",
+    actionAddToPlaylistSheet = "노래목록에 추가",
+    addToPlaylistFailed = "추가 실패, 나중에 다시 시도하세요",
 )

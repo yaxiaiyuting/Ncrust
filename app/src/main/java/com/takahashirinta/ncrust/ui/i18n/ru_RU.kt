@@ -216,4 +216,13 @@ val ruRU = Strings(
     playlistSongsAdded = { count -> "Добавлено треков: $count" },
     playlistCreateFailed = "Не удалось создать, попробуйте позже",
     playlistOpTooFrequent = "Слишком много действий, попробуйте позже",
+
+    // Add-to-playlist sheet
+    addToPlaylistTitle = "Добавить в плейлист",
+    playlistNew = "Новый плейлист",
+    playlistNoOwned = "Своих плейлистов пока нет",
+    addToPlaylistSuccess = "Добавлено в плейлист",
+    addToPlaylistDuplicate = "Уже в плейлисте",
+    actionAddToPlaylistSheet = "Добавить в плейлист",
+    addToPlaylistFailed = "Не удалось добавить, попробуйте позже",
 )

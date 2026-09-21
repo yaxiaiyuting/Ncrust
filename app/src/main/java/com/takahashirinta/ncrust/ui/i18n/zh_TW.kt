@@ -217,4 +217,13 @@ scanConnecting = "正在連接平板…",
     playlistSongsAdded = { count -> "已加入 $count 首" },
     playlistCreateFailed = "建立失敗，請稍後再試",
     playlistOpTooFrequent = "操作過於頻繁，請稍後再試",
+
+    // Add-to-playlist sheet
+    addToPlaylistTitle = "加入歌單",
+    playlistNew = "新增歌單",
+    playlistNoOwned = "還沒有自建歌單",
+    addToPlaylistSuccess = "已加入歌單",
+    addToPlaylistDuplicate = "已在歌單中",
+    actionAddToPlaylistSheet = "加入歌單",
+    addToPlaylistFailed = "加入失敗，請稍後再試",
 )

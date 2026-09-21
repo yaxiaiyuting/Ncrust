@@ -264,6 +264,17 @@ data class Strings(
     val playlistCreateFailed: String,
     /** 服务端 405 限流，冷却可能超过 10 分钟。 */
     val playlistOpTooFrequent: String,
+
+    // Add-to-playlist sheet (v1.3.0 · B3)
+    val addToPlaylistTitle: String,
+    val playlistNew: String,
+    val playlistNoOwned: String,
+    val addToPlaylistSuccess: String,
+    /** 502 = 歌曲已在歌单里，按幂等成功提示。 */
+    val addToPlaylistDuplicate: String,
+    val addToPlaylistFailed: String,
+    /** 歌曲长按菜单里的入口名（v1.3.0 · B3 起是真正的功能，此前只被当成队列按钮的 contentDescription）。 */
+    val actionAddToPlaylistSheet: String,
 )
 
 /** 字节数格式化为人类可读的 B/KB/MB/GB，供 cacheSizeLabel 复用。 */

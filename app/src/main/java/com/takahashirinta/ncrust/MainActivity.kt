@@ -33,6 +33,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LibraryMusic
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.PlaylistAdd
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.ui.viewinterop.AndroidView
@@ -70,6 +71,8 @@ import io.github.takahashirinta.kanesumi.structure.bottomnav.MetroBottomNav
 import io.github.takahashirinta.kanesumi.structure.bottomnav.MetroBottomNavItem
 import io.github.takahashirinta.kanesumi.structure.sidebar.MetroSidebar
 import io.github.takahashirinta.kanesumi.structure.sidebar.MetroSidebarItem
+import com.takahashirinta.ncrust.ui.components.AddToPlaylistResult
+import com.takahashirinta.ncrust.ui.components.AddToPlaylistSheet
 import com.takahashirinta.ncrust.ui.components.CreatePlaylistDialog
 import com.takahashirinta.ncrust.ui.components.PlaylistCreateOutcome
 import com.takahashirinta.ncrust.ui.components.SongMenuAction
@@ -394,12 +397,37 @@ fun MainScreen(
     val progress = remember { Animatable(0f) }
 
     var menuSong by remember { mutableStateOf<SongItem?>(null) }
+    var menuSongActions by remember { mutableStateOf<List<SongMenuAction>>(emptyList()) }
     // v1.3.0 · B2：保存为歌单。playlistSnapshot 是点按钮那一刻的队列快照。
     var showCreatePlaylist by remember { mutableStateOf(false) }
     var playlistSnapshot by remember { mutableStateOf<List<SongItem>>(emptyList()) }
-    var menuSongActions by remember { mutableStateOf<List<SongMenuAction>>(emptyList()) }
+    // v1.3.0 · B3：加入歌单。pendingAddSongs = 走「新建歌单」时创建成功后要补加的歌曲。
+    var showAddToPlaylist by remember { mutableStateOf(false) }
+    var pendingAddSongs by remember { mutableStateOf<List<Long>>(emptyList()) }
+
+    // 打开歌曲长按菜单的唯一入口：所有 Screen 共用，菜单关闭时把歌单相关状态一并清掉，
+    // 避免上一次的待加歌曲泄漏到下一次「加入歌单」。
+    fun showSongMenu(song: SongItem, actions: List<SongMenuAction>) {
+        menuSong = song
+        menuSongActions = actions
+        showAddToPlaylist = false
+        pendingAddSongs = emptyList()
+    }
+
 
     var playbackQueue by remember { mutableStateOf<List<SongItem>>(emptyList()) }
+
+    // B2/B3 共用：这次创建歌单后要往里放的歌曲 —— 队列入口用快照，加歌入口用待加列表。
+    // 待加列表里的歌可能不在当前队列（如搜索结果），退化成只带 id 的占位 SongItem，
+    // 因为这两个入口都只用 id 发请求。
+    fun pendingSongs(): List<SongItem> = if (pendingAddSongs.isNotEmpty()) {
+        val ids = pendingAddSongs.toSet()
+        playbackQueue.filter { it.id in ids }.ifEmpty {
+            pendingAddSongs.map { SongItem(it, "", null, null, null) }
+        }
+    } else {
+        playlistSnapshot
+    }
     var currentQueueIndex by remember { mutableIntStateOf(-1) }
     var songEnded by remember { mutableStateOf(false) }
     var songTransitioned by remember { mutableStateOf(false) }
@@ -1231,7 +1259,7 @@ fun MainScreen(
                             },
                             onSongInsertNext = { insertNext(it) },
                             onSongAppendToQueue = { appendToQueue(it) },
-                            onShowSongMenu = { song, actions -> menuSong = song; menuSongActions = actions },
+                            onShowSongMenu = { song, actions -> showSongMenu(song, actions) },
                             // 主页「我的电台」入口: 之前一直没传, HomeScreen 的 FM 卡因此永不渲染
                             onPlayFm = { startFm() }
                         )
@@ -1280,7 +1308,7 @@ fun MainScreen(
                             },
                             onSongInsertNext = { insertNext(it) },
                             onSongAppendToQueue = { appendToQueue(it) },
-                            onShowSongMenu = { song, actions -> menuSong = song; menuSongActions = actions },
+                            onShowSongMenu = { song, actions -> showSongMenu(song, actions) },
                             refreshTrigger = cookieRefreshTrigger
                         )
 
@@ -1292,7 +1320,7 @@ fun MainScreen(
                             onPlaylistClick = { playlistId -> navController.navigate(NavRoutes.playlist(playlistId)) },
                             onInsertNext = { insertNext(it) },
                             onAppendToQueue = { appendToQueue(it) },
-                            onShowSongMenu = { song, actions -> menuSong = song; menuSongActions = actions },
+                            onShowSongMenu = { song, actions -> showSongMenu(song, actions) },
                             onAlbumBatch = { albumId, action ->
                                 coroutineScope.launch {
                                     try {
@@ -1360,7 +1388,7 @@ fun MainScreen(
                     onInsertNext = { insertAllNext(it) },
                     onSongInsertNext = { insertNext(it) },
                     onSongAppendToQueue = { appendToQueue(it) },
-                    onShowSongMenu = { song, actions -> menuSong = song; menuSongActions = actions },
+                    onShowSongMenu = { song, actions -> showSongMenu(song, actions) },
                     startDestination = NavRoutes.HOME
                 )
             }
@@ -1405,13 +1433,30 @@ fun MainScreen(
             }
         }
 
+        // B3：把歌曲加入某个歌单。toastText 在组合期取好（suspend 上下文不能调 @Composable）。
+        suspend fun addSongsToPlaylist(playlistId: Long, songIds: List<Long>, toastText: () -> String): AddToPlaylistResult {
+            val count = PlaylistEditApi.addSongs(playlistId, songIds)
+            val result = if (count != null) AddToPlaylistResult.SUCCESS else AddToPlaylistResult.FAILED
+            Toast.makeText(context, toastText(), Toast.LENGTH_SHORT).show()
+            return result
+        }
+
         menuSong?.let { song ->
             Box(Modifier.fillMaxSize().zIndex(2f)) {
                 SongMenuSheet(
                     song = song,
                     // 统一在这里追加"转到歌手/转到专辑": 所有长按菜单(首页/歌单/专辑/
                     // 歌手/收藏/搜索)自动获得回调入口, 各 Screen 无需感知导航
-                    actions = menuSongActions + listOf(
+                    actions = listOf(
+                        // B3：加入歌单。放在最前面——它是本版本新增的主操作。
+                        SongMenuAction(
+                            Icons.Default.PlaylistAdd,
+                            LocalStrings.current.actionAddToPlaylistSheet,
+                        ) {
+                            pendingAddSongs = listOf(song.id)
+                            showAddToPlaylist = true
+                        },
+                    ) + menuSongActions + listOf(
                         SongMenuAction(Icons.Default.Person, LocalStrings.current.actionGoToArtist) {
                             resolveAndNavigate(song, toArtist = true)
                         },
@@ -1431,7 +1476,7 @@ fun MainScreen(
             val createStrings = LocalStrings.current
             CreatePlaylistDialog(
                 defaultName = defaultPlaylistName(),
-                songCount = playlistSnapshot.size,
+                songCount = pendingSongs().size,
                 onDismiss = { showCreatePlaylist = false },
                 onCreate = { name, privacy ->
                     if (CookieManager.getCookie(context).isNullOrBlank()) {
@@ -1447,19 +1492,12 @@ fun MainScreen(
                                     PlaylistCreateOutcome.FAILED
                                 }
                             }
-                            playlistSnapshot.isNotEmpty() -> {
-                                val ids = playlistSnapshot.map { it.id }
-                                val count = PlaylistEditApi.addSongs(playlistId, ids)
-                                Toast.makeText(
-                                    context,
-                                    if (count != null) {
-                                        createStrings.playlistSongsAdded(ids.distinct().size)
-                                    } else {
-                                        createStrings.playlistCreateFailed
-                                    },
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                                if (count != null) {
+                            pendingSongs().isNotEmpty() -> {
+                                val ids = pendingSongs().map { it.id }
+                                val outcome = addSongsToPlaylist(playlistId, ids) {
+                                    createStrings.playlistSongsAdded(ids.distinct().size)
+                                }
+                                if (outcome == AddToPlaylistResult.SUCCESS) {
                                     PlaylistCreateOutcome.SUCCESS
                                 } else {
                                     PlaylistCreateOutcome.CREATED_SONGS_FAILED
@@ -1475,6 +1513,24 @@ fun MainScreen(
                             }
                         }
                     }
+                }
+            )
+        }
+
+        // v1.3.0 · B3：加入歌单选择列表。成功后由 sheet 自行关闭（它才知道本次点了哪个歌单）。
+        if (showAddToPlaylist) {
+            val sheetStrings = LocalStrings.current
+            AddToPlaylistSheet(
+                songCount = pendingAddSongs.size,
+                onDismiss = { showAddToPlaylist = false },
+                onPick = { playlistId ->
+                    addSongsToPlaylist(playlistId, pendingAddSongs) {
+                        sheetStrings.addToPlaylistSuccess
+                    }
+                },
+                onCreateNew = {
+                    showAddToPlaylist = false
+                    showCreatePlaylist = true
                 }
             )
         }

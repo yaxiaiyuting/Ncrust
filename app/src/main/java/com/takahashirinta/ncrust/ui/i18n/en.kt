@@ -216,4 +216,13 @@ val en = Strings(
     playlistSongsAdded = { count -> "Added $count song(s)" },
     playlistCreateFailed = "Create failed, try again later",
     playlistOpTooFrequent = "Too many operations, try again later",
+
+    // Add-to-playlist sheet
+    addToPlaylistTitle = "Add to Playlist",
+    playlistNew = "New Playlist",
+    playlistNoOwned = "No playlists yet",
+    addToPlaylistSuccess = "Added to playlist",
+    addToPlaylistDuplicate = "Already in playlist",
+    actionAddToPlaylistSheet = "Add to Playlist",
+    addToPlaylistFailed = "Failed to add, try again later",
 )
