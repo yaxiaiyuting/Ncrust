@@ -63,6 +63,12 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+    // v1.3.0 · B1：单元测试里 android.util.Log 等框架方法是抛异常的桩，会让「走日志的纯逻辑」
+    // 直接 RuntimeException（本次踩到：parseWriteResponse 的空 body 分支）。置 true 后桩方法
+    // 返回默认值，测的是逻辑而不是 Android 运行时。仅影响 testDebugUnitTest，不影响 APK。
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+    }
     buildFeatures {
         compose = true
         // 让 AboutScreen 通过 BuildConfig.VERSION_NAME 动态显示版本号，
@@ -143,6 +149,11 @@ dependencies {
     implementation("androidx.profileinstaller:profileinstaller:1.4.0")
 
     testImplementation("junit:junit:4.13.2")
+    // v1.3.0 · B1：纯 JVM 单测要真正跑 JSON 解析。Android SDK 里 org.json 是抛异常的桩
+    // （unit test 里 new JSONObject(...) 直接 throw），所以测试 classpath 补一份实现。
+    // 许可证：Public Domain（JSON.org 原文 "The Software shall be used for Good, not Evil."），
+    // 仅 testImplementation，不进 APK，见 THIRD-PARTY-LICENSES.md R4。
+    testImplementation("org.json:json:20231013")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 }

@@ -104,7 +104,9 @@ object PlaylistApi {
                     trackCount = item.optInt("trackCount"),
                     creatorUserId = item.optJSONObject("creator")?.optLong("userId") ?: 0,
                     specialType = item.optInt("specialType"),
-                    privacy = item.optInt("privacy")
+                    privacy = item.optInt("privacy"),
+                    subscribed = item.optBoolean("subscribed", false),
+                    description = item.optString("description")
                 )
             )
         }
@@ -239,8 +241,19 @@ object PlaylistApi {
         val trackCount: Int,
         val creatorUserId: Long,
         val specialType: Int,
-        val privacy: Int
-    )
+        val privacy: Int,
+        /** 是否「我收藏的」（他人歌单）。判归属见 [isOwnedBy]。 */
+        val subscribed: Boolean = false,
+        val description: String = ""
+    ) {
+        /**
+         * 是否本人自建（可编辑/删除）。
+         *
+         * 实测（2026-09）：收藏的歌单里 userId / creator.userId 都是**原作者**，
+         * 所以不能用 userId 判归属 —— 必须 creator.userId == 我 **且** 未订阅。
+         */
+        fun isOwnedBy(uid: Long): Boolean = !subscribed && creatorUserId == uid
+    }
 
     data class UserPlaylistResult(
         val playlists: List<PlaylistInfo>,

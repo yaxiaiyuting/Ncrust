@@ -92,6 +92,14 @@ Media3 由 **1.4.1 升级为 1.5.0**（exoplayer / session / ui 三者保持一�
 - **为什么目前不构成问题**：JUnit 只进入单元测试 classpath，**不在** `debugRuntimeClasspath` 中，不会被编译进 APK，因此不随本 Fork 分发，GPLv3 的分发义务不触发。
 - 建议（可选）：若要彻底消除该风险，把单元测试从 JUnit4 迁到 JUnit5（EPL-2.0，兼容 GPLv3）或改用 Apache-2.0 的测试框架。**当前不必处理。**
 
+### R4 — org.json:json（Public Domain，测试专用，不阻塞）
+
+- 坐标：`org.json:json:20231013`，v1.3.0 · B1 起声明为 **`testImplementation`**。
+- 为什么需要：Android SDK 里的 `org.json` 在 JVM 单元测试中是抛异常的桩类，歌单写操作的
+  「业务码 → 结果」映射（200/502/405/403/301…）必须真跑解析才能回归。
+- 许可证：Public Domain（JSON.org 原始声明）。与 GPLv3 无冲突，且只在测试 classpath，
+  **不进 APK、不随分发**。
+
 ### R2 — androidTest / Espresso 依赖（Apache-2.0，不阻塞）
 
 `androidx.test.ext:junit:1.1.5`、`androidx.test.espresso:espresso-core:3.5.1`、`androidx.benchmark:benchmark-macro-junit4:1.4.1` 均为 Apache-2.0，且只在 androidTest/benchmark 中，不进 APK。
