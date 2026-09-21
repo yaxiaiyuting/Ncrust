@@ -90,10 +90,20 @@ fun LyricsView(
     val timestamps = remember(lyrics) { LongArray(lyrics.size) { lyrics[it].timeMs } }
 
     // 2Hz 采样到达时重置外推锚点(首帧前锚点已就位,避免一帧闪到末尾)。
+    // v1.4.1：同时把"位置流与显示位置脱节"的情况拉回来 —— 旧实现只在
+    // isPlaying/isVisible/timestamps 变化时同步 displayPosition，于是
+    // **暂停态点进度条跳到别处时歌词纹丝不动**，要按一下播放（或暂停）才跟上。
+    // 阈值 1.5s：正常播放时 displayPosition 只会比采样超前 ≤1 个 tick（500ms），
+    // 超过就说明发生了 seek（前进或后退），必须立刻对齐，否则前进跳转要等
+    // 下一行边界、后退跳转则永远追不上（外推循环只写更大的值）。
     LaunchedEffect(Unit) {
         snapshotFlow { positionState.value }.collect { pos ->
             anchor.anchorPosMs = pos
             anchor.anchorNanos = System.nanoTime()
+            val drift = kotlin.math.abs(pos - displayPosition.longValue)
+            if (!isPlaying || drift > 1_500L) {
+                displayPosition.longValue = pos
+            }
         }
     }
 
