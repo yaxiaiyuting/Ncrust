@@ -27,7 +27,9 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
@@ -87,6 +89,17 @@ class PlaybackService : MediaLibraryService() {
     // 则丢弃结果 —— 否则慢加载的上一首封面会覆盖新歌封面, 任务栏/锁屏
     // 显示上一首的图(切歌封面错位)。
     private var artworkGeneration = 0
+
+    // v1.2.0 · B：暂停空闲后释放封面位图。3GB 机型上 currentArtworkBitmap +
+    // pendingNextArtworkBitmap 两张全尺寸位图（各 1–4MB）叠加 B3 背景图后内存吃紧。
+    // 系统已持有"已 post 出去的那条通知"里位图的独立副本，因此这里丢弃引用不会让
+    // 已显示的通知变空；恢复播放时按 currentArtworkUrl 重新加载即可。
+    private val artworkIdleHandler = Handler(Looper.getMainLooper())
+    private var artworkReleaseRunnable: Runnable? = null
+    private val ARTWORK_IDLE_RELEASE_MS = 45_000L
+
+    /** 通知栏 / 锁屏封面只用到几百像素：统一降到这个边长，两张位图内存约为原来的 1/4。 */
+    private val ARTWORK_MAX_PX = 512
 
     companion object {
         // 车机浏览树节点 id。
@@ -260,6 +273,8 @@ class PlaybackService : MediaLibraryService() {
                 updatePlaybackState()
             }
             override fun onIsPlayingChanged(isPlaying: Boolean) {
+                // B：暂停即预约释放封面位图，恢复播放则取消释放并补回封面。
+                if (isPlaying) onPlaybackActive() else scheduleArtworkIdleRelease()
                 onIsPlayingChanged?.invoke(isPlaying)
                 PlaybackStateManager.updatePlayingState(this@PlaybackService, isPlaying)
                 updatePlaybackState()
@@ -534,6 +549,45 @@ class PlaybackService : MediaLibraryService() {
      * 无缝 preload_next 时调用, 切换瞬间直接应用, 消除任务栏封面过渡窗口。
      * 用独立的 preload 代数做过期校验(不影响当前歌的 loadArtwork 代数)。
      */
+    /** 把封面缩到通知栏够用的边长；原图不超过上限则原样返回（Palette 也吃这张）。 */
+    private fun downscaleArtwork(source: Bitmap): Bitmap {
+        val maxSide = maxOf(source.width, source.height)
+        if (maxSide <= ARTWORK_MAX_PX) return source
+        val ratio = ARTWORK_MAX_PX.toFloat() / maxSide
+        val w = (source.width * ratio).toInt().coerceAtLeast(1)
+        val h = (source.height * ratio).toInt().coerceAtLeast(1)
+        return Bitmap.createScaledBitmap(source, w, h, true)
+    }
+
+    /**
+     * 暂停 N 秒后释放两张封面位图：预载位图此刻毫无价值，当前封面可按 URL 重载。
+     * 刻意**不**重发通知 —— 系统那份副本还在，已显示的通知不会变空。
+     */
+    private fun scheduleArtworkIdleRelease() {
+        cancelArtworkIdleRelease()
+        val runnable = Runnable {
+            artworkReleaseRunnable = null
+            pendingNextArtworkBitmap = null
+            currentArtworkBitmap = null
+            // 位图引用比较用的快照一并清掉，否则重载回来的新实例会被当成"同一张图"而不重发。
+            lastMetadataBitmap = null
+            Log.i("PlaybackService", "idle release: dropped artwork bitmaps")
+        }
+        artworkReleaseRunnable = runnable
+        artworkIdleHandler.postDelayed(runnable, ARTWORK_IDLE_RELEASE_MS)
+    }
+
+    private fun cancelArtworkIdleRelease() {
+        artworkReleaseRunnable?.let { artworkIdleHandler.removeCallbacks(it) }
+        artworkReleaseRunnable = null
+    }
+
+    /** 播放恢复：取消释放，并按 URL 补回已被释放的封面。 */
+    private fun onPlaybackActive() {
+        cancelArtworkIdleRelease()
+        if (currentArtworkBitmap == null) currentArtworkUrl?.let { loadArtwork(it) }
+    }
+
     private fun preloadArtwork(url: String) {
         val gen = ++artworkPreloadGeneration
         scope.launch(Dispatchers.IO) {
@@ -546,8 +600,9 @@ class PlaybackService : MediaLibraryService() {
                 )
                 if (result is SuccessResult) {
                     if (gen != artworkPreloadGeneration) return@launch
-                    pendingNextArtworkBitmap =
+                    pendingNextArtworkBitmap = downscaleArtwork(
                         (result.drawable as BitmapDrawable).bitmap.copy(Bitmap.Config.ARGB_8888, false)
+                    )
                 }
             } catch (e: Exception) {
                 Log.e("PlaybackService", "Preload artwork failed", e)
@@ -574,7 +629,8 @@ class PlaybackService : MediaLibraryService() {
                 if (gen != artworkGeneration) return@launch
                 if (result is SuccessResult) {
                     val srcBitmap = (result.drawable as BitmapDrawable).bitmap
-                    val bitmap = srcBitmap.copy(Bitmap.Config.ARGB_8888, false)
+                    // B：先拷成 ARGB_8888（Palette 读不了硬件位图）再降到通知栏够用的尺寸。
+                    val bitmap = downscaleArtwork(srcBitmap.copy(Bitmap.Config.ARGB_8888, false))
                     currentArtworkBitmap = bitmap
                     // 立即重发 metadata(不等 500ms 心跳): 新封面尽快上任务栏
                     scope.launch(Dispatchers.Main) {
@@ -768,6 +824,7 @@ class PlaybackService : MediaLibraryService() {
         instance = null
         isServiceStarted = false
         progressJob?.cancel()
+        cancelArtworkIdleRelease()
         // Do NOT null the companion callbacks here — the ViewModel registers them once and
         // they must survive a service stop/restart cycle (e.g. stopSelf then play again).
         // ViewModel.onCleared() is responsible for clearing them when the ViewModel dies.
