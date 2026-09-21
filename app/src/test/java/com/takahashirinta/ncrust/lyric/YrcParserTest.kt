@@ -104,6 +104,31 @@ class YrcParserTest {
     }
 
     @Test
+    fun `对齐——yrc 词文本带首尾空格时用 trim 后的词定位（S6 真机踩到的坑）`() {
+        // 真实样本：yrc 把空格粘在前一段尾部，LRC 那份是 trim 过的。
+        // 修复前《修炼爱情》70 行只挂上 47 行，就是栽在这种行上。
+        val yrc = "[0,1000](0,300,0) 作词 (300,300,0): (600,400,0)易家扬"
+        val lrc = listOf(LrcLine(0, "作词 : 易家扬"))
+        val merged = YrcParser.attachWords(lrc, yrc)
+        val w = merged[0].words
+        assertEquals(3, w.size)
+        assertEquals(listOf("作词", ":", "易家扬"), w.map { it.text })
+        assertEquals(listOf("作词", ":", "易家扬"),
+            w.map { "作词 : 易家扬".substring(it.charStart, it.charEndExclusive) })
+        assertEquals(0, w[0].charStart)
+        assertEquals(8, w[2].charEndExclusive) // 作词 : 易家扬 共 8 字
+    }
+
+    @Test
+    fun `对齐——纯空白的词段直接跳过，不影响其余词的区间`() {
+        val yrc = "[0,1000](0,300,0)独 (300,300,0)不(600,400,0)同"
+        val lrc = listOf(LrcLine(0, "独 不同"))
+        val w = YrcParser.attachWords(lrc, yrc)[0].words
+        assertEquals(listOf("独", "不", "同"), w.map { it.text })
+        assertTrue(w.zipWithNext().all { (a, b) -> a.charEndExclusive <= b.charStart })
+    }
+
+    @Test
     fun `对齐——某个词在 lrc 文本里找不到时该行放弃逐字（不给错位高亮）`() {
         // lrc 文本里没有「离开」，mapRanges 会在第 4 个词上失败
         val lrc = listOf(LrcLine(24898, "听见 冬天的走开"))

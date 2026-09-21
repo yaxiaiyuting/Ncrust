@@ -555,6 +555,11 @@ To add a locale: create `xx_XX.kt` with a `Strings(...)` and add a `LanguagePres
 
 所以 [YrcParser](app/src/main/java/com/takahashirinta/ncrust/lyric/YrcParser.kt) 按 **行序**对齐：行数必须相等 + 时间漂移抽样达标（`MAX_LINE_DRIFT_MS=2000`、`MIN_ALIGN_RATIO=0.8`），否则整首放弃逐字。
 
+**S6 真机踩到的第二个坑（v1.5.0 修复）**：yrc 把空格**粘在前一段尾部**（`(0,1000,0) 作词 `、
+`(1000,1000,0): `），LRC 那份是 trim 过的（`作词 : 易家扬`）。定位时必须用 `w.text.trim()`，
+否则这些词必然 indexOf 失败 → 整行放弃逐字。实测《修炼爱情》因此只挂上 **47/70** 行，
+改成 trim 后同一首歌 **70/70**。纯空白段直接跳过（它没有自己的字符区间，高亮由前一段覆盖）。
+
 文本也要重新映射：yrc 拼出来的是「词的原始拼接」，LRC 那份是「补回空格的美化版」
 （`听见冬天的离开` vs `听见 冬天的离开`）。**展示文本仍用 LRC 的**（与 v1.4.1 完全一致），词的字符区间用
 「游标 + indexOf」映射到 LRC 文本上；任何一个词定位失败就放弃该行的逐字 —— 宁可没有逐字，也不给错位高亮。

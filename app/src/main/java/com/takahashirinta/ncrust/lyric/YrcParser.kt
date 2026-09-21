@@ -162,7 +162,12 @@ object YrcParser {
         val out = ArrayList<LrcWord>(words.size)
         var cursor = 0
         for (w in words) {
-            val t = w.text
+            // S6 真机踩到的坑：yrc 把空格**粘在前一段尾部**（`(0,1000,0) 作词 `、
+            // `(1000,1000,0): `），而 LRC 那份是 trim 过的（`作词 : 易家扬`）。
+            // 直接拿 `w.text` 去 indexOf 会带上首尾空格 → 找不到 → 整行放弃逐字。
+            // 《修炼爱情》实测因此只挂上 47/70 行；改用 trim 后的词去定位即可。
+            // 纯空白段（trim 后为空）直接跳过：它没有自己的字符区间，高亮由前一段覆盖。
+            val t = w.text.trim()
             if (t.isEmpty()) continue
             val idx = text.indexOf(t, cursor)
             if (idx < 0) return null
