@@ -18,6 +18,21 @@
  *     现在 sky 归一化成 exhigh 参与比较，并用 capFromAlias 标记"上限来自别名"，
  *     避免归一化后被误判成「无权限」。展示档位同时改为按**请求档位**封顶，
  *     未知标签不会再被推成杜比/母带。
+ *
+ * 判定依据（v1.3.0 · B4 实测确认，**改判定前必读，顺序反了就会误报**）：
+ *   实测档位 measuredIdx 由 br/type 推算；capIdx 是该曲上限（privilege.maxBrLevel，
+ *   别名先归一化）。当 measuredIdx < requestedIdx（实际文件低于请求档位）时，看上限：
+ *     ① capIdx > measuredIdx → 「无权限」(NO_ENTITLEMENT)
+ *        服务端明明给得出比现在更高的一档，却没给 —— 是账号/版权没放行。
+ *        例：请求 lossless、只给 exhigh 320k mp3，而 cap=hires。
+ *     ② capIdx == measuredIdx → 「该曲无此档位」(SONG_LACKS_TIER)
+ *        实测这一档就是该曲的天花板，再往上没有文件可给。
+ *        例：cap=sky 的曲子归一化后 = exhigh = 实测（sky 没有独立音频文件）。
+ *   注意：**不是**"capIdx 与 requestedIdx 谁高"决定二者 —— cap 介于 measured 与
+ *   requested 之间时（如请求 hires、实测 exhigh、cap=lossless），仍是①「无权限」。
+ *   capFromAlias 是这条规则的例外保护：上限来自别名（sky）时不能按①断言"服务端没给"，
+ *   因为该标记只代表"没有更高档位"，不代表账号拿到了 exhigh 以上的权限。
+ *   回归用例见 app/src/test/.../QualityAssessmentTest.kt（cap=hires 对照 cap=sky）。
  */
 
 package com.takahashirinta.ncrust.player
