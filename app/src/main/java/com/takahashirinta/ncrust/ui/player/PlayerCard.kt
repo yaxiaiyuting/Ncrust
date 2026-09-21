@@ -273,6 +273,14 @@ fun PlayerCard(
         )
     }
 
+    // 控制栏收起的显式切换（把手上点一下即可），与拖拽共用同一条动画轴。
+    fun toggleControlsCollapse() {
+        coroutineScope.launch {
+            val target = if (controlsCollapse.value > 0.5f) 0f else 1f
+            controlsCollapse.animateTo(target, tween(260, easing = FastOutSlowInEasing))
+        }
+    }
+
     // ---- 歌词可达性驱动的「大封面 ↔ 歌词视图」自动切换 ----
     // - 切歌瞬间: 旧歌词已被 ViewModel 清空, 直接落大封面, 绝不残留上一首歌词。
     // - 歌词就绪(lyricsReady): 自动切回歌词视图（Apple Music 语义）。
@@ -909,6 +917,30 @@ fun PlayerCard(
                             }
                     ) {
                         playerControls()
+                    }
+                    // 控制栏把手（v1.4.2）：常驻在内容区最底部，**收起态也可见**。
+                    // 用户反馈：「划下去就划不上来了」—— 收起后歌词面板占满全屏，歌词自己的
+                    // 点击/滚动都在抢手势，只靠"右下角悬浮键下滑"恢复既难发现也难命中。
+                    // 这里给一个明确的小横条：向上拖=收起、向下拖=恢复、点一下=切换。
+                    // 它挂在 Column 里（在最底部、系统栏之上），控制栏收起时不会被一起带走。
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(24.dp)
+                            .then(controlsCollapseDrag())
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null
+                            ) { toggleControlsCollapse() },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(width = 40.dp, height = 3.dp)
+                                .background(
+                                    LocalMetroColors.current.onSurfaceVariant.copy(alpha = 0.55f)
+                                )
+                        )
                     }
                 }
             }
