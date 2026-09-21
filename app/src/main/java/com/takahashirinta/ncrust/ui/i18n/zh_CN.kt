@@ -41,6 +41,7 @@ val zhCN = Strings(
     gaplessDescription = "提前加载下一首，消除曲间空白",
     lyricsTranslationLabel = "歌词翻译",
     lyricsWordByWordLabel = "逐字歌词",
+    controlsHandleLabel = "控制栏把手：向上拖收起、向下拖恢复、点按切换",
     themeSectionTitle = "主题色",
     themeModeSectionTitle = "主题模式",
     themeModeSystem = "跟随系统",

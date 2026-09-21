@@ -41,6 +41,7 @@ val deDE = Strings(
     gaplessDescription = "Nächsten Titel vorladen, um Lücken zu vermeiden",
     lyricsTranslationLabel = "Liedtext-Übersetzung",
     lyricsWordByWordLabel = "Wort-für-Wort-Text",
+    controlsHandleLabel = "Bedienleiste-Griff: nach oben ziehen zum Ausblenden, nach unten zum Einblenden, tippen zum Umschalten",
     themeSectionTitle = "Farbschema",
     themeModeSectionTitle = "Erscheinungsbild",
     themeModeSystem = "System",

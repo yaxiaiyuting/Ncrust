@@ -41,6 +41,7 @@ val zhTW = Strings(
     gaplessDescription = "預載下曲，去其隙縫",
     lyricsTranslationLabel = "歌詞翻譯",
     lyricsWordByWordLabel = "逐字歌詞",
+    controlsHandleLabel = "控制列把手：向上拖收合、向下拖還原、點按切換",
     themeSectionTitle = "裳色",
     themeModeSectionTitle = "主題模式",
     themeModeSystem = "跟隨系統",

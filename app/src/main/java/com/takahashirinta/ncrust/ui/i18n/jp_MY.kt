@@ -41,6 +41,7 @@ val jpMY = Strings(
     gaplessDescription = "次 予読 隙 無",
     lyricsTranslationLabel = "歌詞 翻訳",
     lyricsWordByWordLabel = "逐字 歌詞",
+    controlsHandleLabel = "控制欄 把手：上へ拖 收納、下へ拖 復元、點按 切換",
     themeSectionTitle = "主題色",
     themeModeSectionTitle = "主題 様",
     themeModeSystem = "系統 隨",

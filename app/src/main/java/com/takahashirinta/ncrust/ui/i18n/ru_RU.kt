@@ -41,6 +41,7 @@ val ruRU = Strings(
     gaplessDescription = "Предзагрузка следующего трека для устранения пауз",
     lyricsTranslationLabel = "Перевод текста",
     lyricsWordByWordLabel = "Пословный текст",
+    controlsHandleLabel = "Ручка панели управления: вверх — скрыть, вниз — вернуть, нажатие — переключить",
     themeSectionTitle = "Цветовая тема",
     themeModeSectionTitle = "Режим темы",
     themeModeSystem = "Системный",

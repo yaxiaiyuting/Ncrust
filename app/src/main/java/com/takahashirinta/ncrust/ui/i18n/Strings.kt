@@ -59,6 +59,9 @@ data class Strings(
     val lyricsTranslationLabel: String,
     // v1.5.0 · B：逐字歌词开关。只在歌曲真的带 yrc 逐字数据时才有区别。
     val lyricsWordByWordLabel: String,
+    // v1.5.0 · C2：控制栏把手（全屏播放器底部那条 40×3dp 小横条）的无障碍描述。
+    // 它此前对 TalkBack 完全不可见 —— 视力障碍用户收起控制栏后再也拿不回来。
+    val controlsHandleLabel: String,
     val themeSectionTitle: String,
     val themeModeSectionTitle: String,
     val themeModeSystem: String,

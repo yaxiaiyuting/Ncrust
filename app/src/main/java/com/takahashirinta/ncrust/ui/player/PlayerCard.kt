@@ -61,6 +61,8 @@ import com.takahashirinta.ncrust.library.LibraryManager
 import com.takahashirinta.ncrust.network.SongItem
 import com.takahashirinta.ncrust.network.CoverUrls
 import com.takahashirinta.ncrust.QueueModes
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import com.takahashirinta.ncrust.ui.i18n.LocalStrings
 import com.takahashirinta.ncrust.ui.viewmodel.PlayerViewModel
 import io.github.takahashirinta.kanesumi.anim.sokuou.SokuouTweens
@@ -929,24 +931,38 @@ fun PlayerCard(
                     // 点击/滚动都在抢手势，只靠"右下角悬浮键下滑"恢复既难发现也难命中。
                     // 这里给一个明确的小横条：向上拖=收起、向下拖=恢复、点一下=切换。
                     // 它挂在 Column 里（在最底部、系统栏之上），控制栏收起时不会被一起带走。
+                    // 触摸契约（v1.5.0 · C2）：视觉 40×3dp 不变；
+                    //  - 拖拽带 = 全宽 × 24dp（外层）—— 保持 v1.4.2 的手感，宽度**故意不缩到 48dp**：
+                    //    1440px 宽的 S6 上 48dp 只有 192px，用户抱怨过「划下去就划不上来」；
+                    //  - 点按命中盒 = 居中 48×24dp（内层显式声明）—— 满足 48dp 最小触摸目标，
+                    //    并承载无障碍语义。两者取并集，命中区只增不减。
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(24.dp)
-                            .then(controlsCollapseDrag())
-                            .clickable(
-                                interactionSource = remember { MutableInteractionSource() },
-                                indication = null
-                            ) { toggleControlsCollapse() },
+                            .then(controlsCollapseDrag()),
                         contentAlignment = Alignment.Center
                     ) {
                         Box(
                             modifier = Modifier
-                                .size(width = 40.dp, height = 3.dp)
-                                .background(
-                                    LocalMetroColors.current.onSurfaceVariant.copy(alpha = 0.55f)
-                                )
-                        )
+                                .size(width = 48.dp, height = 24.dp)
+                                .clickable(
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    indication = null
+                                ) { toggleControlsCollapse() }
+                                // 此前把手对无障碍服务完全不可见：TalkBack 用户把控制栏收起后
+                                // 没有任何办法把它拿回来。
+                                .semantics { contentDescription = strings.controlsHandleLabel },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(width = 40.dp, height = 3.dp)
+                                    .background(
+                                        LocalMetroColors.current.onSurfaceVariant.copy(alpha = 0.55f)
+                                    )
+                            )
+                        }
                     }
                 }
             }

@@ -41,6 +41,7 @@ val en = Strings(
     gaplessDescription = "Preload next track to eliminate gaps",
     lyricsTranslationLabel = "Lyrics Translation",
     lyricsWordByWordLabel = "Word-by-Word Lyrics",
+    controlsHandleLabel = "Controls handle: drag up to hide, drag down to restore, tap to toggle",
     themeSectionTitle = "Theme Color",
     themeModeSectionTitle = "Theme Mode",
     themeModeSystem = "System",

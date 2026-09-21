@@ -41,6 +41,7 @@ val koNK = Strings(
     gaplessDescription = "다음곡 미리불러와 틈 없애기",
     lyricsTranslationLabel = "가사 번역",
     lyricsWordByWordLabel = "글자별 가사",
+    controlsHandleLabel = "제어줄 손잡이: 위로 끌면 숨김, 아래로 끌면 복원, 누르면 전환",
     themeSectionTitle = "주제 색상",
     themeModeSectionTitle = "주제 방식",
     themeModeSystem = "체계 따르기",
