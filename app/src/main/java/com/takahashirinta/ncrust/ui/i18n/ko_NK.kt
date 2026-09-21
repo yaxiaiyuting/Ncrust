@@ -40,6 +40,7 @@ val koNK = Strings(
     gaplessSectionTitle = "틈 없이 이어 재생",
     gaplessDescription = "다음곡 미리불러와 틈 없애기",
     lyricsTranslationLabel = "가사 번역",
+    lyricsWordByWordLabel = "글자별 가사",
     themeSectionTitle = "주제 색상",
     themeModeSectionTitle = "주제 방식",
     themeModeSystem = "체계 따르기",

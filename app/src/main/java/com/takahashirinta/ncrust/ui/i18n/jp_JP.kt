@@ -40,6 +40,7 @@ val jpJP = Strings(
     gaplessSectionTitle = "ギャップレス再生",
     gaplessDescription = "次の曲を先読みして途切れをなくす",
     lyricsTranslationLabel = "歌詞翻訳",
+    lyricsWordByWordLabel = "一文字ずつ歌詞",
     themeSectionTitle = "テーマカラー",
     themeModeSectionTitle = "テーマモード",
     themeModeSystem = "システム",

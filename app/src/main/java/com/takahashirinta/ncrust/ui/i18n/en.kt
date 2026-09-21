@@ -40,6 +40,7 @@ val en = Strings(
     gaplessSectionTitle = "Gapless Playback",
     gaplessDescription = "Preload next track to eliminate gaps",
     lyricsTranslationLabel = "Lyrics Translation",
+    lyricsWordByWordLabel = "Word-by-Word Lyrics",
     themeSectionTitle = "Theme Color",
     themeModeSectionTitle = "Theme Mode",
     themeModeSystem = "System",

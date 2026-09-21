@@ -442,6 +442,74 @@ To add a locale: create `xx_XX.kt` with a `Strings(...)` and add a `LanguagePres
 **S6 上的复现方式**（S6 已 root，Magisk）：改 prefs 前先 `su -c cp` 备份 `ncrust_settings.xml`，
 `am force-stop` 之后再写入，冷启后读回；登录态（`ncrust_prefs.xml` 的 `user_cookie`）全程不动。
 
+### 歌词增强：逐字（yrc）+ 翻译（任务 B）
+
+#### 实测结论（2026-09，真实响应，非文档推断）
+
+| 项 | 结论 |
+|---|---|
+| 端点 | `POST /api/song/lyric`（REST，应用现有路径）。**`/eapi/song/lyric` 也能用，但必须做 `/eapi/`→`/api/` 的签名路径重写**；`/eapi/song/lyric/v1` 会混入富文本 JSON 格式，不要用 |
+| 逐字字段 | `yrc`，格式 `[行起始ms,行时长ms](词起始ms,词时长ms,0)词文本...`。**词起始是绝对毫秒**（首词=行首、末词+时长=行尾，实测首尾都对得上）；括号里第三个数字恒为 0 无语义 |
+| 参数语义 | 是**开关**：传 `lv`→lrc、`kv`→klyric、`tv`→tlyric、`rv`→romalrc、**`yv`→yrc + ytlrc + yromalrc 三个一起**。单独传 `ytv`/`yrv` 什么都不返回；不传 `yv` 时响应里**连 `yrc` 这个 key 都不存在** |
+| `ytlrc` 不是逐字 | 它是**行级** LRC（`[MM:SS.mmm]整行译文`），实测 23 首有 ytlrc 的歌 100% 命中行级文法、0 行命中 yrc 文法。所以唯一的逐字数据源就是 `yrc` |
+| 匿名可用 | 完全不带 Cookie 与登录态返回**逐字节相同**（code 200）。歌词接口不需要登录 |
+| 覆盖率 | yrc 与发行年份**不严格相关**：2024-2025 首发新歌（周深《小美满》、Billie Eilish《CHIHIRO》、Taylor Swift《Fortnight》等）大多**没有** yrc；而《屋顶》《修炼爱情》《演员》《浮夸》《孤勇者》《后来的我们》等有 |
+| 「确无歌词」 | code 仍是 200，靠 `uncollected:true` / `pureMusic:true` 与 `lrc.lyric="[00:00.00]暂无歌词"` 判别，此时响应里没有 yrc/tlyric 等 key |
+
+#### 对齐：**不能按时间戳匹配**（踩坑记录）
+
+直觉做法「按时间戳把 yrc 行挂到 lrc 行上」**实测不成立**：《屋顶》55 行里只有 3 行时间戳完全相同，其余相差 20–310 ms（yrc 是逐字轨，本来就更精确）。
+
+但实测同时确认了更强的事实 —— **yrc 与 lrc 的「行」是一一对应的**：
+
+| 歌曲 | lrc 行数 | yrc 行数 | 按文本命中 | 时间差 |
+|---|---|---|---|---|
+| 屋顶 `5257138` | 55 | 55 | 55/55 | +20…+310 ms |
+| 遇见 `287035` | 28 | 28 | 11/28（其余只差空格） | −269…+530 ms |
+
+所以 [YrcParser](app/src/main/java/com/takahashirinta/ncrust/lyric/YrcParser.kt) 按 **行序**对齐：行数必须相等 + 时间漂移抽样达标（`MAX_LINE_DRIFT_MS=2000`、`MIN_ALIGN_RATIO=0.8`），否则整首放弃逐字。
+
+文本也要重新映射：yrc 拼出来的是「词的原始拼接」，LRC 那份是「补回空格的美化版」
+（`听见冬天的离开` vs `听见 冬天的离开`）。**展示文本仍用 LRC 的**（与 v1.4.1 完全一致），词的字符区间用
+「游标 + indexOf」映射到 LRC 文本上；任何一个词定位失败就放弃该行的逐字 —— 宁可没有逐字，也不给错位高亮。
+
+#### 渲染：`drawWithContent` 两层（零重组）
+
+`MetroLyricsPanel`（Kanesumi）只接受纯文本、无法从外部注入单行渲染，所以逐字高亮需要面板本身参与。
+本仓库**把面板整体搬了进来**：`ui/player/NcrustLyricsPanel.kt`（派生自 Kanesumi `MetroLyricsPanel`，Apache-2.0）。
+为什么是复制而不是改 Kanesumi：Kanesumi 走组合构建、不在本仓库版本控制内，改它会让 v1.5.0 的发布产物**不可复现**
+（`git clone Ncrust` 不再足以构建）。除单行渲染外，滚动 / 定位 / 缩放 / 渐入 / a11y 行为与原版逐行一致。
+
+单行渲染 `LyricLineBody`：底色用 `BasicText` 正常画一遍（未唱部分弱化到 45% α），再在 `drawWithContent` 里
+**在 draw 阶段**读播放位置，用 `TextLayoutResult.getPathForRange(0, 已唱字符数)` 取出已唱字符的版面路径，
+`clipPath` 之后把同一份 layout 用高亮色重画一遍。三个好处：
+
+1. **零重组** —— 逐字推进只让这一行重绘，不触发任何重组，与面板既有的 `graphicsLayer` 缩放动画、
+   以及播放器整体的 GPU 零重组原则一致；
+2. **不自己排版** —— 换行 / 断字 / CJK 避头尾全部交给 Compose，逐字高亮天然跟着版面走；
+3. **一次画完** —— `getPathForRange` 把跨行的一段字符合成一条 Path，开销不随词数增长。
+
+只有**当前行**做逐字高亮：已唱完的行会切成 `pastLineColor`，若在那些行上再叠高亮色会把整行重新点亮成
+primary，破坏过去行的弱化。
+
+#### 与 v1.4.1 的 2Hz 采样 / 漂移外推如何共存（B3）
+
+`LyricsView` 的「按需唤醒」循环（v1.4.1 引入，用于跨行精确对齐 + 暂停态 seek 立即同步）原本只按
+**行时间戳**唤醒。逐字高亮要求精度到「词」，但**不能改成逐帧轮询** —— 现在把唤醒表从「行边界」细化成
+「行边界 ∪ 词边界」（`TreeSet` 去重升序），仍然是按需唤醒：静态时零状态写入、零帧调度，只在真正跨行/跨词
+的那一刻动一次（词密度约每秒 3–8 个，远低于 60 fps）。2Hz 采样到达时外推锚点被重置回真实值，
+所以细粒度外推不会累积误差。**v1.4.1 的漂移对齐逻辑一行未动。**
+
+#### 开关与降级
+
+- 设置项 `lyrics_word_by_word`（默认**开**），8 语言文案 `lyricsWordByWordLabel` 已补齐；
+- 关掉、或该曲没有 yrc、或某一行对齐失败 → 行内渲染退回与 v1.4.1 **逐字节一致**的整行 `MetroText`；
+- `YrcParser.attachWords` **不增删任何一行、不改任何一行的文本与时间戳**，这是「关掉开关等于没这功能」的保证；
+- `LyricsCache.CachedLyrics` 新增 `yrc`，声明为可空并在读取处 `orEmpty()` —— 老缓存（无该字段）命中时
+  退化成「没有逐字数据」，不会因 Gson 走 Unsafe 反序列化而 NPE。
+
+单测 [YrcParserTest.kt](app/src/test/java/com/takahashirinta/ncrust/lyric/YrcParserTest.kt) 用真实样本覆盖
+绝对毫秒语义、信息行 trim、按行序对齐、少空格时的字符区间映射、定位失败放弃、行数不等放弃、乱码容错。
 ## Key Constraints & Pitfalls
 
 - **Kanesumi Design**: no rounded corners in the player; no spring/bounce; cover always fills the full screen width (`fillMaxWidth().aspectRatio(1f)`, scale 1.0 in large mode).

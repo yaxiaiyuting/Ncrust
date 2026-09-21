@@ -6,11 +6,17 @@ import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-/** 一条缓存的歌词原文与译文（tlyric 可为空串）。 */
+/**
+ * 一条缓存的歌词原文、译文与逐字时间轴。
+ *
+ * [yrc] 是 v1.5.0 · B 新增的；老缓存里没有这个字段，Gson 走 Unsafe 反序列化不会填默认值，
+ * 所以声明成可空并在读取处 `orEmpty()` —— 老缓存命中时退化成「没有逐字数据」，不会崩。
+ */
 data class CachedLyrics(
     val lrc: String,
     val tlyric: String,
-    val timestamp: Long
+    val timestamp: Long,
+    val yrc: String? = null
 )
 
 /**
@@ -54,11 +60,12 @@ object LyricsCache {
         synchronized(lock) { loadLocked(context)[songId.toString()] }
     }
 
-    suspend fun put(context: Context, songId: Long, lrc: String, tlyric: String) {
+    suspend fun put(context: Context, songId: Long, lrc: String, tlyric: String, yrc: String = "") {
         withContext(Dispatchers.IO) {
             synchronized(lock) {
                 val map = loadLocked(context)
-                map[songId.toString()] = CachedLyrics(lrc, tlyric, System.currentTimeMillis())
+                map[songId.toString()] =
+                    CachedLyrics(lrc, tlyric, System.currentTimeMillis(), yrc)
                 if (map.size > MAX_ENTRIES) {
                     map.entries
                         .sortedBy { it.value.timestamp }

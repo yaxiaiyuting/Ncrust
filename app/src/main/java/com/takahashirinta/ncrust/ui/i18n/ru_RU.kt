@@ -40,6 +40,7 @@ val ruRU = Strings(
     gaplessSectionTitle = "Бесшовное воспроизведение",
     gaplessDescription = "Предзагрузка следующего трека для устранения пауз",
     lyricsTranslationLabel = "Перевод текста",
+    lyricsWordByWordLabel = "Пословный текст",
     themeSectionTitle = "Цветовая тема",
     themeModeSectionTitle = "Режим темы",
     themeModeSystem = "Системный",

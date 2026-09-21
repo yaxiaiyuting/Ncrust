@@ -21,8 +21,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.takahashirinta.ncrust.lyric.LrcLine
 import com.takahashirinta.ncrust.ui.i18n.LocalStrings
-import io.github.takahashirinta.kanesumi.controls.MetroLyricLine
-import io.github.takahashirinta.kanesumi.controls.MetroLyricsPanel
 import io.github.takahashirinta.kanesumi.core.theme.LocalMetroColors
 import io.github.takahashirinta.kanesumi.core.theme.MetroText
 import kotlinx.coroutines.delay
@@ -54,6 +52,9 @@ fun LyricsView(
     onUserScrolled: () -> Unit = {},
     // 歌词是否仍在加载：加载中且暂无内容时留空，避免切歌瞬间闪一下"暂无歌词"。
     isLoading: Boolean = false,
+    // v1.5.0 · B：逐字高亮开关（设置页「逐字歌词」，默认开）。关掉或该行没有 yrc 数据时，
+    // 行内渲染与 v1.4.1 完全一致。
+    wordByWordEnabled: Boolean = true,
 ) {
     val strings = LocalStrings.current
     if (lyrics.isEmpty()) {
@@ -67,9 +68,19 @@ fun LyricsView(
 
     // list 引用保持稳定,让面板的测量缓存以它为 key 不被误清。
     // 翻译按时间戳精确对齐原句(网易 tlyric 与原 lrc 时间戳一致),缺失的行不显示译文。
-    val metroLines = remember(lyrics, translatedLyrics, showTranslation) {
+    // v1.5.0 · B：逐字时间轴(words/endMs)由 LrcLine 原样带过去 —— 它来自 yrc，已经由
+    // YrcParser 对齐到 LRC 的文本上；这里不做任何加工，也不改变行的集合与顺序。
+    val panelLines = remember(lyrics, translatedLyrics, showTranslation) {
         val tMap = if (showTranslation) translatedLyrics.associateBy { it.timeMs } else emptyMap()
-        lyrics.map { MetroLyricLine(it.timeMs, it.text, translation = tMap[it.timeMs]?.text ?: "") }
+        lyrics.map {
+            NcrustLyricLine(
+                timestampMillis = it.timeMs,
+                text = it.text,
+                translation = tMap[it.timeMs]?.text ?: "",
+                words = it.words,
+                endMs = it.endMs,
+            )
+        }
     }
 
     // 订阅位置流:collectAsState 建 State;displayPosition 只在面板 draw/derived
@@ -86,8 +97,19 @@ fun LyricsView(
         }
     }
 
-    // 行时间戳(升序),把"下一次跨行"算成精确唤醒时刻。
-    val timestamps = remember(lyrics) { LongArray(lyrics.size) { lyrics[it].timeMs } }
+    // 唤醒时刻表（升序去重）：行时间戳 + 每个词的起始时间。
+    // v1.5.0 · B：逐字高亮要求唤醒精度到"词"，但绝不能改成逐帧轮询 —— 这里只是把原来
+    // 的"行边界"细化成"行边界 ∪ 词边界"，仍然是**按需唤醒**：静态时零状态写入、零帧调度，
+    // 只在真正跨行/跨词的那一刻动一次。词密度约每秒 3~8 个，远低于 60fps。
+    // 2Hz 采样到达时锚点会被重置回真实值，所以细粒度外推不会累积误差。
+    val boundaries = remember(lyrics) {
+        val set = java.util.TreeSet<Long>()
+        for (line in lyrics) {
+            set.add(line.timeMs)
+            for (w in line.words) set.add(w.startMs)
+        }
+        LongArray(set.size) { set.elementAt(it) }
+    }
 
     // 2Hz 采样到达时重置外推锚点(首帧前锚点已就位,避免一帧闪到末尾)。
     // v1.4.1：同时把"位置流与显示位置脱节"的情况拉回来 —— 旧实现只在
@@ -111,7 +133,7 @@ fun LyricsView(
     // 每帧轮询。withFrameNanos 会持续请求帧回调,歌词常驻时等于让渲染管线一直
     // 60fps 空转;改为按需唤醒后,静态时零状态写入、零帧调度,只在跨行瞬间动一下。
     // 2Hz 采样会把锚点重置回真实值,所以外推误差不会累积。暂停/隐藏即停。
-    LaunchedEffect(isPlaying, isVisible, timestamps) {
+    LaunchedEffect(isPlaying, isVisible, boundaries) {
         if (!isPlaying || !isVisible) {
             displayPosition.longValue = positionState.value
             return@LaunchedEffect
@@ -119,7 +141,7 @@ fun LyricsView(
         while (true) {
             val nowMs =
                 anchor.anchorPosMs + (System.nanoTime() - anchor.anchorNanos) / 1_000_000L
-            val next = nextLineBoundaryAfter(timestamps, nowMs)
+            val next = nextLineBoundaryAfter(boundaries, nowMs)
             if (next == null) {
                 // 已越过最后一行:无跨行可等,低频醒来等采样/seek 改变锚点。
                 delay(500)
@@ -138,12 +160,13 @@ fun LyricsView(
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        MetroLyricsPanel(
-            lines = metroLines,
+        NcrustLyricsPanel(
+            lines = panelLines,
             currentPositionMillis = { displayPosition.longValue },
             isVisible = isVisible,
             forcedScrollTrigger = forcedLocateTrigger,
             enabled = enabled,
+            karaokeEnabled = wordByWordEnabled,
             onLineClick = if (enabled) { ms ->
                 // 点击行:本地立即定位,不等 2Hz 采样回传,seek 手感即时。
                 anchor.anchorPosMs = ms

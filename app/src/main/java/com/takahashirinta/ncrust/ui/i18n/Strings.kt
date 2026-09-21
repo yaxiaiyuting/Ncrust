@@ -57,6 +57,8 @@ data class Strings(
     val gaplessSectionTitle: String,
     val gaplessDescription: String,
     val lyricsTranslationLabel: String,
+    // v1.5.0 · B：逐字歌词开关。只在歌曲真的带 yrc 逐字数据时才有区别。
+    val lyricsWordByWordLabel: String,
     val themeSectionTitle: String,
     val themeModeSectionTitle: String,
     val themeModeSystem: String,

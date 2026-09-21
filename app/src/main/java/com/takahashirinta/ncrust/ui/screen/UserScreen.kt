@@ -115,6 +115,10 @@ fun UserScreen(
     var lyricsTranslation by remember { mutableStateOf(prefs.getBoolean("lyrics_translation", true)) }
     // v1.4.0 · 音乐人推荐开关
     var artistRecoEnabled by remember { mutableStateOf(ArtistReco.isEnabled(context)) }
+    // v1.5.0 · B 逐字歌词开关（默认开）
+    var lyricsWordByWord by remember {
+        mutableStateOf(prefs.getBoolean("lyrics_word_by_word", true))
+    }
 
     var selectedLanguageCode by remember { mutableStateOf(getSavedLanguageCode(context)) }
 
@@ -332,6 +336,15 @@ fun UserScreen(
                     lyricsTranslation = it
                     prefs.edit().putBoolean("lyrics_translation", it).apply()
                     playerViewModel.setLyricsTranslation(it)
+                }
+            )
+            // v1.5.0 · B 逐字歌词开关。默认开；没有 yrc 逐字数据的歌不受影响。
+            SettingSwitchRow(
+                title = strings.lyricsWordByWordLabel,
+                checked = lyricsWordByWord,
+                onCheckedChange = {
+                    lyricsWordByWord = it
+                    playerViewModel.setLyricsWordByWord(it)
                 }
             )
             Spacer(Modifier.height(24.dp))

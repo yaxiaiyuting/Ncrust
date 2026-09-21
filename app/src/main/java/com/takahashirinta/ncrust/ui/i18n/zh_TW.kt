@@ -40,6 +40,7 @@ val zhTW = Strings(
     gaplessSectionTitle = "無縫而歌",
     gaplessDescription = "預載下曲，去其隙縫",
     lyricsTranslationLabel = "歌詞翻譯",
+    lyricsWordByWordLabel = "逐字歌詞",
     themeSectionTitle = "裳色",
     themeModeSectionTitle = "主題模式",
     themeModeSystem = "跟隨系統",

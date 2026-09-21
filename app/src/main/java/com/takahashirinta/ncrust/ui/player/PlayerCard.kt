@@ -118,6 +118,7 @@ fun PlayerCard(
     val lyricsSongId by playerViewModel.lyricsSongId.collectAsState()
     val lyricsNoContentSongId by playerViewModel.lyricsNoContentSongId.collectAsState()
     val showLyricsTranslation by playerViewModel.showLyricsTranslation.collectAsState()
+    val showLyricsWordByWord by playerViewModel.showLyricsWordByWord.collectAsState()
     // 收藏库状态: 当前歌是否已收藏(右下角 加号/对号 切换用)。切歌或操作后刷新。
     var libraryTick by remember { mutableIntStateOf(0) }
     val isSongSaved = remember(song?.id, libraryTick) {
@@ -639,6 +640,7 @@ fun PlayerCard(
                                     enabled = lyricsEnabled && cardExpandedForInput,
                                     onUserScrolled = {},
                                     isLoading = lyricsLoading,
+                                    wordByWordEnabled = showLyricsWordByWord,
                                 )
                             }
                         }

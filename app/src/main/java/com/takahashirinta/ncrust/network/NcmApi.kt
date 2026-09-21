@@ -48,7 +48,10 @@ interface NcmApi {
         @Field("lv") lv: String = "-1",
         @Field("rv") rv: String = "0",
         @Field("kv") kv: String = "0",
-        @Field("yv") yv: String = "0",
+        // v1.5.0 · B：yv=-1 是「要逐字歌词」的开关。实测 yv 一次带回 yrc + ytlrc +
+        // yromalrc 三个字段（ytlrc 其实是**行级** LRC 译文，不是逐字，所以客户端只取 yrc）；
+        // 不传 yv 时响应里连 yrc 这个 key 都不存在。
+        @Field("yv") yv: String = "-1",
         @Field("ytv") ytv: String = "0",
         @Field("yrv") yrv: String = "0"
     ): LyricResponse

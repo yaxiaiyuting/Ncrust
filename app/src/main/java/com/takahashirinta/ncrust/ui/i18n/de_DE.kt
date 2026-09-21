@@ -40,6 +40,7 @@ val deDE = Strings(
     gaplessSectionTitle = "Nahtlose Wiedergabe",
     gaplessDescription = "Nächsten Titel vorladen, um Lücken zu vermeiden",
     lyricsTranslationLabel = "Liedtext-Übersetzung",
+    lyricsWordByWordLabel = "Wort-für-Wort-Text",
     themeSectionTitle = "Farbschema",
     themeModeSectionTitle = "Erscheinungsbild",
     themeModeSystem = "System",

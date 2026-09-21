@@ -29,6 +29,7 @@ import com.takahashirinta.ncrust.player.QualityLadder
 import com.takahashirinta.ncrust.player.QualityStatus
 import com.takahashirinta.ncrust.lyric.LrcLine
 import com.takahashirinta.ncrust.lyric.LrcParser
+import com.takahashirinta.ncrust.lyric.YrcParser
 import com.takahashirinta.ncrust.lyric.LyricsCache
 import com.takahashirinta.ncrust.network.RetrofitClient
 import com.takahashirinta.ncrust.player.PlaybackService
@@ -64,6 +65,9 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
     val lyricsNoContentSongId = MutableStateFlow(-1L)
     // 设置页开关:是否显示歌词翻译。默认开——外文歌直接看到双语,中文歌 tlyric 为空不受影响。
     val showLyricsTranslation = MutableStateFlow(true)
+    // 设置页开关:逐字歌词(v1.5.0 · B)。默认开——只在歌曲真的带 yrc 逐字数据时才有区别,
+    // 没有逐字数据的歌(实测 2024-2025 首发新歌大多没有)行为与关掉完全一致。
+    val showLyricsWordByWord = MutableStateFlow(true)
 
     val isBuffering = MutableStateFlow(false)
     // Emits true when the current song enters the preload window (last 20 s).
@@ -182,7 +186,11 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
 
     init {
         refreshGaplessSetting()
-        // 从设置读歌词翻译开关(默认开);设置页切换时经 setLyricsTranslation 实时生效。
+        // 从设置读歌词开关(默认开);设置页切换时经 setLyricsTranslation /
+        // setLyricsWordByWord 实时生效。
+        showLyricsWordByWord.value = getApplication<Application>()
+            .getSharedPreferences("ncrust_settings", android.content.Context.MODE_PRIVATE)
+            .getBoolean("lyrics_word_by_word", true)
         showLyricsTranslation.value = getApplication<Application>()
             .getSharedPreferences("ncrust_settings", 0)
             .getBoolean("lyrics_translation", true)
@@ -321,6 +329,14 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     /** 设置页开关:歌词翻译开/关。写 SharedPreferences + 更新 StateFlow,播放器立即可见。 */
+    /** v1.5.0 · B：逐字歌词开关。只影响行内渲染，不重取歌词（词时间轴一直在 LrcLine 上）。 */
+    fun setLyricsWordByWord(enabled: Boolean) {
+        showLyricsWordByWord.value = enabled
+        getApplication<Application>()
+            .getSharedPreferences("ncrust_settings", android.content.Context.MODE_PRIVATE)
+            .edit().putBoolean("lyrics_word_by_word", enabled).apply()
+    }
+
     fun setLyricsTranslation(enabled: Boolean) {
         showLyricsTranslation.value = enabled
         getApplication<Application>().getSharedPreferences("ncrust_settings", 0)
@@ -689,7 +705,9 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                     // 解析是 CPU 活(逐行正则), 放 Default 上跑, 别让主线程在切歌瞬间
                     // 一边处理重组一边解 LRC。
                     if (cached.lrc.isNotEmpty()) {
-                        lyrics.value = withContext(Dispatchers.Default) { LrcParser.parse(cached.lrc) }
+                        lyrics.value = withContext(Dispatchers.Default) {
+                            parseLyrics(cached.lrc, cached.yrc.orEmpty())
+                        }
                         lyricsSongId.value = songId
                     } else {
                         // 缓存里就是"确无歌词"，保持按钮置灰语义
@@ -717,6 +735,9 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                     val code = lyricResponse.code
                     val lrcText = lyricResponse.lrc?.lyric ?: ""
                     val tlyricText = lyricResponse.tlyric?.lyric ?: ""
+                    // v1.5.0 · B：逐字时间轴。实测该曲没挂逐字资产时响应里连 yrc 这个 key
+                    // 都没有(不是 null)，所以这里为空是常态，不是错误。
+                    val yrcText = lyricResponse.yrc?.lyric ?: ""
                     if (code != 200 && attempt < 3) {
                         Log.w("PlayerViewModel", "fetchLyrics unsettled songId=$songId code=$code, retry ${attempt + 1}")
                         delay(700L + attempt * 400L)
@@ -725,14 +746,16 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                     // 只缓存 code==200 的权威结果(有歌词/确无歌词)。code!=200 是瞬时
                     // 失败(风控/需登录), 不写缓存也不置"确无歌词", 按钮保持可点可重试。
                     if (code == 200) {
-                        LyricsCache.put(getApplication(), songId, lrcText, tlyricText)
+                        LyricsCache.put(getApplication(), songId, lrcText, tlyricText, yrcText)
                     }
                     // 只在本请求仍是"当前歌"时写入——恢复路径与 playSong 的并发请求
                     // 返回乱序时, 旧请求不得覆盖新歌的歌词/译文
                     if (currentSongId.value == songId && code == 200) {
                         // 同上: 解析放 Default, 避免网络返回后在主线程解 LRC。
                         if (lrcText.isNotEmpty()) {
-                            lyrics.value = withContext(Dispatchers.Default) { LrcParser.parse(lrcText) }
+                            lyrics.value = withContext(Dispatchers.Default) {
+                                parseLyrics(lrcText, yrcText)
+                            }
                             // 有歌词：标记为"当前歌的歌词就绪"（供 UI 自动回切歌词视图）
                             lyricsSongId.value = songId
                             lyricsNoContentSongId.value = -1L
@@ -750,7 +773,7 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                     Log.d(
                         "PlayerViewModel",
                         "fetchLyrics id=$songId code=$code lrc=${lrcText.length} " +
-                            "tlyric=${tlyricText.length} current=${currentSongId.value}"
+                            "tlyric=${tlyricText.length} yrc=${yrcText.length} current=${currentSongId.value}"
                     )
                     return
                 } catch (e: Exception) {
@@ -771,6 +794,16 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                 lyricsFetchingSongId = -1L
             }
         }
+    }
+
+    /**
+     * v1.5.0 · B：统一的歌词解析入口。有 yrc 就把逐词时间轴挂到 LRC 行上，没有就只解 LRC。
+     * [YrcParser.attachWords] 不会增删行、也不改行文本与时间戳 —— 关掉逐字开关后渲染结果
+     * 与 v1.4.1 逐字节一致。
+     */
+    private fun parseLyrics(lrcText: String, yrcText: String): List<LrcLine> {
+        val lines = LrcParser.parse(lrcText)
+        return if (yrcText.isEmpty()) lines else YrcParser.attachWords(lines, yrcText)
     }
 
     /**

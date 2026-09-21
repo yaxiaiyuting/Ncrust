@@ -40,6 +40,7 @@ val jpMY = Strings(
     gaplessSectionTitle = "無間 再世",
     gaplessDescription = "次 予読 隙 無",
     lyricsTranslationLabel = "歌詞 翻訳",
+    lyricsWordByWordLabel = "逐字 歌詞",
     themeSectionTitle = "主題色",
     themeModeSectionTitle = "主題 様",
     themeModeSystem = "系統 隨",

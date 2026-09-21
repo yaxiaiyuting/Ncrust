@@ -33,7 +33,9 @@ data class SongDetail(
 data class LyricResponse(
     @SerializedName("code") val code: Int = 200,
     @SerializedName("lrc") val lrc: LyricContent?,
-    @SerializedName("tlyric") val tlyric: LyricContent?
+    @SerializedName("tlyric") val tlyric: LyricContent?,
+    // v1.5.0 · B：逐字歌词（只在请求带 yv=-1 且该曲挂了逐字资产时才有这个 key）。
+    @SerializedName("yrc") val yrc: LyricContent? = null
 )
 
 data class LyricContent(

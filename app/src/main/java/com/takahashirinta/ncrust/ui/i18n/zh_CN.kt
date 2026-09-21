@@ -40,6 +40,7 @@ val zhCN = Strings(
     gaplessSectionTitle = "无缝播放",
     gaplessDescription = "提前加载下一首，消除曲间空白",
     lyricsTranslationLabel = "歌词翻译",
+    lyricsWordByWordLabel = "逐字歌词",
     themeSectionTitle = "主题色",
     themeModeSectionTitle = "主题模式",
     themeModeSystem = "跟随系统",
