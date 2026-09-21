@@ -37,6 +37,19 @@ object ContentCache {
     fun isHomeFresh(ttlMs: Long = 15_000L): Boolean =
         homeWarmedUpAt > 0L && System.currentTimeMillis() - homeWarmedUpAt < ttlMs
 
+    // ── 榜单（E：首页卡片与搜索页共用同一份快照，避免两处各拉一遍） ──
+    @Volatile var toplistItems: List<PlaylistApi.PlaylistCard>? = null
+    @Volatile private var toplistFetchedAt: Long = 0L
+
+    /** 榜单快照是否在 [ttlMs] 内取过（沿用首页的 15s freshness 窗口）。 */
+    fun isToplistFresh(ttlMs: Long = 15_000L): Boolean =
+        toplistFetchedAt > 0L && System.currentTimeMillis() - toplistFetchedAt < ttlMs
+
+    fun putToplist(items: List<PlaylistApi.PlaylistCard>) {
+        toplistItems = items
+        toplistFetchedAt = System.currentTimeMillis()
+    }
+
     // ── 详情页（按 ID 缓存，LRU 32 项封顶） ──────────────────────────
     private val albumCache = LruCache<Long, AlbumDetailResponse>(32)
     private val playlistCache = LruCache<Long, List<SongItem>>(32)
@@ -59,6 +72,8 @@ object ContentCache {
         homeDailySongs = null
         homeRecommendPlaylists = null
         homeNewSongs = null
+        toplistItems = null
+        toplistFetchedAt = 0L
         albumCache.evictAll()
         playlistCache.evictAll()
         artistCache.evictAll()

@@ -32,6 +32,7 @@ val koNK = Strings(
     accentSourceSystem = "시스템 따르기",
     accentSourceSystemHint = "시스템 색은 Android 12 이상 필요",
     accentSystemRefresh = "시스템 색 다시 읽기",
+    toplistSectionTitle = "순위표",
     qualityFlacUnsupportedHint = "이 기기에서 지원하지 않아 자동으로 낮아집니다",
     playbackSectionTitle = "재생",
     gaplessSectionTitle = "틈 없이 이어 재생",

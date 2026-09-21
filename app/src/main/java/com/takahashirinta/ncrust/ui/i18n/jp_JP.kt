@@ -32,6 +32,7 @@ val jpJP = Strings(
     accentSourceSystem = "システムに従う",
     accentSourceSystemHint = "システム色は Android 12 以降が必要です",
     accentSystemRefresh = "システム色を再読込",
+    toplistSectionTitle = "ランキング",
     qualityFlacUnsupportedHint = "この端末では未対応のため、自動的に下がります",
     playbackSectionTitle = "再生",
     gaplessSectionTitle = "ギャップレス再生",

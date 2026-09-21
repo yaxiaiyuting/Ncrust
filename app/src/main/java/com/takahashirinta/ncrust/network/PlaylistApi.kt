@@ -299,6 +299,27 @@ object PlaylistApi {
         }
     }
 
+    /**
+     * 榜单列表（v1.2.0 · E）。/eapi/toplist 匿名即可读，实测返回 63 个榜单。
+     * 榜单本质就是歌单，因此复用 PlaylistCard 承载、点进去走 getPlaylistDetail(id)，
+     * 不需要任何新解析代码。默认只取前 [limit] 个（首页/搜索页只展示精选入口）。
+     */
+    suspend fun getToplists(limit: Int = 12): List<PlaylistCard> = withContext(Dispatchers.IO) {
+        val response = RetrofitClient.eapiPost("/eapi/toplist", emptyMap())
+        val body = response.body?.string() ?: throw Exception("empty response")
+        val arr = JSONObject(body).optJSONArray("list") ?: return@withContext emptyList()
+        (0 until minOf(arr.length(), limit)).map { i ->
+            val item = arr.getJSONObject(i)
+            PlaylistCard(
+                id = item.optLong("id"),
+                name = item.optString("name"),
+                coverUrl = item.optString("coverImgUrl"),
+                playCount = item.optLong("playCount"),
+                trackCount = item.optInt("trackCount"),
+            )
+        }
+    }
+
     suspend fun getTopSongs(limit: Int = 30, offset: Int = 0): List<SongItem> = withContext(Dispatchers.IO) {
         val body = RetrofitClient.get("/api/v1/discovery/new/songs?limit=$limit&offset=$offset")
         val json = JSONObject(body)

@@ -32,6 +32,7 @@ val zhCN = Strings(
     accentSourceSystem = "跟随系统",
     accentSourceSystemHint = "系统取色需要 Android 12 及以上",
     accentSystemRefresh = "重新读取系统色",
+    toplistSectionTitle = "榜单",
     qualityFlacUnsupportedHint = "本机不支持该档位，将自动降级",
     playbackSectionTitle = "播放",
     gaplessSectionTitle = "无缝播放",

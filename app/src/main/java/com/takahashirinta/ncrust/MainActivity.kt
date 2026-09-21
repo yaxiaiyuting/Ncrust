@@ -1267,6 +1267,8 @@ fun MainScreen(
                             onSongClick = { playSongItem(it) },
                             onAlbumClick = { albumId -> navController.navigate(NavRoutes.album(albumId)) },
                             onArtistClick = { artistId -> navController.navigate(NavRoutes.artist(artistId)) },
+                            // E：空查询态榜单入口 → 复用歌单详情（榜单就是歌单）。
+                            onPlaylistClick = { playlistId -> navController.navigate(NavRoutes.playlist(playlistId)) },
                             onInsertNext = { insertNext(it) },
                             onAppendToQueue = { appendToQueue(it) },
                             onShowSongMenu = { song, actions -> menuSong = song; menuSongActions = actions },

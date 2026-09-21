@@ -86,6 +86,17 @@ fun HomeScreen(
         mutableStateOf(dailySongs.isEmpty() && playlists.isEmpty() && newSongs.isEmpty())
     }
     var error by remember { mutableStateOf<String?>(null) }
+    // E（方案 2 瘦身版）：榜单入口。走 ContentCache 的 15s freshness 窗口 —— warmup/上次
+    // 访问刚拉过就不再请求；卡片放在首屏，但请求不阻塞其它分节渲染（拿不到就整块不显示）。
+    var toplists by remember { mutableStateOf(ContentCache.toplistItems ?: emptyList()) }
+    LaunchedEffect(Unit) {
+        if (ContentCache.toplistItems == null || !ContentCache.isToplistFresh()) {
+            runCatching { PlaylistApi.getToplists() }.getOrNull()?.let {
+                ContentCache.putToplist(it)
+                toplists = it
+            }
+        }
+    }
     val gridState = rememberLazyGridState()
     // 宽屏：新歌从"整行列表"切到"自适应栅格单元"（Apple Music 式）；手机保持整行列表。
     val isWide = LocalConfiguration.current.screenWidthDp >= 600
@@ -211,6 +222,30 @@ fun HomeScreen(
                             )
                         }
                         Spacer(Modifier.height(12.dp))
+                    }
+
+                    // E：榜单入口（全宽横滑），排在所有既有分节之前 —— 首屏可见，
+                    // 且复用既有 PlaylistTile，不引入新组件。
+                    if (toplists.isNotEmpty()) {
+                        item(span = { GridItemSpan(maxLineSpan) }) {
+                            SectionHeader(title = strings.toplistSectionTitle)
+                        }
+                        item(span = { GridItemSpan(maxLineSpan) }) {
+                            LazyRow(
+                                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                                horizontalArrangement = Arrangement.spacedBy(2.dp),
+                                flingBehavior = rememberMetroFlingBehavior()
+                            ) {
+                                items(toplists, key = { it.id }) { tl ->
+                                    PlaylistTile(
+                                        playlist = tl,
+                                        onClick = { onPlaylistClick(tl.id) },
+                                        onPlayAll = { onPlayPlaylist(tl.id) }
+                                    )
+                                }
+                            }
+                        }
+                        item(span = { GridItemSpan(maxLineSpan) }) { Spacer(Modifier.height(16.dp)) }
                     }
 
                     // 每日推荐：横滑大 tile；点击整块进入播放。

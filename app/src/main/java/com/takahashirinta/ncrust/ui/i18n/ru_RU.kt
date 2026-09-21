@@ -32,6 +32,7 @@ val ruRU = Strings(
     accentSourceSystem = "Как в системе",
     accentSourceSystemHint = "Системный цвет требует Android 12 или новее",
     accentSystemRefresh = "Перечитать системный цвет",
+    toplistSectionTitle = "Чарты",
     qualityFlacUnsupportedHint = "Устройство не поддерживает — будет понижено автоматически",
     playbackSectionTitle = "Воспроизведение",
     gaplessSectionTitle = "Бесшовное воспроизведение",

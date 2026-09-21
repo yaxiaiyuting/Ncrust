@@ -32,6 +32,7 @@ val deDE = Strings(
     accentSourceSystem = "System folgen",
     accentSourceSystemHint = "Systemfarbe erfordert Android 12 oder neuer",
     accentSystemRefresh = "Systemfarbe neu lesen",
+    toplistSectionTitle = "Charts",
     qualityFlacUnsupportedHint = "Auf diesem Gerät nicht unterstützt – wird automatisch reduziert",
     playbackSectionTitle = "Wiedergabe",
     gaplessSectionTitle = "Nahtlose Wiedergabe",

@@ -32,6 +32,7 @@ val en = Strings(
     accentSourceSystem = "Follow system",
     accentSourceSystemHint = "System color requires Android 12 or newer",
     accentSystemRefresh = "Re-read system color",
+    toplistSectionTitle = "Top charts",
     qualityFlacUnsupportedHint = "Not supported on this device — will downgrade automatically",
     playbackSectionTitle = "Playback",
     gaplessSectionTitle = "Gapless Playback",

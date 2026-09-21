@@ -43,7 +43,9 @@ import com.takahashirinta.ncrust.library.SearchHistoryManager
 import com.takahashirinta.ncrust.network.SongItem
 import com.takahashirinta.ncrust.network.model.AlbumItem
 import com.takahashirinta.ncrust.network.model.ArtistItem
+import com.takahashirinta.ncrust.cache.ContentCache
 import com.takahashirinta.ncrust.network.CoverUrls
+import com.takahashirinta.ncrust.network.PlaylistApi
 import com.takahashirinta.ncrust.ui.BottomOverlayInsetDp
 import com.takahashirinta.ncrust.ui.components.AlbumSearchItem
 import com.takahashirinta.ncrust.ui.components.ArtistSearchItem
@@ -80,7 +82,9 @@ fun SearchScreen(
     onShowSongMenu: (SongItem, List<SongMenuAction>) -> Unit = { _, _ -> },
     onAlbumBatch: (albumId: Long, action: BatchQueueAction) -> Unit = { _, _ -> },
     onArtistBatch: (artistName: String, action: BatchQueueAction) -> Unit = { _, _ -> },
-    themeIndex: Int = 0
+    themeIndex: Int = 0,
+    // E：空查询态的榜单入口需要跳转到歌单/榜单详情。
+    onPlaylistClick: (Long) -> Unit = {}
 ) {
     val viewModel: SearchViewModel = viewModel()
     val query by viewModel.query.collectAsState()
@@ -536,11 +540,77 @@ fun SearchScreen(
                         }
                     }
                     SearchContentState.Empty -> {
-                        // Query 空且无历史：只留搜索框在上面，下方空白。
-                        Spacer(Modifier.fillMaxSize())
+                        // E（方案 3 附加）：空查询时展示榜单，复用首页那份 ContentCache 快照，
+                        // 未命中/过期才发一次请求（榜单匿名可读，不需要登录）。
+                        var toplists by remember { mutableStateOf(ContentCache.toplistItems ?: emptyList()) }
+                        LaunchedEffect(Unit) {
+                            if (ContentCache.toplistItems == null || !ContentCache.isToplistFresh()) {
+                                runCatching { PlaylistApi.getToplists() }.getOrNull()?.let {
+                                    ContentCache.putToplist(it)
+                                    toplists = it
+                                }
+                            }
+                        }
+                        if (toplists.isEmpty()) {
+                            Spacer(Modifier.fillMaxSize())
+                        } else {
+                            LazyColumn(
+                                modifier = Modifier.fillMaxSize(),
+                                contentPadding = PaddingValues(bottom = BottomOverlayInsetDp),
+                                flingBehavior = rememberMetroFlingBehavior()
+                            ) {
+                                item {
+                                    Box(modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 4.dp)) {
+                                        MetroText(
+                                            strings.toplistSectionTitle,
+                                            color = LocalMetroColors.current.onBackground,
+                                            style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                                        )
+                                    }
+                                }
+                                items(toplists, key = { it.id }) { tl ->
+                                    ToplistRow(tl) { onPlaylistClick(tl.id) }
+                                }
+                            }
+                        }
                     }
                 } }
                 }
+        }
+    }
+}
+
+/** E：搜索页空查询态的榜单行（封面 + 名称 + 曲目数）。 */
+@Composable
+private fun ToplistRow(playlist: PlaylistApi.PlaylistCard, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        coil.compose.AsyncImage(
+            model = CoverUrls.small(playlist.coverUrl),
+            contentDescription = playlist.name,
+            modifier = Modifier.size(48.dp),
+            contentScale = ContentScale.Crop
+        )
+        Spacer(Modifier.width(12.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            MetroText(
+                playlist.name,
+                color = LocalMetroColors.current.onBackground,
+                style = TextStyle(fontSize = 14.sp),
+                maxLines = 1
+            )
+            val strings = LocalStrings.current
+            MetroText(
+                strings.trackCount(playlist.trackCount),
+                color = LocalMetroColors.current.onSurfaceVariant,
+                style = TextStyle(fontSize = 11.sp),
+                maxLines = 1
+            )
         }
     }
 }
