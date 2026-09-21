@@ -8,15 +8,17 @@
 
 纯 Kotlin / Jetpack Compose · Media3 播放引擎 · eapi 加密直连 · 无中间服务器
 
+**This is a GPLv3 fork of [GuitaristRin/Ncrust](https://github.com/GuitaristRin/Ncrust), maintained by [yaxiaiyuting](https://github.com/yaxiaiyuting).**
+
 [![Version](https://img.shields.io/badge/version-1.1.0--gpl-brightgreen?style=flat-square)](https://github.com/yaxiaiyuting/Ncrust/releases)
-[![APK](https://img.shields.io/badge/APK-3.9%20MB-blue?style=flat-square)](https://github.com/GuitaristRin/Ncrust/releases)
+[![APK](https://img.shields.io/badge/APK-9.6%20MB-blue?style=flat-square)](https://github.com/yaxiaiyuting/Ncrust/releases)
 [![API](https://img.shields.io/badge/API-24%2B-green?style=flat-square&logo=android)](https://developer.android.com)
 [![Kotlin](https://img.shields.io/badge/Kotlin-1.9.24-purple?style=flat-square&logo=kotlin)](https://kotlinlang.org)
 [![Compose](https://img.shields.io/badge/Compose-BOM%202024.12-blue?style=flat-square&logo=jetpackcompose)](https://developer.android.com/jetpack/compose)
 [![License](https://img.shields.io/badge/license-GPLv3-blue?style=flat-square)](LICENSE)
 [![Original](https://img.shields.io/badge/original%20code-MIT-yellow?style=flat-square)](LICENSE-MIT)
 
-[**下载安装**](https://github.com/GuitaristRin/Ncrust/releases) · [**Wiki 文档**](https://github.com/GuitaristRin/Ncrust/wiki) · [**问题反馈**](https://github.com/GuitaristRin/Ncrust/issues) · [**Kanesumi 设计库**](https://github.com/GuitaristRin/Kanesumi-sec-a)
+[**下载安装**](https://github.com/yaxiaiyuting/Ncrust/releases) · [**Wiki 文档**](https://github.com/GuitaristRin/Ncrust/wiki) · [**问题反馈**](https://github.com/GuitaristRin/Ncrust/issues) · [**Kanesumi 设计库**](https://github.com/GuitaristRin/Kanesumi-sec-a)
 
 </div>
 
@@ -113,7 +115,7 @@
 
 ## 📦 安装
 
-1. 打开 [Releases](https://github.com/GuitaristRin/Ncrust/releases)，下载最新的 `app-release.apk`（约 **3.9 MB**）
+1. 打开 [Releases](https://github.com/yaxiaiyuting/Ncrust/releases)，下载最新的 release APK（约 **9.6 MB**）
 2. 允许「未知来源」安装
 3. 打开 App，在用户页登录（见下）
 
@@ -244,6 +246,6 @@ Ncrust 原始代码 Copyright (c) 2026 Takahashi_Rinta，遵循 MIT 许可。本
 
 **如果 Ncrust 让你重新爱上听歌，请赐一颗 Star ⭐**
 
-[问题反馈](https://github.com/GuitaristRin/Ncrust/issues) · [Wiki](https://github.com/GuitaristRin/Ncrust/wiki) · [Releases](https://github.com/GuitaristRin/Ncrust/releases)
+[问题反馈](https://github.com/GuitaristRin/Ncrust/issues) · [Wiki](https://github.com/GuitaristRin/Ncrust/wiki) · [Releases](https://github.com/yaxiaiyuting/Ncrust/releases)
 
 </div>

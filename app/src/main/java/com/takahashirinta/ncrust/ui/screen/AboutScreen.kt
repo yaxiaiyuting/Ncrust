@@ -1,3 +1,15 @@
+/*
+ * Ncrust —— 网易云音乐第三方客户端
+ * 原始代码 Copyright (c) 2026 Takahashi_Rinta，以 MIT 许可发布（全文见仓库根目录 LICENSE-MIT）。
+ *
+ * 本文件属于本 Fork（https://github.com/yaxiaiyuting/Ncrust）的修改部分，
+ * Copyright (c) 2026 yaxiaiyuting，以 GPLv3 许可分发；本 Fork 整体以 GPLv3 分发。
+ *
+ * 修改说明：
+ *   - 「关于」页身份信息：开发者 / 许可证 / 项目地址改为「原作者 + fork」并列展示。
+ *     原作者署名、开发人员名单与致谢一律保留，fork 信息为追加而非替换。
+ */
+
 package com.takahashirinta.ncrust.ui.screen
 
 import androidx.activity.compose.BackHandler
@@ -87,9 +99,11 @@ fun AboutScreen(onBack: () -> Unit) {
                     Column {
                         AboutSection(s.aboutSectionProject.uppercase(), accent)
                         AboutRow(s.aboutVersion, VERSION)
-                        AboutRow(s.aboutDeveloper, "Takahashi_Rinta")
-                        AboutRow(s.aboutLicense, "MIT")
-                        AboutRow(s.aboutRepository, "github.com/GuitaristRin/Ncrust")
+                        AboutRow(s.aboutDeveloperOriginal, "Takahashi_Rinta")
+                        AboutRow(s.aboutDeveloperFork, "yaxiaiyuting")
+                        AboutRow(s.aboutLicense, s.aboutLicenseGplWithMit)
+                        AboutRow(s.aboutRepositoryFork, "github.com/yaxiaiyuting/Ncrust")
+                        AboutRow(s.aboutRepositoryOriginal, "github.com/GuitaristRin/Ncrust")
                         Spacer(Modifier.height(20.dp))
                     }
                 }
@@ -112,6 +126,7 @@ fun AboutScreen(onBack: () -> Unit) {
                         AboutSection(s.aboutSectionTeam.uppercase(), accent)
                         AboutRow(s.aboutRoleDev, "Takahashi_Rinta")
                         AboutRow(s.aboutRoleTester, "白给小子")
+                        AboutRow(s.aboutRoleForkMaintainer, "yaxiaiyuting")
                         Spacer(Modifier.height(20.dp))
                     }
                 }
