@@ -29,6 +29,12 @@ data class Strings(
     val qualityOptions: List<String>,
     /** 实际档位低于偏好档位时，播放器音质标签后的角标（Bug1-B）。 */
     val qualityDowngradedBadge: String,
+
+    /** A3：实际文件低于请求档位，但该曲有这个档位 —— 账号/版权没给到。 */
+    val qualityNoEntitlementBadge: String,
+
+    /** A3：该曲本身就没有请求的档位。 */
+    val qualitySongLacksTierBadge: String,
     /** API < 27 无系统 FLAC 解码器、且选中 FLAC 档位时的设置页提示（Bug1-C）。 */
     val qualityFlacUnsupportedHint: String,
     val playbackSectionTitle: String,

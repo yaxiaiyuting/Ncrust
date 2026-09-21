@@ -6,7 +6,7 @@
  * Copyright (c) 2026 yaxiaiyuting，以 GPLv3 许可分发；本 Fork 整体以 GPLv3 分发。
  *
  * 修改说明（Bug1「音质切换」）：
- *   - 向 FullPlayerControls 传入 qualityDowngraded（偏好档位 vs 实际档位不一致）。
+ *   - 向 FullPlayerControls 传入 qualityStatus（偏好档位 vs 实际文件质量不一致）。
  */
 
 package com.takahashirinta.ncrust.ui.player
@@ -439,7 +439,7 @@ fun PlayerCard(
                         positionFlow = playerViewModel.currentPosition,
                         durationFlow = playerViewModel.duration,
                         qualityIndexFlow = playerViewModel.currentQualityIndex,
-                        qualityDowngradedFlow = playerViewModel.qualityDowngraded,
+                        qualityStatusFlow = playerViewModel.qualityStatus,
                         qualityOptions = strings.qualityOptions,
                         onPlayPause = onPlayPause,
                         onPlayPrevious = onPlayPrevious,

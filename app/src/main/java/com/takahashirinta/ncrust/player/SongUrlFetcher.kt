@@ -35,11 +35,14 @@ data class SongUrlResult(
     val actualLevel: String,
     val br: Long = 0L,
     val type: String = "",
+    /** 该曲能达到的最高档位（privilege.maxBrLevel）。仅在实际文件可能低于请求档位时按需拉取。 */
+    val songMaxLevel: String? = null,
 )
 
 object SongUrlFetcher {
     private const val TAG = "SongUrlFetcher"
     private const val SONG_URL_PATH = "/eapi/song/enhance/player/url/v1"
+    private const val SONG_DETAIL_PATH = "/eapi/v3/song/detail"
 
     private val FLAC_TIERS = setOf("lossless", "hires", "jyeffect", "jymaster")
 
@@ -148,7 +151,12 @@ object SongUrlFetcher {
                         continue
                     }
                     logAttempt(tryLevel, actualLevel, br, type, code, accepted = true)
-                    return@withContext SongUrlResult(url, actualLevel, br, type)
+                    // A3：只有"实际文件可能低于请求档位"时才多问一次该曲的档位上限 ——
+                    // 用来把「账号无权限」和「该曲根本没这个档位」分开。平时不加这次往返。
+                    val songMaxLevel =
+                        if (QualityAssessment.needsSongCapability(level, br, type)) fetchSongMaxLevel(songId)
+                        else null
+                    return@withContext SongUrlResult(url, actualLevel, br, type, songMaxLevel)
                 }
             } catch (e: Exception) {
                 Log.w(TAG, "fetch failed for level=$tryLevel", e)
@@ -161,6 +169,38 @@ object SongUrlFetcher {
         Log.e(TAG, "no playable url for songId=$songId at any level")
         null
     }
+
+    /**
+     * 该曲能达到的最高档位（privilege.maxBrLevel）。带内存缓存（每曲一次），失败返回 null，
+     * 绝不抛给调用方 —— 判定降级原因失败不该影响播放。
+     */
+    private suspend fun fetchSongMaxLevel(songId: Long): String? {
+        songMaxLevelCache[songId]?.let { return it }
+        return try {
+            val payload = mapOf("c" to JSONArray().put(JSONObject().put("id", songId)).toString())
+            val response = RetrofitClient.eapiPost(
+                SONG_DETAIL_PATH,
+                payload,
+                extraCookie = ClientIdentity.extraCookieFor(RetrofitClient.getCookie())
+            )
+            val body = response.body?.string()
+            val privileges = body?.let { JSONObject(it).optJSONArray("privileges") }
+            val level = if (privileges != null && privileges.length() > 0) {
+                privileges.getJSONObject(0).optString("maxBrLevel").takeIf { it.isNotEmpty() }
+            } else null
+            if (level != null) {
+                if (songMaxLevelCache.size > 256) songMaxLevelCache.clear()
+                songMaxLevelCache[songId] = level
+            }
+            Log.i(TAG, "song capability: songId=$songId maxBrLevel=${level ?: "unknown"}")
+            level
+        } catch (e: Exception) {
+            Log.w(TAG, "song capability fetch failed for songId=$songId", e)
+            null
+        }
+    }
+
+    private val songMaxLevelCache = java.util.concurrent.ConcurrentHashMap<Long, String>()
 
     /**
      * A1：把「请求档位 / 服务端给的 level 字符串 / 实际文件参数」分开打出来，供真机实测比对

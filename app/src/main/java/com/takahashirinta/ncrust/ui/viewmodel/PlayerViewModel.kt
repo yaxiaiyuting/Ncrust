@@ -24,7 +24,9 @@ import android.os.Build
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.takahashirinta.ncrust.player.QualityAssessment
 import com.takahashirinta.ncrust.player.QualityLadder
+import com.takahashirinta.ncrust.player.QualityStatus
 import com.takahashirinta.ncrust.lyric.LrcLine
 import com.takahashirinta.ncrust.lyric.LrcParser
 import com.takahashirinta.ncrust.lyric.LyricsCache
@@ -109,8 +111,12 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
     /** 用户**偏好**档位索引（由设置页 wifi / mobile 偏好 + 当前网络决定）。 */
     val preferredQualityIndex = MutableStateFlow(3)
 
-    /** 实际档位低于偏好档位时为 true，播放器 UI 据此提示「已降级」（Bug1-B）。 */
-    val qualityDowngraded = MutableStateFlow(false)
+    /**
+     * 音质状态（A3）。不再用「level 字符串的档位序号」判断降级 —— 实测存在标签写 lossless、
+     * 实际文件是 Hi-Res 的情况，也存在请求杜比拿到 jyeffect（不同容器）的情况。
+     * 判定统一走 QualityAssessment：按实际文件参数（br/type）+ 该曲档位上限给结论。
+     */
+    val qualityStatus = MutableStateFlow(QualityStatus.NORMAL)
 
     private val qualityApiLevels = QUALITY_LEVELS
 
@@ -124,6 +130,9 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
     )
     // 上一次交给 PlaybackService 的 URL 的实际档位(fetch 内部可能已降级)。
     private var lastPlayedLevel = ""
+    // A3：最近一次取链的输入，供偏好变化后重算状态（不重新取链）。
+    private var lastVerdictRequested = ""
+    private var lastVerdictResult: SongUrlResult? = null
     // 已处理过的出错点 (songId@level),配合时间窗防止同一错误反复触发重试。
     private var lastErrorKey = ""
     private var lastErrorHandledAt = 0L
@@ -139,7 +148,9 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
     private var preloadedTitle = ""
     private var preloadedArtist = ""
     private var preloadedArtwork = ""
-    private var preloadedActualLevel = ""
+    // A3：预载结果整体留存 —— 自动切歌时要据此重算音质状态（br/type/songMaxLevel 都要用）。
+    private var preloadedResult: SongUrlResult? = null
+    private var preloadedRequestedLevel = ""
     // Cached stream URL from the last completed preload; used by playSong fast-path to skip fetch.
     private var preloadedUrl = ""
     // Song ID most recently requested by playSong; lets a concurrent preload detect a same-song race.
@@ -151,6 +162,10 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         // 取链时用的请求档位:播放失败降档重试时,只有档位一致才允许命中缓存,
         // 避免把上一档(可能播不出声)的 URL 原样放回播放器。
         val requestedLevel: String,
+        // A3：缓存也要带上实际文件参数与档位上限，否则走缓存开播时算不出音质状态。
+        val br: Long = 0L,
+        val type: String = "",
+        val songMaxLevel: String? = null,
         val timestamp: Long = System.currentTimeMillis()
     )
     private val preloadCache = mutableMapOf<Long, PreloadCacheEntry>()
@@ -219,9 +234,7 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                 currentSongName.value = preloadedTitle
                 currentSongArtist.value = preloadedArtist
                 currentSongArtwork.value = preloadedArtwork
-                val idx = qualityApiLevels.indexOf(preloadedActualLevel).coerceAtLeast(0)
-                currentQualityIndex.value = idx
-                noteActualLevel(preloadedActualLevel)
+                preloadedResult?.let { applyQualityVerdict(preloadedRequestedLevel, it) }
                 PlaybackStateManager.saveState(
                     getApplication(), preloadedSongId,
                     preloadedTitle, preloadedArtist, preloadedArtwork, true
@@ -314,19 +327,35 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         else qualityApiLevels.getOrElse(prefs.getInt("mobile_quality", 1)) { "higher" }
 
     /**
-     * 记录服务端**实际**返回的档位，并据此刷新「已降级」提示（Bug1-B）。
-     * 档位表按音质从低到高排列，故 实际索引 < 偏好索引 即为降级。
+     * A3：记录一次取链结果并刷新音质状态。判定依据是**实际文件参数**（br/type）与该曲
+     * 档位上限，而不是服务端返回的 level 字符串 —— 后者只是标签，可能写低（实测
+     * granted=lossless 而 br=1,685,762，其实是 Hi-Res 文件）。
      */
-    private fun noteActualLevel(actualLevel: String) {
-        lastPlayedLevel = actualLevel
-        val actualIdx = qualityApiLevels.indexOf(actualLevel)
-        qualityDowngraded.value = actualIdx >= 0 && actualIdx < preferredQualityIndex.value
+    private fun applyQualityVerdict(requested: String, result: SongUrlResult) {
+        lastPlayedLevel = result.actualLevel
+        lastVerdictRequested = requested
+        lastVerdictResult = result
+        val verdict = QualityAssessment.assess(
+            requested = requested,
+            granted = result.actualLevel,
+            br = result.br,
+            type = result.type,
+            songMaxLevel = result.songMaxLevel,
+        )
+        currentQualityIndex.value = verdict.displayIndex
+        qualityStatus.value = verdict.status
+    }
+
+    /** 偏好档位变化后重算状态（不重新取链，避免每次改设置都重播当前歌）。 */
+    private fun refreshQualityVerdict() {
+        val result = lastVerdictResult ?: return
+        applyQualityVerdict(lastVerdictRequested, result)
     }
 
     /**
      * 设置页改动音质偏好后调用（Bug1-A）。
      *
-     * 1. 先刷新 preferredQualityIndex / qualityDowngraded，让播放器标签立刻反映偏好变化；
+     * 1. 先刷新 preferredQualityIndex / qualityStatus，让播放器标签立刻反映偏好变化；
      * 2. 若当前有歌在播、**且生效档位确实变化**，按新档位对当前歌重新取链播放。
      *    生效档位没变时直接返回——否则每次改设置都会把当前歌从头重播一次。
      */
@@ -334,7 +363,7 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         val prefs = getApplication<Application>().getSharedPreferences("ncrust_settings", 0)
         val newLevel = effectivePreferredLevel(prefs)
         preferredQualityIndex.value = qualityApiLevels.indexOf(newLevel).coerceAtLeast(0)
-        noteActualLevel(lastPlayedLevel)
+        refreshQualityVerdict()
 
         val sid = currentSongId.value ?: return
         if (sid <= 0L) return
@@ -392,7 +421,7 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         // 显式传入 quality 的调用来自「播放失败降档重试」，那不是用户偏好，不能覆盖偏好档位。
         if (quality.isEmpty()) preferredQualityIndex.value = qIdx
         currentQualityIndex.value = qIdx
-        qualityDowngraded.value = false
+        qualityStatus.value = QualityStatus.NORMAL
 
         // Fast path: URL was preloaded and cached for THIS requested level — skip network round-trip.
         // 缓存条目带档位:播放失败降档重试时,绝不会把上一档(可能已证明播不出声)的 URL 原样喂回。
@@ -401,10 +430,14 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         }
         if (cachedEntry != null) {
             preloadedSongId = -1L; preloadedTitle = ""; preloadedArtist = ""
-            preloadedArtwork = ""; preloadedActualLevel = ""; preloadedUrl = ""
-            val actualIdx = qualityApiLevels.indexOf(cachedEntry.actualLevel).coerceAtLeast(0)
-            currentQualityIndex.value = actualIdx
-            noteActualLevel(cachedEntry.actualLevel)
+            preloadedArtwork = ""; preloadedResult = null; preloadedRequestedLevel = ""; preloadedUrl = ""
+            applyQualityVerdict(
+                selectedQuality,
+                SongUrlResult(
+                    cachedEntry.url, cachedEntry.actualLevel,
+                    cachedEntry.br, cachedEntry.type, cachedEntry.songMaxLevel,
+                ),
+            )
             resetLyricsForNewSong()
             currentSongId.value = songId
             currentSongName.value = title
@@ -444,15 +477,13 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                 // 本次结果作废: 再发一次 "url" intent 会让 ExoPlayer setMediaItem
                 // 把同一首歌重播一遍 —— 就是"听起来像拖带"的卡顿。
                 if (fetchVersion != songPlayVersion) return@launch
-                val actualIdx = qualityApiLevels.indexOf(result.actualLevel).coerceAtLeast(0)
                 resetLyricsForNewSong()
                 // 歌词请求异步化: 旧实现在这里顺序等待(失败退避最坏 3s+),
                 // 开播被歌词请求拖住, 慢网络/风控下"点了没反应"。切到 launch 后
                 // 播放立即开始, 歌词就绪了再自动切回歌词视图。
                 viewModelScope.launch { fetchLyrics(songId) }
                 withContext(Dispatchers.Main) {
-                    currentQualityIndex.value = actualIdx
-                    noteActualLevel(result.actualLevel)
+                    applyQualityVerdict(selectedQuality, result)
                     currentSongId.value = songId
                     currentSongName.value = title
                     currentSongArtist.value = artist
@@ -548,8 +579,9 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                     it.requestedLevel == quality &&
                         System.currentTimeMillis() - it.timestamp <= CACHE_TTL_MS
                 }
-                val result = cacheHit?.let { SongUrlResult(it.url, it.actualLevel) }
-                    ?: SongUrlFetcher.fetch(songId, quality)
+                val result = cacheHit?.let {
+                    SongUrlResult(it.url, it.actualLevel, it.br, it.type, it.songMaxLevel)
+                } ?: SongUrlFetcher.fetch(songId, quality)
                 if (result == null) {
                     // 预加载失败：可能无版权/无订阅，忽略即可，等当前歌结束时由 songEnded 跳歌。
                     currentlyPreloadingSongId = -1L
@@ -558,7 +590,9 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                 withContext(Dispatchers.Main) {
                     currentlyPreloadingSongId = -1L
                     // Store in cache regardless of staleness — URL is valid even if a new song started.
-                    preloadCache[songId] = PreloadCacheEntry(result.url, result.actualLevel, quality)
+                    preloadCache[songId] = PreloadCacheEntry(
+                        result.url, result.actualLevel, quality, result.br, result.type, result.songMaxLevel,
+                    )
                     if (capturedVersion != songPlayVersion) {
                         // playSong was called while this fetch was in flight.
                         // If it was for THIS same song and hasn't completed its own fetch, take over.
@@ -567,10 +601,8 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                             // 取链结果在 fetchVersion 检查处作废, 杜绝二次 setMediaItem 重播。
                             songPlayVersion++
                             playJob?.cancel()
-                            val idx = qualityApiLevels.indexOf(result.actualLevel).coerceAtLeast(0)
-                            currentQualityIndex.value = idx
                             lastRequestedLevel = quality
-                            noteActualLevel(result.actualLevel)
+                            applyQualityVerdict(quality, result)
                             resetLyricsForNewSong()
                             currentSongId.value = songId
                             currentSongName.value = title
@@ -603,7 +635,8 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                     preloadedTitle = title
                     preloadedArtist = artist
                     preloadedArtwork = artworkUrl
-                    preloadedActualLevel = result.actualLevel
+                    preloadedResult = result
+                    preloadedRequestedLevel = quality
                     preloadedUrl = result.url
                     val intent = Intent(getApplication(), PlaybackService::class.java).apply {
                         putExtra("action", "preload_next")

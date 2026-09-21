@@ -5,9 +5,9 @@
  * 本文件属于本 Fork（https://github.com/yaxiaiyuting/Ncrust）的修改部分，
  * Copyright (c) 2026 yaxiaiyuting，以 GPLv3 许可分发；本 Fork 整体以 GPLv3 分发。
  *
- * 修改说明（Bug1「音质切换」）：
- *   - 新增 qualityDowngradedFlow：实际档位低于用户偏好档位时，音质标签追加
- *     「已降级」角标，不再让用户误以为设置没生效。
+ * 修改说明（Bug1「音质切换」/ A3「降级语义」）：
+ *   - 新增 qualityStatusFlow：音质标签按**实际文件参数**（br/type）追加角标 ——
+ *     「已降级」/「无权限」/「该曲无此档位」，不再把"其实在播 Hi-Res"误报成降级。
  */
 
 package com.takahashirinta.ncrust.ui.player
@@ -34,6 +34,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.takahashirinta.ncrust.formatDuration
+import com.takahashirinta.ncrust.player.QualityStatus
 import com.takahashirinta.ncrust.ui.i18n.LocalStrings
 import io.github.takahashirinta.kanesumi.core.theme.LocalMetroColors
 import io.github.takahashirinta.kanesumi.core.theme.MetroIcon
@@ -49,7 +50,7 @@ fun FullPlayerControls(
     positionFlow: StateFlow<Long>,
     durationFlow: StateFlow<Long>,
     qualityIndexFlow: StateFlow<Int>,
-    qualityDowngradedFlow: StateFlow<Boolean>,
+    qualityStatusFlow: StateFlow<QualityStatus>,
     qualityOptions: List<String>,
     onPlayPause: () -> Unit,
     onPlayPrevious: () -> Unit = {},
@@ -234,7 +235,7 @@ fun FullPlayerControls(
                 ) {
                     QualityLabel(
                         qualityIndexFlow = qualityIndexFlow,
-                        qualityDowngradedFlow = qualityDowngradedFlow,
+                        qualityStatusFlow = qualityStatusFlow,
                         options = qualityOptions
                     )
                 }
@@ -267,7 +268,7 @@ fun FullPlayerControls(
             ) {
                 QualityLabel(
                     qualityIndexFlow = qualityIndexFlow,
-                    qualityDowngradedFlow = qualityDowngradedFlow,
+                    qualityStatusFlow = qualityStatusFlow,
                     options = qualityOptions
                 )
             }
@@ -426,12 +427,21 @@ private fun DurationText(durationFlow: StateFlow<Long>, modifier: Modifier) {
 @Composable
 private fun QualityLabel(
     qualityIndexFlow: StateFlow<Int>,
-    qualityDowngradedFlow: StateFlow<Boolean>,
+    qualityStatusFlow: StateFlow<QualityStatus>,
     options: List<String>
 ) {
     val qualityIndex by qualityIndexFlow.collectAsState()
-    val downgraded by qualityDowngradedFlow.collectAsState()
+    val status by qualityStatusFlow.collectAsState()
     val label = options.getOrElse(qualityIndex) { options.getOrElse(3) { "" } }
+    // A3：状态按实际文件参数（br/type）判定，不再按 level 序号 —— 明确区分
+    // 「无权限」「该曲无此档位」「真实降级」，避免把"其实在播 Hi-Res"或
+    // "沉浸声换格式"误报成「已降级」。
+    val badge = when (status) {
+        QualityStatus.NORMAL -> null
+        QualityStatus.DOWNGRADED -> LocalStrings.current.qualityDowngradedBadge
+        QualityStatus.NO_ENTITLEMENT -> LocalStrings.current.qualityNoEntitlementBadge
+        QualityStatus.SONG_LACKS_TIER -> LocalStrings.current.qualitySongLacksTierBadge
+    }
     Row(verticalAlignment = Alignment.CenterVertically) {
         MetroText(
             label,
@@ -441,12 +451,11 @@ private fun QualityLabel(
             softWrap = false,
             overflow = TextOverflow.Ellipsis
         )
-        // 实际档位低于偏好档位：明确告知被降级（设备解码能力 / 会员权限 / 版权），
-        // 否则用户改了设置却听不出变化，会以为"切换音质失败"。
-        if (downgraded) {
+        // 状态非 NORMAL 时才加后缀，否则用户改了设置却听不出变化，会以为"切换音质失败"。
+        if (badge != null) {
             Spacer(Modifier.width(4.dp))
             MetroText(
-                LocalStrings.current.qualityDowngradedBadge,
+                badge,
                 color = LocalMetroColors.current.onSurfaceVariant,
                 style = TextStyle(fontSize = 10.sp),
                 maxLines = 1,
