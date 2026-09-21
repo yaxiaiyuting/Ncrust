@@ -733,6 +733,35 @@ download_task(
 3. 与其塞一个未在真机验证过的下载器进 v1.5.0，不如把已实测的协议结论与表结构沉淀下来，
    让 v1.5.1 从「已知可行」起步。
 
+## ⚠️ 操作红线：不要用 `sed -i` 改应用私有目录里的文件（v1.5.0 实测踩到）
+
+Android 应用私有目录（`/data/data/<pkg>/shared_prefs/*.xml` 等）的文件带 **SELinux MLS 类别**，
+例如 `u:object_r:app_data_file:s0:c512,c768`。`sed -i` 的语义是「写临时文件 + rename 覆盖」，
+rename 出来的新文件会丢掉 `:c512,c768`（变成 `u:object_r:app_data_file:s0`），应用**立刻读不到自己的文件**：
+
+```
+W SharedPreferencesImpl: Attempt to read preferences file …/ncrust_settings.xml without permission
+E SharedPreferencesImpl: Couldn't rename file … to backup file
+E audit  : avc: denied { rename } … ino=… scontext=u:r:untrusted_app:s0:c512,c768 …
+```
+
+实际表现极具误导性：应用照常启动、照常播放（用的是内存里的默认值），但**所有设置静默失效**
+（本次是「推荐卡开关明明是 true 却不推导」）。
+
+**正确做法**：
+
+1. 首选**不要碰 prefs** —— 走应用内的设置入口；
+2. 必须改文件时，用**原地截断写**（`cat > file`、`tee`）而不是 `sed -i`，保留 inode 与 SELinux 标签；
+3. 万一手滑了，按同目录下正常文件恢复（owner / mode / 标签三件套）：
+
+```bash
+su -c 'chown $(stat -c %u REF):$(stat -c %g REF) TARGET'
+su -c 'chmod $(stat -c %a REF) TARGET'
+su -c 'chcon $(ls -Z REF | cut -d" " -f1) TARGET'    # 或直接 restorecon TARGET
+```
+
+本次即用此法恢复，设置与登录态均完好无损。
+
 ## Key Constraints & Pitfalls
 
 - **Kanesumi Design**: no rounded corners in the player; no spring/bounce; cover always fills the full screen width (`fillMaxWidth().aspectRatio(1f)`, scale 1.0 in large mode).
