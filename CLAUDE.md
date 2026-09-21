@@ -222,7 +222,7 @@ Two API styles coexist:
 
 `WeapiCrypto`: random 16-char secret, double AES-128-CBC/PKCS5 with preset key `0CoJUm6Qyw8W8jud` then the secret, and `encSecKey` = raw RSA of the reversed secret (256 hex, no PKCS#1 padding, not base64).
 
-### ⚠️ 详情页播放器死带（v1.3.0 实测，放交互元素前必读）
+### ✅ 详情页播放器死带（v1.3.0 已修 · B-1，此节保留根因与实测数据）
 
 折叠态播放器卡片的 `Box(Modifier.fillMaxSize())` + `graphicsLayer { translationY = collapsedOffsetY }`
 （[PlayerCard.kt:404-422](app/src/main/java/com/takahashirinta/ncrust/ui/player/PlayerCard.kt)、
@@ -249,9 +249,12 @@ Two API styles coexist:
 - 同一原因：`MetroBottomSheet`（如歌单操作菜单）画在本页 `LazyColumn` 之下会被盖住，
   且自身也落在带里 —— 详情页不要用底部菜单承载操作，改用 `MetroDialog`。
 
-**待办（独立问题，未修）**：播放器层为什么吃事件（`alpha≈0` 的隐藏内容仍参与命中，还是某个
-子节点在消费），以及「清空队列没有真正移除 overlay 层」。修它要碰三层图形架构，需单独一轮
-真机回归。
+**根因与修复（v1.3.0 · B-1）**：那一段里其实一个子节点都没有 —— mini bar 与 Column 的内容都被
+statusBarsPadding() 下推到 2016，吃事件的是卡片根 Box 自己的两个 pointerInput（上拉手势 / 展开态吞事件），
+命中区就是整个 fillMaxSize 根 Box。修法两步：① 折叠态不挂载展开态子树（mini bar 永远挂载）；
+② 折叠态给根 Box 一个 statusBar 高的 top padding 收窄这两个 pointerInput，再用等量 offset 把子节点
+放回原位（视觉与布局零变化）。实测（API 24 模拟器，同一坐标 y=1188 同长度上滑）：修复前把整卡拉起，
+修复后事件还给下层；mini bar 上滑展开、点按展开均正常。「清空队列没有真正移除 overlay」已由 commit A 修掉。
 
 ### Playlist 管理（v1.3.0 · B2–B5）
 
@@ -392,11 +395,22 @@ To add a locale: create `xx_XX.kt` with a `Strings(...)` and add a `LanguagePres
 - Wide screens (`windowWidthDp >= 600`) replace the bottom nav with a 200dp `MetroSidebar`; the content column gets `padding(start = 200.dp)`.
 - `BottomOverlayInsetDp` = **144dp** narrow (80 nav + 56 mini + 8 buffer) / **64dp** wide (56 mini + 8). All scrollable content must use it as `contentPadding`; **never** append a manual end-of-list `Spacer`.
 
+## v1.4.0 新增（本 fork）
+
+| 项 | 说明 |
+|---|---|
+| 底部控制栏可收起 | 窄屏全屏播放器下向上拖控制栏 → 控制栏滑出、面板长高到全屏；右下角悬浮播放键向下拖恢复。controlsCollapse(Animatable) + graphicsLayer 平移 + Modifier.collapsibleHeight（layout 阶段读 Animatable，零重组）；控制栏区域的整卡拖拽由 isOverCollapsibleControls 让路。宽屏不启用。 |
+| 暂停态 seek 立即生效 | 进度 ticker 只在 isPlaying 时广播，暂停态 seek 后 UI 收不到新位置。修法：PlaybackService 两条 seek 路径后 publishProgressNow() + PlayerViewModel.seekTo 乐观更新；showBuffering 不再把 isSeeking 当缓冲（点进度条不再有脉冲动画）。 |
+| 播放全部先播后补 | 首页/库页的 ▶ 直接播放：命中 ContentCache / 本地收藏单曲立即开播，未命中先 Toast 再拉取；收藏单曲剩余详情后台补齐后追加队尾。移除全局 pendingPlayAllSongs 二次确认（详情页各自的 PlayAllDialog 保留）。 |
+| 音乐人推荐卡片 | 首页推荐流按「收藏艺人 ∩ 风格锚点」本地判定插入一张艺人卡（点击进 ArtistDetailScreen）。配置在 ncrust_settings：artist_reco_enabled / artist_reco_target_id / artist_reco_anchor_ids(CSV)，默认全空 → 其他用户不显示也不发请求。自动锚点：目标艺人热门曲 → simiSong → 同风格艺人（7 天 TTL）。 |
+| 相似艺人端点纠正 | 任务里写的 /eapi/simi/artist 不存在（404）；真实端点是 /eapi/discovery/simiArtist，参数名 artistid，匿名 301、需登录，返回 artists[]（≤20，平均约 300ms）。B0 实测目标艺人 122618229 自己的相似列表为空、在 top20 收藏艺人的相似列表里 0 次命中 → 原方案不可行，改走锚点降级方案。 |
+| 艺人端点可用性 | GET /api/artist/{id} 与 GET /api/artist/albums/{id} 可用；/eapi/v1/artist/detail、/eapi/artist/albums（PlaylistApi 里那两个旧函数）已 400 失效（当前无人调用，ArtistDetailScreen 走 Retrofit 的 REST 路径）。 |
+
 ## Key Constraints & Pitfalls
 
 - **Kanesumi Design**: no rounded corners in the player; no spring/bounce; cover always fills the full screen width (`fillMaxWidth().aspectRatio(1f)`, scale 1.0 in large mode).
 - **GPU zero-recomposition**: read animation values only inside `graphicsLayer`; never `animateFloatAsState` for the player card. High-frequency StateFlows are subscribed in leaf composables / `draw` scope, not in the parent.
-- **PlayerCard collapse gating**: below `progress = 0.05`, heavy children (LyricsView / QueueView / FullPlayerControls) are disposed.
+- **PlayerCard collapse gating**: below `progress = 0.01`, the whole expanded subtree (LyricsView / QueueView / FullPlayerControls / 大封面信息) is **not mounted**; mini bar 永远挂载。代价是首次展开付一次 composition+layout+draw（v1.3.0 · B-1 的取舍，换掉详情页死带）。
 - **Borderless list style**: `SongCard` LIST/COMPACT rows have `0dp` left padding (72dp cover flush to the edge); only the right keeps 16dp. `DetailScaffold` has no `TopAppBar` Surface — a floating back arrow (`MetroTopScrim`) overlays the content. Grid tiles use `spacedBy(2.dp)`. Home/Library use a 34sp page header instead of an app bar.
 - **Bottom overlay inset**: the mini bar (56dp) sits above the M3-era 80dp nav bar, drawn as a sibling overlay, so `Scaffold.innerPadding.bottom` does **not** reserve space for them. Use `BottomOverlayInsetDp` as `contentPadding`.
 - **System-bar compensation**: `collapsedOffsetY = contentHeightPx - sysNavPx - navBarHeightPx(56/0) - miniBarHeightPx(56) - sysStatusPx`. `sysStatusPx` cancels the `.statusBarsPadding()` applied inside `PlayerCard` to the mini-bar overlay. **Automotive (AAOS) caveat**: CarSystemUI does not deliver WindowInsets, so on `UI_MODE_TYPE_CAR` the content height comes from the measured root height (`rootHeightPx`), not `screenHeightDp`; phone/tablet keep `screenHeightDp` so car changes don't leak. Touch any of these values carefully.
