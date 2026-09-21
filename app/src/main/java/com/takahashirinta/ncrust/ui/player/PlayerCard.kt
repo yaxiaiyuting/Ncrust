@@ -22,6 +22,7 @@ import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -41,6 +42,7 @@ import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -69,6 +71,7 @@ import io.github.takahashirinta.kanesumi.core.theme.LocalMetroTypography
 import io.github.takahashirinta.kanesumi.core.theme.MetroIcon
 import io.github.takahashirinta.kanesumi.core.theme.MetroText
 import kotlin.math.abs
+import kotlin.math.roundToInt
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -205,6 +208,68 @@ fun PlayerCard(
     // 展开阈值和 alpha 淡入阈值(0.7)错开, 保证交互只在内容真正可见后开启。
     val cardExpandedForInput by remember { derivedStateOf { progress.value > 0.9f } }
 
+    // ---- v1.4.0 · A：底部控制栏可收起（仅窄屏全屏态）----
+    // controlsCollapse: 0 = 展开（每次进入全屏的默认值），1 = 完全收起。
+    // 收起后控制栏整体滑出屏幕，面板（歌词/队列）顺势长高到全屏；右下角留一个极简播放键。
+    // 手势：控制栏区域向上拖 = 收起；收起后右下角悬浮键向下拖 = 恢复（点 = 播放/暂停）。
+    // 零重组：滑动走 graphicsLayer 平移，高度收缩在 layout 阶段读 Animatable（不触发 recompose）。
+    // 只在窄屏生效：宽屏是左右两栏，右栏本来就是整轴高度，没有可让出的空间。
+    val controlsCollapse = remember { Animatable(0f) }
+    var controlsHeightPx by remember { mutableFloatStateOf(0f) }
+    // 控制栏在**卡片根 Box 局部坐标**里的上沿，用于让根节点的整卡拖拽给"收起控制栏"让路。
+    var controlsTopInCardPx by remember { mutableFloatStateOf(Float.MAX_VALUE) }
+    val controlsCollapsedForInput by remember { derivedStateOf { controlsCollapse.value > 0.5f } }
+
+    // 收起状态不持久化：离开全屏（卡片回到折叠态）即复位为展开。
+    LaunchedEffect(Unit) {
+        snapshotFlow { progress.value <= 0.01f }
+            .distinctUntilChanged()
+            .collect { collapsed -> if (collapsed) controlsCollapse.snapTo(0f) }
+    }
+
+    // 收起/恢复共用的竖直拖拽检测器：拖动期间 snapTo 跟手，松手做方向敏感吸附。
+    // key 带 isWidePlayer：宽屏不启用（见上）。
+    // 注意：必须每次调用都**新建** Modifier 实例。SuspendPointerInputElement 内部持有
+    // previousKeys 这类可变状态，同一个实例挂到两个节点上会互相踩，表现为其中一个节点
+    // 的 pointer 处理器起不来（实测：控制栏能收起、悬浮键的恢复手势收不到事件）。
+    fun controlsCollapseDrag(): Modifier = Modifier.pointerInput(hasSong, isWidePlayer) {
+        if (!hasSong || isWidePlayer) return@pointerInput
+        // current 必须自己累加：onVerticalDrag 的 dragAmount 是**每帧增量**，
+        // 写成 startValue - dragAmount/h 只会得到最后一帧的位移，拖动基本不动。
+        var current = 0f
+        var from = 0f
+        detectVerticalDragGestures(
+            onDragStart = {
+                from = controlsCollapse.value
+                current = from
+            },
+            onVerticalDrag = { change, dragAmount ->
+                change.consume()
+                val h = if (controlsHeightPx > 1f) controlsHeightPx
+                        else with(density) { 200.dp.toPx() }
+                current = (current - dragAmount / h).coerceIn(0f, 1f)
+                coroutineScope.launch { controlsCollapse.snapTo(current) }
+            },
+            onDragEnd = {
+                coroutineScope.launch {
+                    // 方向敏感吸附：从收起态往回拉，过半就恢复；从展开态往上推，过半才收起。
+                    // 只按固定阈值判会出问题——收起态下拉 40% 抬头又落回收起态（实测）。
+                    val target = if (from >= 0.5f) {
+                        if (current <= 0.6f) 0f else 1f
+                    } else {
+                        if (current >= 0.4f) 1f else 0f
+                    }
+                    controlsCollapse.animateTo(target, tween(260, easing = FastOutSlowInEasing))
+                }
+            },
+            onDragCancel = {
+                coroutineScope.launch {
+                    controlsCollapse.animateTo(0f, tween(200, easing = FastOutSlowInEasing))
+                }
+            }
+        )
+    }
+
     // ---- 歌词可达性驱动的「大封面 ↔ 歌词视图」自动切换 ----
     // - 切歌瞬间: 旧歌词已被 ViewModel 清空, 直接落大封面, 绝不残留上一首歌词。
     // - 歌词就绪(lyricsReady): 自动切回歌词视图（Apple Music 语义）。
@@ -315,6 +380,14 @@ fun PlayerCard(
     //    把事件全部吞掉，底部播放控制栏与底部导航栏一起失效（歌词开着反而正常）。
     //    消费者要挡的只是**下层兄弟**，与自己内部显示哪个面板无关，
     //    所以这里必须只依赖几何。
+    // ③ isOverCollapsibleControls —— **控制栏语义**：点是否落在"可收起的底部控制栏"上。
+    //    只给根节点的整卡拖拽让路用：窄屏全屏态下，这一区域内向上拖是"收起控制栏"，
+    //    而不是把整张卡片拖走。controlsTopInCardPx 由控制栏 onGloballyPositioned 实测，
+    //    分辨率无关；未实测到（MAX_VALUE）时判断恒为 false，即退化成旧行为。
+    fun isOverCollapsibleControls(y: Float) =
+        !isWidePlayer && cardExpandedForInput && !controlsCollapsedForInput &&
+            y >= controlsTopInCardPx
+
     fun isOverCardVisibleArea(y: Float, x: Float): Boolean {
         // 宽屏左右分栏，左半是封面区，触摸落在左半时不属于卡片内容区。
         if (isWidePlayer && x <= screenWidthPx / 2f) return false
@@ -366,6 +439,8 @@ fun PlayerCard(
                     val down = awaitFirstDown(requireUnconsumed = false)
                     // 面板内纵向手势完全交给内部 LazyColumn/进度条,根节点不消费任何事件。
                     if (isOverPanel(down.position.y, down.position.x)) return@awaitEachGesture
+                    // 底部控制栏区域同理让路：向上拖 = 收起控制栏（v1.4.0 · A）。
+                    if (isOverCollapsibleControls(down.position.y)) return@awaitEachGesture
                     val startProgress = progress.value
                     val pointer = down.id
                     val slop = viewConfiguration.touchSlop
@@ -752,6 +827,34 @@ fun PlayerCard(
                             .graphicsLayer { alpha = ((progress.value - 0.7f) / 0.3f).coerceIn(0f, 1f) }
                     ) {
                         playerPanels(Modifier.fillMaxSize())
+                        // 收起态悬浮播放键（v1.4.0 · A）：只在控制栏真的收起后挂载 ——
+                        // alpha=0 却常挂载的按钮会变成一块"摸不着的命中区"（见 B-1 的教训）。
+                        // 点 = 播放/暂停；向下拖 = 把控制栏拉回来（复用同一条收起进度轴）。
+                        if (controlsCollapsedForInput) {
+                            Box(
+                                modifier = Modifier
+                                    .align(Alignment.BottomEnd)
+                                    .padding(end = 16.dp, bottom = 16.dp)
+                                    .size(56.dp)
+                                    .background(LocalMetroColors.current.surfaceVariant)
+                                    .then(controlsCollapseDrag())
+                                    .clickable(
+                                        interactionSource = remember { MutableInteractionSource() },
+                                        indication = null
+                                    ) {
+                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                        onPlayPause()
+                                    },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                MetroIcon(
+                                    imageVector = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
+                                    contentDescription = null,
+                                    tint = LocalMetroColors.current.onBackground,
+                                    sizeDp = 30.dp
+                                )
+                            }
+                        }
                         // 大封面模式下的曲名/歌手信息：overlay 在内容区底部，不占高度。
                         Column(
                             modifier = Modifier
@@ -785,7 +888,22 @@ fun PlayerCard(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .graphicsLayer { alpha = ((progress.value - 0.7f) / 0.3f).coerceIn(0f, 1f) }
+                            .onGloballyPositioned { c ->
+                                // 只在展开态实测（收起后高度会被收成 0，别把度量值也带偏）：
+                                // 高度决定"从布局里收走多少"，上沿决定整卡拖拽在哪让路。
+                                if (controlsCollapse.value < 0.01f) {
+                                    controlsHeightPx = c.size.height.toFloat()
+                                    controlsTopInCardPx = c.boundsInRoot().top - cardRootOrigin.y
+                                }
+                            }
+                            // 收起：layout 阶段把高度收走（面板顺势长高），内容用 graphicsLayer
+                            // 平移出屏幕 —— 全程零 recomposition，只有这一棵子树重新布局。
+                            .collapsibleHeight(controlsCollapse)
+                            .then(controlsCollapseDrag())
+                            .graphicsLayer {
+                                alpha = ((progress.value - 0.7f) / 0.3f).coerceIn(0f, 1f)
+                                translationY = controlsCollapse.value * size.height
+                            }
                     ) {
                         playerControls()
                     }
@@ -953,6 +1071,22 @@ fun PlayerCard(
         }
     }
 }
+
+/**
+ * v1.4.0 · A：按 [collapse]（0..1）把本节点**在布局里占的高度**收走。
+ *
+ * 与 graphicsLayer 平移配合使用：布局高度收走 → 兄弟节点（面板，weight 1f）顺势长高；
+ * 内容本身由外层 graphicsLayer 平移出屏幕。这里在 layout 阶段直接读 Animatable，
+ * **不触发 recomposition** —— 动画帧只重排这一棵子树。
+ */
+private fun Modifier.collapsibleHeight(collapse: Animatable<Float, AnimationVector1D>): Modifier =
+    this.layout { measurable, constraints ->
+        val placeable = measurable.measure(constraints)
+        val shrink = (collapse.value.coerceIn(0f, 1f) * placeable.height).roundToInt()
+        layout(placeable.width, (placeable.height - shrink).coerceAtLeast(0)) {
+            placeable.place(0, 0)
+        }
+    }
 
 // 新封面超过该阈值仍未就绪，才退化为纯色占位（"实在不出来再禁用"）。
 private const val COVER_HOLD_MS = 400L
