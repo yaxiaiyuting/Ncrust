@@ -218,6 +218,7 @@ standard -> standard
 ```
 
 - **Device FLAC gate**: skips `lossless`/`hires`/`jyeffect`/`jymaster` when no MediaCodec `audio/flac` decoder exists (API < 27 or stripped ROM), so ExoPlayer never gets a FLAC stream it can only render as silence.
+- **`sky`（沉浸环绕声）未支持 —— v1.2.1 TODO**: 账号态确有 `maxBrLevel=sky` 的样本（36 首），但 `level=sky` 请求实测返回 `exhigh`（320k mp3），属于**请求参数不匹配**而非权限问题；待探测 `encodeType=mp4` / 其它 level 字符串 / appver 三个方向（复现脚本 `tools/probe-quality.py`）。因此当前档位表止于 `jymaster`。
 - **Auto quality downgrade**: `PlayerViewModel.handlePlaybackError` retries the same song one rung lower on `qualityRetryLadder` (reverse order, deduped 3 s per `songId@level`), skipping to the next song only when even `standard` fails. `AudioSink` failures are covered too.
 - **Level-aware preload cache**: `PreloadCacheEntry` records `requestedLevel`; a downgrade retry never replays an already-failed higher-tier URL. TTL = 5 min. Gapless preload window = **60 s** (`PRELOAD_THRESHOLD_MS`), despite some older comments saying 20 s.
 - A song that yields no playable URL at any tier is skipped — **never** fall back to `.../song/media/outer/url?id=X.mp3` (it 302→404s HTML and buffers forever).
