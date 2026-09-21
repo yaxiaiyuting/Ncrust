@@ -222,6 +222,26 @@ Two API styles coexist:
 
 `WeapiCrypto`: random 16-char secret, double AES-128-CBC/PKCS5 with preset key `0CoJUm6Qyw8W8jud` then the secret, and `encSecKey` = raw RSA of the reversed secret (256 hex, no PKCS#1 padding, not base64).
 
+### Playlist 管理（v1.3.0 · B2–B5）
+
+歌单的创建/编辑/删除/增删曲全部走 `PlaylistEditApi`，UI 入口固定四处：
+
+| 入口 | 位置 | 行为 |
+|---|---|---|
+| 保存当前队列为歌单 | 全屏播放器队列区 ⊕（`onSavePlaylist`，此前是空壳） | 快照队列 → 命名对话框 → 创建 → 批量加歌 |
+| 新建空歌单 | 收藏页歌单 tab 网格第一格「＋」 | 复用同一对话框，不加歌 |
+| 加入歌单 | 任意歌曲长按菜单第一项（由 `MainActivity.showSongMenu` 统一追加，全 Screen 覆盖） | `AddToPlaylistSheet` 只列**本人自建**歌单 + 顶部「新建歌单」 |
+| 编辑 / 删除 / 改隐私 / 移除曲目 | 歌单详情页头部「⋮」与曲目长按菜单 | 编辑对话框一次改名称+简介+隐私，**只发改动过的字段**（三个独立端点，少一次请求就少 2s 写闸门）；移除曲目仅自建歌单可见 |
+
+- **归属判定**：`PlaylistInfo.isOwnedBy(uid)` = `creator.userId == uid && !subscribed`。收藏的歌单
+  里 `userId`/`creator.userId` 都是原作者，用 `userId == 我` 会把别人的歌单显示成可编辑。
+- **判重不做预判**：`>1000` 首的歌单没有可靠判重手段（见上），重复添加由服务端 502 兜底，
+  客户端把它当幂等成功、提示「已加入歌单」——与真的加进去在用户视角无区别，还省一次往返。
+- **缓存**：任何写操作成功后调用 `ContentCache.invalidatePlaylist(id)`。服务端 detail 本身有陈旧
+  缓存，本地这份不丢就会出现「改名成功、进详情还是旧名」。
+- **收藏页的 playlist tab 过滤 `specialType != 0`**，所以「我喜欢的音乐」不在网格里（它是单曲 tab
+  的数据源，见 `PlaylistApi.getLikedPlaylistId`）。
+
 ### Playback
 
 `PlaybackService` is a **`MediaLibraryService`** (media3), not a plain `MediaSessionService`. It owns:
