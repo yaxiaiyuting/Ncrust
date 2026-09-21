@@ -171,13 +171,25 @@ fun PlayerCard(
     val miniBarInteractionSource = remember { MutableInteractionSource() }
     // 完全展开时才激活收起按钮
     val dismissEnabled by remember { derivedStateOf { progress.value > 0.99f } }
-    // 展开态子树常挂载（无 gate）：LyricsView / QueueView / FullPlayerControls / 大封面
-    // 信息在 MainScreen 首次 composition 时即挂载，交互只切 graphicsLayer alpha，不再
-    // 走 mount/dispose。这是"Apple Music 手感"的关键——原生 View 系统里 player subview
-    // 是 app 启动就构建好、隐藏用 visibility=GONE 的；我们此前用 if (expandedEnough) 条件
-    // 挂载来省折叠态 layout 成本，但把构造成本压到了首次跨阈值那一帧，压不进单帧就必然卡。
-    // 常挂载的代价：折叠态 LazyColumn 仍走一次 layout（懒渲染，实际每帧 1-3ms），交换
-    // 首次 expand 永远不卡。冷启动那一次成本由 Splash + AppWarmup 兜底吸收。
+    // ---- v1.3.0 · B-1：折叠态只挂载 mini bar，其余展开态子树一律条件挂载 ----
+    // 展开态子树 = 顶部标题栏 / 歌词·队列双面板 / 底部播放控件 / 大封面模式下的曲名信息。
+    // 历史：它们一度常挂载（无 gate），只切 graphicsLayer alpha，不再走 mount/dispose ——
+    // 那是"Apple Music 手感"的关键（原生 View 系统里 player subview 是 app 启动就构建好、
+    // 隐藏用 visibility=GONE 的），也把首次展开的构造成本从"跨阈值那一帧"挪走了。
+    // 但常挂载的代价是**命中区**：Compose 的命中测试与 alpha 无关，折叠态这些 alpha≈0 的
+    // 子树仍留在卡片里（卡片 = fillMaxSize + translationY(collapsedOffsetY)，整块压在屏幕
+    // 下半部），详情页底部落在这一带的交互元素因此完全收不到事件（死带）。
+    // 现在的取舍：折叠态不挂载 → 死带消失。代价是展开时首次挂载展开态子树要做一次
+    // composition + layout + draw（冷启动/切歌后第一次展开最明显，之后有 Compose 的
+    // slot table 复用，成本低于首次），压不进单帧时会看到一次轻微掉帧；冷启动那一次由
+    // Splash + AppWarmup 兜底吸收。阈值 0.01 与 miniBarEnabled 同一处：拖动或点按动画
+    // 一开始（约第 1 帧）就挂载，给后面 400ms 动画留出吸收时间。
+    // mini bar 本身**永远挂载**（否则无法点击/上拉展开），是折叠态唯一保留的子树。
+    val expandedMounted by remember { derivedStateOf { progress.value > 0.01f } }
+    // 折叠态命中区让位开关（见下方根 Box 的 padding/offset 注释）。
+    // 同样用 derivedStateOf 离散化：只在跨阈值那一帧重组一次，动画帧零成本。
+    val hitGateInsetDp = with(density) { statusBarPx.toDp() }
+    val collapsedHitGate by remember { derivedStateOf { progress.value <= 0.01f } }
 
     // lyricAnimProgress：0 = 大封面，1 = 小封面；驱动封面缩放 + 内容淡入淡出
     // queueSlideProgress：0 = 歌词位置，1 = 列表位置；仅 b↔c 时动画，其他时 snap
@@ -317,6 +329,18 @@ fun PlayerCard(
         modifier = Modifier
             .fillMaxSize()
             .onGloballyPositioned { cardRootOrigin = it.boundsInRoot().topLeft }
+            // ---- 死带修复（B-1 的必要补充）：折叠态把**命中区**上沿让出 statusBar 高 ----
+            // 卡片是 fillMaxSize + translationY(collapsedOffsetY)，下面两个 pointerInput（上拉
+            // 手势、展开态吞事件）挂在根 Box 上，命中区 = 整个根 Box；而 mini bar 的内容被
+            // .statusBarsPadding() 下推了 statusBar 高、卡背背景也被 graphicsLayer 下推了同样
+            // 高度。于是 collapsedOffsetY .. collapsedOffsetY+statusBar 这一段（S6 实测
+            // 1920..2016，24dp）视觉上"卡片透明、下层详情页透出来"，事件却被卡片自己吃掉
+            // ——详情页 y≈1938 的原 ⋮ 点不动就是这个，只凭不挂载 Column 子树修不掉（那一段
+            // 里根本没有子节点，吃事件的正是这两个 pointerInput 自己）。
+            // 做法：折叠态给根 Box 加一个 statusBar 高的 top padding（只收窄两个 pointerInput
+            // 的命中区），再用等量 offset 把子节点放回原位 —— 视觉与子节点布局零变化。
+            // 展开态与动画中段不加 padding：整屏吞事件的行为原样保留。
+            .then(if (collapsedHitGate) Modifier.padding(top = hitGateInsetDp) else Modifier)
             // Outer modifier → runs last within this node in Main pass (after drag detector below).
             // Consumes remaining events when fully expanded so Scaffold siblings never receive them.
             // 面板区域不吞事件:内部列表需要先拿到未消费的 MOVE 才能滚动。
@@ -395,6 +419,9 @@ fun PlayerCard(
                     }
                 }
             }
+            // 把上面 padding 让出的高度补回去：子节点仍从根 Box 顶开始（视觉/布局不变），
+            // 只有两个 pointerInput 留在下移后的命中区里。
+            .then(if (collapsedHitGate) Modifier.offset(y = -hitGateInsetDp) else Modifier)
     ) {
         // 全屏纯黑背景。展开时 translationY=0，卡片顶与封面顶/内容区顶等高；
         // 折叠时整体下移一个 statusBar 高，使顶边对齐 miniBar 内容。miniBar 自带
@@ -426,7 +453,8 @@ fun PlayerCard(
                 .fillMaxSize()
                 .systemBarsPadding()
         ) {
-            if (hasSong) {
+            // B-1：折叠态不挂载展开态子树（mini bar 在下面、永远挂载）。见 expandedMounted 注释。
+            if (hasSong && expandedMounted) {
                 val s = song!!
 
                 // 底部播放控件（窄屏整宽 / 宽屏左栏共用）。常挂载，alpha 只在 draw 阶段调。
