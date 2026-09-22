@@ -55,7 +55,7 @@ Single source of truth: `app/build.gradle.kts` → `defaultConfig.versionName` /
 
 - `AboutScreen.kt` reads `BuildConfig.VERSION_NAME` — **never hardcode a version constant**. This needs `buildFeatures.buildConfig = true`.
 - Release flow: bump `versionCode` + `versionName` → commit `build: 升级至 vX.Y.Z ...` → `./gradlew assembleRelease` → `gh release create vX.Y.Z --draft <apk>` → user smoke-tests and publishes manually.
-- Current: `versionName = "1.3.1"`, `versionCode = 6`. Latest release: `v1.3.1` (2026-09-11).
+- Current: `versionName = "1.5.1-gpl"`, `versionCode = 16`. Latest release: `v1.5.1-gpl`.
 
 ## Commit Convention
 
@@ -732,6 +732,102 @@ download_task(
 2. 任务书明确允许：「如果上下文不足：只做 D1 + D2 调研报告，实现留 v1.5.1」；
 3. 与其塞一个未在真机验证过的下载器进 v1.5.0，不如把已实测的协议结论与表结构沉淀下来，
    让 v1.5.1 从「已知可行」起步。
+
+## v1.5.1 新增（本 fork）
+
+### A · 歌词逐字三模式 + PCL110（API 36）失效根因
+
+**症状**：S6（Android 7.0）逐字生效但"硬切"、不够顺滑；PCL110（Android 16）**完全没有逐字效果**。
+
+**诊断（PCL110 真机，临时探针实测，不是推断）**：
+
+| 检查项 | 结果 |
+|---|---|
+| 逐字分支是否进入 | 进入 —— `words` 非空（yrc 在 API 36 上照样解析成功） |
+| `TextLayoutResult.getPathForRange(0, n)` | **正常**：`pathOk=true pathEmpty=false bounds=Rect(0,0,112,131)`，无异常 |
+| 结论 | 失效点在 v1.5.0 的**绘制组合**：同一个 BasicText 节点里 `clipPath(path)` + `drawText(lr, color=...)`。取路径那一步是好的，所以"API 36 上 getPathForRange 失效"这个假设**不成立**；真正要弃用的是那套画法 |
+
+**v1.5.1 的重写**（[NcrustLyricsPanel.kt](app/src/main/java/com/takahashirinta/ncrust/ui/player/NcrustLyricsPanel.kt)）：
+
+- 不再用路径 API；硬切走 `clipRect`，软边走 `canvas.saveLayer` + `drawRect(blendMode = DstIn)`；
+- 高亮层与底层**各自用同一 TextStyle（只差颜色）排版**，颜色烤进 style —— 不再依赖 drawText 的颜色覆盖；
+- **不用 `CompositingStrategy.Offscreen`**：它在低版本会回落成 Auto，DstIn 就作用到整个目标画布、
+  把底下的文字一起擦掉；显式 saveLayer 在 API 24 上也稳；
+- 换行用 `getLineForOffset` / `getLineTop` / `getLineBottom` 逐行处理，软边不跨行；
+- 播放位置仍然只在 draw 阶段读（零重组不变）；高亮层 `clearAndSetSemantics`，一行文本不会给无障碍报两遍。
+
+**三模式**（设置项 `lyrics_word_animation`，prefs 存 Int）：
+
+| 值 | 模式 | 说明 |
+|---|---|---|
+| 0 | 渐变扫过（**默认**） | 词内按时间线性推进，渐变带 12% 行宽 |
+| 1 | 逐字硬切 | v1.5.0 的逐词点亮风格，向后兼容 |
+| 2 | 关闭逐字 | 当前行整行高亮，行内渲染同 v1.4.1 |
+
+老设置迁移：v1.5.0 的布尔 `lyrics_word_by_word=false` → 模式 2，其余 → 模式 0（只迁移一次）。
+
+**双端实测**（S6 + PCL110）：三种模式都即时生效；用逐帧像素剖面验证扫过点逐帧右移、
+硬切边界是"一刀切"（无中间灰阶）。
+
+### B · 控制栏把手与全面屏手势冲突（PCL110）
+
+**症状**：从把手起手的上滑被系统"回到桌面"抢走，把手只能点按（用户描述为"滑动只能单向"）。
+
+**实测与结论**（PCL110 / Android 16 / `navigation_mode=2`）：
+
+1. `Modifier.systemGestureExclusion()` **确实注册成功**（`dumpsys window` 实测
+   `mSystemGestureExclusion=SkRegion((0,2716,1272,2800))`），但系统**照样吞掉底部 0~13dp 起手的上滑**
+   —— 单靠它修不好。上滑起手点实测：13dp 必被吞、28dp 必交给应用。
+2. 所以真正生效的是**按导航模式把 24dp 拖拽带整体上抬 32dp**；排除区声明保留（对左右边缘与部分 ROM 仍有效）。
+3. 三键导航与 API < 29（没有 `navigation_mode` 设置项）不上抬，视觉与行为不变。
+
+**实测**：上拖收起 ✓ / 下拖恢复 ✓ / 点按切换 ✓。A/B 对照：v1.5.0 同一位置的上滑 → launcher。
+
+### C · 无网络启动
+
+**诊断（emulator-5554 / API 24，v1.5.0 release 包实测）**：
+
+- 冷启动**不阻塞**：`am start -W` TotalTime ≈ 0.5s，splash 正常退出（AppWarmup 有 3s 兜底，
+  且无网时 OkHttp 是快速失败，不是 30s 超时）；无 ANR、无 crash、无主线程网络调用。
+- 真正的问题是**失败静默**：首页三块请求失败后 `error` 只写进 state、界面上没有任何消费者，
+  三块数据全空 → 首页只剩页头 + 私人 FM 卡片，**没有空态、没有原因、没有重试**，一直这样（实测 22s 不变）。
+
+**修复**：
+
+1. `NetworkAvailability.isOnline()`（[NetworkAvailability.kt](app/src/main/java/com/takahashirinta/ncrust/network/NetworkAvailability.kt)）——
+   无网时 AppWarmup 与首页**都不发请求**，直接进降级态。判据只用 `NET_CAPABILITY_INTERNET`，
+   **故意不要求 VALIDATED**（国内 ROM 上 validated 常年 false，用它会把"有网"误判成"没网"）；
+2. `HomeSnapshot`（[HomeSnapshot.kt](app/src/main/java/com/takahashirinta/ncrust/cache/HomeSnapshot.kt)）——
+   首页四块数据落盘（`ncrust_home_cache`，每块 ≤60 条），冷启动先灌回 ContentCache，
+   断网重启也能看到上次的内容；
+3. 首页降级空态（图标 + 原因 + 重试），并在有网但请求挂住时 **8s** 撤掉转圈
+   （`HOME_LOAD_TIMEOUT_MS`），不再一路等到 OkHttp 的 30s。
+
+### D · 媒体控制中心显示当前歌词行
+
+**调研结论（AOSP 源码级）**：Android 13+ 的 SystemUI 媒体面板**只读 TITLE（第一行）与 ARTIST（第二行）**，
+`DISPLAY_SUBTITLE` 被完全忽略；MediaMetadata/Media3 都没有歌词字段；Android 16 的 Live Updates
+明确排除 MediaStyle ⇒ 小米超级岛 / OPPO 流体云 / vivo 原子通知对第三方要么要白名单 + MiPush、
+要么只能走不含 MediaStyle 的 Live Updates，**一律不接入，不引入厂商 SDK**。
+
+**实现**：设置项 `lyrics_in_media_session`（**默认关**）。打开后 ARTIST = 「艺人 · 当前歌词行」
+（艺人保留在前），并顺带写 `DISPLAY_SUBTITLE` 兜住老车机与蓝牙 AVRCP；只在**跨行**时更新
+（ViewModel 在 2Hz 采样上算当前行，值不变不写；服务侧本来就有等值去重）⇒ 行不变时零 `setMetadata`。
+关掉 / 无歌词：字段完全回落原样。
+
+**实测（PCL110）**：`dumpsys media_session` → `metadata: size=5, description=修炼爱情, 林俊杰 · 我们那些信仰要忘记多难, null`；
+下拉 QS 的媒体卡片显示「修炼爱情 / 林俊杰 · 谁说太阳…」。
+
+### E · 歌词字号调节
+
+设置项 `lyrics_font_scale`（Float，5 档 0.7/0.85/1.0/1.2/1.5，默认 1.0）+ 歌词界面右上角的
+**A- / A+**（44×28dp、到端点置灰、带无障碍描述；放右上角是为了避开底部的控制栏把手与系统手势区）。
+两者共用一条 StateFlow：**立即生效**、跨重启保持；落盘 **150ms 防抖**（连点只写一次）。
+字号直接乘在 fontSize/lineHeight/译文号上 ⇒ 行高、居中偏移、自动换行、逐字裁剪全部由
+`TextLayoutResult` 自行重算，当前行的缩放动画与基础字号本来就是乘数关系，无需补偿。
+
+**实测（PCL110）**：0.7x / 1.5x 视觉差异明显、1.5x 下长句正常折行且逐字高亮正常；
+A+ ×2 → prefs 1.5、A- ×4 → prefs 0.7。S6 上设置项与下拉渲染正常。
 
 ## ⚠️ 操作红线：不要用 `sed -i` 改应用私有目录里的文件（v1.5.0 实测踩到）
 
