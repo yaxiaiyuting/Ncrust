@@ -152,6 +152,12 @@ class PlaybackService : MediaLibraryService() {
     private var pendingNextArtist: String? = null
     private var pendingNextArtwork: String? = null
     private var pendingNextSongId: Long = -1L
+    /**
+     * 待播槽位里那一项的 URL；**槽位是否被占用只看它**（见 [PreloadSlot]）。
+     * preload 幂等判定与 transition 守卫都以「槽位里到底是哪一项」为准，
+     * 不再靠 pendingNextTitle 是否为 null 这种间接信号。
+     */
+    private var pendingNextUrl: String? = null
     // 无缝预载的下一首封面位图: preload_next 时提前加载, 切换瞬间直接应用,
     // 任务栏不会出现"新歌标题 + 上一首封面"的过渡窗口
     private var pendingNextArtworkBitmap: Bitmap? = null
@@ -382,17 +388,42 @@ class PlaybackService : MediaLibraryService() {
             "preload_next" -> {
                 val nextUrl = intent.getStringExtra("url") ?: return START_NOT_STICKY
                 val nextSongId = intent.getLongExtra("songId", -1L)
+                // v1.5.2 串台修复：同一首下一曲会被预载两次（切歌瞬间 + 进入最后 60s 窗口），
+                // 旧实现无条件 addMediaItem，播放列表累积成 [当前, 下一首, 下一首']；
+                // 播完当前项先播「下一首」, 再播那个重复项时 pendingNext* 已指向下下首 ⇒
+                // 耳朵里是上一首、通知栏/歌词显示下一首。槽位至多一首是不变量本身。
+                when (PreloadSlot.decide(pendingNextSongId, pendingNextUrl, nextSongId, nextUrl)) {
+                    PreloadSlot.Decision.IGNORE -> {
+                        Log.d(
+                            "PlaybackService",
+                            "preload_next ignored, slot already holds songId=$nextSongId"
+                        )
+                        return START_NOT_STICKY
+                    }
+                    PreloadSlot.Decision.REPLACE -> {
+                        Log.d(
+                            "PlaybackService",
+                            "preload_next replaces stale slot songId=$pendingNextSongId -> $nextSongId"
+                        )
+                        removePendingItems()
+                    }
+                    PreloadSlot.Decision.APPEND -> Unit
+                }
                 pendingNextTitle = intent.getStringExtra("title")
                 pendingNextArtist = intent.getStringExtra("artist")
                 pendingNextArtwork = intent.getStringExtra("artwork")
                 pendingNextSongId = nextSongId
+                pendingNextUrl = nextUrl
                 // 提前加载下一首封面: 无缝切换瞬间任务栏直接是新图,
                 // 不再出现"新歌标题 + 上一首封面"的过渡窗口
                 if (!pendingNextArtwork.isNullOrEmpty()) {
                     preloadArtwork(pendingNextArtwork!!)
                 }
                 player.addMediaItem(androidx.media3.common.MediaItem.fromUri(nextUrl))
-                Log.d("PlaybackService", "Queued next: $pendingNextTitle url=$nextUrl")
+                Log.d(
+                    "PlaybackService",
+                    "Queued next: $pendingNextTitle url=$nextUrl count=" + player.mediaItemCount
+                )
                 return START_NOT_STICKY
             }
             "pause" -> { player.pause() }
@@ -405,6 +436,7 @@ class PlaybackService : MediaLibraryService() {
                 mediaTitle = "Ncrust"
                 mediaArtist = ""
                 mediaSongId = null
+                clearPendingNext()
                 currentArtworkBitmap = null
                 currentArtworkUrl = null
                 stopSelf()
@@ -562,10 +594,7 @@ class PlaybackService : MediaLibraryService() {
     private fun playUrl(url: String, startPositionMs: Long = 0L) {
         Log.d("PlaybackService", "Playing: $url startPositionMs=$startPositionMs")
         // Clear any stale preload metadata; setMediaItem replaces the entire playlist.
-        pendingNextTitle = null
-        pendingNextArtist = null
-        pendingNextArtwork = null
-        pendingNextSongId = -1L
+        clearPendingNext()
         // 手动切歌会顶掉无缝队列, 预载的下一首封面作废, 一并清掉
         pendingNextArtworkBitmap = null
         artworkPreloadGeneration++
@@ -573,6 +602,34 @@ class PlaybackService : MediaLibraryService() {
         player.setMediaItem(mediaItem, startPositionMs.coerceAtLeast(0L))
         player.prepare()
         player.playWhenReady = true
+    }
+
+    /**
+     * 清空待播槽位的元数据。
+     *
+     * 凡是**替换播放列表**的路径（playUrl / stop / onTaskRemoved）都必须调用 ——
+     * 残留的 pendingNext* 会在下一次 AUTO transition 时被当成新歌写进通知栏/歌词，
+     * 那正是「UI 显示下一首、耳朵还是上一首」的串台。
+     */
+    private fun clearPendingNext() {
+        pendingNextTitle = null
+        pendingNextArtist = null
+        pendingNextArtwork = null
+        pendingNextSongId = -1L
+        pendingNextUrl = null
+    }
+
+    /**
+     * 移除当前项之后的所有项，把播放列表收敛回「当前项 + 至多一首待播项」。
+     *
+     * ExoPlayer 的播放列表操作必须在应用主线程（本类所有调用点都在主线程）。
+     * 之所以是「当前项之后」而不是固定的 index 1：历史版本留下过重复待播项，
+     * 这里顺手把任何多余项一并清掉，恢复不变量。
+     */
+    private fun removePendingItems() {
+        val from = player.currentMediaItemIndex + 1
+        val count = player.mediaItemCount
+        if (count > from) player.removeMediaItems(from, count)
     }
 
     /**
@@ -931,6 +988,7 @@ class PlaybackService : MediaLibraryService() {
         mediaTitle = "Ncrust"
         mediaArtist = ""
         mediaSongId = null
+        clearPendingNext()
         currentArtworkBitmap = null
         currentArtworkUrl = null
         stopSelf()
