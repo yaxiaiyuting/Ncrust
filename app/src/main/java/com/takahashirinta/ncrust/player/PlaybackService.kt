@@ -894,20 +894,23 @@ class PlaybackService : MediaLibraryService() {
         // 位图用**引用**比较: 实例变了(新封面加载完成)就重发, 同图不重发。
         // v1.5.1 · D：媒体面板歌词。只在"有歌词行"时改写 ARTIST（艺人前缀保留），
         // 没有就走原样 —— 关闭开关 / 无歌词的歌与 v1.5.0 逐字节一致。
-        val lyricLine = mediaLyricLine?.takeIf { it.isNotBlank() }
-        val effectiveArtist = if (lyricLine == null) mediaArtist else "$mediaArtist · $lyricLine"
-        if (mediaTitle != lastMetadataTitle || effectiveArtist != lastMetadataArtist ||
+        // v1.6.0（用户反馈修正）：有歌词行时 **第一行 = 当前歌词、第二行 = 「歌名 · 艺人」**；
+        // 没歌词行时回到「歌名 / 艺人」。排布规则抽在 MediaDisplayLines（JVM 单测覆盖），
+        // 这里只负责把结果写进 session 与通知。
+        val display = MediaDisplayLines.of(mediaTitle, mediaArtist, mediaLyricLine)
+        if (display.title != lastMetadataTitle || display.subtitle != lastMetadataArtist ||
             dur != lastMetadataDuration || currentArtworkUrl != lastMetadataArtwork ||
             currentArtworkBitmap !== lastMetadataBitmap
         ) {
             val builder = android.support.v4.media.MediaMetadataCompat.Builder()
-                .putString(android.support.v4.media.MediaMetadataCompat.METADATA_KEY_TITLE, mediaTitle)
-                .putString(android.support.v4.media.MediaMetadataCompat.METADATA_KEY_ARTIST, effectiveArtist)
+                .putString(android.support.v4.media.MediaMetadataCompat.METADATA_KEY_TITLE, display.title)
+                .putString(android.support.v4.media.MediaMetadataCompat.METADATA_KEY_ARTIST, display.subtitle)
                 .putLong(android.support.v4.media.MediaMetadataCompat.METADATA_KEY_DURATION, dur)
-            // 老车机 / 蓝牙 AVRCP 读的是 SUBTITLE 那一套，顺手写上；没歌词就写空串清掉。
+            // 老车机 / 蓝牙 AVRCP 读的是 SUBTITLE 那一套。v1.6.0 起歌词已经在 TITLE（第一行）了，
+            // 再写一遍 SUBTITLE 会在支持三行的车机上重复显示，所以这里一律写空串清掉旧值。
             builder.putString(
                 android.support.v4.media.MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE,
-                lyricLine ?: ""
+                ""
             )
             // 系统任务栏/锁屏的媒体卡优先读 MediaSession 的 ART 位图——不放进来的话
             // 系统退化用低清来源, 封面在任务栏上就是模糊的
@@ -915,8 +918,8 @@ class PlaybackService : MediaLibraryService() {
                 builder.putBitmap(android.support.v4.media.MediaMetadataCompat.METADATA_KEY_ART, it)
             }
             mediaSessionCompat?.setMetadata(builder.build())
-            lastMetadataTitle = mediaTitle
-            lastMetadataArtist = effectiveArtist
+            lastMetadataTitle = display.title
+            lastMetadataArtist = display.subtitle
             lastMetadataDuration = dur
             lastMetadataArtwork = currentArtworkUrl
             lastMetadataBitmap = currentArtworkBitmap
@@ -974,10 +977,11 @@ class PlaybackService : MediaLibraryService() {
         runCatching {
             val songId = player.currentMediaItem?.mediaId
             if (songId != null) {
+                val display = MediaDisplayLines.of(mediaTitle, mediaArtist, mediaLyricLine)
                 LiveUpdateNotifier.update(
                     this,
-                    title = mediaTitle,
-                    artist = mediaArtist,
+                    title = display.title,
+                    artist = display.subtitle,
                     positionMs = player.currentPosition.coerceAtLeast(0L),
                     durationMs = player.duration.takeIf { it > 0L } ?: 0L,
                     isPlaying = player.isPlaying,
@@ -999,10 +1003,13 @@ class PlaybackService : MediaLibraryService() {
 
     private fun buildNotification(): Notification {
         val isPlaying = player.isPlaying
+        // v1.6.0（用户反馈修正）：通知与系统媒体面板共用同一份两行文案 —— 否则会出现
+        // 「面板第一行是歌词、通知第一行是歌名」的不一致。规则见 MediaDisplayLines。
+        val display = MediaDisplayLines.of(mediaTitle, mediaArtist, mediaLyricLine)
 
         val builder = NotificationCompat.Builder(this, "ncrust_playback")
-            .setContentTitle(mediaTitle)
-            .setContentText(mediaArtist)
+            .setContentTitle(display.title)
+            .setContentText(display.subtitle)
             .setSmallIcon(android.R.drawable.ic_media_play)
             .setOngoing(false)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)

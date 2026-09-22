@@ -440,7 +440,7 @@ D3 在 `PlaybackService` 里的接线（`updateNotify` 里调用实时更新、�
 
 | 项 | 结果 |
 |---|---|
-| JVM 单测 | **129 / 129 通过**（D4：YrcAligner 12 + YrcParser 15；D1：OfflineKeys 7 + OfflineUrlIndex 7；其余为既有 88） |
+| JVM 单测 | **120 / 120 通过**（D4：YrcAligner 12 + YrcParser 15；D1：OfflineKeys 7 + OfflineUrlIndex 7；既有 79）—— 发布说明里一度写成 129，那个数字把中途按证据回退删除的探针测试也算了进去，这里是复核后的真实值 |
 | D4 真机 A/B（PCL110 release） | `Sound Of Silence`：v1.5.2 `line count mismatch lrc=40 yrc=39, skip` → v1.6.0 `39/40 lines got word timing (yrc=39, lcs)` |
 | D4 真机（S6 debug） | `16/28 lines got word timing (yrc=28, lcs)`、`41/41 (index)` —— 两条路径都在真机跑通 |
 | D2 真机（S6 debug） | 五态 gfxinfo（库滚动 / 队列滚动 / 歌词渐变 / 逐字关 / 队列静止）+ framestats 阶段分解 |
@@ -468,4 +468,60 @@ D3 在 `PlaybackService` 里的接线（`updateNotify` 里调用实时更新、�
 - 逐行缩放 graphicsLayer 探针（`PROBE-D2`）：已 `git checkout` 还原，仓库无残留；
 - 「帧预算自适应降级」实现到一半按证据回退，相关文件已删除；
 - 未做任何永久性系统修改，未使用 iptables（v1.5.2 用过的黑洞方案本轮不需要）。
+
+---
+
+# 12. v1.6.1（补丁：媒体面板两行位置修正）
+
+**用户反馈（v1.6.0 发布当天，附 ColorOS 控制中心截图）**：「播放面板的歌词和乐曲的名字位置反了」。
+
+## 12.1 复现与定位
+
+截图里控制中心媒体面板是 「67」 / 「DJ R4 · You have a mental proble..」。
+核对网易元数据：这首歌 name=67、artists=[DJ R4]，LRC 里确有 「You have a mental problems」
+且时间戳与播放进度（1:43）对得上 —— **内容没串，是两行的「排布」不符合用户预期**：
+
+| | v1.6.0（旧） | v1.6.1（新） |
+|---|---|---|
+| 第一行（TITLE） | 歌名 | **当前歌词行** |
+| 第二行（ARTIST） | 艺人 · 歌词行 | **歌名 · 艺人** |
+
+用 ask_user_question 与用户确认了他要的就是这一种（不是猜的）。
+
+## 12.2 修法
+
+新增纯逻辑 [MediaDisplayLines.kt](app/src/main/java/com/takahashirinta/ncrust/player/MediaDisplayLines.kt)
+（JVM 单测 8 条）承载唯一一条规则，**三处复用**：媒体面板元数据（TITLE/ARTIST）、通知栏媒体通知
+（contentTitle/contentText）、Android 16 实时更新（Live Update 两行）—— 三处必须同一份文案，
+否则会出现「面板第一行是歌词、通知第一行是歌名」的不一致。
+
+边界（都进单测）：空白歌词行当作没歌词；艺人缺失时第二行只写歌名（不留「歌名 · 」尾巴）；
+歌名缺失只写艺人；两者都缺则第二行为空串；歌词**不 trim、不截断**（截断交给系统面板）。
+另把 METADATA_KEY_DISPLAY_SUBTITLE 清空 —— 歌词已在第一行，再写一遍会让支持三行的车机重复显示
+（v1.5.1 写它是为了老车机，语义已变）。
+
+## 12.3 真机验证（PCL110 / ColorOS / Android 16 / **release** 包）
+
+```
+dumpsys media_session:
+  metadata: size=5, description=制作人 : 卢文韬, 紫荆花盛开 · 李荣浩/梁咏琪, null
+                              ^^^^^^^^^^^^^^ TITLE=当前歌词行    ^^^^^^^^^^^^^^^^^^^^^^^^^^ ARTIST=歌名 · 艺人
+
+控制中心媒体面板（截图复核）:
+  第一行：紫荆花飘扬            ← 当前歌词
+  第二行：紫荆花盛开 · 李荣…     ← 歌名 · 艺人
+```
+
+## 12.4 单测与产物
+
+- JVM 单测 **128 / 128 通过**（v1.6.0 的 120 + MediaDisplayLines 8）；
+- release `Ncrust-v1.6.1-gpl-release.apk`，debug `Ncrust-v1.6.1-gpl-debug.apk`，sha256 见 `dist/Ncrust-v1.6.1-gpl.sha256`；
+- 顺带修正 v1.6.0 文档里写错的单测总数：129 → **120**。
+
+## 12.5 未验证项（如实）
+
+- 车机 / 蓝牙 AVRCP 上的两行映射（TITLE 现在是歌词）**未在真车机验证**，只按字段语义推断；
+- 老车机三行显示下 SUBTITLE 清空后的观感未验证；
+- S6（API 24）上的锁屏媒体卡未单独截图（字段同源，行为应一致）。
+
 

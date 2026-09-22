@@ -34,8 +34,8 @@ android {
         targetSdk = 36
         // 本 fork 自有的版本线：基于上游 1.3.1 (versionCode 6)。
         // versionCode 必须严格大于上游，否则后续 fork 版本无法覆盖安装。
-        versionCode = 18
-        versionName = "1.6.0-gpl"
+        versionCode = 19
+        versionName = "1.6.1-gpl"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
