@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.takahashirinta.ncrust.ui.i18n.LocalStrings
+import com.takahashirinta.ncrust.ui.theme.LocalNcrustColors
 import io.github.takahashirinta.kanesumi.core.theme.LocalMetroColors
 import io.github.takahashirinta.kanesumi.core.theme.LocalMetroTypography
 import io.github.takahashirinta.kanesumi.core.theme.MetroText
@@ -31,7 +32,8 @@ fun BackgroundActivityDialog(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(LocalMetroColors.current.surface)
+                // P2：弹窗容器抬到 surfaceContainerHigh（深色 #242424 / 浅色 #F2EBDE）。
+                .background(LocalNcrustColors.current.surfaceContainerHigh)
                 .padding(24.dp)
         ) {
             MetroText(

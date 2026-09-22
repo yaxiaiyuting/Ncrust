@@ -68,6 +68,7 @@ import com.takahashirinta.ncrust.ui.i18n.getSavedLanguageCode
 import com.takahashirinta.ncrust.ui.i18n.languagePresets
 import com.takahashirinta.ncrust.ui.theme.AccentSource
 import com.takahashirinta.ncrust.ui.theme.AccentSourceSelector
+import com.takahashirinta.ncrust.ui.theme.LocalNcrustColors
 import com.takahashirinta.ncrust.ui.theme.ThemeColorSelector
 import com.takahashirinta.ncrust.ui.theme.systemAccentSupported
 import com.takahashirinta.ncrust.ui.theme.ThemeMode
@@ -769,7 +770,9 @@ private fun ThemeModeSelector(
                     .border(
                         1.dp,
                         if (active) LocalMetroColors.current.primary
-                        else LocalMetroColors.current.divider
+                        // P2：未选中态用 outline（组件边界）而不是 divider（分隔线）——
+                        // 浅色下 #E2DACB 在 #F6F2E9 页面上几乎看不见，边界该更强一档。
+                        else LocalNcrustColors.current.outline
                     )
                     .background(
                         if (active) LocalMetroColors.current.primary.copy(alpha = 0.14f)
@@ -803,7 +806,9 @@ private fun ClearCacheConfirmDialog(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(LocalMetroColors.current.surface)
+                // P2：弹窗走 surfaceContainerHigh，比基准容器 surface 高一档 ——
+                // 深色 #1A1A1A → #242424、浅色 #FFFDF8 → #F2EBDE，弹窗与卡背不再同色。
+                .background(LocalNcrustColors.current.surfaceContainerHigh)
                 .padding(24.dp)
         ) {
             MetroText(
@@ -920,7 +925,8 @@ private fun AccountDialog(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(LocalMetroColors.current.surface)
+                // P2：同上，账号弹窗也抬到 surfaceContainerHigh。
+                .background(LocalNcrustColors.current.surfaceContainerHigh)
                 .padding(24.dp)
         ) {
             MetroText(

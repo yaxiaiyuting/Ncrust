@@ -44,7 +44,7 @@ fun AccentSourceSelector(
                             when {
                                 !enabled -> LocalMetroColors.current.divider.copy(alpha = 0.4f)
                                 active -> LocalMetroColors.current.primary
-                                else -> LocalMetroColors.current.divider
+                                else -> LocalNcrustColors.current.outline
                             }
                         )
                         .background(
