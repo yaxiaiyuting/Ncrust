@@ -548,6 +548,11 @@ fun PlayerCard(
                     // ("滑动拉起"失效)。这里越界后再 consume, 之后正常 drag。
                     var acc = 0f
                     var dragging = false
+                    // v1.7.0 · P0：**本地累计**拖动进度，不读 progress.value。
+                    // progress.snapTo 是 launch 出去的异步写，慢设备（S6/debug 包）上
+                    // 一次拖动结束时 Animatable 可能还没追上手指；用它做吸附判定会出现
+                    // 「明明拖了 400px，判据只看到 150px」→ 依旧弹回（S6 实测 400px 仍失败）。
+                    var dragProgress = startProgress
                     while (true) {
                         val event = awaitPointerEvent()
                         val change = event.changes.firstOrNull { it.id == pointer } ?: break
@@ -561,11 +566,9 @@ fun PlayerCard(
                             // 不补这一段就会出现「划了但卡片没动」，松手必然弹回。
                             val overshoot = acc - (if (acc > 0f) slop else -slop)
                             if (overshoot != 0f) {
-                                coroutineScope.launch {
-                                    progress.snapTo(
-                                        (progress.value - overshoot / totalDragDistancePx).coerceIn(0f, 1f)
-                                    )
-                                }
+                                dragProgress = (dragProgress - overshoot / totalDragDistancePx).coerceIn(0f, 1f)
+                                val snapshot = dragProgress
+                                coroutineScope.launch { progress.snapTo(snapshot) }
                             }
                             break
                         }
@@ -589,23 +592,21 @@ fun PlayerCard(
                         lastMs = change.uptimeMillis
                         val dragAmount = change.position.y - change.previousPosition.y
                         if (dragAmount != 0f) {
-                            coroutineScope.launch {
-                                progress.snapTo(
-                                    (progress.value - dragAmount / totalDragDistancePx).coerceIn(0f, 1f)
-                                )
-                            }
+                            dragProgress = (dragProgress - dragAmount / totalDragDistancePx).coerceIn(0f, 1f)
+                            val snapshot = dragProgress
+                            coroutineScope.launch { progress.snapTo(snapshot) }
                         }
                     }
                     // 速度用 progress 域反推（px/s）：本节点挂在被 graphicsLayer 平移的卡片里，
                     // 拖动过程中局部坐标随卡片一起移动，直接用 position 差分会低估速度。
                     // progress 与像素的换算是已知的（totalDragDistancePx），换算回来既准又稳。
                     val elapsedMs = lastMs - dragStartMs
-                    val movedProgress = progress.value - startProgress
+                    val movedProgress = dragProgress - startProgress
                     val velocityY = if (elapsedMs > 0L)
                         movedProgress * totalDragDistancePx / (elapsedMs / 1000f) else 0f
                     coroutineScope.launch {
                         // v1.7.0 · P0：行程阈值 + 甩动（原实现要 progress 过中点 = 340dp，用户拖不动）
-                        val target = PlayerCardDragSnap.target(startProgress, progress.value, velocityY)
+                        val target = PlayerCardDragSnap.target(startProgress, dragProgress, velocityY)
                         progress.animateTo(
                             target,
                             if (target == 1f)

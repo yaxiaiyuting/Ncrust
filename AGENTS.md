@@ -960,6 +960,65 @@ S6（API 24 / debug / 1440×2560）`dumpsys gfxinfo framestats`，22s 窗口：
 - 厂商灵动岛（HyperOS 超级岛 / OPPO 流体云 / vivo 原子通知 / 华为实况窗）**无公开 SDK**，
   不接入（与 v1.5.1 D-media2 一致）。
 
+
+## v1.7.0 新增（本 fork）
+
+三个方向：**P0 手势 bug（最高优先级）· P1 横屏大屏幕模式 · P2 Material3 理念美化**。
+
+### P0 · 收起播放器拖不上来
+
+完整根因/修法/实测见「Compose 触摸陷阱」第 8 条与 TASK.md 第 13.1 节。一句话：
+**不是命中测试，是吸附阈值**（旧判据要求手指跨 340dp），判定抽到
+[PlayerDragSnap.kt](app/src/main/java/com/takahashirinta/ncrust/ui/player/PlayerDragSnap.kt)（+23 条 JVM 单测）。
+两条**必须保住**的实现细节：
+
+1. 吸附判定读的是**本地累计的拖动进度**（`dragProgress`），不是 `progress.value` ——
+   `progress.snapTo` 是 `launch` 出去的异步写，慢设备上一次拖动结束时 Animatable 还没追上手指，
+   用它判定会出现「明明拖了 400px，判据只看到 150px」（S6 实测）。
+2. 速度从 **progress 域**反推（`progressDelta × totalDragDistancePx ÷ 耗时`）：
+   检测器挂在被 `graphicsLayer` 平移的节点里，拖动中局部坐标随卡片一起移动，`position` 差分会低估速度。
+
+### P1 · 横屏「大屏幕模式」（桌面播放器）
+
+| 项 | 说明 |
+|---|---|
+| 进入 | 播放器展开后，底部操作行第 4 个「⤢」按钮（`FullPlayerControls` 的 `onToggleBigScreen`） |
+| 退出 | 同一按钮（横屏在控制条右端）· 系统返回键 · **把手机转回竖屏** |
+| 布局 | 左栏：大封面 + 歌名/作者 + **就地音质选择器**；右栏：复用既有歌词/队列面板（yrc 逐字、翻译、A-/A+ 全保留）；底部控制条横跨右栏 |
+| 方向 | 进入时 `SENSOR_LANDSCAPE` 立刻转过去 → 由 `OrientationEventListener` 放宽成 `SENSOR`（**绝不长期锁横屏**）；`applyOrientationPolicy()` 在大屏期间让路；`onConfigurationChanged` 优先判退大屏 |
+| 判定 | **第三个谓词** `PlayerLayout.isBigScreenActive(requested, orientationLandscape)`，只让播放器读；全仓库那 7 处 `screenWidthDp >= 600` **一处没改** |
+| 顺手修 | 分栏**语义中线**：旧实现两处用 `screenWidthPx / 2`，而真实边界是 `0.44 × 宽`，44%~50% 那条窄带里歌词滚动会被整卡拖拽抢走（第 3 条坑的变种）。现在统一走 `PlayerLayout.splitBoundaryPx()` |
+| 纯逻辑 | [PlayerLayout.kt](app/src/main/java/com/takahashirinta/ncrust/ui/player/PlayerLayout.kt)（12 条单测）、[BigScreenOrientation.kt](app/src/main/java/com/takahashirinta/ncrust/BigScreenOrientation.kt)（6 条单测） |
+| 实测 | PCL110：进入即 2800×1272、左封面 952px(272dp)、右栏 yrc 歌词 + A-/A+ 并排、音质就地切换 `wifi_quality` 6→2 并按新档续播、返回键/按钮都能退出、大屏帧 Janky 0% |
+
+⚠️ **大屏模式与「宽屏两栏」是两件事**：宽屏（平板/折叠/车机，`screenWidthDp >= 600`）仍走原来的
+`isWidePlayer` 分支；手机横屏大屏模式走新分支。改其中一个不要顺手改另一个。
+
+### P2 · Material3 理念美化（**不引 material3**）
+
+**结论先行：官方 `androidx.compose.material3` 不引入。** Kanesumi 是自研的 M3 风格设计系统
+（库自己的 AGENTS.md 写着「零 M3」），同时装两套 = 双主题源 + 圆角/ripple 冲突。
+M3 在本仓库只当**取值参照系**。落地的是三件与 Kanesumi「无圆角无阴影」不冲突的事：
+
+1. **tonal 层级做进颜色**（不是阴影）：`NcrustColors` 新增
+   `surfaceContainerLowest/Low/High/Highest + outline/outlineVariant`（**默认值 = 深色现值**，
+   老调用点零变化）；`toMetroColors()` 把 `surfaceVariant ← surfaceContainerHighest`、
+   `divider ← outlineVariant`。深色因此有了 4 级层次：
+   **页面 `#000000` → 卡片 `#1A1A1A` → 弹窗 `#242424` → 菜单/下拉 `#2E2E2E`**
+   （修掉「深色下 surface == surfaceVariant，弹窗与页面同色」这个老问题）；浅色弹窗 `#FFFDF8 → #F2EBDE`。
+2. **对比度**：5 处把「primary 上的前景色」硬编码成 `Color.Black` 的地方改用
+   `LocalMetroColors.current.onPrimary`。6 个预设色下逐像素不变（它们本来就判黑），
+   但「跟随封面 / 跟随系统」取色会产出中亮度色（例 `#3D3D99` 黑字仅 2.33:1），现在自动改白字 9.03:1。
+3. **无障碍/触控**：`SettingSwitchRow` 整行加 `toggleable + Role.Switch`（Kanesumi 的 `MetroSwitch`
+   是裸 `pointerInput`、零 semantics，TalkBack 摸不到；**不改库**是因为改了发布产物不可复现）；
+   4 个 <48dp 的点击目标抬到 48dp（主题模式选择器 / 取色来源选择器 / 两个对话框按钮）。
+
+**明确不做**：大圆角（Kanesumi 是直角设计语言，全 app 只有 `SongCard` 播放按钮一处 CircleShape，
+属图标语义保留）、`material3` 依赖、typography 迁移（`LocalNcrustTypography` 至今 0 处读取，
+要动 `MainActivity` 给 `MetroTheme` 传参才生效，收益低风险高，本轮不碰）、
+任何 `tween` 时长调整（避免无谓回归）、`SweepEasing`（逐字歌词的光标是**音频时间轴**问题，
+不是 UI 转场，绝不能被 M3 动效统一掉）。
+
 - **Stale comments**: some comments say "last 20 s" for the gapless preload window (actual 60 s) and "4 Hz" for progress ticks (actual 2 Hz). Trust the code.
 - **`SongDetailScreen` / `NavRoutes.song(...)` are registered but unreachable** — clipboard song links load into the player instead.
 - **`ncrust-api/` is not part of the app** — see Repository Layout.

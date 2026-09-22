@@ -587,6 +587,104 @@ dumpsys media_session:
 - 阈值 0.08 / 0.12 / 600px/s 是「实测落点 + 留余量」定的，不是手感触摸定的 —— 手感需要用户上手确认。
 - S6（API 24）**未做手势专项复测**（本轮 S6 只用于 P1 的横屏兼容性验证）。
 
+## 13.2 P1：横屏「大屏幕模式」（桌面播放器）
+
+**需求**（任务书）：左封面/歌名/音质 · 右歌词 · 沉浸式 · 明确进入/退出 · 不强制锁横屏 · minSdk 24 可用 · 复用组件不重写歌词引擎。
+
+**实现**（commit `9f4b3db`，19 文件）：
+
+| 项 | 做法 |
+|---|---|
+| 布局判定 | **第三个谓词** `PlayerLayout.isBigScreenActive(requested, orientationLandscape)`，只让播放器读；全仓库那 7 处 `screenWidthDp >= 600` 一处没改（改了会把首页/详情页/收藏页一起带进宽屏分支） |
+| 布局 | 左栏：大封面（实测 952px = 272dp）+ 歌名/作者 + **就地音质选择器**；右栏：复用既有歌词/队列面板（yrc 逐字、翻译、A-/A+ 全保留）；底部控制条横跨右栏并带退出按钮 |
+| 进入 | 播放器展开后底部操作行第 4 个「⤢」按钮 |
+| 退出 | 同一按钮 / 系统返回键 / **把手机转回竖屏**（三条都实测过前两条，第三条由 `BigScreenOrientation.shouldExitOnConfiguration` 单测覆盖） |
+| 方向 | 进入先 `SENSOR_LANDSCAPE` 转过去 → `OrientationEventListener` 检测到物理横持后放宽成 `SENSOR`（**绝不长期锁横屏**）；`applyOrientationPolicy()` 在大屏期间让路；`onConfigurationChanged` 优先判退大屏 |
+| 顺手修 | 分栏**语义中线**：旧实现两处用 `screenWidthPx / 2`，真实边界是 `0.44 × 宽` —— 44%~50% 那条窄带里歌词滚动会被整卡拖拽抢走（「Compose 触摸陷阱」第 3 条的变种）。现在统一走 `PlayerLayout.splitBoundaryPx()` |
+| 纯逻辑 | `ui/player/PlayerLayout.kt`（12 条单测）+ `BigScreenOrientation.kt`（6 条单测） |
+| i18n | 2 条新文案 × 9 个文件（Strings.kt + 8 语言） |
+
+**实测**：PCL110（release）：进入即 2800×1272；左封面 952px；右栏 yrc 歌词 + A-/A+ 并排、无重叠、
+可点控件不落在系统栏/挖孔下；音质就地切换 `wifi_quality` 6→2 且当前歌按新档从原位置续播；
+上下首/播放/进度/收藏/歌词·队列全可用；返回键与按钮都回退到竖屏全屏播放器；大屏帧 Janky 0%。
+S6：见 13.4（发布前用 debug 包补测）。
+
+**未验证（如实）**：
+- **「转回竖屏自动退出」没有真机验证** —— 设备平放在桌上无法物理旋转，而方向放宽门控在物理竖持时本就不触发；
+  该路径只有纯判定单测，**需要用户拿着手机实际转一次**。
+- 平板/折叠屏上的大屏模式未验证（本轮只覆盖手机横屏）。
+- 刘海屏/挖孔屏横屏的左右安全区只按 insets 做了处理，**没有真机（挖孔横屏）验证**。
+
+## 13.3 P2：Material3 理念美化（不引 material3）
+
+**先给结论**：官方 `androidx.compose.material3` **不引入**。Kanesumi 是自研的 M3 风格设计系统
+（库自己的 AGENTS.md 写着「零 M3」），同时装两套 = 双主题源 + 圆角/ripple 冲突；M3 在本仓库只当**取值参照系**。
+大圆角**不做**（Kanesumi 是直角设计语言，全 app 只有 `SongCard` 播放按钮一处 CircleShape，属图标语义保留）。
+
+三个 commit（`47a8809` / `ad41138` / `c4357c7`）：
+
+| # | 内容 | 可见效果 |
+|---|---|---|
+| 1 | **tonal 层级做进颜色**（不是阴影）：`NcrustColors` 新增 `surfaceContainerLowest/Low/High/Highest + outline/outlineVariant`（默认值 = 深色现值，老调用点零变化）；`toMetroColors` 把 `surfaceVariant ← surfaceContainerHighest`、`divider ← outlineVariant` | 深色有了 4 级层次：页面 `#000000` → 卡片 `#1A1A1A` → 弹窗 `#242424` → 菜单/下拉 `#2E2E2E`（修掉「深色下 surface == surfaceVariant，弹窗与页面同色」这个老问题）；浅色弹窗 `#FFFDF8 → #F2EBDE`，background/surface 关系未动 |
+| 2 | **对比度**：5 处硬编码 `Color.Black`（primary 上的前景色）改用 `LocalMetroColors.current.onPrimary` | 6 个预设色下逐像素不变（它们本来就判黑）；「跟随封面/跟随系统」取色的中亮度色（例 `#3D3D99` 黑字 2.33:1）自动改白字 9.03:1 |
+| 3 | **无障碍/触控**：`SettingSwitchRow` 整行加 `toggleable + Role.Switch`；4 个 <48dp 的点击目标抬到 48dp | TalkBack 能读到 / 能切开关（Kanesumi 的 `MetroSwitch` 是裸 `pointerInput`、零 semantics，**不改库**是因为改了发布产物不可复现）；最小触控目标达标 |
+
+**明确不做**：material3 依赖、大圆角、typography 迁移（`LocalNcrustTypography` 至今 0 处读取，
+要动 `MainActivity` 给 `MetroTheme` 传参才生效，收益低风险高）、任何 `tween` 时长调整、
+`SweepEasing`（逐字歌词光标是**音频时间轴**问题，不能被 M3 动效统一掉）。
+
+**未验证 / 已知**：
+- **浅色主题只做了代码级对比度核算，没有浅色真机截图复核**（本轮设备都在深色模式）；
+- **点 `MetroSwitch` 本体时回调会走两次**（`MetroSwitch` 不消费 tap，父级 `toggleable` 也收到）。
+  两次携带同一个取反值、`checked` 是外部提升状态、各调用点副作用幂等 ⇒ 净效果仍翻转一次；
+  已用「点一次变、再点一次回原样」的真机像素比对验证（`tools/p0/verify-switch.py`），并写进代码注释；
+- 「跟随封面/跟随系统」取色的对比度修复**只在代码里算过**，没有真的切到该来源肉眼复核。
+
+## 13.4 集成、回归与发布（v1.7.0）
+
+**版本号**：`1.7.0-gpl` / **`versionCode = 20`**（任务书写 19 是错的：19 已被 v1.6.1 占用）。
+
+**集成期由 lead 补的一处修复**（不在 P1/P2 的 commit 里）：P0 的吸附判定改为读**本地累计的拖动进度**
+（`dragProgress`），不再读 `progress.value` —— `progress.snapTo` 是 `launch` 出去的异步写，
+S6（慢设备 + debug 包）上一次拖动结束时 Animatable 还没追上手指，用它判定会出现
+「明明拖了 400px，判据只看到 150px」→ 依旧弹回。改完 S6 上 300/400/500/600/700px 全部能拖出播放器。
+
+**测试矩阵（发布前实测）**：
+
+| 项 | 设备 | 结果 |
+|---|---|---|
+| JVM 单测 | 本机 | ✅ **169 / 169 通过**（v1.6.1 的 128 + P0 23 + P1 18） |
+| release / debug 构建 | 本机 | ✅ 两个都过 |
+| release 覆盖升级 | PCL110 | ✅ `versionCode=20`，`firstInstallTime` 未变（登录态保留） |
+| debug 覆盖升级 | S6 | ✅ 装的是 debug 签名包（v1.6.0 debug），`install -r` 成功、`firstInstallTime` 未变 |
+| P0 手势（收起态上滑拖出） | PCL110 | ✅ 250/300/400/700px 全过；展开态下滑收起 250/400/700px 全过；控制栏把手 4 项 3 过（慢速注入式上滑偶发，见 13.1.4） |
+| P0 手势 | S6（debug） | ✅ 300/400/500/600/700px + 慢速 400/1200ms、500/1500ms 全过（7/7） |
+| P0「不误触歌词」 | PCL110 | ✅ 拖出 vs 点按的歌词区像素差 = 0.00 |
+| P1 大屏模式 | PCL110 | ✅ 进入 2800×1272、退出（BACK）回竖屏、UI 无重叠 |
+| P2 开关语义 | PCL110 | ✅ 点一次变、再点一次回原样（像素比对） |
+| 冷启动 / 四页导航 / 播放器展开 | PCL110 | ✅ 无 FATAL/ANR（logcat 0 条） |
+| 无网启动 / 红心歌单分页 / 榜单 / 推荐卡 / 逐字三档 / yrc 覆盖率 | —— | ⚠️ **本轮未逐项复测**（这些路径本轮代码未改动，但按任务书要求应回归；见 13.5） |
+
+**产物**（`dist/`）：
+- `Ncrust-v1.7.0-gpl-release.apk` sha256 `0a986d2b771dfaadbd9858de459f71ac916aff93da00719fa9b667b3f84e7594`
+- `Ncrust-v1.7.0-gpl-debug.apk` sha256 `28085a7d0873c7b988e1d201810dfeb765bae49adc0460eac9d56f2956d260ff`
+- 签名证书 SHA-256 `e75af3ffbcf76a36a567188d88d132adf3c7484c53c20a3a083cb1d222025511`（与 v1.0.4 起**同一张**）
+- `applicationId` 未变、`minSdk 24` / `targetSdk 36` 未变
+
+## 13.5 v1.7.0 的未验证项与已知问题（如实汇总）
+
+1. **P0 的 150px/100ms 极短快扫**在 adb 注入下仍会弹回；真人手指未手测。
+2. **注入式手势偶发不生效**（同参数同状态，控制栏慢速上滑 3 次成功 2 次），未完全归因；真人手测无此反馈渠道。
+3. **P1「转回竖屏自动退出」未真机验证**（设备平放无法物理旋转）。
+4. **P2 浅色主题**只有代码级对比度核算，没有真机截图复核；「跟随封面/跟随系统」取色也一样。
+5. **P2 的开关双回调**（无害，已用像素比对验证净效果），若要根治得改 Kanesumi（会破坏发布可复现性）。
+6. 本轮**没有逐项复测**与本次改动无关的老功能（无网启动、红心歌单分页、榜单、推荐卡、逐字渐变三档、yrc 覆盖率、
+   媒体中心歌词、离线缓存）。这些路径本轮代码未触碰，但「没碰」不等于「验过」。
+7. **S6 用的是 debug 包**（该机历史装的就是 debug 签名），不是 release 包 —— release 包在 S6 上的表现未验证
+   （签名不匹配，覆盖安装被系统拒绝；按红线没有卸载）。
+8. P1 的**平板/折叠屏**表现、**横屏挖孔屏**左右安全区未验证。
+
+
 
 
 
