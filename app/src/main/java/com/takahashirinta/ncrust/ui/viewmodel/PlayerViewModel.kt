@@ -32,6 +32,7 @@ import com.takahashirinta.ncrust.lyric.LrcParser
 import com.takahashirinta.ncrust.lyric.YrcParser
 import com.takahashirinta.ncrust.lyric.LyricsCache
 import com.takahashirinta.ncrust.lyric.LyricsDisplayPrefs
+import com.takahashirinta.ncrust.lyric.LyricsSweepQuality
 import com.takahashirinta.ncrust.lyric.LyricsWordAnimationMode
 import com.takahashirinta.ncrust.network.RetrofitClient
 import com.takahashirinta.ncrust.player.PlaybackService
@@ -77,6 +78,11 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
     // 只在歌曲真的带 yrc 逐字数据时才有区别，没有逐字数据的歌行为与关掉完全一致。
     // 取值见 LyricsWordAnimationMode（0 渐变扫过 / 1 逐字硬切 / 2 关闭逐字）。
     val lyricsWordAnimation = MutableStateFlow(LyricsWordAnimationMode.GRADIENT_SWEEP)
+
+    // v1.5.2：逐字扫过的绘制质量（0 自动 / 1 高级软边 / 2 兼容硬边）。默认「自动」——
+    // 按设备是否 low-RAM 决定；两种画法的**光标位置算法完全相同**，所以切到兼容档只是
+    // 少了渐变带的柔化，不会退回 v1.5.1 那种按词跳变。取值见 LyricsSweepQuality。
+    val lyricsSweepQuality = MutableStateFlow(LyricsSweepQuality.AUTO)
 
     /**
      * v1.5.1 · D：是否把当前歌词行送进系统媒体面板（通知栏 / 锁屏 / 车机）。
@@ -221,6 +227,11 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
             .getBoolean("lyrics_translation", true)
         // v1.5.1 · E：歌词字号倍率（默认 1.0x —— 与 v1.5.0 的视觉完全一致）。
         lyricsFontScale.value = LyricsDisplayPrefs.readFontScale(
+            getApplication<Application>()
+                .getSharedPreferences(LyricsDisplayPrefs.PREFS_NAME, android.content.Context.MODE_PRIVATE)
+        )
+        // v1.5.2：逐字扫过质量（默认自动）。
+        lyricsSweepQuality.value = LyricsDisplayPrefs.readSweepQuality(
             getApplication<Application>()
                 .getSharedPreferences(LyricsDisplayPrefs.PREFS_NAME, android.content.Context.MODE_PRIVATE)
         )
@@ -385,6 +396,22 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         val normalized = LyricsWordAnimationMode.normalize(mode)
         lyricsWordAnimation.value = normalized
         LyricsDisplayPrefs.writeWordAnimation(
+            getApplication<Application>()
+                .getSharedPreferences(LyricsDisplayPrefs.PREFS_NAME, android.content.Context.MODE_PRIVATE),
+            normalized
+        )
+    }
+
+    /**
+     * v1.5.2：逐字扫过的绘制质量（自动 / 高级软边 / 兼容硬边）。
+     *
+     * 只影响**怎么画**，不重取歌词、不重建轨道，所以切换是即时的：
+     * `softEdge` 只在 draw 阶段被读，改完下一帧就生效。
+     */
+    fun setLyricsSweepQuality(quality: Int) {
+        val normalized = LyricsSweepQuality.normalize(quality)
+        lyricsSweepQuality.value = normalized
+        LyricsDisplayPrefs.writeSweepQuality(
             getApplication<Application>()
                 .getSharedPreferences(LyricsDisplayPrefs.PREFS_NAME, android.content.Context.MODE_PRIVATE),
             normalized

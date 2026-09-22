@@ -132,6 +132,8 @@ fun PlayerCard(
     val lyricsWordAnimation by playerViewModel.lyricsWordAnimation.collectAsState()
     // v1.5.1 · E：歌词字号倍率（设置页与歌词界面的 A-/A+ 都改它）。
     val lyricsFontScale by playerViewModel.lyricsFontScale.collectAsState()
+    // v1.5.2：逐字扫过的绘制质量（0 自动 / 1 高级软边 / 2 兼容硬边）。
+    val lyricsSweepQuality by playerViewModel.lyricsSweepQuality.collectAsState()
     // 收藏库状态: 当前歌是否已收藏(右下角 加号/对号 切换用)。切歌或操作后刷新。
     var libraryTick by remember { mutableIntStateOf(0) }
     val isSongSaved = remember(song?.id, libraryTick) {
@@ -656,6 +658,7 @@ fun PlayerCard(
                                     wordByWordEnabled = lyricsWordAnimation != LyricsWordAnimationMode.OFF,
                                     wordAnimationMode = lyricsWordAnimation,
                                     fontScale = lyricsFontScale,
+                                    sweepQuality = lyricsSweepQuality,
                                     onFontScaleStep = { delta -> playerViewModel.stepLyricsFontScale(delta) },
                                 )
                             }

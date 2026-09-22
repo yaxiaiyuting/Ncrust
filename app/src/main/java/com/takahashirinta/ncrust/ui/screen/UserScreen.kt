@@ -60,6 +60,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import com.takahashirinta.ncrust.ui.components.QrLoginDialog
 import com.takahashirinta.ncrust.ui.theme.BackgroundImageManager
 import com.takahashirinta.ncrust.lyric.LyricsDisplayPrefs
+import com.takahashirinta.ncrust.lyric.LyricsSweepQuality
 import com.takahashirinta.ncrust.ui.i18n.LocalStrings
 import com.takahashirinta.ncrust.ui.i18n.LanguagePreset
 import com.takahashirinta.ncrust.ui.i18n.getSavedLanguageCode
@@ -125,6 +126,8 @@ fun UserScreen(
     }
     // v1.5.1 · E 歌词字号倍率（0.7x ~ 1.5x，默认 1.0x）。
     var lyricsFontScale by remember { mutableStateOf(LyricsDisplayPrefs.readFontScale(prefs)) }
+    // v1.5.2 逐字扫过绘制质量（0 自动 / 1 高级软边 / 2 兼容硬边，默认自动）。
+    var lyricsSweepQuality by remember { mutableIntStateOf(LyricsDisplayPrefs.readSweepQuality(prefs)) }
 
     var selectedLanguageCode by remember { mutableStateOf(getSavedLanguageCode(context)) }
 
@@ -353,6 +356,17 @@ fun UserScreen(
                 onSelect = {
                     lyricsWordAnimation = it
                     playerViewModel.setLyricsWordAnimation(it)
+                }
+            )
+            // v1.5.2 逐字扫过质量三选一。只影响渐变带磨不磨圆 —— 两种档位的光标位置算法
+            // 完全相同（都走 SweepTrack），所以切到「兼容」也不会退回按词跳变。
+            MetroDropdownRow(
+                label = strings.lyricsSweepQualityLabel,
+                selectedIndex = lyricsSweepQuality,
+                options = strings.lyricsSweepQualityOptions,
+                onSelect = {
+                    lyricsSweepQuality = it
+                    playerViewModel.setLyricsSweepQuality(it)
                 }
             )
             // v1.5.1 · E 歌词字号（0.7x~1.5x）。改完立即生效，无需重进播放器。

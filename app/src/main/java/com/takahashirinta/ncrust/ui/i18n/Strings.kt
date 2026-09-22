@@ -69,6 +69,10 @@ data class Strings(
     // v1.5.1 · D：媒体面板歌词开关（默认关）。开启后 ARTIST 变成「艺人 · 当前歌词行」。
     val lyricsInMediaSessionLabel: String,
     val lyricsInMediaSessionHint: String,
+    // v1.5.2：逐字扫过质量三选一（0 自动 / 1 高级软边 / 2 兼容硬边）。顺序必须与
+    // LyricsSweepQuality 的常量一一对应。
+    val lyricsSweepQualityLabel: String,
+    val lyricsSweepQualityOptions: List<String>,
     // v1.5.1 · E：歌词字号（倍率档位文案是纯数字，与语言无关，不进 i18n）。
     val lyricsFontScaleLabel: String,
     /** 歌词界面 A- / A+ 的无障碍描述。 */
