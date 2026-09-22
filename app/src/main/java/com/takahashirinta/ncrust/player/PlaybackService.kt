@@ -12,7 +12,10 @@
  *   - B3-2：禁用流内嵌 ID3 元数据（封面等）解析，显示用的元数据全部来自 API。
  *   - B3-3：加入音频 offload 能力探测日志（刻意不启用，依据见 logAudioOffloadCapability）。
  *   - B4：playUrl 支持 startPositionMs，配合「每首歌进度记忆」实现断点续播；
- *     用 setMediaItem(item, pos) 而非 prepare 后 seekTo，保证歌词首帧即对齐。 */
+ *     用 setMediaItem(item, pos) 而非 prepare 后 seekTo，保证歌词首帧即对齐。
+ *   - v1.5.2 串台修复：待播槽位（PreloadSlot）至多一首预载项；预载项自带
+ *     mediaId 与 MediaMetadata；onMediaItemTransition 加槽位守卫，宁可不更新 UI
+ *     也不显示与耳朵不符的歌。 */
 
 package com.takahashirinta.ncrust.player
 
@@ -327,42 +330,70 @@ class PlaybackService : MediaLibraryService() {
                 reason: Int
             ) {
                 // Only handle automatic transitions triggered by ExoPlayer (gapless handoff).
-                if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_AUTO && pendingNextTitle != null) {
-                    mediaTitle = pendingNextTitle!!
-                    mediaArtist = pendingNextArtist ?: ""
-                    mediaSongId = pendingNextSongId.takeIf { it > 0 }
-                    pendingNextTitle = null
-                    val artwork = pendingNextArtwork
-                    pendingNextArtwork = null
-                    if (!artwork.isNullOrEmpty()) {
-                        currentArtworkUrl = artwork
-                        // 预载位图就绪直接应用(切换瞬间任务栏就是新图),
-                        // 未就绪回退异步加载
-                        val preloaded = pendingNextArtworkBitmap
-                        pendingNextArtworkBitmap = null
-                        // 使任何在途预载作废: 迟到的预载结果不能回填 pending,
-                        // 否则会污染下一次切换
-                        artworkPreloadGeneration++
-                        if (preloaded != null) {
-                            currentArtworkBitmap = preloaded
-                            scope.launch(Dispatchers.Main) {
-                                updatePlaybackState()
-                                updateNotify()
-                            }
-                        } else {
-                            // 回退异步加载; 旧位图保留到新封面加载完(用户决策),
-                            // 加载完成由 metadata 位图引用比较触发换图
-                            loadArtwork(artwork)
-                        }
-                    }
-                    // Remove the finished item so the playlist stays compact.
-                    if (player.mediaItemCount > 1) {
-                        player.removeMediaItem(0)
-                    }
-                    updatePlaybackState()
-                    updateNotify()
-                    onSongTransitioned?.invoke()
+                if (reason != Player.MEDIA_ITEM_TRANSITION_REASON_AUTO) return
+                val itemSongId = PreloadSlot.songIdFromMediaId(mediaItem?.mediaId)
+                val itemUrl = mediaItem?.localConfiguration?.uri?.toString()
+                // v1.5.2 串台守卫：只有「ExoPlayer 真正起播的那一项」就是待播槽位里那一首，
+                // 才允许把元数据写进通知栏 / 歌词 / ViewModel。重复入队的年代，这里会把
+                // 「下下首」的标题写到正在播的「上一首」上 —— 就是用户听到的串台。
+                // 现在宁可让 UI 停在原处（下一首自然会走硬切重新对齐），也绝不显示错歌。
+                if (!PreloadSlot.transitionMatches(pendingNextSongId, pendingNextUrl, itemSongId, itemUrl)) {
+                    Log.w(
+                        "PlaybackService",
+                        "AUTO transition outside the preload slot (itemId=" + mediaItem?.mediaId +
+                            " url=" + itemUrl + ", slot songId=" + pendingNextSongId +
+                            ") — keep metadata in sync with audio, leave the slot for its own item"
+                    )
+                    // 刻意**不清**槽位：槽位项可能只是被排在了别的项之后（例如车机往播放列表里
+                    // 插了内容），等它真的起播时元数据仍然正确。守卫只保证「绝不把槽位元数据
+                    // 用在别的项上」——按 songId 比对，所以留着不会有谎报风险。
+                    // 已播完的项照常清掉，列表长度不会因这次异常 transition 持续增长。
+                    val playedItems = player.currentMediaItemIndex
+                    if (playedItems > 0) player.removeMediaItems(0, playedItems)
+                    return
                 }
+                // 元数据优先取 item 自带的（与音频同源），槽位只作兜底。
+                val itemMetadata = mediaItem?.mediaMetadata
+                val itemTitle = itemMetadata?.title?.toString()?.takeIf { it.isNotBlank() }
+                val slotTitle = pendingNextTitle
+                val slotArtist = pendingNextArtist
+                val slotArtwork = pendingNextArtwork
+                val slotSongId = pendingNextSongId
+                // 预载位图就绪则在切换瞬间直接应用(任务栏立即是新图), 未就绪回退异步加载。
+                val preloaded = pendingNextArtworkBitmap
+                clearPendingNext()
+                pendingNextArtworkBitmap = null
+                (itemTitle ?: slotTitle)?.let { mediaTitle = it }
+                mediaArtist = itemMetadata?.artist?.toString() ?: (slotArtist ?: "")
+                mediaSongId = itemSongId ?: slotSongId.takeIf { it > 0 }
+                Log.d(
+                    "PlaybackService",
+                    "gapless transition -> songId=" + mediaSongId + " title=" + mediaTitle +
+                        " count=" + player.mediaItemCount
+                )
+                if (!slotArtwork.isNullOrEmpty()) {
+                    currentArtworkUrl = slotArtwork
+                    // 使任何在途预载作废: 迟到的预载结果不能回填 pending,
+                    // 否则会污染下一次切换
+                    artworkPreloadGeneration++
+                    if (preloaded != null) {
+                        currentArtworkBitmap = preloaded
+                        scope.launch(Dispatchers.Main) {
+                            updatePlaybackState()
+                            updateNotify()
+                        }
+                    } else {
+                        // 回退异步加载; 旧位图保留到新封面加载完(用户决策),
+                        // 加载完成由 metadata 位图引用比较触发换图
+                        loadArtwork(slotArtwork)
+                    }
+                }
+                // 播完的项统一清掉：列表收敛回「当前 + 至多一首待播」。
+                val finishedItems = player.currentMediaItemIndex
+                if (finishedItems > 0) player.removeMediaItems(0, finishedItems)
+                updatePlaybackState()
+                updateNotify()
+                onSongTransitioned?.invoke()
             }
         })
         // 音频输出层故障（听感"哒哒哒"爆鸣，严重时 AudioTrack 死掉、进度照跑但没声）
@@ -419,7 +450,7 @@ class PlaybackService : MediaLibraryService() {
                 if (!pendingNextArtwork.isNullOrEmpty()) {
                     preloadArtwork(pendingNextArtwork!!)
                 }
-                player.addMediaItem(androidx.media3.common.MediaItem.fromUri(nextUrl))
+                player.addMediaItem(buildPreloadMediaItem(nextUrl, nextSongId))
                 Log.d(
                     "PlaybackService",
                     "Queued next: $pendingNextTitle url=$nextUrl count=" + player.mediaItemCount
@@ -617,6 +648,31 @@ class PlaybackService : MediaLibraryService() {
         pendingNextArtwork = null
         pendingNextSongId = -1L
         pendingNextUrl = null
+    }
+
+    /**
+     * 预载项的构造：元数据（标题/艺人/封面）与 mediaId 都写在 media item **自己身上**。
+     *
+     * 通知栏/歌词原先只靠 pendingNext* 这组旁路变量，而旁路是 last-write-wins：
+     * 只要 ExoPlayer 起播的项不是槽位里那一首，写出来的元数据就是另一首歌。
+     * 让元数据跟 item 走，UI 与音频就永远同源；mediaId=song:<id> 则让
+     * onMediaItemTransition 能回答「这次起播的到底是哪一首」（见 PreloadSlot）。
+     */
+    private fun buildPreloadMediaItem(url: String, songId: Long): androidx.media3.common.MediaItem {
+        val builder = androidx.media3.common.MediaItem.Builder()
+            .setUri(url)
+            .setMediaId(PreloadSlot.mediaIdFor(songId, url))
+        val title = pendingNextTitle
+        val artist = pendingNextArtist
+        val artwork = pendingNextArtwork
+        if (title != null || artist != null || !artwork.isNullOrEmpty()) {
+            val meta = MediaMetadata.Builder()
+            if (title != null) meta.setTitle(title)
+            if (artist != null) meta.setArtist(artist)
+            CoverUrls.large(artwork)?.let { meta.setArtworkUri(Uri.parse(it)) }
+            builder.setMediaMetadata(meta.build())
+        }
+        return builder.build()
     }
 
     /**
