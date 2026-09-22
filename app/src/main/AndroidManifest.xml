@@ -9,6 +9,10 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <!-- v1.6.0 · D3：Android 16 的实时更新（Live Updates）。真机实测权限名就是这个
+         （不是文档里常见的 ..._ONGOING_NOTIFICATIONS）；只有 API 36+ 会用到，
+         运行时还要 NotificationManager.canPostPromotedNotifications() 通过才发。 -->
+    <uses-permission android:name="android.permission.POST_PROMOTED_NOTIFICATIONS" />
     <!-- 后台持续播放：请求系统把本应用加入电池优化白名单（"允许后台活动"）。
          不申请该权限时，ColorOS/MIUI 等 ROM 会在熄屏后杀掉前台播放服务。 -->
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
