@@ -64,6 +64,7 @@ import com.takahashirinta.ncrust.QueueModes
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import com.takahashirinta.ncrust.ui.i18n.LocalStrings
+import com.takahashirinta.ncrust.lyric.LyricsWordAnimationMode
 import com.takahashirinta.ncrust.ui.viewmodel.PlayerViewModel
 import io.github.takahashirinta.kanesumi.anim.sokuou.SokuouTweens
 import io.github.takahashirinta.kanesumi.controls.MetroDivider
@@ -120,7 +121,9 @@ fun PlayerCard(
     val lyricsSongId by playerViewModel.lyricsSongId.collectAsState()
     val lyricsNoContentSongId by playerViewModel.lyricsNoContentSongId.collectAsState()
     val showLyricsTranslation by playerViewModel.showLyricsTranslation.collectAsState()
-    val showLyricsWordByWord by playerViewModel.showLyricsWordByWord.collectAsState()
+    // v1.5.1 · A：逐字动画模式（0 渐变扫过 / 1 逐字硬切 / 2 关闭逐字）。
+    // 模式 2 时 karaokeEnabled=false，行内渲染退回 v1.4.1 的整行路径。
+    val lyricsWordAnimation by playerViewModel.lyricsWordAnimation.collectAsState()
     // 收藏库状态: 当前歌是否已收藏(右下角 加号/对号 切换用)。切歌或操作后刷新。
     var libraryTick by remember { mutableIntStateOf(0) }
     val isSongSaved = remember(song?.id, libraryTick) {
@@ -642,7 +645,8 @@ fun PlayerCard(
                                     enabled = lyricsEnabled && cardExpandedForInput,
                                     onUserScrolled = {},
                                     isLoading = lyricsLoading,
-                                    wordByWordEnabled = showLyricsWordByWord,
+                                    wordByWordEnabled = lyricsWordAnimation != LyricsWordAnimationMode.OFF,
+                                    wordAnimationMode = lyricsWordAnimation,
                                 )
                             }
                         }
@@ -1210,3 +1214,4 @@ private fun StableCover(
         )
     }
 }
+

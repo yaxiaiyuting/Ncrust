@@ -31,6 +31,8 @@ import com.takahashirinta.ncrust.lyric.LrcLine
 import com.takahashirinta.ncrust.lyric.LrcParser
 import com.takahashirinta.ncrust.lyric.YrcParser
 import com.takahashirinta.ncrust.lyric.LyricsCache
+import com.takahashirinta.ncrust.lyric.LyricsDisplayPrefs
+import com.takahashirinta.ncrust.lyric.LyricsWordAnimationMode
 import com.takahashirinta.ncrust.network.RetrofitClient
 import com.takahashirinta.ncrust.player.PlaybackService
 import com.takahashirinta.ncrust.player.PlaybackStateManager
@@ -65,9 +67,10 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
     val lyricsNoContentSongId = MutableStateFlow(-1L)
     // 设置页开关:是否显示歌词翻译。默认开——外文歌直接看到双语,中文歌 tlyric 为空不受影响。
     val showLyricsTranslation = MutableStateFlow(true)
-    // 设置页开关:逐字歌词(v1.5.0 · B)。默认开——只在歌曲真的带 yrc 逐字数据时才有区别,
-    // 没有逐字数据的歌(实测 2024-2025 首发新歌大多没有)行为与关掉完全一致。
-    val showLyricsWordByWord = MutableStateFlow(true)
+    // 设置页开关:逐字歌词(v1.5.0 · B，v1.5.1 · A 起是三模式)。默认「渐变扫过」——
+    // 只在歌曲真的带 yrc 逐字数据时才有区别，没有逐字数据的歌行为与关掉完全一致。
+    // 取值见 LyricsWordAnimationMode（0 渐变扫过 / 1 逐字硬切 / 2 关闭逐字）。
+    val lyricsWordAnimation = MutableStateFlow(LyricsWordAnimationMode.GRADIENT_SWEEP)
 
     val isBuffering = MutableStateFlow(false)
     // Emits true when the current song enters the preload window (last 20 s).
@@ -187,10 +190,11 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
     init {
         refreshGaplessSetting()
         // 从设置读歌词开关(默认开);设置页切换时经 setLyricsTranslation /
-        // setLyricsWordByWord 实时生效。
-        showLyricsWordByWord.value = getApplication<Application>()
-            .getSharedPreferences("ncrust_settings", android.content.Context.MODE_PRIVATE)
-            .getBoolean("lyrics_word_by_word", true)
+        // setLyricsWordAnimation 实时生效。readWordAnimation 顺带完成 v1.5.0 布尔开关的迁移。
+        lyricsWordAnimation.value = LyricsDisplayPrefs.readWordAnimation(
+            getApplication<Application>()
+                .getSharedPreferences(LyricsDisplayPrefs.PREFS_NAME, android.content.Context.MODE_PRIVATE)
+        )
         showLyricsTranslation.value = getApplication<Application>()
             .getSharedPreferences("ncrust_settings", 0)
             .getBoolean("lyrics_translation", true)
@@ -328,14 +332,21 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         gaplessEnabled = prefs.getBoolean("gapless_playback", true)
     }
 
-    /** 设置页开关:歌词翻译开/关。写 SharedPreferences + 更新 StateFlow,播放器立即可见。 */
-    /** v1.5.0 · B：逐字歌词开关。只影响行内渲染，不重取歌词（词时间轴一直在 LrcLine 上）。 */
-    fun setLyricsWordByWord(enabled: Boolean) {
-        showLyricsWordByWord.value = enabled
-        getApplication<Application>()
-            .getSharedPreferences("ncrust_settings", android.content.Context.MODE_PRIVATE)
-            .edit().putBoolean("lyrics_word_by_word", enabled).apply()
+    /**
+     * v1.5.0 · B / v1.5.1 · A：逐字动画模式。只影响行内渲染，不重取歌词
+     * （词时间轴一直在 LrcLine 上），所以切换是即时的、不需要重新请求。
+     */
+    fun setLyricsWordAnimation(mode: Int) {
+        val normalized = LyricsWordAnimationMode.normalize(mode)
+        lyricsWordAnimation.value = normalized
+        LyricsDisplayPrefs.writeWordAnimation(
+            getApplication<Application>()
+                .getSharedPreferences(LyricsDisplayPrefs.PREFS_NAME, android.content.Context.MODE_PRIVATE),
+            normalized
+        )
     }
+
+    /** 设置页开关:歌词翻译开/关。写 SharedPreferences + 更新 StateFlow,播放器立即可见。 */
 
     fun setLyricsTranslation(enabled: Boolean) {
         showLyricsTranslation.value = enabled

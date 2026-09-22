@@ -20,6 +20,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.takahashirinta.ncrust.lyric.LrcLine
+import com.takahashirinta.ncrust.lyric.LyricsWordAnimationMode
 import com.takahashirinta.ncrust.ui.i18n.LocalStrings
 import io.github.takahashirinta.kanesumi.core.theme.LocalMetroColors
 import io.github.takahashirinta.kanesumi.core.theme.MetroText
@@ -55,6 +56,8 @@ fun LyricsView(
     // v1.5.0 · B：逐字高亮开关（设置页「逐字歌词」，默认开）。关掉或该行没有 yrc 数据时，
     // 行内渲染与 v1.4.1 完全一致。
     wordByWordEnabled: Boolean = true,
+    // v1.5.1 · A：逐字动画模式（渐变扫过 / 逐字硬切 / 关闭逐字），见 LyricsWordAnimationMode。
+    wordAnimationMode: Int = LyricsWordAnimationMode.GRADIENT_SWEEP,
 ) {
     val strings = LocalStrings.current
     if (lyrics.isEmpty()) {
@@ -167,6 +170,7 @@ fun LyricsView(
             forcedScrollTrigger = forcedLocateTrigger,
             enabled = enabled,
             karaokeEnabled = wordByWordEnabled,
+            wordAnimationMode = wordAnimationMode,
             onLineClick = if (enabled) { ms ->
                 // 点击行:本地立即定位,不等 2Hz 采样回传,seek 手感即时。
                 anchor.anchorPosMs = ms

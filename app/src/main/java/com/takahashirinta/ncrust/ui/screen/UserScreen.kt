@@ -59,6 +59,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import com.takahashirinta.ncrust.ui.components.QrLoginDialog
 import com.takahashirinta.ncrust.ui.theme.BackgroundImageManager
+import com.takahashirinta.ncrust.lyric.LyricsDisplayPrefs
 import com.takahashirinta.ncrust.ui.i18n.LocalStrings
 import com.takahashirinta.ncrust.ui.i18n.LanguagePreset
 import com.takahashirinta.ncrust.ui.i18n.getSavedLanguageCode
@@ -115,10 +116,9 @@ fun UserScreen(
     var lyricsTranslation by remember { mutableStateOf(prefs.getBoolean("lyrics_translation", true)) }
     // v1.4.0 · 音乐人推荐开关
     var artistRecoEnabled by remember { mutableStateOf(ArtistReco.isEnabled(context)) }
-    // v1.5.0 · B 逐字歌词开关（默认开）
-    var lyricsWordByWord by remember {
-        mutableStateOf(prefs.getBoolean("lyrics_word_by_word", true))
-    }
+    // v1.5.0 · B / v1.5.1 · A 逐字动画模式（0 渐变扫过 / 1 逐字硬切 / 2 关闭逐字）。
+    // 读的时候顺带完成 v1.5.0 布尔开关 lyrics_word_by_word 的一次性迁移。
+    var lyricsWordAnimation by remember { mutableIntStateOf(LyricsDisplayPrefs.readWordAnimation(prefs)) }
 
     var selectedLanguageCode by remember { mutableStateOf(getSavedLanguageCode(context)) }
 
@@ -338,13 +338,15 @@ fun UserScreen(
                     playerViewModel.setLyricsTranslation(it)
                 }
             )
-            // v1.5.0 · B 逐字歌词开关。默认开；没有 yrc 逐字数据的歌不受影响。
-            SettingSwitchRow(
-                title = strings.lyricsWordByWordLabel,
-                checked = lyricsWordByWord,
-                onCheckedChange = {
-                    lyricsWordByWord = it
-                    playerViewModel.setLyricsWordByWord(it)
+            // v1.5.0 · B / v1.5.1 · A 逐字动画三选一。默认「渐变扫过」；没有 yrc 逐字数据的
+            // 歌不受影响（整行渲染与 v1.4.1 一致）。
+            MetroDropdownRow(
+                label = strings.lyricsWordAnimationLabel,
+                selectedIndex = lyricsWordAnimation,
+                options = strings.lyricsWordAnimationOptions,
+                onSelect = {
+                    lyricsWordAnimation = it
+                    playerViewModel.setLyricsWordAnimation(it)
                 }
             )
             Spacer(Modifier.height(24.dp))
