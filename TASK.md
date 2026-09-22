@@ -186,3 +186,79 @@ TRANSITION reason=1 itemId=song:25640004 刀马旦 count=4
 - **未验证**：release（R8）APK 没能在本 worktree 出包 —— `keystore.properties` 指向的 `ncrust-release.jks`
   不在本 worktree，按红线未改配置、未拷贝密钥；只跑了 R8 任务本身。发布前请在主 checkout 出 release 包复测一次。
 
+
+---
+
+## 9. v1.5.2：逐字歌词渐变重做 + 冷启动修复
+
+### 9.1 参考实现是 AMLL，不是 SPlayer 自己
+
+SPlayer 的逐字歌词来自 **AMLL（Apple Music-like Lyrics）**（SPlayer-Dev/SPlayer PR #726）。
+本轮直接读 AMLL 源码（`Steve-xmh/applemusic-like-lyrics`，`packages/core/src/lyric-player/dom/animation/mask/`）：
+
+| 维度 | AMLL 的做法 |
+|---|---|
+| 渐变载体 | **每个词一个 CSS `mask-image`**，不是整行一个遮罩 |
+| 停靠点 | 亮区**正好等于词宽**，右侧再接一段 `fadeWidth` 的线性过渡（`generateFadeGradient()`） |
+| 光标 | `maskPosition` 线性推进，速度 = 词宽 / 词时长（**纯线性**） |
+| 停顿区间 | `advancePauseTimeline` 里 `movePx = 0` —— 冻住，到下一个词起始时刻瞬时平移 |
+| 渐变带宽度 | `wordFadeWidth = 0.5`（默认）× **词高** ≈ 0.65 em |
+| 未唱/已唱 α | 当前行 `--bright-mask-alpha: 1` / `--dark-mask-alpha: 0.4`；非当前行都是 0.2 |
+| 首尾 | 首词额外 1.5 倍、末词额外 0.5 倍渐变带位移 |
+| 缓动 | **全程没有任何缓动函数** |
+
+⇒ 顺滑感来自「词内匀速 + 0.65em 软边」，给每个词套缓动反而变成逐词脉冲。故 `SweepEasing` 默认 `LINEAR`。
+
+### 9.2 v1.5.1 的问题定位（真机 + 代码双向确认）
+
+1. **光标根本不连续（主因）**：按需唤醒循环只在「行时间戳 ∪ 词起始时刻」写一次 `displayPosition`，
+   绘制阶段永远读到词边界那一刻 —— `playedCutCharCount` 里的词内线性插值**在真机上从未被喂到中间值**。
+2. 渐变带取「整行宽度的 12%」，短行糊、长行细，与字号无关。
+3. 渐变带是「光标贴右沿、整条带向左展开」，光标与进度差半个带宽。
+4. 行首把 `edge` 夹到约 1px，等于硬切。
+
+### 9.3 实施（6 个 commit）
+
+| commit | 内容 |
+|---|---|
+| `a96b487` | `SweepTrack`：yrc 词时间轴 → 连续「时间 → 光标位置」折线，纯逻辑、可脱离 Compose 单测 |
+| `9ac4446` | 光标逐帧推进（只在「当前行正在唱」的窗口内）+ 渲染改用轨道；渐变带绑字号、以光标为中心、窄离屏层 |
+| `1030fb9` | 渐变质量三档（自动/高级/兼容）+ 低内存自动降级 + 三个参数覆盖键 + 8 语言设置项 |
+| `9f9a99e` | 修「词间隙倒扫」与「折行跨行插值倒扫」（用户真机反馈） |
+| `1d71925` | 修「切歌时歌词被快速从头过一遍」（`currentPosition` 未归零） |
+| `8174048` | **冷启动**：启动页不再等网络 + 让超时真正生效（见 9.5） |
+
+新增 [SweepTrack.kt](app/src/main/java/com/takahashirinta/ncrust/lyric/SweepTrack.kt) +
+[SweepTrackTest.kt](app/src/test/java/com/takahashirinta/ncrust/lyric/SweepTrackTest.kt)（21 条）。
+
+### 9.4 两条真机反馈 bug 的根因（用户 2026-09-22 报告）
+
+- **一句话占两行时特效从头再播一遍** = 两个倒扫缺陷叠加：
+  ① 「首尾各外扩半个渐变带」被错用到**每一个**词 ⇒ 词间隙光标后退一整个带宽；
+  ② 折行处上一行末词的 x 接近行尾、下一行首词的 x 接近行首，直接插值 ⇒ 整行从行尾倒扫回行首。
+  修法：先筛有效词，只有整行首/末词外扩；给每个节点存「行尾保持位」，跨视觉行**保持**在上一行行尾。
+- **切歌时歌词被快速过一遍** = `resetLyricsForNewSong()` 清了歌词却没清 `currentPosition`，
+  2Hz 的位置流还是上一首的末尾，面板拿它去新歌词里二分找行 ⇒ 落在最后一行 ⇒ 从第一行快速滚到底再滚回。
+  修法：切歌路径把 `currentPosition/progress` 归零；`LyricsView` 换歌时重置外推锚点；
+  循环里加「超前真实时刻 >1s 就拉回」的守卫。
+
+### 9.5 冷启动根因（用户 2026-09-22 报告「十秒到半分钟打不开」）
+
+1. **超时形同虚设**：`AppWarmup` 的网络阶段套着 `withTimeoutOrNull(3000)`，但里面每个 suspend 调用
+   外面都是 `runCatching { ... }.getOrNull()` —— Kotlin 的 `runCatching` 捕获 `Throwable`，会把
+   协程取消异常一起吞掉。超时取消被吞 ⇒ 预算完全不生效，坏网下一路挂到 **OkHttp 的 connectTimeout(30s)**。
+   **「半分钟」就是这 30s。** 修法：新增 `runCatchingCancellable`（CancellationException 原样上抛）。
+2. **启动页在等网络**：`SplashScreen` 双闸门里的 `AppWarmup.ready` 原本要等完整个网络阶段
+   （3 个 Home 请求 + 最多 18 张封面）才置位。修法：`_ready` 改为**只反映本地阶段**（快照回灌完成即置位）。
+   为避免同一批接口打两遍，新增 `AppWarmup.homeFetchDone`，`HomeScreen` 缓存还冷时最多等它 1.2s。
+
+实测（PCL110 / API 36）：**完全断网**（`Active default network: none`）冷启动 **2.7s 进首页**（走磁盘快照）。
+
+### 9.6 实测记录与未验证项
+
+已验证：单测 **79/79 通过**（含两条倒扫回归）；`assembleDebug` 通过、覆盖安装成功；
+逐帧循环真机 logcat 计数**稳定 60fps**（`displayPosition` 89581→100375，60 帧 ≈ 994ms）；
+相邻 `screencap` 确有像素差；断网冷启动 2.7s。
+
+⚠️ **未验证**：① 渐变观感仅用户口头确认「还可以」，无逐档对比；② 兼容档（硬边）/ easing 未逐档真机对比；
+③ 折行歌词的真机观感未复核；④ 长跑（>30 分钟）内存/掉帧未测。
