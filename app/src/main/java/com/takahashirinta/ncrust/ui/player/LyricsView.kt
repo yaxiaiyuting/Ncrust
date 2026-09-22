@@ -157,6 +157,15 @@ fun LyricsView(
         )
     }
 
+    // v1.5.2：换歌（歌词表身份变化）时，外推状态立刻按当前真实位置重来一次。
+    // ViewModel 侧已经在切歌路径把 currentPosition 归零，这里再兜一道：只要歌词换了，
+    // 就绝不允许继续用上一首的外推值去定位新歌词的行。
+    LaunchedEffect(lyrics) {
+        anchor.anchorPosMs = positionState.value
+        anchor.anchorNanos = System.nanoTime()
+        displayPosition.longValue = positionState.value
+    }
+
     // 2Hz 采样到达时重置外推锚点(首帧前锚点已就位,避免一帧闪到末尾)。
     // v1.4.1：同时把"位置流与显示位置脱节"的情况拉回来 —— 旧实现只在
     // isPlaying/isVisible/timestamps 变化时同步 displayPosition，于是
@@ -193,6 +202,11 @@ fun LyricsView(
         while (true) {
             val nowMs =
                 anchor.anchorPosMs + (System.nanoTime() - anchor.anchorNanos) / 1_000_000L
+            // 位置回退（seek / 切歌）：外推值是**单调抬高**出来的，不主动跟下去就会停在旧位置；
+            // 把它拉回 nowMs，保证面板永远不会拿一个"未来"的位置去定位歌词行。
+            if (displayPosition.longValue > nowMs + POSITION_SNAP_BACK_MS) {
+                displayPosition.longValue = nowMs
+            }
             // ① 正在唱的这一行 → 逐帧推进。
             if (inSweepWindow(nowMs, sweepWindows, timestamps)) {
                 withFrameNanos { }
@@ -352,6 +366,15 @@ private fun nextLineBoundaryAfter(timestamps: LongArray, positionMillis: Long): 
 
 /** 该行没有逐字扫过窗口（无 yrc / 开关关掉 / 时间轴不可用）的哨兵值。 */
 private const val NO_SWEEP_WINDOW = Long.MIN_VALUE
+
+/**
+ * 外推值允许超前真实时刻多少毫秒。
+ *
+ * 正常播放时外推最多领先一个 2Hz 采样周期（500ms）再加一点调度抖动；超过这个量就说明
+ * 发生了回退（seek 或切歌），必须立刻把 displayPosition 拉回来。取 1000ms 是为了不去
+ * 干扰正常的采样抖动。
+ */
+private const val POSITION_SNAP_BACK_MS = 1_000L
 
 /**
  * 每行的扫过活动窗口，与歌词行下标一一对应。

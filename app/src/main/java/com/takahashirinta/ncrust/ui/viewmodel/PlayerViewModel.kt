@@ -378,6 +378,14 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         // 旧歌词是渐隐过渡素材, 不属于新歌; 在"当前歌歌词就绪"判定里立即失效
         lyricsSongId.value = -1L
         lyricsNoContentSongId.value = -1L
+        // v1.5.2：位置也必须跟着一首歌一起翻篇。
+        // 位置流是 2Hz 广播的，切歌那一两帧里 currentPosition 还是**上一首的末尾**；
+        // 歌词面板（LyricsView）是拿 positionState.value 给外推做种子的，于是新歌词一到位就会
+        // 用上一首的位置去二分找行 —— 落在新歌的最后一行，面板从第一行快速滚到最后一行、
+        // 等真实位置（0）到了再滚回来。用户看到的就是「切歌时把歌词从头到尾过了一遍」。
+        // 这里在**所有切歌路径共用的地方**归零，服务端随后会用 startPositionMs 广播真实值。
+        currentPosition.value = 0L
+        progress.value = 0f
     }
 
     fun resetPreloadFlag() { needsPreload.value = false }
