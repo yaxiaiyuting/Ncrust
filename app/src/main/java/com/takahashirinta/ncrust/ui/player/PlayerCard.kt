@@ -254,6 +254,9 @@ fun PlayerCard(
         // 写成 startValue - dragAmount/h 只会得到最后一帧的位移，拖动基本不动。
         var current = 0f
         var from = 0f
+        // v1.7.0 · P0：手势测速（px/s），供吸附判定做「甩动」判据。
+        var startMs = 0L
+        var lastMs = 0L
         detectVerticalDragGestures(
             onDragStart = {
                 from = controlsCollapse.value
@@ -264,21 +267,26 @@ fun PlayerCard(
                 val h = if (controlsHeightPx > 1f) controlsHeightPx
                         else with(density) { 200.dp.toPx() }
                 current = (current - dragAmount / h).coerceIn(0f, 1f)
+                if (startMs == 0L) startMs = change.uptimeMillis
+                lastMs = change.uptimeMillis
                 coroutineScope.launch { controlsCollapse.snapTo(current) }
             },
             onDragEnd = {
+                // 速度由收起进度反推（px/s）：把手挂在被平移的控制栏兄弟节点上，
+                // 直接用 position 差分同样不可靠。h = 控制栏实测高度。
+                val elapsedMs = lastMs - startMs
+                val h = if (controlsHeightPx > 1f) controlsHeightPx
+                        else with(density) { 200.dp.toPx() }
+                val velocityY = if (elapsedMs > 0L) (current - from) * h / (elapsedMs / 1000f) else 0f
                 coroutineScope.launch {
-                    // 方向敏感吸附：向上推（收起）要 25% 行程；向下拉（恢复）只要 5%。
+                    // 方向敏感吸附：向上推（收起）要 12% 行程；向下拉（恢复）只要 5%。
                     // 恢复方向阈值刻意很小：收起会挡住内容、需要"故意"，而恢复只是把控制栏
                     // 放回来、没有任何副作用，阈值大了反而会让"划不回来"（S6 真机实测：
                     // 把手向下可拖的总行程本来就短，控制栏越高越够不到比例阈值）。
-                    // 微动（两个方向都没到阈值）按出发点归位。
-                    val delta = current - from
-                    val target = when {
-                        delta <= -0.05f -> 0f
-                        delta >= 0.25f -> 1f
-                        else -> if (from >= 0.5f) 1f else 0f
-                    }
+                    // 微动（两个方向都没到阈值）按出发点归位。甩动按方向直接提交。
+                    // v1.7.0 · P0：收起阈值由 25% 收窄到 12%（25% 在 PCL110 上 = 235px +
+                    // 42px 触摸 slop，正常速度的上滑刚好够不到）。
+                    val target = ControlsDragSnap.target(from, current, velocityY)
                     controlsCollapse.animateTo(target, tween(260, easing = FastOutSlowInEasing))
                 }
             },
@@ -489,17 +497,37 @@ fun PlayerCard(
                         if (abs(acc) > slop) {
                             dragging = true
                             change.consume()
+                            // v1.7.0 · P0：把越过 slop 的那一段位移补进 progress。
+                            // 注入事件稀疏时（adb / 快速轻扫）整个手势可能只有一两个 MOVE，
+                            // 不补这一段就会出现「划了但卡片没动」，松手必然弹回。
+                            val overshoot = acc - (if (acc > 0f) slop else -slop)
+                            if (overshoot != 0f) {
+                                coroutineScope.launch {
+                                    progress.snapTo(
+                                        (progress.value - overshoot / totalDragDistancePx).coerceIn(0f, 1f)
+                                    )
+                                }
+                            }
                             break
                         }
                     }
                     if (!dragging) return@awaitEachGesture
                     // 手动拖动循环：同样忽略消费标志读位移, 边拖边 consume
                     // （压制 miniBar clickable 的按压, 让它不会在抬手时误触发展开）。
+                    // v1.7.0 · P0：顺便测一次手势速度（px/s）交给吸附判定做「甩动」判据。
+                    var dragStartMs = 0L
+                    var lastMs = 0L
+                    var firstMove = true
                     while (true) {
                         val event = awaitPointerEvent()
                         val change = event.changes.firstOrNull { it.id == pointer } ?: break
                         if (!change.pressed) break
                         change.consume()
+                        if (firstMove) {
+                            dragStartMs = change.uptimeMillis
+                            firstMove = false
+                        }
+                        lastMs = change.uptimeMillis
                         val dragAmount = change.position.y - change.previousPosition.y
                         if (dragAmount != 0f) {
                             coroutineScope.launch {
@@ -509,12 +537,16 @@ fun PlayerCard(
                             }
                         }
                     }
+                    // 速度用 progress 域反推（px/s）：本节点挂在被 graphicsLayer 平移的卡片里，
+                    // 拖动过程中局部坐标随卡片一起移动，直接用 position 差分会低估速度。
+                    // progress 与像素的换算是已知的（totalDragDistancePx），换算回来既准又稳。
+                    val elapsedMs = lastMs - dragStartMs
+                    val movedProgress = progress.value - startProgress
+                    val velocityY = if (elapsedMs > 0L)
+                        movedProgress * totalDragDistancePx / (elapsedMs / 1000f) else 0f
                     coroutineScope.launch {
-                        val target = if (startProgress < 0.5f) {
-                            if (progress.value >= 0.5f) 1f else 0f
-                        } else {
-                            if (progress.value >= 0.75f) 1f else 0f
-                        }
+                        // v1.7.0 · P0：行程阈值 + 甩动（原实现要 progress 过中点 = 340dp，用户拖不动）
+                        val target = PlayerCardDragSnap.target(startProgress, progress.value, velocityY)
                         progress.animateTo(
                             target,
                             if (target == 1f)
