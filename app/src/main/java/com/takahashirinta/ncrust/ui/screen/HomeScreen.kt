@@ -51,6 +51,7 @@ import io.github.takahashirinta.kanesumi.core.theme.LocalMetroColors
 import io.github.takahashirinta.kanesumi.core.theme.LocalMetroTypography
 import io.github.takahashirinta.kanesumi.core.theme.MetroIcon
 import io.github.takahashirinta.kanesumi.core.theme.MetroText
+import com.takahashirinta.ncrust.warmup.AppWarmup
 import com.takahashirinta.ncrust.ui.components.ArtistRecoCard
 import com.takahashirinta.ncrust.ui.components.PlayAllButton
 import com.takahashirinta.ncrust.ui.components.SongCard
@@ -60,7 +61,9 @@ import com.takahashirinta.ncrust.ui.i18n.LocalStrings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import android.widget.Toast
 
 // 新歌速递容量：一次装够，不做分页。首页只是一瞥的展示位，
@@ -246,6 +249,19 @@ fun HomeScreen(
             ContentCache.homeDailySongs?.let { dailySongs = it }
             ContentCache.homeRecommendPlaylists?.let { playlists = it }
             ContentCache.homeNewSongs?.let { cached -> if (newSongs.isEmpty()) newSongs.addAll(cached) }
+        }
+        // v1.5.2：AppWarmup 的网络阶段不再阻塞 splash，它此刻很可能**正在**取同一批数据。
+        // 冷启动时在这里等它收尾（它有硬预算，见 AppWarmup.NETWORK_BUDGET_MS），
+        // 免得同一批接口在启动瞬间打两遍。等不到就自己发 —— 下面那段逻辑原样保留。
+        if (!ContentCache.isHomeFresh() && !AppWarmup.homeFetchDone.value) {
+            withTimeoutOrNull(HOME_WARMUP_JOIN_MS) { AppWarmup.homeFetchDone.first { it } }
+            ContentCache.homeDailySongs?.let { dailySongs = it }
+            ContentCache.homeRecommendPlaylists?.let { playlists = it }
+            ContentCache.homeNewSongs?.let { cached -> if (newSongs.isEmpty()) newSongs.addAll(cached) }
+            if (ContentCache.isHomeFresh()) {
+                isLoading = false
+                return@LaunchedEffect
+            }
         }
         // v1.5.1 · C：没网就一个请求都不发 —— 直接进降级态（显示刚灌进来的快照，
         // 或者空态 + 重试）。原来这里会白等 OkHttp 的 30s connectTimeout。
@@ -773,6 +789,15 @@ private fun HomeDegradedState(
 
 /** v1.5.1 · C：首页转圈的最长陪跑时间（半死网络下不再一路等到 OkHttp 的 30s）。 */
 private const val HOME_LOAD_TIMEOUT_MS = 8_000L
+
+/**
+ * v1.5.2：冷启动时等 AppWarmup 后台预取收尾的上限。
+ *
+ * splash 已经不再等网络（见 AppWarmup.start），但预热仍在后台取同一批接口。
+ * 这里等它一下可以避免同一批请求打两遍；等不到就自己发，不留空白。
+ * 取 1.2s：正常网络下预热早就回来了，这个等待一次都不会真的走满。
+ */
+private const val HOME_WARMUP_JOIN_MS = 1_200L
 
 /** 点击 + 长按合并到一个 modifier，避免每个 tile 内部重复样板。 */
 @OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)

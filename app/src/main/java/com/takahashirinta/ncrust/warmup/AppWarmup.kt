@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withTimeoutOrNull
 
 /**
@@ -31,15 +32,48 @@ import kotlinx.coroutines.withTimeoutOrNull
  * ready 由 splash 订阅：为 true 时才允许淡出（配合 splash 侧的最短驻留时间）。
  * 总兜底 [TIMEOUT_MS]：无论网络多慢，超时后强制置 ready，防止启动被卡死。
  */
+/**
+ * 同 `runCatching`，但**绝不吞 [CancellationException]**。
+ *
+ * 这是 v1.5.2 修掉「冷启动十秒到半分钟」的关键一行：Kotlin 的 `runCatching` 捕获 `Throwable`，
+ * 会把协程取消异常一起吃掉。于是 `withTimeoutOrNull` 的超时取消被吞 ⇒ 代码继续往下跑 ⇒
+ * **超时形同虚设**，坏网下预热会一路挂到 OkHttp 的 connectTimeout(30s)。
+ * 凡是 `suspend` 调用外面套 `runCatching`，都必须换成这个版本。
+ */
+private suspend fun <T> runCatchingCancellable(block: suspend () -> T): T? =
+    try {
+        block()
+    } catch (e: kotlinx.coroutines.CancellationException) {
+        throw e
+    } catch (t: Throwable) {
+        null
+    }
+
 object AppWarmup {
 
+    /** splash 的闸门。**只反映本地阶段**（快照回灌），不含任何网络等待。 */
     private val _ready = MutableStateFlow(false)
     val ready: StateFlow<Boolean> = _ready.asStateFlow()
+
+    /**
+     * v1.5.2：后台首页预取是否已收尾（成功 / 失败 / 超时都算）。
+     *
+     * HomeScreen 用它避开「冷启动同一批接口打两遍」：预热还在跑就等它一下，跑完了再决定要不要自己发。
+     */
+    private val _homeFetchDone = MutableStateFlow(false)
+    val homeFetchDone: StateFlow<Boolean> = _homeFetchDone.asStateFlow()
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     @Volatile private var started = false
 
-    private const val TIMEOUT_MS = 3_000L
+    /**
+     * 后台首页预取的硬预算。
+     *
+     * v1.5.2 之前这里是 3s 且**根本不生效**（见 [runCatchingCancellable] 的注释），坏网下会一路挂到
+     * OkHttp 的 connectTimeout(30s)，而 splash 正等着这批请求 —— 用户看到的就是「冷启动十秒到半分钟」。
+     * 现在它对 splash 已经完全没有影响，只用来给后台预取收个尾，所以可以给得宽一点。
+     */
+    private const val NETWORK_BUDGET_MS = 8_000L
     // Home 里 tile 显示尺寸约 160dp，取 320px 覆盖 xxhdpi 单张封面
     private const val COVER_PX = 320
     // 每类内容预取多少张封面——盖住首屏可见部分即可
@@ -76,32 +110,40 @@ object AppWarmup {
         LibraryManager.preload(app)
 
         scope.launch {
-            // 阶段零·五（v1.5.1 · C）：先把上次的首页磁盘快照灌回内存缓存。无网冷启动时
-            // 这几乎是首屏唯一的内容来源；必须在「判定有没有网」之前完成，否则降级态会先
-            // 按空缓存定下来、快照到了也来不及上屏。
-            runCatching { HomeSnapshot.restoreIntoCache(app) }
+            // ================= 阶段一：本地阶段（**唯一**决定 splash 何时结束的部分） =================
+            // 上次的首页磁盘快照灌回内存缓存。无网冷启动时这几乎是首屏唯一的内容来源。
+            runCatchingCancellable { HomeSnapshot.restoreIntoCache(app) }
 
-            // v1.5.1 · C：完全没网就一个请求都不发。原来这里会白等 OkHttp 的
-            // connectTimeout（30s），首页全程转圈；现在直接进降级态（显示快照或空态），
-            // ready 立刻置位，splash 不会被网络拖住。
+            // v1.5.2：splash 到此为止。
+            //
+            // 以前 _ready 要等完整个网络阶段（三个 Home 请求 + 18 张封面）才置位，而那个阶段的
+            // 超时因为 runCatching 吞取消**根本没生效** —— 坏网下启动页会一直挂到 OkHttp 的
+            // connectTimeout(30s)。冷启动速度被网络绑架，用户看到的就是「十秒到半分钟打不开」。
+            //
+            // 现在：本地快照就绪 = 可以进首页。首页自己有完整的三段式（缓存直出 → 后台刷新 →
+            // 超时降级），不需要启动页替它等网络。
+            _ready.value = true
+
+            // ================= 阶段二：网络阶段（纯后台，谁都不等它） =================
             if (!NetworkAvailability.isOnline(app)) {
-                _ready.value = true
+                _homeFetchDone.value = true
                 return@launch
             }
 
-            withTimeoutOrNull(TIMEOUT_MS) {
+            // 预算现在**真的**生效（超时取消不会被吞）：到点就撤，剩下的交给 HomeScreen。
+            withTimeoutOrNull(NETWORK_BUDGET_MS) {
                 // 阶段一：三条 Home 请求并发写入 ContentCache
                 coroutineScope {
                     val dailyDeferred = async {
-                        runCatching { PlaylistApi.getDailyRecommendSongs() }.getOrNull()
+                        runCatchingCancellable { PlaylistApi.getDailyRecommendSongs() }
                     }
                     val plsDeferred = async {
-                        runCatching { PlaylistApi.getRecommendPlaylists() }.getOrNull()
+                        runCatchingCancellable { PlaylistApi.getRecommendPlaylists() }
                     }
                     val topDeferred = async {
                         // limit 与 HomeScreen NEW_SONGS_LIMIT 对齐——warmup 一次装够，
                         // 不留"缓存 10 条 → 刷新变 20 条"的可见 diff
-                        runCatching { PlaylistApi.getTopSongs(limit = 20, offset = 0) }.getOrNull()
+                        runCatchingCancellable { PlaylistApi.getTopSongs(limit = 20, offset = 0) }
                     }
                     dailyDeferred.await()?.let { ContentCache.homeDailySongs = it }
                     plsDeferred.await()?.let { ContentCache.homeRecommendPlaylists = it }
@@ -134,7 +176,7 @@ object AppWarmup {
                     urls.chunked(4).forEach { chunk ->
                         chunk.map { url ->
                             async {
-                                runCatching {
+                                runCatchingCancellable {
                                     loader.execute(
                                         ImageRequest.Builder(app)
                                             .data(url)
@@ -149,7 +191,7 @@ object AppWarmup {
             }
 
             // v1.5.1 · C：把刚拿到的首页数据落盘，供下次无网冷启动使用。
-            runCatching {
+            runCatchingCancellable {
                 HomeSnapshot.save(
                     app,
                     daily = ContentCache.homeDailySongs,
@@ -159,12 +201,11 @@ object AppWarmup {
                 )
             }
 
-            // 阶段二：收藏库刷新(已登录时)。只喂收藏页缓存, 不进 ready 关键路径——
-            // 它要 3 次额外网络往返, 挂在关键路径上会拖长启动。
+            // 阶段三：收藏库刷新(已登录时)。3 次额外网络往返，同样谁都不等。
             if (CookieManager.hasCookie(app)) {
-                scope.launch { runCatching { LibraryManager.refreshFromCloud(app) } }
+                scope.launch { runCatchingCancellable { LibraryManager.refreshFromCloud(app) } }
             }
-            _ready.value = true
+            _homeFetchDone.value = true
         }
     }
 }
