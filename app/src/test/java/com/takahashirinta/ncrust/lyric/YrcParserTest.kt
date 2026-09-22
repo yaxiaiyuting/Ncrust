@@ -66,10 +66,69 @@ class YrcParserTest {
     }
 
     @Test
-    fun `对齐——行数不等时整首放弃逐字，行一个都不改`() {
+    fun `对齐——行数不等时不再整首放弃（v1_6_0）：文本相同的行照挂，其余行原样`() {
+        // v1.5.x 在这里整首放弃（行数 1 vs 2）。实测这种「yrc 多/少几行」的歌占多数，
+        // 是覆盖率真正的瓶颈 —— 现在按文本 LCS 匹配：两行都是同一句，lrc 的那一行挂上，
+        // 多出来的那一行 yrc 数据被忽略。
         val lrc = listOf(LrcLine(23970, "半夜睡不着觉把心情哼成歌"))
         val twoLines = wudingYrc + "\n" + wudingYrc
-        assertSame(lrc, YrcParser.attachWords(lrc, twoLines))
+        val merged = YrcParser.attachWords(lrc, twoLines)
+        assertEquals(1, merged.size)
+        assertEquals(12, merged[0].words.size)
+        assertEquals(23970L, merged[0].timeMs)
+        assertEquals("半夜睡不着觉把心情哼成歌", merged[0].text)
+    }
+
+    @Test
+    fun `对齐——yrc 少一行（间奏没有逐字轨）时其余行仍然挂上`() {
+        // 真实形态：yrc 只覆盖唱词，lrc 多一行纯音乐标记。
+        val lrc = listOf(
+            LrcLine(1000, "第一句"),
+            LrcLine(5000, "中间是间奏"),
+            LrcLine(9000, "第二句"),
+        )
+        val yrc = "[1000,1000](1000,500,0)第(1500,500,0)一(2000,500,0)句\n" +
+            "[9000,1000](9000,500,0)第(9500,500,0)二(10000,500,0)句"
+        val merged = YrcParser.attachWords(lrc, yrc)
+        assertEquals(3, merged.size)
+        assertEquals(3, merged[0].words.size)
+        assertTrue(merged[1].words.isEmpty())
+        assertNull(merged[1].endMs)
+        assertEquals(3, merged[2].words.size)
+        // 行文本与时间戳不变
+        assertEquals(listOf(1000L, 5000L, 9000L), merged.map { it.timeMs })
+        assertEquals(listOf("第一句", "中间是间奏", "第二句"), merged.map { it.text })
+    }
+
+    @Test
+    fun `对齐——yrc 多几行（重复段）时按文本重新配对，不按行号硬套`() {
+        val lrc = listOf(LrcLine(1000, "甲"), LrcLine(2000, "乙"), LrcLine(3000, "丙"))
+        val yrc = "[1000,500](1000,500,0)甲\n" +
+            "[1500,500](1500,500,0)插\n" +          // yrc 多出来的插句
+            "[2000,500](2000,500,0)乙\n" +
+            "[3000,500](3000,500,0)丙"
+        val merged = YrcParser.attachWords(lrc, yrc)
+        assertEquals(listOf("甲", "乙", "丙"), merged.map { it.text })
+        assertEquals(3, merged.count { it.words.isNotEmpty() })
+        // 乙 的逐词时刻必须来自 yrc 的第 3 行（2000ms），不能错位到插句（1500ms）
+        assertEquals(2000L, merged[1].words.first().startMs)
+    }
+
+    @Test
+    fun `对齐——LCS 更差时回落到行序对齐（保证 v1_5_x 不回归）`() {
+        // 真实形态（《You Never Can Tell》）：两份文本归一化后不相等（lrc 带后缀），
+        // 但词仍能逐个定位 —— LCS 配不上，行序对齐能挂上，此时必须选行序对齐。
+        val lrc = listOf(LrcLine(24870, "听见 冬天的离开（Live）"))
+        val merged = YrcParser.attachWords(lrc, yujianYrc)
+        assertEquals(1, merged.size)
+        assertEquals(7, merged[0].words.size)
+        assertTrue(merged[0].words.all { it.charEndExclusive <= "听见 冬天的离开（Live）".length })
+    }
+
+    @Test
+    fun `对齐——两条路都没有可用配对时原样返回`() {
+        val lrc = listOf(LrcLine(0, "完全不同的歌词"))
+        assertSame(lrc, YrcParser.attachWords(lrc, wudingYrc))
     }
 
     @Test
