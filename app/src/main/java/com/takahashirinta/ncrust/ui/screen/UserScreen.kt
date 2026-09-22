@@ -18,6 +18,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ChevronRight
@@ -29,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -709,6 +711,19 @@ private fun SectionTitle(text: String) {
 /**
  * 开关设置行：标题与 Switch 同一行垂直居中，描述（可选）另起一行。
  * 描述不参与对齐，避免 Switch 被顶到与描述顶部对齐。
+ *
+ * P2 · 无障碍与触控：
+ *  - 整行挂 [toggleable] + [Role.Switch]：TalkBack 才能把「标题 + 开关」读成一个可切换
+ *    控件。Kanesumi 的 MetroSwitch 是裸 Box + pointerInput、自身零 semantics，原先整行对
+ *    无障碍服务不存在（用户页 3 个开关全走这里）。开关状态由 toggleable 写入的
+ *    ToggleableState 播报 —— 由系统按当前语言朗读，比自造 stateDescription 文案更准，
+ *    也不必新增 8 个语言文件的词条（本轮红线）。
+ *  - 整行可点后命中区 = 52dp 高的整行，原先只有 52×28dp 的 Switch 本身。
+ *  - 点在 Switch 上时回调会走两次：MetroSwitch 自己的 pointerInput 不消费 tap，父级
+ *    toggleable 也会收到。但两次携带的都是同一个「取反后的目标值」，而 checked 是外部
+ *    提升的状态、两处读到的都是同一次组合的值 —— 净效果仍是翻转一次；各调用点的副作用
+ *    （写 prefs / 刷新 ViewModel / ArtistReco.setEnabled）都是幂等的。Kanesumi 不在本仓库
+ *    版本控制内，不能改库让它消费这个事件（改了发布产物不可复现）。
  */
 @Composable
 private fun SettingSwitchRow(
@@ -720,6 +735,11 @@ private fun SettingSwitchRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .toggleable(
+                value = checked,
+                role = Role.Switch,
+                onValueChange = onCheckedChange
+            )
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -779,14 +799,16 @@ private fun ThemeModeSelector(
                         else Color.Transparent
                     )
                     .clickable { onSelect(mode) }
-                    .padding(vertical = 10.dp),
+                    // P2：10→14dp 垂直 padding，触控高度 ≈40dp → 48dp。
+                    .padding(vertical = 14.dp),
                 contentAlignment = Alignment.Center
             ) {
                 MetroText(
                     label,
                     color = if (active) LocalMetroColors.current.primary
                     else LocalMetroColors.current.onSurfaceVariant,
-                    style = TextStyle(fontSize = 14.sp),
+                    // P2：显式 20sp 行框，触控高度可算（14+20+14 = 48dp），不再跟字体度量走。
+                    style = TextStyle(fontSize = 14.sp, lineHeight = 20.sp),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -1003,12 +1025,14 @@ private fun DialogButton(
                 else Modifier.border(1.dp, LocalMetroColors.current.onSurfaceVariant.copy(alpha = 0.4f))
             )
             .clickable(onClick = onClick)
-            .padding(horizontal = 20.dp, vertical = 10.dp)
+            // P2：10→14dp 垂直 padding，触控高度 ≈40dp → 48dp。
+            .padding(horizontal = 20.dp, vertical = 14.dp)
     ) {
         MetroText(
             text,
             color = if (accent) LocalMetroColors.current.onPrimary else LocalMetroColors.current.onSurfaceVariant,
-            style = TextStyle(fontSize = 14.sp),
+            // P2：显式 20sp 行框，触控高度可算（14+20+14 = 48dp）。
+            style = TextStyle(fontSize = 14.sp, lineHeight = 20.sp),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
@@ -1032,13 +1056,15 @@ private fun FullWidthDialogButton(
                 else Modifier.border(1.dp, borderColor)
             )
             .clickable(onClick = onClick)
-            .padding(horizontal = 12.dp, vertical = 12.dp),
+            // P2：12→14dp 垂直 padding，单行触控高度 ≈44dp → 48dp。
+            .padding(horizontal = 12.dp, vertical = 14.dp),
         contentAlignment = Alignment.Center
     ) {
         MetroText(
             text,
             color = if (accent) LocalMetroColors.current.onPrimary else textColor,
-            style = TextStyle(fontSize = 14.sp),
+            // P2：显式 20sp 行框，触控高度可算（14+20+14 = 48dp，单行）。
+            style = TextStyle(fontSize = 14.sp, lineHeight = 20.sp),
             maxLines = 2,
             overflow = TextOverflow.Ellipsis
         )
