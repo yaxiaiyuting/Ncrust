@@ -108,3 +108,22 @@
 - 未对任何设备做永久性系统修改；未删除任何用户数据。
 - PCL110 上遗留的测试状态：**设置 → 播放 → 「媒体面板显示歌词」= 开**（方便你直接看效果，关掉即可）；
   逐字动画模式 / 字号已改回默认（渐变扫过 / 1.0x）。
+
+## 8. ⚠️ 待修：UI/元数据与实际音频不同步（用户 2026-09-22 报告，未修）
+
+**症状（PCL110，v1.5.1 release）**：播放器标题 / 歌词面板 / 媒体卡片都显示下一首（如 Crucified、江南），
+但耳朵里放的仍是上一首的音频。用户确认「状态栏和歌词界面对，音频不对」。
+
+**不是 v1.5.1 引入的**：v1.5.1 只改了 metadata 的 ARTIST 文案与歌词渲染，没有动 ExoPlayer / 预载 / 切歌路径。
+
+**下一轮从这里开始排查**：
+
+1. PlaybackService.onSongTransitioned（ExoPlayer onMediaItemTransition 回调）里 UI 直接切到 preloadedSongId；
+   若这次 transition 实际播的是旧 media item（预载 URL 是上一首的、或预载缓存 PreloadCacheEntry 的
+   requestedLevel 与降级重试串了），就会出现「UI 提前、音频滞后」。
+2. PlayerViewModel 的 preloadedSongId / preloadedResult / preloadedRequestedLevel 与
+   PlaybackService.pendingNextTitle 的配对时机（约 292-313 行）。
+3. 复现思路：连续快速切歌；或让一首歌在降档重试（handlePlaybackError 的 qualityRetryLadder）之后自然结束。
+4. 抓证据：听到不同步的那一刻抓 adb logcat -d | grep -E "PlayerViewModel|SongUrlFetcher|PlaybackService"。
+
+**临时绕过**：按一次「下一首」强制重建 media item，或 force-stop 后重进（已对用户说明）。
