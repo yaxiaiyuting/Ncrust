@@ -12,7 +12,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.input.pointer.pointerInput
@@ -191,7 +190,7 @@ fun PlayAllButton(
         MetroIcon(
             imageVector = Icons.Default.PlayArrow,
             contentDescription = LocalStrings.current.playAllButton,
-            tint = Color.Black,
+            tint = LocalMetroColors.current.onPrimary,
             sizeDp = size * 0.55f
         )
     }

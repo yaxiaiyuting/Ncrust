@@ -118,7 +118,7 @@ fun DetailScaffold(
                                         .padding(horizontal = 24.dp, vertical = 8.dp),
                                     contentAlignment = Alignment.Center
                                 ) {
-                                    MetroText(strings.retry, color = Color.Black)
+                                    MetroText(strings.retry, color = LocalMetroColors.current.onPrimary)
                                 }
                             }
                         }

@@ -1001,7 +1001,7 @@ private fun DialogButton(
     ) {
         MetroText(
             text,
-            color = if (accent) Color.Black else LocalMetroColors.current.onSurfaceVariant,
+            color = if (accent) LocalMetroColors.current.onPrimary else LocalMetroColors.current.onSurfaceVariant,
             style = TextStyle(fontSize = 14.sp),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
@@ -1031,7 +1031,7 @@ private fun FullWidthDialogButton(
     ) {
         MetroText(
             text,
-            color = if (accent) Color.Black else textColor,
+            color = if (accent) LocalMetroColors.current.onPrimary else textColor,
             style = TextStyle(fontSize = 14.sp),
             maxLines = 2,
             overflow = TextOverflow.Ellipsis
