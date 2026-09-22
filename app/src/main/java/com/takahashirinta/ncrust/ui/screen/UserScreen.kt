@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import io.github.takahashirinta.kanesumi.anim.sokuou.rememberMetroFlingBehavior
 import io.github.takahashirinta.kanesumi.controls.MetroSelectorFlyout
+import com.takahashirinta.ncrust.cache.OfflineAudioCache
 import com.takahashirinta.ncrust.reco.ArtistReco
 import io.github.takahashirinta.kanesumi.controls.MetroSwitch
 import io.github.takahashirinta.kanesumi.core.theme.LocalMetroColors
@@ -221,6 +222,9 @@ fun UserScreen(
                                 ?.forEach { it.deleteRecursively() }
                         }
                     }
+                    // v1.6.0 · D1：离线音频缓存在 filesDir/offline/audio（不随系统清缓存消失），
+                    // 用户点「清除缓存」时一并清掉，并作废离线 URL 清单，避免留下死条目。
+                    runCatching { OfflineAudioCache.clear(context) }
                     currentCacheSize(context)
                 }
                 cacheSize = size
@@ -1092,11 +1096,18 @@ fun MetroLanguageDropdown(
 }
 
 
-/** 统计应用缓存占用：图片磁盘缓存 + 缓存目录（含 WebView 缓存）。 */
+/**
+ * 统计应用缓存占用：图片磁盘缓存 + 缓存目录（含 WebView 缓存）+ 离线音频缓存。
+ *
+ * v1.6.0 · D1：离线音频放在 filesDir/offline/audio（不随系统清 cacheDir 消失），但它同样由
+ * 用户可见的「清除缓存」清掉，所以计入同一个数字 —— 统计口径与可清理范围必须一致，
+ * 否则用户会看到「占用 300MB、清完还剩 300MB」。
+ */
 private fun currentCacheSize(context: Context): Long {
     var total = 0L
     runCatching { coil.Coil.imageLoader(context).diskCache?.size?.let { total += it } }
     runCatching { context.cacheDir?.let { total += folderSize(it) } }
+    runCatching { total += OfflineAudioCache.sizeBytes(context) }
     return total
 }
 

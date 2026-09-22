@@ -18,6 +18,7 @@ import android.os.Build
 import androidx.media3.decoder.ffmpeg.FfmpegLibrary
 import android.util.Log
 import com.takahashirinta.ncrust.BuildConfig
+import com.takahashirinta.ncrust.cache.OfflineKeys
 import com.takahashirinta.ncrust.network.ClientIdentity
 import com.takahashirinta.ncrust.network.RetrofitClient
 import kotlinx.coroutines.Dispatchers
@@ -156,7 +157,12 @@ object SongUrlFetcher {
                     val songMaxLevel =
                         if (QualityAssessment.needsSongCapability(level, br, type)) fetchSongMaxLevel(songId)
                         else null
-                    return@withContext SongUrlResult(url, actualLevel, br, type, songMaxLevel)
+                    // v1.6.0 · D1：给播放 URL 挂上离线缓存的 key（query 参数是装饰，
+                    // CDN 只认路径里的签名，实测删改 query 仍 206）。挂上之后 CacheDataSource
+                    // 才能把「同一首歌 + 同一档位」的所有轮换 URL 认成同一份缓存。
+                    return@withContext SongUrlResult(
+                        OfflineKeys.withKey(url, songId, actualLevel), actualLevel, br, type, songMaxLevel,
+                    )
                 }
             } catch (e: Exception) {
                 Log.w(TAG, "fetch failed for level=$tryLevel", e)

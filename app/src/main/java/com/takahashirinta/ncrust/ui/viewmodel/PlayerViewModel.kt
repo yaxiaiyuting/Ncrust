@@ -24,6 +24,9 @@ import android.os.Build
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.takahashirinta.ncrust.cache.OfflineAudioCache
+import com.takahashirinta.ncrust.cache.OfflineKeys
+import com.takahashirinta.ncrust.cache.OfflineUrlStore
 import com.takahashirinta.ncrust.player.QualityAssessment
 import com.takahashirinta.ncrust.player.QualityLadder
 import com.takahashirinta.ncrust.player.QualityStatus
@@ -617,7 +620,13 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         playJob?.cancel()
         playJob = viewModelScope.launch(Dispatchers.IO) {
             try {
-                val result = SongUrlFetcher.fetch(songId, selectedQuality)
+                var result = SongUrlFetcher.fetch(songId, selectedQuality)
+                if (result == null) {
+                    // v1.6.0 · D1：取链失败（典型是断网）时先看离线缓存 —— 只要这台设备**真的
+                    // 播过**这首歌，就用「最后一次成功播放的 URL + 本地音频片段」起播，
+                    // 全程不需要网络。缓存里没有就什么都不做，绝不用旧 URL 去赌。
+                    result = recallOfflineCache(songId, selectedQuality)
+                }
                 if (result == null) {
                     // 该歌在所有音质档位都取不到可播放的 URL（无版权 / 需会员且当前无订阅）。
                     // 前一个版本会兜底喂给 ExoPlayer 一个 404 的 HTML 链接导致无限缓冲"卡住"，
@@ -662,6 +671,24 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                 Log.e("PlayerViewModel", "fetchUrl failed", e)
             }
         }
+    }
+
+    /**
+     * v1.6.0 · D1：离线兜底取链。
+     *
+     * 只有「离线 URL 清单里有这首歌」**且**「本地音频缓存里确实有对应片段」时才返回结果 ——
+     * 两个条件缺一不可：只满足前者会拿一个指向空缓存的过期 URL 去起播，退化成网络
+     * 403/404 的无限缓冲（正是 v1.3.0 明确禁止的那类坏链接）。
+     *
+     * 档位不严格要求一致（[OfflineUrlStore.recall] 会退化成「这首歌的任意档位」）：
+     * 离线时能把这歌放出来，比死守用户选的档位重要得多。
+     */
+    private fun recallOfflineCache(songId: Long, level: String): SongUrlResult? {
+        val app = getApplication<Application>()
+        val hit = OfflineUrlStore.recall(app, songId, listOf(level)) ?: return null
+        if (!OfflineAudioCache.contains(app, hit.first)) return null
+        Log.i("PlayerViewModel", "offline cache hit songId=$songId key=" + hit.first)
+        return SongUrlResult(hit.second, OfflineKeys.levelOf(hit.first) ?: level, 0L, "", null)
     }
 
     /**

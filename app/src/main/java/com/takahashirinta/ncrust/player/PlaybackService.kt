@@ -52,6 +52,8 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.LoadControl
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
+import com.takahashirinta.ncrust.cache.OfflineAudioCache
+import com.takahashirinta.ncrust.cache.OfflineUrlStore
 import androidx.media3.extractor.DefaultExtractorsFactory
 import androidx.media3.extractor.flac.FlacExtractor
 import androidx.media3.extractor.mp3.Mp3Extractor
@@ -258,7 +260,10 @@ class PlaybackService : MediaLibraryService() {
         val extractorsFactory = DefaultExtractorsFactory()
             .setMp3ExtractorFlags(Mp3Extractor.FLAG_DISABLE_ID3_METADATA)
             .setFlacExtractorFlags(FlacExtractor.FLAG_DISABLE_ID3_METADATA)
-        val mediaSourceFactory = DefaultMediaSourceFactory(this, extractorsFactory)
+        // v1.6.0 · D1：ExoPlayer 走离线缓存数据源 —— 已播放过的音频片段直接从本地读，
+        // 弱网/断网时不再重下（cache key 由 OfflineKeys 决定，见该文件 KDoc）。
+        val mediaSourceFactory =
+            DefaultMediaSourceFactory(OfflineAudioCache.dataSourceFactory(this), extractorsFactory)
 
         player = ExoPlayer.Builder(this, renderersFactory, mediaSourceFactory)
             .setAudioAttributes(
@@ -462,6 +467,8 @@ class PlaybackService : MediaLibraryService() {
             "stop" -> {
                 PlaybackStateManager.clearState(this)
                 stopForeground(STOP_FOREGROUND_REMOVE)
+                // v1.6.0 · D3：撤掉实时更新通知，别在状态栏留一条不动的进度条。
+                LiveUpdateNotifier.cancel(this)
                 mediaSessionCompat?.isActive = false
                 mediaSessionCompat?.release()
                 mediaTitle = "Ncrust"
@@ -624,6 +631,9 @@ class PlaybackService : MediaLibraryService() {
      */
     private fun playUrl(url: String, startPositionMs: Long = 0L) {
         Log.d("PlaybackService", "Playing: $url startPositionMs=$startPositionMs")
+        // v1.6.0 · D1：记下这首歌「最后一次成功播放的 URL」。断网时客户端必须先有一个 URL
+        // 才会去问 CacheDataSource，而网易的 URL 20 分钟就过期 —— 这份清单就是离线回放的入口。
+        runCatching { OfflineUrlStore.rememberFromUrl(this, url) }
         // Clear any stale preload metadata; setMediaItem replaces the entire playlist.
         clearPendingNext()
         // 手动切歌会顶掉无缝队列, 预载的下一首封面作废, 一并清掉
@@ -959,6 +969,21 @@ class PlaybackService : MediaLibraryService() {
     }
 
     private fun updateNotify() {
+        // v1.6.0 · D3：API 36 的实时更新（Live Updates）。与媒体通知并行、互不依赖，
+        // 失败只打日志（见 LiveUpdateNotifier）。
+        runCatching {
+            val songId = player.currentMediaItem?.mediaId
+            if (songId != null) {
+                LiveUpdateNotifier.update(
+                    this,
+                    title = mediaTitle,
+                    artist = mediaArtist,
+                    positionMs = player.currentPosition.coerceAtLeast(0L),
+                    durationMs = player.duration.takeIf { it > 0L } ?: 0L,
+                    isPlaying = player.isPlaying,
+                )
+            }
+        }
         try {
             val n = buildNotification()
             if (!isServiceStarted) {
@@ -1020,6 +1045,7 @@ class PlaybackService : MediaLibraryService() {
 
     override fun onDestroy() {
         Log.d("PlaybackService", "onDestroy")
+        LiveUpdateNotifier.cancel(this)
         instance = null
         isServiceStarted = false
         progressJob?.cancel()
@@ -1039,6 +1065,7 @@ class PlaybackService : MediaLibraryService() {
     override fun onTaskRemoved(rootIntent: Intent?) {
         Log.d("PlaybackService", "onTaskRemoved")
         stopForeground(STOP_FOREGROUND_REMOVE)
+        LiveUpdateNotifier.cancel(this)
         mediaSessionCompat?.isActive = false
         mediaSessionCompat?.release()
         mediaTitle = "Ncrust"
