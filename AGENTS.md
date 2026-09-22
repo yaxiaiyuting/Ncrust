@@ -875,6 +875,77 @@ su -c 'chcon $(ls -Z REF | cut -d" " -f1) TARGET'    # 或直接 restorecon TARG
 - **Search debounce**: 500 ms in `SearchViewModel` — do not remove.
 - **No explicit coroutines dependency**: coroutines ship with the Kotlin stdlib configuration here.
 - **`ContentCache` is not persisted**; `LibraryManager` is the persistence layer.
+## v1.6.0 新增（本 fork）
+
+### D4 · 逐字歌词覆盖率：`YrcAligner`（LCS 行对齐）
+
+**接口层天花板是 43%**（收藏库 100 首实测）。`lv/kv/tv=-1` 与覆盖率无关 —— v1.5.0 起就已经在传
+`yv=-1`；`kv=-1`(klyric) 100 首全空；换 eapi/iPhone/Android 身份、换 `/api/song/lyric/v1`、
+换 GET/POST 都不多给一个 yrc 字段。**所以别再往「换参数/换通道/接外部源」上花时间**
+（LRCLIB 等只有行级时间轴，拿不到逐字）。
+
+真正的瓶颈是「yrc 行数必须 == lrc 行数」这条判据：实测 yrc 常少一行（间奏没有逐字轨）、多几行
+（重复段），或 lrc 多一行「作词 : xxx」元信息。改成**两条路各算一遍、取挂得多的那条**：
+
+| 路径 | 做法 |
+|---|---|
+| `index` | v1.5.x 原行为：行数相等 + 时间漂移抽样达标 → 按行序 i↔i（逐字节保留） |
+| `lcs` | 按**归一化文本**（只删空白字符）做最长公共子序列，再按时间漂移逐对过滤 |
+
+实测：可用歌数 37 → **42**/100，行级挂载率 77.9% → **90.0%**；《Sound Of Silence》
+`line count mismatch lrc=40 yrc=39, skip` → `39/40 lines got word timing (yrc=39, lcs)`。
+「择优」规则是为了**不回归**：实测《You Never Can Tell》index=22 行 > lcs=17 行。
+
+契约（不许改）：`attachWords` 不增删任何一行、不改任何一行的文本与时间戳；挂不上的行原样返回。
+归一化**只删空白**，不去标点、不去大小写 —— 宁可少挂几行，也不让不同源的两行被判成同一行。
+
+### D2 · S6 帧预算：98% jank 的归因（**结论：不要为此改歌词面板**）
+
+S6（API 24 / debug / 1440×2560）`dumpsys gfxinfo framestats`，22s 窗口：
+
+| 状态 | 帧数 | Janky | 整帧 50th | GPU 段 50th |
+|---|---|---|---|---|
+| 库列表滚动（播放器收起） | 1080 | 1.02% | 5.2ms | 2.7ms |
+| 展开播放器 + 队列滚动（**无歌词**） | 1224 | 25.8% | 18.0ms | 11.8ms |
+| 展开播放器 + 歌词（逐字渐变） | 981 | 98.06% | 18.6ms | 14.5ms |
+| 展开播放器 + 歌词（逐字关） | 117 | 84.6% | 22.8ms | 12.6ms |
+
+- 整屏重绘的单价是**设备属性**：无歌词的队列滚动已经 11.8ms GPU；加逐字渐变只 +2.7ms；
+- 歌词面板的作用是**让昂贵帧连续发生**（981 vs 117 帧）—— Janky% 由 25.8% 跳到 98%；
+- UI 线程始终 1–2ms，瓶颈纯 GPU（Slow issue draw commands 73%）⇒ **「减少重组」「给某行加
+  layer」这类改动没有意义**（逐行缩放层探针实测 977 vs 981 帧，无差异）；
+- ⇒ 不存在「小改一处到 60fps」的热点。**不要为了让 S6 的 Janky% 好看而牺牲软边/逐帧推进**。
+- 也**不要**用「帧间隔」自动判降级：S6 是流水线式掉帧（帧回调仍 60Hz、每帧延迟 19.5ms），
+  帧间隔量不出来（这条已经踩过，实现到一半按证据回退）。
+
+### D1 · 离线缓存 = **已播放音频流**的缓存（不是下载）
+
+- 新 `cache/` 包：`OfflineKeys`（纯逻辑）、`OfflineUrlStore`、`OfflineAudioCache`（media3
+  `SimpleCache` + `CacheDataSource`）；
+- **必须自定义 cache key**：网易播放 URL 每次取都变（host 轮换 + 路径签发时间戳 + 20 分钟过期），
+  media3 默认按 URL 做 key 会让缓存**永远不可能命中**。URL 的 query 是装饰（CDN 只认路径签名），
+  所以挂 `ncrustkey=song:<id>:<level>`；**档位必须进 key**（无损与高解析是两个文件）；
+- 缓存放 `filesDir/offline/audio`（**不要**放 cacheDir，系统清缓存会误删），但设置页的
+  「缓存占用」统计与「清除缓存」必须覆盖它 —— 统计口径与可清理范围要一致；
+- 离线回放：起播时记录 (key → 最后一次成功播放的 URL)（300 条 LRU）。取链失败时兜底，
+  且**必须** `OfflineAudioCache.contains(key)` 才起播 —— 否则就是拿过期 URL 赌网络 403/404
+  的无限缓冲（v1.3.0 禁止的坏链接）；
+- `FLAG_IGNORE_CACHE_ON_ERROR`：写缓存失败绝不影响播放；
+- 上限 `ncrust_settings:offline_cache_mb`（默认 512，非法值回落默认）；
+- 歌词本身已经离线可用（`LyricsCache` 持久化，200 条），不需要额外做。
+
+### D3 · Android 16 实时更新（Live Updates）
+
+- `Notification.ProgressStyle` 存在但**没有** `setProgressMax`（0–100 百分比语义）；
+- 闸门：`NotificationManager.canPostPromotedNotifications()`（API 36+）+ 权限
+  `android.permission.POST_PROMOTED_NOTIFICATIONS`（**真机实测名**，不是流传的
+  `..._ONGOING_NOTIFICATIONS`）；API 36 的 Builder **没有** `setRequestPromotedOngoing`；
+- 一条通知只能有一个 Style，MediaStyle 与 ProgressStyle 无法并存 ⇒ 媒体通知保持 MediaStyle，
+  另发一条 id 固定、ongoing、IMPORTANCE_MIN、只更新不提醒的通知进实时更新区
+  （`LiveUpdateNotifier`）；API < 36 或系统不允许时整类静默不工作；
+- 厂商灵动岛（HyperOS 超级岛 / OPPO 流体云 / vivo 原子通知 / 华为实况窗）**无公开 SDK**，
+  不接入（与 v1.5.1 D-media2 一致）。
+
 - **Stale comments**: some comments say "last 20 s" for the gapless preload window (actual 60 s) and "4 Hz" for progress ticks (actual 2 Hz). Trust the code.
 - **`SongDetailScreen` / `NavRoutes.song(...)` are registered but unreachable** — clipboard song links load into the player instead.
 - **`ncrust-api/` is not part of the app** — see Repository Layout.

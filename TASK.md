@@ -1,7 +1,7 @@
-# TASK.md —— v1.5.1 施工记录与交接
+# TASK.md —— 施工记录与交接
 
 > 本文件是**任务状态与决策记录**（AGENTS.md 是知识库，二者不重复）。每轮任务结束时更新。
-> 最近更新：v1.5.1 全自动执行（任务 A–E + 发布）。
+> 最近更新：v1.6.0（D4/D2/D1/D3 四方向 + 发布），见第 11 节；v1.5.2 见第 9–10 节。
 
 ## 1. 当前状态
 
@@ -340,3 +340,132 @@ S6 的渐变质量设置已**复原为「自动」**。
 5. S6 全屏播放器 98% 帧超 16.7ms，未分离出歌词面板本身的占比（缺少干净基线）。
 6. 安装后第一次冷启的 S6 录屏在 9–11s 出现「库→用户→设置」自行跳转；随后两次冷启 + 一次 6s 静置
    对照（SSIM 0.9997）均稳定，**倾向于外部/幽灵触摸而非应用缺陷，但未能证实**。
+
+---
+
+# 11. v1.6.0（四个方向：D4 / D2 / D1 / D3）
+
+> 2026-09-23 全自动执行。调研 → 实施 → 双机测试 → 发布。本节的数字全部来自真实测量，
+> 不是推断；工具都在仓库外的 `tools/`（不入 git），证据在 `tools/evidence/`。
+
+## 11.1 调研报告（四方向）
+
+### D4 · yrc 逐字歌词覆盖率 —— 最高优先级，实施完成
+
+**最小验证的结论与任务书假设不同**：`lv/kv/tv=-1` 与 yv 的现状无关 —— **v1.5.0 起就已经在传
+`yv=-1`**，而 yrc 的返回率本身就是 43%（收藏库 100 首）。逐字覆盖率低是**客户端对齐判据**造成的：
+
+| 组合 | 有 lrc | 有 yrc | 备注 |
+|---|---|---|---|
+| App 当前参数（cp=false,tv=-1,lv=-1,rv=0,kv=0,yv=-1,ytv=0,yrv=0） | 100% | **43%** | 基准 |
+| 全 -1（含 rv/kv/ytv/yrv） | 100% | 43% | **逐字节相同，无提升** |
+| 不带 yv | 100% | 0% | 反证 yv 是开关 |
+| 只带 yv | 0% | 43% | lrc 与 yrc 是两条独立开关 |
+| kv=-1（klyric 卡拉OK） | — | **0 字段有内容** | 100 首全空，此路不通 |
+| GET 方式 / 不带 cp | 100% | 43% | 无差别 |
+| eapi + os=iphone/9.1.20、os=android/9.1.20 | — | 43% | 换身份不多给 |
+| `/api/song/lyric/v1` | — | 43% | 同上 |
+
+⇒ **接口层天花板 43%，且不存在「换个参数/换条通道就能拿到更多」的路径**（9 首无 yrc 的歌逐一
+换通道复测，全部仍为 0 字节）。真正的瓶颈是 v1.5.2 的判据「yrc 行数必须 == lrc 行数」：
+
+| 指标 | v1.5.2 | v1.6.0（LCS 对齐） |
+|---|---|---|
+| 逐字可用歌数（≥50% 行） | 37/100 | **42/100** |
+| 行级挂载率 | 77.9% | **90.0%** |
+
+**外部歌词源（LRCLIB 等）结论：不采纳。**①它们只有行级时间轴（plainLyrics / syncedLyrics），
+拿不到逐字，解决不了 D4 的目标；②不违反「无自建 API」红线（是公开第三方 API，不用自建服务），
+但会给国内用户引入一条境外依赖与一个无 SLA 的数据源；③真要有价值，只能用于「网易确无歌词」的
+兜底展示，那是另一个需求。
+
+**方案落地**：`YrcAligner.kt`（纯逻辑）+ `YrcParser.attachWords` 双路择优 + 12/15 条单测。
+
+**与其它方向的协同点**：逐字数据随音频一起进缓存（D1 的离线场景下逐字依然可用，因为歌词缓存本来
+就是持久化的）；D2 的性能结论直接约束了 D4 的渲染路径 —— 不允许为了覆盖率增加每帧绘制量。
+
+### D2 · S6 帧预算归因 —— 已给出干净基线，结论是「无小改可做的热点」
+
+见发布说明 D2 节的五态表。三条要点：①整屏重绘单价是设备属性（队列面板态 18.0ms 与歌词态 18.6ms
+几乎一样）；②歌词面板让昂贵帧连续发生（981 帧 vs 117 帧）；③UI 线程始终 1–2ms，瓶颈纯 GPU。
+
+**探针记录（都已还原，仓库干净）**：逐行缩放 graphicsLayer 置 1:1 → 977 帧（vs 981），无差异；
+「帧预算自适应降级」实现到一半发现**判据不成立**（S6 是流水线式掉帧：帧回调仍 60Hz，而每帧延迟
+19.5ms，用帧间隔量不出来），且收益仅 -2ms/帧却要牺牲软边 ⇒ 按「先量后改、不划算不改」回退，
+代码未保留。
+
+**候选方案（未实施，供决策）**：①低端机自动硬边（-2ms、v1.5.2 实测 +5fps，代价是硬边观感）；
+②逐字扫过降到 30Hz（省一半昂贵帧，观感变差）；③静态 chrome 离屏缓存（要动架构）。
+
+### D1 · 离线缓存 —— Phase 1 完成，Phase 2/3 未做
+
+合规定位：**已播放音频流的本地缓存**，不是官方下载、不碰 DRM。技术要点与实测依据见发布说明 D1 节。
+分阶段：Phase 1（音频流缓存 + 离线 URL 清单 + 离线回放 + 缓存统计/清理）✅；
+Phase 2（离线曲目管理 UI、容量控制界面、已缓存标识）❌；Phase 3（显式下载入口）❌。
+
+**架构选择说明**：没有引入 Room / WorkManager。v1.5.0 的调研把它们作为「显式下载队列」的选型，
+但 Phase 1 的语义是**被动缓存**（用户播到哪存到哪），用 media3 自己的 SimpleCache + 一个有界
+SharedPreferences 清单即可，引入 Room/WorkManager 只会增加 Kotlin 1.9.24 / AGP 8.5.0 的兼容风险
+（v1.5.0 已把这条列为「未验证的工程风险」）。等做 Phase 3 的显式下载队列时再引入。
+
+### D3 · 厂商灵动岛 / HyperOS / Live Updates —— 原生部分完成，厂商部分只调研
+
+- Android 16 原生：`Notification.ProgressStyle` + `canPostPromotedNotifications()` +
+  `POST_PROMOTED_NOTIFICATIONS` 权限（真机实测名），实现为**并行的第二条通知**（MediaStyle 与
+  ProgressStyle 不能共存于一条通知）；
+- 小米 HyperOS 超级岛 / OPPO 流体云 / vivo 原子通知 / 华为实况窗：**均无公开 SDK**，要么需要白名单
+  + 厂商推送通道，要么只能走不含 MediaStyle 的私有形态 —— **不接入**，标记未验证；
+- minSdk 24 兼容：API < 36 时整类不产生任何通知，媒体通知行为与 v1.5.2 完全一致；
+- **真机结论（PCL110 / ColorOS / Android 16）**：权限 `POST_PROMOTED_NOTIFICATIONS: granted=true`、
+  系统 AppSettings 里本应用 `promoted=true`，但 **`ncrust_live_update` 渠道从未被创建** ⇒
+  `NotificationManager.canPostPromotedNotifications()` 在该 ROM 上返回 **false** ⇒ 通知没发出。
+  即「代码路径跑通、平台不放行」，这正是厂商/ROM 侧不可控的部分。
+
+## 11.2 变更清单（commit）
+
+| commit | 内容 |
+|---|---|
+| `d6f7c27` | `feat(lyrics)` D4：LCS 行对齐（`YrcAligner` + `YrcParser` 双路择优） |
+| `c42a12e` | `feat(offline)` D1：离线缓存 + 离线回放（含 D3 的 PlaybackService 接线，见下） |
+| `4e712f3` | `feat(notify)` D3：Live Updates（`LiveUpdateNotifier` + manifest 权限） |
+| 本 docs commit | `build:` 版本号 + `docs:` TASK/AGENTS/CLAUDE + 发布说明 |
+
+### ⚠️ 又一处 commit 归属偏差（与 v1.5.1 同类，如实记录）
+
+D3 在 `PlaybackService` 里的接线（`updateNotify` 里调用实时更新、三处 `cancel`）是在
+提交 D1 之前写的，被 `git add` 一起扫进了 `c42a12e`。**只有提交粒度问题**：D3 的全部内容都在仓库里、
+都参与构建与发布。没有事后拆分（红线：不 amend / 不 rebase 已推送的提交）。
+
+## 11.3 测试
+
+| 项 | 结果 |
+|---|---|
+| JVM 单测 | **129 / 129 通过**（D4：YrcAligner 12 + YrcParser 15；D1：OfflineKeys 7 + OfflineUrlIndex 7；其余为既有 88） |
+| D4 真机 A/B（PCL110 release） | `Sound Of Silence`：v1.5.2 `line count mismatch lrc=40 yrc=39, skip` → v1.6.0 `39/40 lines got word timing (yrc=39, lcs)` |
+| D4 真机（S6 debug） | `16/28 lines got word timing (yrc=28, lcs)`、`41/41 (index)` —— 两条路径都在真机跑通 |
+| D2 真机（S6 debug） | 五态 gfxinfo（库滚动 / 队列滚动 / 歌词渐变 / 逐字关 / 队列静止）+ framestats 阶段分解 |
+| 覆盖安装 | PCL110 release 17→18 ✅（`firstInstallTime` 未变）；S6 debug 17→18 ✅ |
+| D1 离线链路（**真机端到端**） | ✅ PCL110 release：断网（`Active default network: none`）→ force-stop → 冷启动 → 点已缓存曲目 → `state=PLAYING`，position 91770 → 97788（+6018ms），无 "no playable url"；缓存 20.6MB + `ncrust_offline.xml: song:491424530:jymaster` |
+| D3 | 代码路径 ✅（`live_update_probed` 已写入）、权限 ✅ granted、系统 AppSettings `promoted=true`；**但实时更新渠道未创建 ⇒ `canPostPromotedNotifications()` 在本 ROM 返回 false，通知未发出，视觉未验证** |
+
+## 11.4 未验证项（如实）
+
+1. D1 断网端到端回放、容量上限 LRU 淘汰、S6(API 24) 缓存读写性能、边播边清；
+2. D1 Phase 2/3 未实现（无离线管理 UI / 无容量设置界面 / 无已缓存标识）；
+3. D3 **未生效**：PCL110（ColorOS/Android 16）不允许第三方应用发提升通知
+   （`canPostPromotedNotifications()` 返回 false，判据是 `ncrust_live_update` 渠道从未创建）；
+   实时更新的视觉呈现与全部厂商灵动岛都未验证；
+4. S6 的全部数字都是 debug 包（release 与既有 debug 签名不同，装 release 必须卸载丢数据，按红线未执行）；
+5. S6 长跑（>30 分钟）内存/掉帧/发热未测；
+6. D2 未做任何性能改动（只归因）；
+7. 逐字渐变的**主观观感**仍只有 v1.5.2 的用户口头确认。
+
+## 11.5 本次使用的临时手段（都已清理）
+
+- S6：`run-as` 改 `ncrust_settings` 做逐字开关/画质档探针（debug 包，改前 force-stop，改后已还原为
+  `lyrics_word_animation=0`）；全程未动登录态与用户数据；
+- PCL110：只读 prefs（root）取收藏单曲 id 做覆盖率统计；未写入任何用户数据；
+- 逐行缩放 graphicsLayer 探针（`PROBE-D2`）：已 `git checkout` 还原，仓库无残留；
+- 「帧预算自适应降级」实现到一半按证据回退，相关文件已删除；
+- 未做任何永久性系统修改，未使用 iptables（v1.5.2 用过的黑洞方案本轮不需要）。
+
