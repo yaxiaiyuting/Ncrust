@@ -43,6 +43,8 @@ val koNK = Strings(
     lyricsWordByWordLabel = "글자별 가사",
     lyricsWordAnimationLabel = "글자별 애니메이션",
     lyricsWordAnimationOptions = listOf("그라데이션", "글자별", "끄기"),
+    lyricsInMediaSessionLabel = "미디어 패널 가사",
+    lyricsInMediaSessionHint = "알림창 / 잠금 화면 미디어 카드 둘째 줄에 현재 가사를 표시합니다 (Android 13+ 에서는 「아티스트 · 가사」로 바뀝니다. 차량과 블루투스에도 동기화)",
     controlsHandleLabel = "제어줄 손잡이: 위로 끌면 숨김, 아래로 끌면 복원, 누르면 전환",
     themeSectionTitle = "주제 색상",
     themeModeSectionTitle = "주제 방식",
@@ -59,6 +61,8 @@ val koNK = Strings(
     cacheCleared = "캐시가 삭제되었습니다",
 
     dailySongsTitle = "날마다 추천곡",
+    networkOfflineTitle = "네트워크에 연결되지 않았습니다",
+    networkOfflineHint = "로컬 캐시를 표시 중입니다. 연결되면 자동으로 새로 고칩니다",
     recommendPlaylistTitle = "추천 목록",
     newSongsTitle = "새노래 소식",
 

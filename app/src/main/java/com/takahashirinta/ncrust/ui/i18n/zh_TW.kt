@@ -43,6 +43,8 @@ val zhTW = Strings(
     lyricsWordByWordLabel = "逐字歌詞",
     lyricsWordAnimationLabel = "逐字動畫模式",
     lyricsWordAnimationOptions = listOf("漸層掃過", "逐字硬切", "關閉逐字"),
+    lyricsInMediaSessionLabel = "媒體面板顯示歌詞",
+    lyricsInMediaSessionHint = "通知列 / 鎖屏的媒體卡片第二行顯示目前歌詞（Android 13+ 會把歌手換成「歌手 · 歌詞」；車機與藍牙同步）",
     controlsHandleLabel = "控制列把手：向上拖收合、向下拖還原、點按切換",
     themeSectionTitle = "裳色",
     themeModeSectionTitle = "主題模式",
@@ -59,6 +61,8 @@ val zhTW = Strings(
     cacheCleared = "快取已清除",
 
     dailySongsTitle = "日薦之曲",
+    networkOfflineTitle = "目前沒有網路連線",
+    networkOfflineHint = "已顯示本機快取的內容；連網後會自動重新整理",
     recommendPlaylistTitle = "薦單",
     newSongsTitle = "新歌速至",
 

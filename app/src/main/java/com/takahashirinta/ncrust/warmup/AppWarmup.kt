@@ -5,8 +5,10 @@ import coil.Coil
 import coil.request.ImageRequest
 import com.takahashirinta.ncrust.auth.CookieManager
 import com.takahashirinta.ncrust.cache.ContentCache
+import com.takahashirinta.ncrust.cache.HomeSnapshot
 import com.takahashirinta.ncrust.library.LibraryManager
 import com.takahashirinta.ncrust.network.CoverUrls
+import com.takahashirinta.ncrust.network.NetworkAvailability
 import com.takahashirinta.ncrust.network.PlaylistApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -51,7 +53,8 @@ object AppWarmup {
         "ncrust_library",         // LibraryManager
         "ncrust_playback_state",  // PlaybackStateManager
         "ncrust_lyrics_cache",    // LyricsCache
-        "search_history"          // SearchHistoryManager
+        "search_history",         // SearchHistoryManager
+        "ncrust_home_cache"       // HomeSnapshot（v1.5.1 · C）
     )
 
     fun start(context: Context) {
@@ -73,6 +76,19 @@ object AppWarmup {
         LibraryManager.preload(app)
 
         scope.launch {
+            // 阶段零·五（v1.5.1 · C）：先把上次的首页磁盘快照灌回内存缓存。无网冷启动时
+            // 这几乎是首屏唯一的内容来源；必须在「判定有没有网」之前完成，否则降级态会先
+            // 按空缓存定下来、快照到了也来不及上屏。
+            runCatching { HomeSnapshot.restoreIntoCache(app) }
+
+            // v1.5.1 · C：完全没网就一个请求都不发。原来这里会白等 OkHttp 的
+            // connectTimeout（30s），首页全程转圈；现在直接进降级态（显示快照或空态），
+            // ready 立刻置位，splash 不会被网络拖住。
+            if (!NetworkAvailability.isOnline(app)) {
+                _ready.value = true
+                return@launch
+            }
+
             withTimeoutOrNull(TIMEOUT_MS) {
                 // 阶段一：三条 Home 请求并发写入 ContentCache
                 coroutineScope {
@@ -130,6 +146,17 @@ object AppWarmup {
                         }.awaitAll()
                     }
                 }
+            }
+
+            // v1.5.1 · C：把刚拿到的首页数据落盘，供下次无网冷启动使用。
+            runCatching {
+                HomeSnapshot.save(
+                    app,
+                    daily = ContentCache.homeDailySongs,
+                    playlists = ContentCache.homeRecommendPlaylists,
+                    newSongs = ContentCache.homeNewSongs,
+                    toplists = ContentCache.toplistItems,
+                )
             }
 
             // 阶段二：收藏库刷新(已登录时)。只喂收藏页缓存, 不进 ready 关键路径——

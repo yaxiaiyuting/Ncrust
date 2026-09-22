@@ -66,6 +66,9 @@ data class Strings(
     // LyricsWordAnimationMode 的常量一一对应。
     val lyricsWordAnimationLabel: String,
     val lyricsWordAnimationOptions: List<String>,
+    // v1.5.1 · D：媒体面板歌词开关（默认关）。开启后 ARTIST 变成「艺人 · 当前歌词行」。
+    val lyricsInMediaSessionLabel: String,
+    val lyricsInMediaSessionHint: String,
     // v1.5.0 · C2：控制栏把手（全屏播放器底部那条 40×3dp 小横条）的无障碍描述。
     // 它此前对 TalkBack 完全不可见 —— 视力障碍用户收起控制栏后再也拿不回来。
     val controlsHandleLabel: String,
@@ -82,6 +85,11 @@ data class Strings(
     val clearCache: String,
     val clearCacheConfirm: String,
     val cacheCleared: String,
+
+    // v1.5.1 · C：无网络时的首页降级空态（标题 / 提示）。有缓存时会直接显示缓存，
+    // 只有"一条都没有"时才轮到它。
+    val networkOfflineTitle: String,
+    val networkOfflineHint: String,
 
     // Home screen
     val dailySongsTitle: String,

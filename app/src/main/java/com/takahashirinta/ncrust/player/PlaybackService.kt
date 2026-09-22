@@ -116,6 +116,18 @@ class PlaybackService : MediaLibraryService() {
         const val LIKED_ID = "ncrust_liked"
 
         var onProgressUpdate: ((Long, Long) -> Unit)? = null
+
+        /**
+         * v1.5.1 · D：当前**正在唱的那一行歌词**，由 PlayerViewModel 在「跨行」时写入
+         * （null = 这首歌没歌词，或者用户没打开「媒体面板显示歌词」）。
+         *
+         * 为什么走 ARTIST：Android 13+ 的 SystemUI 媒体面板第二行**只读
+         * METADATA_KEY_ARTIST**，`DISPLAY_SUBTITLE` 被完全忽略（AOSP 源码级结论，见 TASK.md
+         * 的调研报告）；把歌词塞进 SUBTITLE 在现代系统上等于没写。所以开启后 ARTIST 变成
+         * 「艺人 · 当前歌词行」，并**同时**写 SUBTITLE/DISPLAY_SUBTITLE 兜住老车机与蓝牙路径；
+         * 关闭或没有歌词时这里保持 null，ARTIST 一字不变。
+         */
+        @Volatile var mediaLyricLine: String? = null
         var onPlaybackEnded: (() -> Unit)? = null
         var onPlaybackPrevious: (() -> Unit)? = null
         var onIsPlayingChanged: ((Boolean) -> Unit)? = null
@@ -757,14 +769,23 @@ class PlaybackService : MediaLibraryService() {
         // Metadata 只在 title/artist/duration/封面变化时重发——旧实现每 250ms 都要走一遍
         // MediaMetadataCompat.Builder + 跨进程 IPC 到系统 MediaSession，纯浪费。
         // 位图用**引用**比较: 实例变了(新封面加载完成)就重发, 同图不重发。
-        if (mediaTitle != lastMetadataTitle || mediaArtist != lastMetadataArtist ||
+        // v1.5.1 · D：媒体面板歌词。只在"有歌词行"时改写 ARTIST（艺人前缀保留），
+        // 没有就走原样 —— 关闭开关 / 无歌词的歌与 v1.5.0 逐字节一致。
+        val lyricLine = mediaLyricLine?.takeIf { it.isNotBlank() }
+        val effectiveArtist = if (lyricLine == null) mediaArtist else "$mediaArtist · $lyricLine"
+        if (mediaTitle != lastMetadataTitle || effectiveArtist != lastMetadataArtist ||
             dur != lastMetadataDuration || currentArtworkUrl != lastMetadataArtwork ||
             currentArtworkBitmap !== lastMetadataBitmap
         ) {
             val builder = android.support.v4.media.MediaMetadataCompat.Builder()
                 .putString(android.support.v4.media.MediaMetadataCompat.METADATA_KEY_TITLE, mediaTitle)
-                .putString(android.support.v4.media.MediaMetadataCompat.METADATA_KEY_ARTIST, mediaArtist)
+                .putString(android.support.v4.media.MediaMetadataCompat.METADATA_KEY_ARTIST, effectiveArtist)
                 .putLong(android.support.v4.media.MediaMetadataCompat.METADATA_KEY_DURATION, dur)
+            // 老车机 / 蓝牙 AVRCP 读的是 SUBTITLE 那一套，顺手写上；没歌词就写空串清掉。
+            builder.putString(
+                android.support.v4.media.MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE,
+                lyricLine ?: ""
+            )
             // 系统任务栏/锁屏的媒体卡优先读 MediaSession 的 ART 位图——不放进来的话
             // 系统退化用低清来源, 封面在任务栏上就是模糊的
             currentArtworkBitmap?.let {
@@ -772,7 +793,7 @@ class PlaybackService : MediaLibraryService() {
             }
             mediaSessionCompat?.setMetadata(builder.build())
             lastMetadataTitle = mediaTitle
-            lastMetadataArtist = mediaArtist
+            lastMetadataArtist = effectiveArtist
             lastMetadataDuration = dur
             lastMetadataArtwork = currentArtworkUrl
             lastMetadataBitmap = currentArtworkBitmap

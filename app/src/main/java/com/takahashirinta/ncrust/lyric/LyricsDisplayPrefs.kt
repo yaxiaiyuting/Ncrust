@@ -57,6 +57,7 @@ object LyricsDisplayPrefs {
     /** 设置页档位（TASK 里要求 5~7 档，这里取 5 档；A-/A+ 按键也走同一张表）。 */
     val FONT_SCALE_STEPS = listOf(0.7f, 0.85f, 1.0f, 1.2f, 1.5f)
 
+
     /**
      * 读逐字动画模式，并完成 v1.5.0 布尔开关的一次性迁移：
      * 老用户关掉过逐字 → [LyricsWordAnimationMode.OFF]（等价于他原来的选择）；

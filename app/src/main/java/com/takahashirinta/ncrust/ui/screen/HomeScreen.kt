@@ -34,6 +34,8 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.request.SuccessResult
 import com.takahashirinta.ncrust.cache.ContentCache
+import com.takahashirinta.ncrust.cache.HomeSnapshot
+import com.takahashirinta.ncrust.network.NetworkAvailability
 import com.takahashirinta.ncrust.network.PlaylistApi
 import com.takahashirinta.ncrust.network.SongItem
 import com.takahashirinta.ncrust.network.CoverUrls
@@ -42,6 +44,7 @@ import com.takahashirinta.ncrust.ui.ResponsiveContent
 import com.takahashirinta.ncrust.library.LibraryManager
 import io.github.takahashirinta.kanesumi.anim.sokuou.SokuouTweens
 import io.github.takahashirinta.kanesumi.anim.sokuou.rememberMetroFlingBehavior
+import io.github.takahashirinta.kanesumi.controls.MetroButton
 import io.github.takahashirinta.kanesumi.controls.MetroIconButton
 import io.github.takahashirinta.kanesumi.controls.MetroProgressIndicator
 import io.github.takahashirinta.kanesumi.core.theme.LocalMetroColors
@@ -55,6 +58,7 @@ import com.takahashirinta.ncrust.ui.components.SongCardStyle
 import com.takahashirinta.ncrust.ui.components.SongMenuAction
 import com.takahashirinta.ncrust.ui.i18n.LocalStrings
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import android.widget.Toast
@@ -90,15 +94,26 @@ fun HomeScreen(
         mutableStateOf(dailySongs.isEmpty() && playlists.isEmpty() && newSongs.isEmpty())
     }
     var error by remember { mutableStateOf<String?>(null) }
+    // v1.5.1 · C：无网 / 超时的降级状态。
+    //  - offline：启动时系统就告诉我们没有可用网络 —— 一个请求都不发；
+    //  - timedOut：有网但请求迟迟不回（半死网络），到点主动撤掉转圈，给空态 + 重试。
+    var offline by remember { mutableStateOf(false) }
+    var timedOut by remember { mutableStateOf(false) }
+    val context = androidx.compose.ui.platform.LocalContext.current
     // E（方案 2 瘦身版）：榜单入口。走 ContentCache 的 15s freshness 窗口 —— warmup/上次
     // 访问刚拉过就不再请求；卡片放在首屏，但请求不阻塞其它分节渲染（拿不到就整块不显示）。
     var toplists by remember { mutableStateOf(ContentCache.toplistItems ?: emptyList()) }
     LaunchedEffect(Unit) {
-        if (ContentCache.toplistItems == null || !ContentCache.isToplistFresh()) {
-            runCatching { PlaylistApi.getToplists() }.getOrNull()?.let {
-                ContentCache.putToplist(it)
-                toplists = it
-            }
+        if (ContentCache.toplistItems != null && ContentCache.isToplistFresh()) return@LaunchedEffect
+        // v1.5.1 · C：没网就不发（榜单只是首屏一块内容，不值得为它等超时）。
+        if (!NetworkAvailability.isOnline(context)) {
+            offline = true
+            return@LaunchedEffect
+        }
+        runCatching { PlaylistApi.getToplists() }.getOrNull()?.let {
+            ContentCache.putToplist(it)
+            toplists = it
+            HomeSnapshot.save(context, toplists = it)
         }
     }
     val gridState = rememberLazyGridState()
@@ -113,6 +128,8 @@ fun HomeScreen(
     var fmAccent by remember { mutableStateOf<Color?>(null) }
     val fmContext = androidx.compose.ui.platform.LocalContext.current
     LaunchedEffect(Unit) {
+        // v1.5.1 · C：没网就别去要资料了（电台卡会退回通用标题）。
+        if (!NetworkAvailability.isOnline(context)) return@LaunchedEffect
         val profile = ContentCache.userProfile
             ?: runCatching { PlaylistApi.getUserProfile() }.getOrNull()
         if (profile != null && profile.userId > 0) {
@@ -123,6 +140,17 @@ fun HomeScreen(
         }
     }
 
+    /** v1.5.1 · C：把当前首页状态落盘（异步、失败无害），供下次无网冷启动使用。 */
+    fun persistHomeSnapshot() {
+        HomeSnapshot.save(
+            context,
+            daily = ContentCache.homeDailySongs,
+            playlists = ContentCache.homeRecommendPlaylists,
+            newSongs = ContentCache.homeNewSongs,
+            toplists = ContentCache.toplistItems,
+        )
+    }
+
     fun loadDailySongs() {
         coroutineScope.launch(Dispatchers.IO) {
             try {
@@ -130,6 +158,8 @@ fun HomeScreen(
                 withContext(Dispatchers.Main) {
                     dailySongs = list
                     ContentCache.homeDailySongs = list
+                    offline = false
+                    persistHomeSnapshot()
                 }
             } catch (e: Exception) {
                 android.util.Log.e("DailySongs", "Error", e)
@@ -144,6 +174,8 @@ fun HomeScreen(
                 withContext(Dispatchers.Main) {
                     playlists = list
                     ContentCache.homeRecommendPlaylists = list
+                    offline = false
+                    persistHomeSnapshot()
                 }
             } catch (_: Exception) { }
         }
@@ -160,6 +192,8 @@ fun HomeScreen(
                     newSongs.addAll(list)
                     ContentCache.homeNewSongs = list.toList()
                     isLoading = false
+                    offline = false
+                    persistHomeSnapshot()
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
@@ -170,15 +204,72 @@ fun HomeScreen(
         }
     }
 
+    /** v1.5.1 · C：空态上的「重试」——先重新问一次网络，再重发三块请求。 */
+    fun retryLoad() {
+        error = null
+        timedOut = false
+        if (!NetworkAvailability.isOnline(context)) {
+            offline = true
+            isLoading = false
+            return
+        }
+        offline = false
+        isLoading = true
+        loadDailySongs()
+        loadPlaylists()
+        loadNewSongs()
+        coroutineScope.launch(Dispatchers.IO) {
+            runCatching { PlaylistApi.getToplists() }.getOrNull()?.let {
+                ContentCache.putToplist(it)
+                withContext(Dispatchers.Main) { toplists = it }
+                HomeSnapshot.save(context, toplists = it)
+            }
+        }
+    }
+
     LaunchedEffect(Unit) {
         // AppWarmup 刚预取过同样三个接口时直接复用缓存，避免冷启动重复网络/耗电。
         if (ContentCache.isHomeFresh()) return@LaunchedEffect
+        // v1.5.1 · C 冷启动竞态：AppWarmup 把磁盘快照灌回 ContentCache 是异步的
+        // （IO 线程 + JSON 解析），这里最多等 800ms 再接后面的判断，免得首帧先闪一个
+        // 空态、再被随后到达的快照顶掉。有内容时这个等待一次都不会发生。
+        if (dailySongs.isEmpty() && playlists.isEmpty() && newSongs.isEmpty()) {
+            var waited = 0
+            while (waited < 800 &&
+                ContentCache.homeDailySongs == null &&
+                ContentCache.homeRecommendPlaylists == null &&
+                ContentCache.homeNewSongs == null
+            ) {
+                delay(50)
+                waited += 50
+            }
+            ContentCache.homeDailySongs?.let { dailySongs = it }
+            ContentCache.homeRecommendPlaylists?.let { playlists = it }
+            ContentCache.homeNewSongs?.let { cached -> if (newSongs.isEmpty()) newSongs.addAll(cached) }
+        }
+        // v1.5.1 · C：没网就一个请求都不发 —— 直接进降级态（显示刚灌进来的快照，
+        // 或者空态 + 重试）。原来这里会白等 OkHttp 的 30s connectTimeout。
+        if (!NetworkAvailability.isOnline(context)) {
+            offline = true
+            isLoading = false
+            return@LaunchedEffect
+        }
         loadDailySongs()
         loadPlaylists()
         loadNewSongs()
     }
 
-    val context = androidx.compose.ui.platform.LocalContext.current
+    // v1.5.1 · C：半死网络（连上了但实际不通）下请求最长会挂到 connectTimeout。
+    // 转圈最多陪跑 [HOME_LOAD_TIMEOUT_MS]：到点撤掉转圈、给空态 + 重试，
+    // 至少让用户知道发生了什么，而不是对着一个永远转的圈。
+    LaunchedEffect(isLoading) {
+        if (!isLoading) return@LaunchedEffect
+        delay(HOME_LOAD_TIMEOUT_MS)
+        if (isLoading) {
+            timedOut = true
+            isLoading = false
+        }
+    }
 
     fun songMenu(song: SongItem): List<SongMenuAction> = listOf(
         SongMenuAction(Icons.Default.LibraryAdd, strings.actionAddToLibrary) {
@@ -199,6 +290,17 @@ fun HomeScreen(
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 MetroProgressIndicator(color = LocalMetroColors.current.primary)
             }
+        } else if (dailySongs.isEmpty() && playlists.isEmpty() && newSongs.isEmpty()) {
+            // v1.5.1 · C：三块数据全空（无网 / 失败 / 超时）时不再给一片空白。
+            // 此前 error 只写进 state、界面上没有任何呈现，用户看到的就是一个空网格。
+            HomeDegradedState(
+                offline = offline,
+                message = if (!offline && (timedOut || error != null)) strings.loadFailed(error) else null,
+                hint = if (offline) strings.networkOfflineHint else null,
+                title = if (offline) strings.networkOfflineTitle else strings.loadFailed(error),
+                retryLabel = strings.retry,
+                onRetry = { retryLoad() },
+            )
         } else {
             ResponsiveContent {
                 LazyVerticalGrid(
@@ -610,6 +712,67 @@ private suspend fun extractAvatarAccent(context: Context, avatarUrl: String): Co
         ?: return null
     return Color(argb)
 }
+
+/**
+ * v1.5.1 · C：首页降级空态。
+ *
+ * 冷启动完全没网、或者请求失败/超时且一条缓存都没有时，首页显示它 —— 说明原因 +
+ * 一个「重试」入口。此前这种情况下面是一个三块全空的网格，用户既看不到内容也看不到
+ * 为什么（error 写进了 state，却没有任何 UI 消费它）。
+ */
+@Composable
+private fun HomeDegradedState(
+    offline: Boolean,
+    title: String,
+    message: String?,
+    hint: String?,
+    retryLabel: String,
+    onRetry: () -> Unit,
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .statusBarsPadding()
+            .padding(horizontal = 32.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            MetroIcon(
+                imageVector = if (offline) Icons.Default.CloudOff else Icons.Default.Refresh,
+                contentDescription = null,
+                tint = LocalMetroColors.current.onSurfaceVariant,
+                sizeDp = 40.dp,
+            )
+            Spacer(Modifier.height(16.dp))
+            MetroText(
+                title,
+                color = LocalMetroColors.current.onBackground,
+                style = LocalMetroTypography.current.titleLarge,
+            )
+            if (message != null) {
+                Spacer(Modifier.height(8.dp))
+                MetroText(
+                    message,
+                    color = LocalMetroColors.current.onSurfaceVariant,
+                    style = LocalMetroTypography.current.bodyMedium,
+                )
+            }
+            if (hint != null) {
+                Spacer(Modifier.height(8.dp))
+                MetroText(
+                    hint,
+                    color = LocalMetroColors.current.onSurfaceVariant,
+                    style = LocalMetroTypography.current.bodyMedium,
+                )
+            }
+            Spacer(Modifier.height(20.dp))
+            MetroButton(text = retryLabel, onClick = onRetry)
+        }
+    }
+}
+
+/** v1.5.1 · C：首页转圈的最长陪跑时间（半死网络下不再一路等到 OkHttp 的 30s）。 */
+private const val HOME_LOAD_TIMEOUT_MS = 8_000L
 
 /** 点击 + 长按合并到一个 modifier，避免每个 tile 内部重复样板。 */
 @OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)

@@ -43,6 +43,8 @@ val ruRU = Strings(
     lyricsWordByWordLabel = "Пословный текст",
     lyricsWordAnimationLabel = "Анимация слов",
     lyricsWordAnimationOptions = listOf("Градиент", "Пословно", "Выкл."),
+    lyricsInMediaSessionLabel = "Текст в медиапанели",
+    lyricsInMediaSessionHint = "Показывать текущую строку в уведомлении и на экране блокировки (Android 13+ покажет «исполнитель · строка»; авто и Bluetooth тоже)",
     controlsHandleLabel = "Ручка панели управления: вверх — скрыть, вниз — вернуть, нажатие — переключить",
     themeSectionTitle = "Цветовая тема",
     themeModeSectionTitle = "Режим темы",
@@ -59,6 +61,8 @@ val ruRU = Strings(
     cacheCleared = "Кэш очищен",
 
     dailySongsTitle = "Ежедневные рекомендации",
+    networkOfflineTitle = "Нет подключения к сети",
+    networkOfflineHint = "Показано содержимое из кэша; обновление произойдёт автоматически",
     recommendPlaylistTitle = "Рекомендуемые плейлисты",
     newSongsTitle = "Новые релизы",
 

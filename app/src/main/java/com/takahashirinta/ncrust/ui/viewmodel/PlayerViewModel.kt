@@ -45,6 +45,7 @@ import com.takahashirinta.ncrust.ui.i18n.stringsForCode
 import android.widget.Toast
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 
 class PlayerViewModel(application: Application) : AndroidViewModel(application) {
     val isPlaying = MutableStateFlow(false)
@@ -67,10 +68,23 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
     val lyricsNoContentSongId = MutableStateFlow(-1L)
     // 设置页开关:是否显示歌词翻译。默认开——外文歌直接看到双语,中文歌 tlyric 为空不受影响。
     val showLyricsTranslation = MutableStateFlow(true)
+    // v1.5.1 · D：上一次推给媒体面板的歌词行（去重用，避免 2Hz 采样反复写同一个值）。
+    private var lastMediaLyricLine: String? = null
+
+
     // 设置页开关:逐字歌词(v1.5.0 · B，v1.5.1 · A 起是三模式)。默认「渐变扫过」——
     // 只在歌曲真的带 yrc 逐字数据时才有区别，没有逐字数据的歌行为与关掉完全一致。
     // 取值见 LyricsWordAnimationMode（0 渐变扫过 / 1 逐字硬切 / 2 关闭逐字）。
     val lyricsWordAnimation = MutableStateFlow(LyricsWordAnimationMode.GRADIENT_SWEEP)
+
+    /**
+     * v1.5.1 · D：是否把当前歌词行送进系统媒体面板（通知栏 / 锁屏 / 车机）。
+     *
+     * **默认关**：Android 13+ 的媒体面板第二行只认 ARTIST，开启后 ARTIST 会变成
+     * 「艺人 · 歌词行」，这是对既有语义的改写 —— 只有用户明确打开才做。
+     */
+    val lyricsInMediaSession = MutableStateFlow(false)
+
 
     val isBuffering = MutableStateFlow(false)
     // Emits true when the current song enters the preload window (last 20 s).
@@ -198,6 +212,25 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         showLyricsTranslation.value = getApplication<Application>()
             .getSharedPreferences("ncrust_settings", 0)
             .getBoolean("lyrics_translation", true)
+        // v1.5.1 · D：媒体面板歌词开关（默认关，见字段注释）。
+        lyricsInMediaSession.value = getApplication<Application>()
+            .getSharedPreferences("ncrust_settings", 0)
+            .getBoolean("lyrics_in_media_session", false)
+
+        // v1.5.1 · D：把「当前行」推给 PlaybackService —— 只在**跨行**时写一次
+        // （currentPosition 是 2Hz 采样，这里每次采样只做一次 O(行数) 的二分/线性比较，
+        // 值没变就不写），通知栏因此不会逐帧重绘。关掉开关或无歌词时推 null。
+        viewModelScope.launch {
+            combine(lyrics, currentPosition, lyricsInMediaSession) { lines, pos, on ->
+                Triple(lines, pos, on)
+            }.collect { (lines, pos, on) ->
+                val line = if (!on || lines.isEmpty()) null else lines.lastOrNull { it.timeMs <= pos }?.text
+                if (line != lastMediaLyricLine) {
+                    lastMediaLyricLine = line
+                    PlaybackService.mediaLyricLine = line
+                }
+            }
+        }
 
         PlaybackService.onProgressUpdate = { pos, dur ->
             currentPosition.value = pos
@@ -347,6 +380,21 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     /** 设置页开关:歌词翻译开/关。写 SharedPreferences + 更新 StateFlow,播放器立即可见。 */
+
+    /**
+     * v1.5.1 · D：媒体面板歌词开关。关闭时立刻清掉已经写进 ARTIST 的歌词行，
+     * 不等下一次跨行 —— 否则用户关了开关、通知栏还挂着上一句歌词。
+     */
+    fun setLyricsInMediaSession(enabled: Boolean) {
+        lyricsInMediaSession.value = enabled
+        getApplication<Application>()
+            .getSharedPreferences("ncrust_settings", android.content.Context.MODE_PRIVATE)
+            .edit().putBoolean("lyrics_in_media_session", enabled).apply()
+        if (!enabled) {
+            lastMediaLyricLine = null
+            PlaybackService.mediaLyricLine = null
+        }
+    }
 
     fun setLyricsTranslation(enabled: Boolean) {
         showLyricsTranslation.value = enabled

@@ -43,6 +43,8 @@ val jpJP = Strings(
     lyricsWordByWordLabel = "一文字ずつ歌詞",
     lyricsWordAnimationLabel = "逐字アニメーション",
     lyricsWordAnimationOptions = listOf("グラデーション", "一文字ずつ", "オフ"),
+    lyricsInMediaSessionLabel = "メディアパネルに歌詞",
+    lyricsInMediaSessionHint = "通知バー / ロック画面のメディアカード2行目に現在の歌詞を表示（Android 13+ では「アーティスト · 歌詞」になります。車載機と Bluetooth にも同期）",
     controlsHandleLabel = "コントロールバーのハンドル：上へドラッグで収納、下へドラッグで復元、タップで切り替え",
     themeSectionTitle = "テーマカラー",
     themeModeSectionTitle = "テーマモード",
@@ -59,6 +61,8 @@ val jpJP = Strings(
     cacheCleared = "キャッシュを消去しました",
 
     dailySongsTitle = "おすすめ今日の曲",
+    networkOfflineTitle = "ネットワークに接続されていません",
+    networkOfflineHint = "ローカルキャッシュを表示中。接続が戻ると自動で更新します",
     recommendPlaylistTitle = "おすすめプレイリスト",
     newSongsTitle = "新着曲",
 

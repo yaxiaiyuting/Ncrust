@@ -43,6 +43,8 @@ val jpMY = Strings(
     lyricsWordByWordLabel = "逐字 歌詞",
     lyricsWordAnimationLabel = "逐字 動畫",
     lyricsWordAnimationOptions = listOf("漸化 掃過", "逐字 硬切", "無効"),
+    lyricsInMediaSessionLabel = "媒體 面板 歌詞",
+    lyricsInMediaSessionHint = "通知 鎖屏 媒體 卡片 次行 現 歌詞 表示（Android 13+ 歌手 「歌手 · 歌詞」変。車載 藍牙 同期）",
     controlsHandleLabel = "控制欄 把手：上へ拖 收納、下へ拖 復元、點按 切換",
     themeSectionTitle = "主題色",
     themeModeSectionTitle = "主題 様",
@@ -59,6 +61,8 @@ val jpMY = Strings(
     cacheCleared = "キャッシュを消去しました",
 
     dailySongsTitle = "毎日 推奨",
+    networkOfflineTitle = "網 繋 無",
+    networkOfflineHint = "本地 貯 內容 表示中。繋戻 自動 更新",
     recommendPlaylistTitle = "推奨 曲目",
     newSongsTitle = "新曲 速報",
 

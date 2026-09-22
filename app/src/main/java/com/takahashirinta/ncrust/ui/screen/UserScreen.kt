@@ -119,6 +119,10 @@ fun UserScreen(
     // v1.5.0 · B / v1.5.1 · A 逐字动画模式（0 渐变扫过 / 1 逐字硬切 / 2 关闭逐字）。
     // 读的时候顺带完成 v1.5.0 布尔开关 lyrics_word_by_word 的一次性迁移。
     var lyricsWordAnimation by remember { mutableIntStateOf(LyricsDisplayPrefs.readWordAnimation(prefs)) }
+    // v1.5.1 · D 媒体面板歌词（默认关：开启后 ARTIST 会被改写成「艺人 · 歌词行」）。
+    var lyricsInMediaSession by remember {
+        mutableStateOf(prefs.getBoolean("lyrics_in_media_session", false))
+    }
 
     var selectedLanguageCode by remember { mutableStateOf(getSavedLanguageCode(context)) }
 
@@ -347,6 +351,17 @@ fun UserScreen(
                 onSelect = {
                     lyricsWordAnimation = it
                     playerViewModel.setLyricsWordAnimation(it)
+                }
+            )
+            // v1.5.1 · D 媒体面板歌词。默认关 —— 开启后系统媒体卡片的第二行会从
+            // 「歌手」变成「歌手 · 当前歌词行」（Android 13+ 的面板第二行只认 ARTIST）。
+            SettingSwitchRow(
+                title = strings.lyricsInMediaSessionLabel,
+                description = strings.lyricsInMediaSessionHint,
+                checked = lyricsInMediaSession,
+                onCheckedChange = {
+                    lyricsInMediaSession = it
+                    playerViewModel.setLyricsInMediaSession(it)
                 }
             )
             Spacer(Modifier.height(24.dp))

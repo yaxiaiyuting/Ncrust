@@ -43,6 +43,8 @@ val zhCN = Strings(
     lyricsWordByWordLabel = "逐字歌词",
     lyricsWordAnimationLabel = "逐字动画模式",
     lyricsWordAnimationOptions = listOf("渐变扫过", "逐字硬切", "关闭逐字"),
+    lyricsInMediaSessionLabel = "媒体面板显示歌词",
+    lyricsInMediaSessionHint = "通知栏 / 锁屏的媒体卡片第二行显示当前歌词（Android 13+ 会把歌手换成「歌手 · 歌词」；车机与蓝牙同步）",
     controlsHandleLabel = "控制栏把手：向上拖收起、向下拖恢复、点按切换",
     themeSectionTitle = "主题色",
     themeModeSectionTitle = "主题模式",
@@ -59,6 +61,8 @@ val zhCN = Strings(
     cacheCleared = "缓存已清除",
 
     dailySongsTitle = "每日推荐",
+    networkOfflineTitle = "当前无网络连接",
+    networkOfflineHint = "已显示本地缓存的内容；联网后会自动刷新",
     recommendPlaylistTitle = "推荐歌单",
     newSongsTitle = "新歌速递",
 

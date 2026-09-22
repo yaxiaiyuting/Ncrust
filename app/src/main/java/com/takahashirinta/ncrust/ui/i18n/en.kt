@@ -43,6 +43,8 @@ val en = Strings(
     lyricsWordByWordLabel = "Word-by-Word Lyrics",
     lyricsWordAnimationLabel = "Word Animation",
     lyricsWordAnimationOptions = listOf("Gradient sweep", "Word-by-word", "Off"),
+    lyricsInMediaSessionLabel = "Lyrics in media panel",
+    lyricsInMediaSessionHint = "Show the current lyric line in the notification / lock-screen media card (Android 13+ shows \"artist · line\"; car and Bluetooth follow)",
     controlsHandleLabel = "Controls handle: drag up to hide, drag down to restore, tap to toggle",
     themeSectionTitle = "Theme Color",
     themeModeSectionTitle = "Theme Mode",
@@ -59,6 +61,8 @@ val en = Strings(
     cacheCleared = "Cache cleared",
 
     dailySongsTitle = "Daily Recommendations",
+    networkOfflineTitle = "No network connection",
+    networkOfflineHint = "Showing locally cached content; it refreshes once you're back online",
     recommendPlaylistTitle = "Recommended Playlists",
     newSongsTitle = "New Releases",
 

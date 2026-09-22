@@ -43,6 +43,8 @@ val deDE = Strings(
     lyricsWordByWordLabel = "Wort-für-Wort-Text",
     lyricsWordAnimationLabel = "Wort-Animation",
     lyricsWordAnimationOptions = listOf("Verlauf", "Wort für Wort", "Aus"),
+    lyricsInMediaSessionLabel = "Liedtext im Medienpanel",
+    lyricsInMediaSessionHint = "Aktuelle Textzeile in der Benachrichtigung / auf dem Sperrbildschirm anzeigen (Android 13+ zeigt \"Künstler · Zeile\"; Auto und Bluetooth folgen)",
     controlsHandleLabel = "Bedienleiste-Griff: nach oben ziehen zum Ausblenden, nach unten zum Einblenden, tippen zum Umschalten",
     themeSectionTitle = "Farbschema",
     themeModeSectionTitle = "Erscheinungsbild",
@@ -59,6 +61,8 @@ val deDE = Strings(
     cacheCleared = "Cache geleert",
 
     dailySongsTitle = "Tägliche Empfehlungen",
+    networkOfflineTitle = "Keine Netzwerkverbindung",
+    networkOfflineHint = "Lokal zwischengespeicherte Inhalte; Aktualisierung erfolgt automatisch",
     recommendPlaylistTitle = "Empfohlene Playlists",
     newSongsTitle = "Neue Veröffentlichungen",
 
