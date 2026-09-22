@@ -262,3 +262,81 @@ SPlayer 的逐字歌词来自 **AMLL（Apple Music-like Lyrics）**（SPlayer-De
 
 ⚠️ **未验证**：① 渐变观感仅用户口头确认「还可以」，无逐档对比；② 兼容档（硬边）/ easing 未逐档真机对比；
 ③ 折行歌词的真机观感未复核；④ 长跑（>30 分钟）内存/掉帧未测。
+
+
+---
+
+## 10. v1.5.2 发布实测（2026-09-22，versionCode 17）
+
+版本号 commit `6e6a930`（`build: 升级至 v1.5.2-gpl (versionCode 17)`），tag `v1.5.2-gpl`。
+单测 **90/90 通过**（`testDebugUnitTest` 90、`testReleaseUnitTest` 90，0 failures / 0 errors / 0 skipped）。
+产物：release 9,721,992 B（`eca16db6…abbd`）、debug 29,942,928 B（`8d5671a7…9fd4`）。
+
+### 10.1 两台设备与安装结果
+
+| 设备 | 系统 | 装了什么 | 结果 |
+|---|---|---|---|
+| 3B15CD00GB700000 PCL110 | Android 16 / API 36，KernelSU root | **v1.5.2 release** | ✅ `adb install -r` 覆盖 v1.5.1(vC16) **成功**；`firstInstallTime` 未变、`shared_prefs` 全在（登录态/队列保留） |
+| 0715f763f54c023a S6 SM-G9209 | Android 7.0 / API 24，Magisk root | **v1.5.2 debug** | ⚠️ release 包 `INSTALL_FAILED_UPDATE_INCOMPATIBLE`（S6 上是 debug 签名 `e10c8b4d…`，与 release `e75af3ff…` 不同，**既有状况**，见 v1.5.0 发布说明）；同签名 debug 包 15→17 覆盖成功，数据保留 |
+
+release 包证书与 v1.5.0 release **逐位一致**（`e75af3ff…5511`）⇒ 老 release 用户可直接覆盖升级。
+装 release 到 S6 必须先卸载（丢登录态），按「不对既有用户数据做写操作」的约束**未执行**。
+
+### 10.2 冷启动（screenrecord + 逐帧分析；「首帧→首页内容出现」）
+
+方法：`am force-stop` → `KEYCODE_HOME` → `screenrecord --time-limit 12` → `am start -W`，
+录像按 25fps 抽帧后做逐帧 MAD 分析（首页内容 = 启动页之后的第一次大幅整屏切换）。
+
+| 设备 | 改前（旧包） | 改后（v1.5.2） |
+|---|---|---|
+| PCL110（release） | TotalTime **1332 / 1303 / 1267 ms**；首帧→内容 **2.40 / 2.44 / 2.64 s** | TotalTime **481 / 351 / 456 / 465 ms**；首帧→内容 **0.96 / 0.76 / 0.84 / 0.92 s** |
+| S6（debug） | TotalTime 1317 / 1330 ms（另有 1 例 129848ms 伪影）；首帧→内容 **2.28 / 2.28 / 2.76 s** | TotalTime **1291 / 1300 / 1291 ms**；首帧→内容 **1.92 / 1.88 / 1.92 s** |
+
+**断网/坏网（关键）**：PCL110 上用临时 `iptables -I OUTPUT -p tcp -d <ip> -j DROP` 把
+`music.163.com` / `interface*.music.163.com` / `clientlogusf.music.163.com` 四个 IP 的 TCP 全部黑洞
+（复现用户「坏网」场景），release 包冷启动 **TotalTime 520 / 490 ms、首帧→内容 0.92 / 0.52 s**，
+**未出现十秒以上冷启动**。测试后规则**已立即删除并验证**（`iptables -S OUTPUT | grep -c DROP` → 0，ping 外网正常），
+设备上无任何永久性系统修改。
+
+S6 首轮 `TotalTime: 129848ms` 是 Android 7 复用 ActivityRecord 旧 `mLaunchStartTime` 的**测量伪影**
+（同次 App 侧 `Displayed +1s312ms`，录屏 2.76s 就出内容），冷启动结论以 App 侧 Displayed + 录屏为准。
+
+### 10.3 逐字渐变（S6《浮夸》47/47 行；PCL110《修炼爱情》70/70 行）
+
+- **PCL110（release，Android 16）**：`YrcParser: attachWords: 70/70 lines got word timing`；
+  逐列像素剖面确认同色相 alpha 阶跃随光标**从左向右**推进（RGB 48,53,68 → 92,101,131），**无回退**；
+  `dumpsys gfxinfo` 20s：**779 帧 / Janky 1 帧（0.13%）**、50th 6ms、90th 7ms、95th 10ms、99th 14ms、Missed Vsync 0。
+- **S6（debug，Android 7）**：`attachWords: 47/47`（《浮夸》）、22/30（99 Problems）；
+  折行句渲染正常（第一视觉行亮、换行后的第二行暗，光标停在行尾保持位），**无 ANR、无 FATAL**（logcat 计数 0）。
+- **S6 掉帧（25s 窗口，`dumpsys gfxinfo`）**：
+
+| 档位 | 帧数 | Janky | 50th | 90th | 95th | 99th | Missed Vsync |
+|---|---|---|---|---|---|---|---|
+| 自动（软边 saveLayer） | 1352（54fps） | 1326（98.08%） | 19ms | 26ms | 28ms | 34ms | 6 |
+| 兼容（clipRect 硬边） | 1476（59fps） | 1452（98.37%） | 19ms | 25ms | 27ms | 32ms | 5 |
+
+**结论：S6 上的掉帧不是软边（saveLayer）造成的。** 切到「兼容」硬边只换来约 +5fps、99th −2ms，
+两档都远超 16.7ms 预算 —— 2015 年 GPU 跑 1440×2560 的整屏播放器 UI 本身就是这个水平（且这是 **debug 包**）。
+未能取到干净的「关掉歌词面板」基线（歌词开关的注入点击未生效），故无法把歌词面板本身的成本单独分离出来。
+S6 的渐变质量设置已**复原为「自动」**。
+
+### 10.4 回归清单
+
+| 项 | PCL110（release） | S6（debug） |
+|---|---|---|
+| 首页 / 库 / 搜索 / 用户 四个 tab | ✅ 四页均正常渲染（首页榜单+每日推荐、库 1068 首、搜索历史+榜单、用户设置） | ✅ 首页榜单/每日推荐、库、搜索（含搜索结果直接播放）、用户设置 |
+| 展开 / 收起播放器 | ✅ 上滑/点击展开、BACK 收起回 mini bar | ✅ 同；另测到「控制栏收起」态需拖右下悬浮键恢复（v1.4.0 既有行为） |
+| 切歌 | ✅ 最后一页 → Doja，媒体元数据与歌词同步跟随，**新歌歌词从 0:00 正常开始（不快速过一遍）** | ✅ 浮夸 → Can Can，元数据/歌词跟随 |
+| 拉进度条 | ✅ 点 75% → position 5931ms → **78565ms**（1:19 / 1:37） | ✅ 点 60% → position 82609ms（1:24 / 2:14） |
+| 设置页 | ✅ 用户页各分区正常 | ✅ 播放分区各项正常，并实测「渐变质量」切档 → 复原 |
+| 崩溃 / ANR | 0 | 0 |
+
+### 10.5 本次新增的未验证 / 未通过项（如实）
+
+1. S6 **没有**装上 release 包（签名不符，需先卸载丢数据，未执行）；S6 的冷启动与帧率都是 **debug 包**数字。
+2. 渐变观感仍只有用户口头确认；**「高级」档未单独取值**，easing 未做 A/B，软边/硬边只比了帧统计没比主观画质。
+3. 折行歌词只验证了「光标不倒退到行首」，**第二行的扫过顺滑度未逐帧跟踪**。
+4. 长跑（>30 分钟）内存与掉帧未测（本次窗口均 20–25s）。
+5. S6 全屏播放器 98% 帧超 16.7ms，未分离出歌词面板本身的占比（缺少干净基线）。
+6. 安装后第一次冷启的 S6 录屏在 9–11s 出现「库→用户→设置」自行跳转；随后两次冷启 + 一次 6s 静置
+   对照（SSIM 0.9997）均稳定，**倾向于外部/幽灵触摸而非应用缺陷，但未能证实**。
