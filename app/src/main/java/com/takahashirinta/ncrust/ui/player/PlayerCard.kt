@@ -64,6 +64,7 @@ import com.takahashirinta.ncrust.QueueModes
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import com.takahashirinta.ncrust.ui.i18n.LocalStrings
+import androidx.compose.foundation.systemGestureExclusion
 import com.takahashirinta.ncrust.lyric.LyricsWordAnimationMode
 import com.takahashirinta.ncrust.ui.viewmodel.PlayerViewModel
 import io.github.takahashirinta.kanesumi.anim.sokuou.SokuouTweens
@@ -112,6 +113,11 @@ fun PlayerCard(
     val density = LocalDensity.current
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
+    // v1.5.1 · B：手势导航机型给控制栏把手留出的上抬量（见把手处的注释）。
+    // 只在 navigation_mode == 2（Android 10+ 手势导航）时非零；三键导航与 API < 29 为 0。
+    val gestureNavLiftDp = remember(context) {
+        if (isGestureNavigation(context)) GESTURE_NAV_HANDLE_LIFT_DP else 0.dp
+    }
 
     val strings = LocalStrings.current
     val playerViewModel: PlayerViewModel = viewModel()
@@ -943,7 +949,29 @@ fun PlayerCard(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
+                            // 手势导航机型要把整条拖拽带抬离系统「回到桌面」手势带：
+                            // 实测（PCL110 / Android 16）从屏幕底部往上 0~13dp 起手的上滑
+                            // 100% 被判成系统手势，28dp 起手才会交给应用；而这一段**无法**用
+                            // systemGestureExclusion 排除（排除矩形确实注册进了
+                            // mSystemGestureExclusion，系统照样吞掉）。所以按导航模式把
+                            // 拖拽带整体上抬 32dp —— 这样带内任意一点起手都在安全区。
+                            // 三键导航 / API < 29（无 navigation_mode 设置项）不抬，行为不变。
+                            .padding(bottom = gestureNavLiftDp)
                             .height(24.dp)
+                            // v1.5.1 · B —— 全面屏手势冲突：把手在屏幕**最底边**（卡片是
+                            // fillMaxSize，覆盖到系统手势区），Android 10+ 的手势导航会把从
+                            // 这里起手的上滑当成"回到桌面"抢走，把手于是只能点按、拖不动。
+                            //
+                            // 这里声明系统手势排除区（API 29+ 生效、低版本自动忽略）。
+                            // 实测（PCL110 / Android 16）：排除矩形确实注册进了 dumpsys 的
+                            // mSystemGestureExclusion，**但系统照样吞掉底部 0~13dp 起手的上滑**
+                            // —— 真正解决问题的是上面那个「按导航模式上抬 32dp」，这一句是配合
+                            // （对左右边缘与部分 ROM 仍然有效）。
+                            //
+                            // 只排除**这一条**：系统在同一屏幕边缘只认最靠上的那一个排除矩形，
+                            // 若把收起态那个悬浮播放键也一起排除，两个矩形里只有更靠上的悬浮键
+                            // 会被采信，把手反而失效。宽 × 24dp 远小于系统允许的上限（200dp）。
+                            .systemGestureExclusion()
                             .then(controlsCollapseDrag()),
                         contentAlignment = Alignment.Center
                     ) {
@@ -1215,3 +1243,25 @@ private fun StableCover(
     }
 }
 
+/**
+ * v1.5.1 · B：控制栏把手在手势导航机型上要抬离系统手势带的高度。
+ *
+ * 实测（PCL110 / Android 16 / navigation_mode=2）：从屏幕底部往上 0~13dp 起手的上滑
+ * 100% 被判成「回到桌面」，28dp 起手才会交给应用；把这段声明成
+ * `systemGestureExclusion` 也**没用** —— 排除矩形确实注册进了
+ * `dumpsys window` 的 `mSystemGestureExclusion`，系统照样把上滑当自家手势。
+ * 32dp 是实测安全阈值（28dp 可用）之上的保守取值：
+ * 拖拽带整体上抬后，带内任意一点起手都不再落在系统手势带里。
+ */
+private val GESTURE_NAV_HANDLE_LIFT_DP = 32.dp
+
+/**
+ * 是否处于 Android 10+ 的手势导航（`navigation_mode == 2`）。
+ *
+ * `navigation_mode` 是 API 29 引入的 secure setting；读取 secure setting 不需要权限，
+ * 设置项不存在（API < 29 或三键导航写的是 0）时 `getInt` 返回默认值 0 ⇒ 不上抬，
+ * 老设备与三键导航机型的视觉/行为完全不变。
+ */
+private fun isGestureNavigation(context: android.content.Context): Boolean = runCatching {
+    android.provider.Settings.Secure.getInt(context.contentResolver, "navigation_mode", 0) == 2
+}.getOrDefault(false)
