@@ -69,6 +69,11 @@ data class Strings(
     // v1.5.1 · D：媒体面板歌词开关（默认关）。开启后 ARTIST 变成「艺人 · 当前歌词行」。
     val lyricsInMediaSessionLabel: String,
     val lyricsInMediaSessionHint: String,
+    // v1.5.1 · E：歌词字号（倍率档位文案是纯数字，与语言无关，不进 i18n）。
+    val lyricsFontScaleLabel: String,
+    /** 歌词界面 A- / A+ 的无障碍描述。 */
+    val lyricsFontSmaller: String,
+    val lyricsFontLarger: String,
     // v1.5.0 · C2：控制栏把手（全屏播放器底部那条 40×3dp 小横条）的无障碍描述。
     // 它此前对 TalkBack 完全不可见 —— 视力障碍用户收起控制栏后再也拿不回来。
     val controlsHandleLabel: String,

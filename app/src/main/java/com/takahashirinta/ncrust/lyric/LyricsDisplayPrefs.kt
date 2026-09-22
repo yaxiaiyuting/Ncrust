@@ -57,6 +57,8 @@ object LyricsDisplayPrefs {
     /** 设置页档位（TASK 里要求 5~7 档，这里取 5 档；A-/A+ 按键也走同一张表）。 */
     val FONT_SCALE_STEPS = listOf(0.7f, 0.85f, 1.0f, 1.2f, 1.5f)
 
+    /** 档位文案：纯数字倍率，与语言无关，不进 i18n（8 语言下都是同一串）。 */
+    val FONT_SCALE_LABELS = listOf("0.7x", "0.85x", "1.0x", "1.2x", "1.5x")
 
     /**
      * 读逐字动画模式，并完成 v1.5.0 布尔开关的一次性迁移：

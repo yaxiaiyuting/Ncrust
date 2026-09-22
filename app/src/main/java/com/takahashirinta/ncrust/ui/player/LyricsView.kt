@@ -1,11 +1,14 @@
 package com.takahashirinta.ncrust.ui.player
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -16,10 +19,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.takahashirinta.ncrust.lyric.LrcLine
+import com.takahashirinta.ncrust.lyric.LyricsDisplayPrefs
 import com.takahashirinta.ncrust.lyric.LyricsWordAnimationMode
 import com.takahashirinta.ncrust.ui.i18n.LocalStrings
 import io.github.takahashirinta.kanesumi.core.theme.LocalMetroColors
@@ -58,6 +64,11 @@ fun LyricsView(
     wordByWordEnabled: Boolean = true,
     // v1.5.1 · A：逐字动画模式（渐变扫过 / 逐字硬切 / 关闭逐字），见 LyricsWordAnimationMode。
     wordAnimationMode: Int = LyricsWordAnimationMode.GRADIENT_SWEEP,
+    // v1.5.1 · E：歌词字号倍率（0.7~1.5，默认 1.0）。乘在面板的 fontSize/lineHeight 上，
+    // 逐字裁剪与自动换行都跟着 TextLayoutResult 走，不需要额外补偿。
+    fontScale: Float = 1f,
+    // 点一下 A- / A+ 回调一步（±1 档），倍率换算在 ViewModel 里做。
+    onFontScaleStep: (Int) -> Unit = {},
 ) {
     val strings = LocalStrings.current
     if (lyrics.isEmpty()) {
@@ -183,6 +194,13 @@ fun LyricsView(
             // 浅色底上白色已播行会看不见。这里改用语义色。
             pastLineColor = LocalMetroColors.current.onBackground.copy(alpha = 0.6f),
             futureLineColor = LocalMetroColors.current.onSurfaceVariant.copy(alpha = 0.4f),
+            // v1.5.1 · E：字号倍率乘在基础字号上（行高同步乘，行距比例不变）。
+            // 当前行的放大动画是紧跟在渲染里的 scale，与基础字号是乘数关系，所以字号变了
+            // 缩放动画不需要任何额外处理。
+            fontSize = (32 * fontScale).sp,
+            lineHeight = (42 * fontScale).sp,
+            translationFontSize = (20 * fontScale).sp,
+            translationLineHeight = (26 * fontScale).sp,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 20.dp),
@@ -206,6 +224,60 @@ fun LyricsView(
                 .background(
                     Brush.verticalGradient(listOf(Color.Transparent, LocalMetroColors.current.background))
                 )
+        )
+
+        // v1.5.1 · E：歌词界面里的快捷字号调节（A- / A+）。
+        // 放右上角而不是底部：底部是控制栏把手与系统手势区（任务 B 刚处理过），
+        // 贴边悬浮在这一行也不会跟歌词的点击/滚动抢手势（只在两个 44×28dp 的盒子里）。
+        // 只在播放器可交互时挂载 —— 折叠态/宽屏封面态不该出现可点却看不见的按钮。
+        if (enabled) {
+            Row(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(top = 4.dp, end = 2.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                FontScaleButton(
+                    label = "A-",
+                    description = strings.lyricsFontSmaller,
+                    enabled = fontScale > LyricsDisplayPrefs.FONT_SCALE_MIN + 0.001f,
+                ) { onFontScaleStep(-1) }
+                FontScaleButton(
+                    label = "A+",
+                    description = strings.lyricsFontLarger,
+                    enabled = fontScale < LyricsDisplayPrefs.FONT_SCALE_MAX - 0.001f,
+                ) { onFontScaleStep(+1) }
+            }
+        }
+    }
+}
+
+/**
+ * v1.5.1 · E：A- / A+ 小按钮。视觉克制（13sp、无背景），但命中区按 44×28dp 给足；
+ * 到端点时置灰 + 不可点，并带无障碍描述（TalkBack 能读到「放大歌词字号」）。
+ */
+@Composable
+private fun FontScaleButton(
+    label: String,
+    description: String,
+    enabled: Boolean,
+    onClick: () -> Unit,
+) {
+    Box(
+        modifier = Modifier
+            .size(width = 44.dp, height = 28.dp)
+            .clickable(enabled = enabled, onClick = onClick)
+            .semantics { contentDescription = description },
+        contentAlignment = Alignment.Center,
+    ) {
+        MetroText(
+            label,
+            color = if (enabled) {
+                LocalMetroColors.current.onSurfaceVariant
+            } else {
+                LocalMetroColors.current.onSurfaceVariant.copy(alpha = 0.35f)
+            },
+            style = TextStyle(fontSize = 13.sp),
         )
     }
 }

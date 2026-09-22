@@ -71,7 +71,8 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
     // v1.5.1 · D：上一次推给媒体面板的歌词行（去重用，避免 2Hz 采样反复写同一个值）。
     private var lastMediaLyricLine: String? = null
 
-
+    // v1.5.1 · E：字号落盘防抖窗口 —— A-/A+ 连点时只写最后一次。
+    private val FONT_SCALE_WRITE_DEBOUNCE_MS = 150L
     // 设置页开关:逐字歌词(v1.5.0 · B，v1.5.1 · A 起是三模式)。默认「渐变扫过」——
     // 只在歌曲真的带 yrc 逐字数据时才有区别，没有逐字数据的歌行为与关掉完全一致。
     // 取值见 LyricsWordAnimationMode（0 渐变扫过 / 1 逐字硬切 / 2 关闭逐字）。
@@ -85,6 +86,12 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
      */
     val lyricsInMediaSession = MutableStateFlow(false)
 
+    /**
+     * v1.5.1 · E：歌词字号倍率（0.7~1.5，默认 1.0）。设置页与歌词界面的 A- / A+ 共用它，
+     * 变更立即生效（StateFlow → 面板重组），落盘做 150ms 防抖（连续点按只写一次磁盘）。
+     */
+    val lyricsFontScale = MutableStateFlow(LyricsDisplayPrefs.FONT_SCALE_DEFAULT)
+    private var fontScaleWriteJob: kotlinx.coroutines.Job? = null
 
     val isBuffering = MutableStateFlow(false)
     // Emits true when the current song enters the preload window (last 20 s).
@@ -212,6 +219,11 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         showLyricsTranslation.value = getApplication<Application>()
             .getSharedPreferences("ncrust_settings", 0)
             .getBoolean("lyrics_translation", true)
+        // v1.5.1 · E：歌词字号倍率（默认 1.0x —— 与 v1.5.0 的视觉完全一致）。
+        lyricsFontScale.value = LyricsDisplayPrefs.readFontScale(
+            getApplication<Application>()
+                .getSharedPreferences(LyricsDisplayPrefs.PREFS_NAME, android.content.Context.MODE_PRIVATE)
+        )
         // v1.5.1 · D：媒体面板歌词开关（默认关，见字段注释）。
         lyricsInMediaSession.value = getApplication<Application>()
             .getSharedPreferences("ncrust_settings", 0)
@@ -394,6 +406,29 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
             lastMediaLyricLine = null
             PlaybackService.mediaLyricLine = null
         }
+    }
+
+    /**
+     * v1.5.1 · E：设置歌词字号倍率。立即生效；落盘防抖（3GB 设备上连续点 A-/A+
+     * 不该每次都同步写一遍 SharedPreferences）。
+     */
+    fun setLyricsFontScale(scale: Float) {
+        val clamped = scale.coerceIn(LyricsDisplayPrefs.FONT_SCALE_MIN, LyricsDisplayPrefs.FONT_SCALE_MAX)
+        lyricsFontScale.value = clamped
+        fontScaleWriteJob?.cancel()
+        fontScaleWriteJob = viewModelScope.launch {
+            delay(FONT_SCALE_WRITE_DEBOUNCE_MS)
+            LyricsDisplayPrefs.writeFontScale(
+                getApplication<Application>()
+                    .getSharedPreferences(LyricsDisplayPrefs.PREFS_NAME, android.content.Context.MODE_PRIVATE),
+                clamped
+            )
+        }
+    }
+
+    /** v5.1 · E：歌词界面里的 A- / A+ —— 在档位表上走一格。 */
+    fun stepLyricsFontScale(delta: Int) {
+        setLyricsFontScale(LyricsDisplayPrefs.steppedFontScale(lyricsFontScale.value, delta))
     }
 
     fun setLyricsTranslation(enabled: Boolean) {

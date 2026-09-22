@@ -123,6 +123,8 @@ fun UserScreen(
     var lyricsInMediaSession by remember {
         mutableStateOf(prefs.getBoolean("lyrics_in_media_session", false))
     }
+    // v1.5.1 · E 歌词字号倍率（0.7x ~ 1.5x，默认 1.0x）。
+    var lyricsFontScale by remember { mutableStateOf(LyricsDisplayPrefs.readFontScale(prefs)) }
 
     var selectedLanguageCode by remember { mutableStateOf(getSavedLanguageCode(context)) }
 
@@ -351,6 +353,17 @@ fun UserScreen(
                 onSelect = {
                     lyricsWordAnimation = it
                     playerViewModel.setLyricsWordAnimation(it)
+                }
+            )
+            // v1.5.1 · E 歌词字号（0.7x~1.5x）。改完立即生效，无需重进播放器。
+            MetroDropdownRow(
+                label = strings.lyricsFontScaleLabel,
+                selectedIndex = LyricsDisplayPrefs.fontScaleStepIndex(lyricsFontScale),
+                options = LyricsDisplayPrefs.FONT_SCALE_LABELS,
+                onSelect = {
+                    val scale = LyricsDisplayPrefs.FONT_SCALE_STEPS[it]
+                    lyricsFontScale = scale
+                    playerViewModel.setLyricsFontScale(scale)
                 }
             )
             // v1.5.1 · D 媒体面板歌词。默认关 —— 开启后系统媒体卡片的第二行会从
