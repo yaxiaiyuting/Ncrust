@@ -534,6 +534,42 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         )
     }
 
+    /**
+     * P1：**大屏模式就地切换音质**（不再"跳设置页"）。
+     *
+     * 复用设置页那条现成通道，一处逻辑两处入口：
+     *  1. 写**当前网络对应**的那一项偏好（Wi-Fi → `wifi_quality`，移动网络 → `mobile_quality`），
+     *     与 UserScreen 的两个下拉完全一致 —— 否则在 Wi-Fi 下改的档位会污染移动网络的偏好；
+     *  2. 复用 [onQualityPreferenceChanged]：只改偏好 + **档位真变了才**重新取链，
+     *     不会因为点一次音质就把当前歌从头重播。
+     *
+     * 调用方（播放器里的音质选择器）因此不需要自己读/写 prefs，也不需要判断网络类型。
+     */
+    /**
+     * P1：读**当前生效**的偏好档位（按当前网络在 `wifi_quality` / `mobile_quality` 里二选一），
+     * 供大屏模式的就地选择器回显。
+     *
+     * 必须现读，不能直接用 [preferredQualityIndex]：那个 StateFlow 是"最近一次已知值"，
+     * 只在播放歌曲 / 改过设置时刷新，冷启动后仍是默认档 3（无损）——
+     * 实测 PCL110：偏好其实是「超清母带」，选择器却把「无损」高亮成当前项。
+     * 顺带把读到的值写回 StateFlow，让别处读到的也是一致的。
+     */
+    fun currentQualityPreferenceIndex(): Int {
+        val prefs = getApplication<Application>().getSharedPreferences("ncrust_settings", 0)
+        val index = qualityApiLevels.indexOf(effectivePreferredLevel(prefs)).coerceAtLeast(0)
+        preferredQualityIndex.value = index
+        return index
+    }
+
+    fun setQualityPreference(index: Int) {
+        if (index !in qualityApiLevels.indices) return
+        val prefs = getApplication<Application>().getSharedPreferences("ncrust_settings", 0)
+        prefs.edit()
+            .putInt(if (isOnWifi()) "wifi_quality" else "mobile_quality", index)
+            .apply()
+        onQualityPreferenceChanged()
+    }
+
     private fun isOnWifi(): Boolean {
         val cm = getApplication<Application>().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         return cm.getNetworkCapabilities(cm.activeNetwork)

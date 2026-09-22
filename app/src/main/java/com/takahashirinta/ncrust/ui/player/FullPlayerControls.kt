@@ -68,7 +68,30 @@ fun FullPlayerControls(
     // 宽屏左栏用紧凑尺寸：缩小按钮/间距，把纵向空间让给封面区。
     compact: Boolean = false,
     // 宽屏横向布局：进度行 + 操作行扁平铺开，替代手机的竖向大按钮堆叠。
-    landscape: Boolean = false
+    landscape: Boolean = false,
+    // P1：大屏模式把音质控件搬到左栏（就地选择器）后，控制条右端不再重复画一个
+    // 「点一下跳设置页」的音质角标 —— 同一屏里两个音质入口会互相打架。
+    showQuality: Boolean = true,
+    // P1：大屏幕模式（横屏桌面播放器布局）。true 时按钮图标换成"退出大屏"。
+    bigScreen: Boolean = false,
+    /**
+     * P1：大屏幕模式入口/出口（同一个按钮、同一个槽位）。
+     *
+     * 为什么放在这条操作行里而不是屏幕右上角：
+     *  - 这一行在展开态子树里（折叠态整棵不挂载，符合 B-1 的命中区契约），
+     *    并且整块控制条共用 progress>0.7 的淡入，入口天然"只在展开且有歌时出现"；
+     *  - 右上角在横屏大屏下是歌词面板的 A-/A+ 字号按钮，放那里会互相抢命中区。
+     */
+    onToggleBigScreen: () -> Unit = {},
+    /**
+     * 横向控制条右端的替代槽位（仅 [showQuality] = false 时使用）。
+     *
+     * 大屏模式用它放「退出大屏」：**不能**放进左端那组按钮 —— 横向控制条是
+     * 「左组贴左 + 传输组居中 + 右组贴右」的三段式，左组加到 4 个按钮后（4×40dp）
+     * 在窄的右栏里会顶到居中的传输组，实测 PCL110 横屏下与「上一首」重叠。
+     * 右端正好是音质角标让出来的空位。
+     */
+    trailing: (@Composable () -> Unit)? = null
 ) {
     val strings = LocalStrings.current
     // 触觉反馈:播放/暂停/切歌/开关面板给一个轻振,补足无 ripple 时代的确认感
@@ -91,10 +114,12 @@ fun FullPlayerControls(
     if (landscape) {
         // 宽屏横向控件条：进度行（位置 · 进度 · 时长）+ 操作行（面板开关 · 音质 · 传输），
         // 扁平铺开，不再照搬手机的竖向大按钮堆叠。
+        val lPad = if (compact) 12.dp else 20.dp
+        val lTop = if (compact) 2.dp else 4.dp
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 4.dp)
+                .padding(horizontal = lPad, vertical = lTop)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -223,21 +248,25 @@ fun FullPlayerControls(
                         )
                     }
                 }
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .background(LocalMetroColors.current.surfaceVariant)
-                        .clickable(
-                            indication = null,
-                            interactionSource = remember { MutableInteractionSource() }
-                        ) { onNavigateToUser() }
-                        .padding(horizontal = 8.dp, vertical = 3.dp)
-                ) {
-                    QualityLabel(
-                        qualityIndexFlow = qualityIndexFlow,
-                        qualityStatusFlow = qualityStatusFlow,
-                        options = qualityOptions
-                    )
+                if (showQuality) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .background(LocalMetroColors.current.surfaceVariant)
+                            .clickable(
+                                indication = null,
+                                interactionSource = remember { MutableInteractionSource() }
+                            ) { onNavigateToUser() }
+                            .padding(horizontal = 8.dp, vertical = 3.dp)
+                    ) {
+                        PlayerQualityLabel(
+                            qualityIndexFlow = qualityIndexFlow,
+                            qualityStatusFlow = qualityStatusFlow,
+                            options = qualityOptions
+                        )
+                    }
+                } else if (trailing != null) {
+                    Box(modifier = Modifier.align(Alignment.CenterEnd)) { trailing() }
                 }
             }
         }
@@ -266,7 +295,7 @@ fun FullPlayerControls(
                     ) { onNavigateToUser() }
                     .padding(horizontal = 8.dp, vertical = 3.dp)
             ) {
-                QualityLabel(
+                PlayerQualityLabel(
                     qualityIndexFlow = qualityIndexFlow,
                     qualityStatusFlow = qualityStatusFlow,
                     options = qualityOptions
@@ -398,6 +427,23 @@ fun FullPlayerControls(
                     sizeDp = toggleIcon
                 )
             }
+            // P1：大屏幕模式入口。同一槽位在横屏大屏下变成"退出大屏"。
+            Box(
+                modifier = Modifier
+                    .size(toggleBtn)
+                    .clickable {
+                        tick()
+                        onToggleBigScreen()
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                MetroIcon(
+                    imageVector = if (bigScreen) Icons.Default.CloseFullscreen else Icons.Default.OpenInFull,
+                    contentDescription = if (bigScreen) strings.bigScreenExit else strings.bigScreenEnter,
+                    tint = if (bigScreen) LocalMetroColors.current.primary else LocalMetroColors.current.onBackground,
+                    sizeDp = toggleIcon
+                )
+            }
         }
     }
 }
@@ -424,8 +470,15 @@ private fun DurationText(durationFlow: StateFlow<Long>, modifier: Modifier) {
     )
 }
 
+/**
+ * 音质档位 + 状态角标。唯一实现，两处复用：
+ *  - 控制条（窄屏底部居中 / 宽屏横向右端）：点一下跳设置页；
+ *  - P1 大屏模式左栏：包一层可点盒子 + MetroSelectorFlyout，就地切换档位。
+ * 拆成公开 Composable 而不是复制一份，是为了让「实际档位 vs 偏好档位」的角标语义
+ * （已降级 / 无权限 / 该曲无此档位）只有一处真相。
+ */
 @Composable
-private fun QualityLabel(
+fun PlayerQualityLabel(
     qualityIndexFlow: StateFlow<Int>,
     qualityStatusFlow: StateFlow<QualityStatus>,
     options: List<String>

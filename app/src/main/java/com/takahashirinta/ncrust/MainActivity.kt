@@ -20,6 +20,8 @@ import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
+import android.view.OrientationEventListener
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
@@ -122,6 +124,23 @@ class MainActivity : ComponentActivity() {
      */
     private val systemAccentTick = mutableIntStateOf(0)
 
+    // ---------- P1 · 大屏幕模式（横屏桌面播放器布局） ----------
+    /**
+     * 大屏模式总开关（用户意图）。布局侧只读这个值 + 当前窗口方向，见
+     * [com.takahashirinta.ncrust.ui.player.PlayerLayout.isBigScreenActive]。
+     *
+     * 放在 Activity 而不是 MainScreen：方向策略在 Activity 层
+     * （[applyOrientationPolicy] / [onConfigurationChanged]），两边必须看同一个事实源 ——
+     * 只用 Compose 状态的话，onConfigurationChanged 里读不到最新值，会把横屏锁回竖屏。
+     */
+    private val bigScreenMode = mutableStateOf(false)
+
+    /** 进入大屏后是否已把方向从「强制横屏」放宽成 SENSOR（避免重复设置 requestedOrientation）。 */
+    private var bigScreenOrientationRelaxed = false
+
+    /** 物理朝向门控：只有设备真的横过来了才放宽成 SENSOR，见 [startBigScreenOrientationGate]。 */
+    private var bigScreenOrientationGate: OrientationEventListener? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // 手机锁竖屏、大屏(平板/折叠展开/车机)放开方向。见 applyOrientationPolicy。
@@ -215,6 +234,11 @@ class MainActivity : ComponentActivity() {
                                 saveLanguageCode(this@MainActivity, newCode)
                                 languageCode = newCode
                                 showSplash = true
+                            },
+                            // P1：大屏模式状态在 Activity（方向策略要用），这里只做双向透传。
+                            bigScreen = bigScreenMode.value,
+                            onToggleBigScreen = {
+                                if (bigScreenMode.value) exitBigScreenMode() else enterBigScreenMode()
                             }
                         )
                         if (showSplash) {
@@ -263,10 +287,26 @@ class MainActivity : ComponentActivity() {
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        // 折叠展开/合拢会改变 smallestScreenWidthDp，需重新判定手机/大屏。
-        applyOrientationPolicy()
+        // P1：大屏模式优先。**旋转回竖屏 = 退出大屏模式**（需求里的第二条退出路径），
+        // 所以这一支绝不能走 applyOrientationPolicy() 的"按形态锁回去"分支 ——
+        // 那正是"横屏被自己锁回竖屏"的根因（大屏期间窗口方向由大屏模式负责）。
+        if (BigScreenOrientation.shouldExitOnConfiguration(
+                bigScreen = bigScreenMode.value,
+                orientationLandscape = newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE,
+            )
+        ) {
+            exitBigScreenMode()
+        } else {
+            // 折叠展开/合拢会改变 smallestScreenWidthDp，需重新判定手机/大屏。
+            applyOrientationPolicy()
+        }
         // B2-D：配置变化后重新读取系统强调色（部分 ROM 换壁纸只发配置变更，不重启进程）。
         systemAccentTick.intValue++
+    }
+
+    override fun onDestroy() {
+        stopBigScreenOrientationGate()
+        super.onDestroy()
     }
 
     /**
@@ -276,14 +316,92 @@ class MainActivity : ComponentActivity() {
      *
      * 用 smallestScreenWidthDp 而非当前宽度：手机横屏时当前宽度可能 >= 600dp，
      * 会误判成大屏。该值随折叠形态变化，故在 onConfigurationChanged 里重跑。
+     *
+     * P1：大屏模式期间直接让路。onConfigurationChanged 在「刚转成横屏」那一次也会调用
+     * 本方法，而手机的 smallestScreenWidthDp 恒为竖屏宽（PCL110 实测 363dp < 600）——
+     * 照旧判定就会在同一帧把刚转过去的横屏锁回竖屏，大屏模式等于进不去。
      */
     private fun applyOrientationPolicy() {
+        if (bigScreenMode.value) return
         val smallestWidthDp = resources.configuration.smallestScreenWidthDp
         requestedOrientation = if (smallestWidthDp < 600) {
             ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         } else {
             ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
         }
+    }
+
+    /**
+     * P1：进入大屏幕模式（横屏桌面播放器布局）。
+     *
+     * 方向两步走（实测依据见 [startBigScreenOrientationGate]）：
+     *  ① 立刻 `SCREEN_ORIENTATION_SENSOR_LANDSCAPE` 强制横屏 —— 用户此刻还竖着拿手机
+     *     （按钮在竖屏播放器里），只有强制横屏能让窗口马上转过去；
+     *  ② 设备一旦物理横过来就放宽成 `SCREEN_ORIENTATION_SENSOR`，此后方向完全交给用户，
+     *     **绝不长期强制锁横屏**；转回竖屏即退出大屏模式。
+     */
+    private fun enterBigScreenMode() {
+        if (bigScreenMode.value) return
+        bigScreenMode.value = true
+        bigScreenOrientationRelaxed = false
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+        startBigScreenOrientationGate()
+    }
+
+    /** P1：退出大屏模式，并恢复既有的方向策略（手机锁竖屏 / 大屏不限制）。 */
+    private fun exitBigScreenMode() {
+        if (!bigScreenMode.value) return
+        bigScreenMode.value = false
+        stopBigScreenOrientationGate()
+        bigScreenOrientationRelaxed = false
+        applyOrientationPolicy()
+    }
+
+    /**
+     * P1：物理朝向门控 —— 设备真的横过来了才把方向「放宽」成 SENSOR。
+     *
+     * 为什么不能无条件立刻放宽：`SCREEN_ORIENTATION_SENSOR` 是**跟随传感器**的
+     * （它不理会系统的自动旋转锁），而进入大屏时手机通常还竖着/平放在桌上 ——
+     * 系统会在下一帧就把窗口转回竖屏，大屏模式当场自我退出（"点了按钮闪一下就回来"）。
+     * 门控只决定**什么时候**放宽，不改变"一定会放宽"：用户一把手机转横，方向立刻交割。
+     *
+     * 退出路径因此有三条：同一个按钮、系统返回键、旋转回竖屏（配置回到竖屏）。
+     * 没有方向传感器的设备（车机 / 部分平板）本就没有"转回竖屏"这条路径，
+     * 直接放宽，避免把用户永久锁在横屏里。
+     */
+    private fun startBigScreenOrientationGate() {
+        stopBigScreenOrientationGate()
+        val listener = object : OrientationEventListener(this) {
+            override fun onOrientationChanged(orientation: Int) {
+                if (BigScreenOrientation.shouldRelaxToSensor(
+                        bigScreen = bigScreenMode.value,
+                        alreadyRelaxed = bigScreenOrientationRelaxed,
+                        degrees = orientation,
+                    )
+                ) {
+                    bigScreenOrientationRelaxed = true
+                    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR
+                    Log.i(TAG, "big screen: relaxed to SENSOR (device landscape $orientation°)")
+                }
+            }
+        }
+        if (listener.canDetectOrientation()) {
+            listener.enable()
+            bigScreenOrientationGate = listener
+        } else {
+            bigScreenOrientationRelaxed = true
+            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR
+            Log.i(TAG, "big screen: no orientation sensor, relaxed to SENSOR immediately")
+        }
+    }
+
+    private fun stopBigScreenOrientationGate() {
+        bigScreenOrientationGate?.disable()
+        bigScreenOrientationGate = null
+    }
+
+    private companion object {
+        const val TAG = "NcrustBigScreen"
     }
 }
 
@@ -323,7 +441,11 @@ fun MainScreen(
     accentSource: AccentSource = AccentSource.PRESET,
     onAccentSourceChange: (AccentSource) -> Unit = {},
     // B2-D：手动重新读取系统色（应对部分 ROM 换壁纸后不发配置变更）。
-    onRefreshSystemAccent: () -> Unit = {}
+    onRefreshSystemAccent: () -> Unit = {},
+    // P1：大屏幕模式（横屏桌面播放器布局）。状态由 MainActivity 持有（方向策略要用），
+    // 这里只负责把它透传给播放器 + 用它隐藏大屏下不该出现的导航层。
+    bigScreen: Boolean = false,
+    onToggleBigScreen: () -> Unit = {}
 ) {
     var selectedTab by remember { mutableIntStateOf(1) }
     // 根布局实测高度(px)：车机会把窗口内容区 inset 到系统栏之间，但 WindowInsets
@@ -1258,14 +1380,21 @@ fun MainScreen(
                 coroutineScope.launch {
                     progress.animateTo(0f, tween(260, easing = FastOutSlowInEasing))
                 }
-            }
+            },
+            // P1：大屏模式开关。退出大屏时进度保持 1（回到竖屏全屏播放器，不是收起态）。
+            bigScreen = bigScreen,
+            onToggleBigScreen = onToggleBigScreen
         )
         } // end PlayerCardOverlay wrapper
         } // end if (currentSong != null) —— 死带修复 A：无播放时不挂载
 
         // 宽屏左侧常驻导航（Apple Music 式）：背景铺满整高(含状态栏后)，内容自行
         // 避让系统栏；底部 miniBar 仍整宽叠加，自然盖住侧栏空余的底部。
-        if (isWideLayout) {
+        // P1：大屏模式下**不挂载**侧栏与底部导航。横屏窗口宽度必然 >= 600dp，若不排除
+        // 就会把平板的左侧栏一起画出来：它 zIndex 0.5 在播放器卡片（1f）之下、视觉被卡片
+        // 盖住，但左侧栏正好压在卡片左栏（封面/歌名/音质）底下 —— 卡片一旦有一处不参与
+        // 命中测试，点下去就会误切 tab。隐藏是零风险的（大屏模式本来就是"只看播放器"）。
+        if (isWideLayout && !bigScreen) {
             Box(
                 modifier = Modifier
                     .align(Alignment.CenterStart)
@@ -1297,7 +1426,9 @@ fun MainScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     // 宽屏内容栏右移，给左侧 sidebar 让位（详情页与 tab 屏一起移）。
-                    .padding(start = if (isWideLayout) sidebarWidthDp else 0.dp)
+                    // P1：大屏模式下 sidebar 不挂载（见上），这里必须一起收掉 —— 否则
+                    // 大屏里一旦播放器收起（progress→0），下层页面会凭空左空 200dp 死带。
+                    .padding(start = if (isWideLayout && !bigScreen) sidebarWidthDp else 0.dp)
             ) {
                 // 主 tab 屏一直挂载（下层）：以前用 if(isInMain) 条件挂载，导航返回时
                 // tab 屏瞬间 mount + LaunchedEffect 立即触发，撞在 nav slide 动画的第一帧
@@ -1464,7 +1595,7 @@ fun MainScreen(
         // background 放在 navigationBarsPadding 之外：surface 覆盖 56dp 视觉栏 + 系统栏预留
         // 一整段，一直涂到物理屏幕底；如果反过来，栏下方就是透明，露出后景空隙。
         // 宽屏改用左侧 sidebar，这里不再渲染底部导航。
-        if (!isWideLayout) {
+        if (!isWideLayout && !bigScreen) {
             Box(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
@@ -1601,8 +1732,10 @@ fun MainScreen(
         // (实测展开时 Compose:recompose 119 次/65ms)。derivedStateOf 只在布尔值
         // 真正翻转(阈值穿越)时才通知, 动画期间零重组。
         val backEnabled by remember { derivedStateOf { progress.value > 0.01f } }
-        BackHandler(enabled = backEnabled) {
-            collapseCard()
+        BackHandler(enabled = backEnabled || bigScreen) {
+            // P1：大屏模式下 BACK = 退出大屏（回到竖屏全屏播放器），而不是收起播放器 ——
+            // 这是需求要求的第三条退出路径，也是用户在大屏里最自然的"返回"预期。
+            if (bigScreen) onToggleBigScreen() else collapseCard()
         }
     }
 }

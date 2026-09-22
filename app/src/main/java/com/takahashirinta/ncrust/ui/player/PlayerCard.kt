@@ -11,6 +11,7 @@
 
 package com.takahashirinta.ncrust.ui.player
 
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import androidx.compose.animation.Crossfade
@@ -58,6 +59,7 @@ import coil.Coil
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import com.takahashirinta.ncrust.library.LibraryManager
+import com.takahashirinta.ncrust.player.SongUrlFetcher
 import com.takahashirinta.ncrust.network.SongItem
 import com.takahashirinta.ncrust.network.CoverUrls
 import com.takahashirinta.ncrust.QueueModes
@@ -70,6 +72,7 @@ import com.takahashirinta.ncrust.ui.viewmodel.PlayerViewModel
 import io.github.takahashirinta.kanesumi.anim.sokuou.SokuouTweens
 import io.github.takahashirinta.kanesumi.controls.MetroDivider
 import io.github.takahashirinta.kanesumi.controls.MetroIconButton
+import io.github.takahashirinta.kanesumi.controls.MetroSelectorFlyout
 import io.github.takahashirinta.kanesumi.core.theme.LocalMetroColors
 import io.github.takahashirinta.kanesumi.core.theme.LocalMetroTypography
 import io.github.takahashirinta.kanesumi.core.theme.MetroIcon
@@ -103,7 +106,11 @@ fun PlayerCard(
     onSongInfoClick: () -> Unit = {},
     onClearQueue: () -> Unit = {},
     onSavePlaylist: () -> Unit = {},
-    onNavigateToUser: () -> Unit = {}
+    onNavigateToUser: () -> Unit = {},
+    // P1：大屏幕模式（横屏桌面播放器布局）开关 + 入口/出口回调。
+    // bigScreen 是"用户意图"，还要叠加当前窗口方向才是生效态（见 bigScreenActive）。
+    bigScreen: Boolean = false,
+    onToggleBigScreen: () -> Unit = {}
 ) {
     val hasSong = song != null
     // 初始落大封面: 歌词未就绪时(加载中/确无), 全屏默认看封面而非空歌词面板;
@@ -159,8 +166,45 @@ fun PlayerCard(
     val dp24px = with(density) { 24.dp.toPx() }
     // 宽屏播放器两栏（Apple Music 式）：左封面 / 右歌词·队列。
     val isWidePlayer = LocalConfiguration.current.screenWidthDp >= 600
-    // 宽屏左栏占整宽的比例：随 wideSplit 在 100%(单栏) 与 44%(两栏) 间过渡。窄屏恒为 1。
-    val wideLeftFraction = if (isWidePlayer) 1f - 0.56f * wideSplit else 1f
+    // ---- P1 · 大屏幕模式（横屏桌面播放器布局）：第三个谓词，只让播放器读 ----
+    // 全仓库另外 7 处 `screenWidthDp >= 600` 的宽屏判定一律不动：横屏时窗口宽度必然
+    // >= 600dp（PCL110 实测 2800px = 800dp），把大屏模式塞进那个谓词会把首页/详情页/
+    // 收藏页的布局一起改掉 —— 它们要的是"平板"，不是"横过来的手机"。
+    val bigScreenActive = PlayerLayout.isBigScreenActive(
+        requested = bigScreen,
+        // Manifest 已声明 configChanges=orientation，旋转不重建 Activity，
+        // 这里读到的一定是旋转后的窗口方向。
+        orientationLandscape = LocalConfiguration.current.orientation ==
+            Configuration.ORIENTATION_LANDSCAPE,
+    )
+    // 封面走"侧栏大图"路径（宽屏两栏 or 大屏左栏）：封面尺寸由实测的封面区决定，
+    // 而不是窄屏的"整屏宽"。
+    val usesSideCover = isWidePlayer || bigScreenActive
+    // 左栏占整宽的比例：随 wideSplit 在 100%(单栏) 与 44%(两栏) 间过渡。窄屏恒为 1。
+    val wideLeftFraction = PlayerLayout.wideLeftFraction(isWidePlayer, wideSplit)
+
+    // 分栏**语义边界**（px）：左侧=封面/信息区，右侧=歌词·队列面板。命中测试用。
+    // P1 顺手修：旧实现两处都写 `screenWidthPx / 2`，而真实边界是 0.44×宽（两栏稳定态）
+    // ⇒ 44%~50% 那条窄带（真实属于歌词面板）被判成"封面区"，带内上下拖歌词会被整卡
+    // 拖拽抢走。现在统一走 PlayerLayout（真实边界，且跟随 wideSplit 动画）。
+    val panelBoundaryPx = if (bigScreenActive) {
+        PlayerLayout.bigScreenLeftBoundaryPx(screenWidthPx)
+    } else {
+        PlayerLayout.splitBoundaryPx(screenWidthPx, isWidePlayer, wideSplit)
+    }
+
+    // P1：大屏左栏的音质选择器（就地切换档位，不再是"跳设置页"）。
+    var showQualityPicker by remember { mutableStateOf(false) }
+    // 选择器高亮的档位：打开那一刻现读一次真实偏好（冷启动后 preferredQualityIndex 可能
+    // 还是默认档，直接用它会把「我选的是哪档」显示错）。
+    var preferredQualityIndex by remember { mutableIntStateOf(0) }
+    LaunchedEffect(Unit) { preferredQualityIndex = playerViewModel.currentQualityPreferenceIndex() }
+    // 选择器高度上限：竖屏 400dp 够用；横屏大屏只有 ~363dp 高（PCL110 实测 1272px），
+    // 400dp 的弹层会被屏幕裁掉底部档位 —— 实测第 8 档「杜比全景声」落在屏幕外、点不到。
+    // 这里按窗口高的 70% 夹一下，选择器本身是 LazyColumn，放不下时可以滚。
+    val qualityPickerMaxHeightDp = with(density) {
+        minOf(400.dp.toPx(), screenHeightPx * 0.7f).toDp()
+    }
     // 迷你条与顶栏按钮的触觉反馈
     val haptic = LocalHapticFeedback.current
 
@@ -169,10 +213,10 @@ fun PlayerCard(
     var cardRootOrigin by remember { mutableStateOf(Offset.Zero) }
     var wideCoverCenter by remember { mutableStateOf(Offset.Zero) }
     var wideCoverSizePx by remember { mutableStateOf(0f) }
-    val coverSizePx = if (isWidePlayer) {
+    val coverSizePx = if (usesSideCover) {
         // 实测前用兜底尺寸，避免首帧 1px 让 Coil 按 1px 解码成纯色（重进时尤为明显）。
         if (wideCoverSizePx > 0f) wideCoverSizePx
-        else minOf(screenWidthPx * 0.4f, screenHeightPx * 0.5f)
+        else PlayerLayout.coverFallbackSizePx(screenWidthPx, screenHeightPx)
     } else screenWidthPx
     val coverSizeDp = with(density) { coverSizePx.toDp() }
     val miniCoverHalfPx = with(density) { 28.dp.toPx() }
@@ -181,8 +225,8 @@ fun PlayerCard(
         .let { with(density) { it.toPx() } }
     val miniCoverCenterX = miniCoverHalfPx
     val miniCoverCenterY = statusBarPx + miniCoverHalfPx
-    val largeCoverCenterX = if (isWidePlayer) wideCoverCenter.x else screenWidthPx / 2f
-    val largeCoverCenterY = if (isWidePlayer) wideCoverCenter.y else screenHeightPx * 0.3f + dp24px
+    val largeCoverCenterX = if (usesSideCover) wideCoverCenter.x else screenWidthPx / 2f
+    val largeCoverCenterY = if (usesSideCover) wideCoverCenter.y else screenHeightPx * 0.3f + dp24px
     val boundsCenter = coverSizePx / 2f
 
     // 完全收起时才激活迷你播放栏；derivedStateOf 将重组限制在阈值穿越处
@@ -344,6 +388,14 @@ fun PlayerCard(
         }
     }
 
+    // P1：大屏模式右栏常驻面板。若用户此前两个面板都没开（例如该曲无歌词、或手动关了
+    // 歌词），进大屏后右栏会是一整块黑。这里只在"大屏 + 两个面板都关"时打开歌词面板
+    // （歌词为空时面板自己显示「暂无歌词」，比空白可读）。退出大屏不改回 —— 与既有的
+    // "歌词就绪自动切歌词"行为一致，不引入第二套面板状态。
+    LaunchedEffect(bigScreenActive) {
+        if (bigScreenActive && !showLyrics && !showQueue) showLyrics = true
+    }
+
     LaunchedEffect(showLyrics, showQueue) {
         when {
             showLyrics -> {
@@ -406,7 +458,7 @@ fun PlayerCard(
     //    只给下面的拖拽检测器用：落在面板内时根节点必须让路，
     //    否则内部 LazyColumn 滚不动（历史 issue #23）。它依赖 isPanelInteractive 是正确的。
     fun isOverPanel(y: Float, x: Float) = isPanelInteractive && y > topBarBottomPx &&
-        (!isWidePlayer || x > screenWidthPx / 2f)
+        (!isWidePlayer || x > panelBoundaryPx)
 
     // ② isOverCardVisibleArea —— **几何语义**：点是否落在卡片自己的可见矩形内。
     //    只给下面「展开态吞事件」的消费者用。
@@ -425,11 +477,14 @@ fun PlayerCard(
     // 而不是让整卡拖拽来抢（S6 真机实测：收起后向下拖把手恢复，会被整卡拖拽抢走，
     // 结果是"控制栏没回来、整卡反而被拖下去"）。
     fun isOverCollapsibleControls(y: Float) =
-        !isWidePlayer && cardExpandedForInput && y >= controlsTopInCardPx
+        !usesSideCover && cardExpandedForInput && y >= controlsTopInCardPx
 
     fun isOverCardVisibleArea(y: Float, x: Float): Boolean {
-        // 宽屏左右分栏，左半是封面区，触摸落在左半时不属于卡片内容区。
-        if (isWidePlayer && x <= screenWidthPx / 2f) return false
+        // 宽屏左右分栏，左栏是封面区，触摸落在左栏时不属于卡片内容区。
+        // P1：大屏模式**不**参与这条豁免 —— 它的左栏里有可点控件（音质选择器），
+        // 整个屏幕都算卡片可见区，根节点不吞任何事件，避免把子控件的 UP 消费掉
+        // （Compose 的 waitForUpOrCancellation 见到 isConsumed 就直接取消点击）。
+        if (isWidePlayer && !bigScreenActive && x <= panelBoundaryPx) return false
         // 卡片可见上沿：收起时整体下移到 collapsedOffsetY，展开时回到 0。
         // 用 progress 插值而不是直接读 cardRootOrigin.y —— graphicsLayer 的平移
         // 不会重新触发布局，onGloballyPositioned 写入的坐标在动画期间会滞后。
@@ -472,8 +527,12 @@ fun PlayerCard(
             // Inner modifier → runs first within this node in Main pass.
             // Handles drag-to-expand/collapse; runs before the outer consumer so it sees unconsumed MOVE.
             // 仅在有歌（!hasSong = 暂无播放）时可拖拽；用 hasSong 作 key，来了歌后手势重新激活。
-            .pointerInput(hasSong) {
+            .pointerInput(hasSong, bigScreenActive) {
                 if (!hasSong) return@pointerInput
+                // P1：大屏模式下停用"整卡拖拽"。大屏是横屏桌面布局，"把卡片拖下去"没有
+                // 对应语义（折叠态的 mini bar 落点是按竖屏 contentHeightPx 算的），
+                // 出口固定为：同一个按钮 / 系统返回键 / 旋转回竖屏。
+                if (bigScreenActive) return@pointerInput
                 awaitEachGesture {
                     val down = awaitFirstDown(requireUnconsumed = false)
                     // 面板内纵向手势完全交给内部 LazyColumn/进度条,根节点不消费任何事件。
@@ -647,7 +706,37 @@ fun PlayerCard(
                         onNavigateToUser = onNavigateToUser,
                         lyricsUnavailable = lyricsUnavailable,
                         previousEnabled = playMode != QueueModes.INFINITY,
-                        landscape = isWidePlayer
+                        // 大屏模式也用扁平横向控制条（竖屏那套大按钮堆叠在 300dp 高里放不下）。
+                        landscape = usesSideCover,
+                        compact = usesSideCover,
+                        // 大屏把音质搬到左栏就地选择器，控制条右端不再重复一个音质角标。
+                        showQuality = !bigScreenActive,
+                        // 大屏幕模式开关（入口/出口同一个回调、同一个图标语义）。
+                        // 竖屏时它在下方那排操作按钮里（第 4 个，SpaceEvenly）；
+                        // 横屏大屏时它在控制条右端（音质让出来的位置）—— 竖屏那排的
+                        // 第 4 个在横向三段式布局里会顶到居中的传输组（实测与"上一首"重叠）。
+                        bigScreen = bigScreenActive,
+                        onToggleBigScreen = onToggleBigScreen,
+                        trailing = if (bigScreenActive) {
+                            {
+                                Box(
+                                    modifier = Modifier
+                                        .size(40.dp)
+                                        .clickable(
+                                            interactionSource = remember { MutableInteractionSource() },
+                                            indication = null
+                                        ) { onToggleBigScreen() },
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    MetroIcon(
+                                        imageVector = Icons.Default.CloseFullscreen,
+                                        contentDescription = strings.bigScreenExit,
+                                        tint = LocalMetroColors.current.primary,
+                                        sizeDp = 24.dp
+                                    )
+                                }
+                            }
+                        } else null
                     )
                 }
 
@@ -772,7 +861,162 @@ fun PlayerCard(
                     }
                 }
 
-                if (isWidePlayer) {
+                when {
+                    bigScreenActive -> {
+                        // ---- P1 大屏幕模式（横屏桌面播放器布局）----
+                        // 左栏 = 大封面（尽量占满左栏可用高度、保持正方形）+ 歌名/作者 + 音质
+                        //        （就地切换档位）；右栏 = 歌词·队列（**复用既有面板，歌词引擎
+                        //        一个字都没重写**）+ 底部扁平控制条。
+                        // 为什么 transport 不放左栏：旧的"宽屏竖屏"形状把封面 + 歌名 + 控件全塞
+                        // 在左栏，手机横屏可用高只有 ~300dp（PCL110 实测 1272px 高、扣掉左右
+                        // 系统栏与挖孔），封面被挤到 ~170dp，比竖屏还小。把控制条移到右栏底部
+                        // 之后，左栏只剩「歌名 + 音质」一条约 44dp 的行，封面能拿到 ~230dp。
+                        Row(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                // 外层 Column 已经吃过 systemBarsPadding()（横屏时系统栏贴在
+                                // **左右两侧**），这里再补 displayCutout —— 嵌套的
+                                // windowInsetsPadding 会自动扣掉父级已消费的 inset（Compose
+                                // InsetsPaddingModifier 的 exclude 语义），所以挖孔与同侧
+                                // 状态栏等宽（PCL110 实测都是 141px）时不重复留白，挖孔更宽
+                                // （部分 ROM）时也不会被压住。
+                                // 注：Kanesumi 的 rememberMetroInsets() 表达不了横屏的左右
+                                // 系统栏 —— MetroInsets.statusBar/navigationBar 只有
+                                // calculateTopPadding / calculateBottomPadding 两条边
+                                // （Kanesumi MetroInsets.kt:57-63），故此处用 displayCutout。
+                                .windowInsetsPadding(WindowInsets.displayCutout)
+                        ) {
+                            // ===== 左栏 =====
+                            Column(
+                                modifier = Modifier
+                                    .weight(PlayerLayout.BIG_SCREEN_LEFT_FRACTION)
+                                    .fillMaxHeight()
+                            ) {
+                                // 封面区：只作为「唯一封面 overlay」的落点参考（与宽屏两栏同一
+                                // 机制，绝不在这里放第二个封面）。正方形边长 = min(区宽, 区高)
+                                // ⇒ 封面总是"尽量占满左栏可用高度"。
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .weight(1f)
+                                        .onGloballyPositioned { coords ->
+                                            val b = coords.boundsInRoot()
+                                            wideCoverCenter = b.center - cardRootOrigin
+                                            wideCoverSizePx =
+                                                PlayerLayout.squareCoverSizePx(b.width, b.height)
+                                        }
+                                )
+                                Spacer(Modifier.height(10.dp))
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Column(
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            // 与竖屏/宽屏一致：点歌名上拉「转到歌手/转到专辑」菜单。
+                                            .clickable { onSongInfoClick() }
+                                    ) {
+                                        MetroText(
+                                            s.name,
+                                            color = LocalMetroColors.current.onBackground,
+                                            style = LocalMetroTypography.current.titleMedium,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                        MetroText(
+                                            s.artists?.joinToString("/") { it.name } ?: "",
+                                            color = LocalMetroColors.current.primary,
+                                            style = LocalMetroTypography.current.bodyMedium,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                    }
+                                    Spacer(Modifier.width(10.dp))
+                                    // 音质：就地切换。走设置页那条现成通道
+                                    // （PlayerViewModel.setQualityPreference → 按当前网络写 prefs，
+                                    // 再走 onQualityPreferenceChanged：只改偏好、档位真变了才重取链），
+                                    // 不再是"点一下跳设置页"。
+                                    Box {
+                                        Box(
+                                            modifier = Modifier
+                                                .background(LocalMetroColors.current.surfaceVariant)
+                                                .clickable(
+                                                    interactionSource = remember { MutableInteractionSource() },
+                                                    indication = null
+                                                ) {
+                                                    // 每次打开都现读一次：网络在 Wi-Fi/移动之间切换过、
+                                                    // 或刚冷启动时，StateFlow 里的值可能已过期。
+                                                    preferredQualityIndex =
+                                                        playerViewModel.currentQualityPreferenceIndex()
+                                                    showQualityPicker = true
+                                                }
+                                                .padding(horizontal = 10.dp, vertical = 5.dp)
+                                                .semantics { contentDescription = strings.qualitySectionTitle },
+                                        ) {
+                                            PlayerQualityLabel(
+                                                qualityIndexFlow = playerViewModel.currentQualityIndex,
+                                                qualityStatusFlow = playerViewModel.qualityStatus,
+                                                options = strings.qualityOptions
+                                            )
+                                        }
+                                        // UWP ComboBox 移植：选中档位落回 chip 原位，菜单从锚点展开。
+                                        // 高亮的是**偏好档位**（preferredQualityIndex）而不是实际档位 ——
+                                        // 实际档位可能因版权/设备被降级，选择器要反映"我选的是哪档"。
+                                        MetroSelectorFlyout(
+                                            expanded = showQualityPicker,
+                                            onDismissRequest = { showQualityPicker = false },
+                                            options = strings.qualityOptions,
+                                            selectedIndex = preferredQualityIndex,
+                                            onSelect = { index ->
+                                                playerViewModel.setQualityPreference(index)
+                                                // API < 27 无 FLAC 解码器时这些档位会在取链阶段被跳过
+                                                // （与设置页同一条提示，避免"选了无损却没无损"）。
+                                                val level = PlayerViewModel.QUALITY_LEVELS
+                                                    .getOrNull(index)
+                                                if (level != null &&
+                                                    !SongUrlFetcher.deviceSupportsFlac &&
+                                                    SongUrlFetcher.isFlacTier(level)
+                                                ) {
+                                                    Toast.makeText(
+                                                        context,
+                                                        strings.qualityFlacUnsupportedHint,
+                                                        Toast.LENGTH_SHORT
+                                                    ).show()
+                                                }
+                                                showQualityPicker = false
+                                            },
+                                            horizontalAlignment = Alignment.End,
+                                            maxHeightDp = qualityPickerMaxHeightDp,
+                                        )
+                                    }
+                                }
+                                Spacer(Modifier.height(8.dp))
+                            }
+                            // ===== 右栏 =====
+                            Column(
+                                modifier = Modifier
+                                    .weight(1f - PlayerLayout.BIG_SCREEN_LEFT_FRACTION)
+                                    .fillMaxHeight()
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .weight(1f)
+                                ) {
+                                    playerPanels(
+                                        Modifier
+                                            .fillMaxSize()
+                                            .graphicsLayer { alpha = ((progress.value - 0.7f) / 0.3f).coerceIn(0f, 1f) }
+                                    )
+                                }
+                                playerControls()
+                            }
+                        }
+                    }
+                    isWidePlayer -> {
                     // 宽屏：Row 两栏，区域化布局（weight 分区，无绝对定位 / 魔法数字）。
                     // 左栏 = 封面区(weight 撑满剩余) + 歌名 + 控件；右栏 = 歌词·队列占满整轴。
                     Row(modifier = Modifier.fillMaxSize()) {
@@ -848,7 +1092,8 @@ fun PlayerCard(
                             )
                         }
                     }
-                } else {
+                }
+                    else -> {
                     // 窄屏：顶部标题栏 + 整宽面板 + 底部控件（保持原行为）。
                     Box(
                         modifier = Modifier
@@ -1036,6 +1281,7 @@ fun PlayerCard(
                         }
                     }
                 }
+                }   // end when { 大屏 / 宽屏两栏 / 窄屏 }
             }
         }
 
@@ -1151,15 +1397,15 @@ fun PlayerCard(
                 placeholderColor = LocalMetroColors.current.surfaceVariant,
                 modifier = Modifier
                     .then(
-                        if (isWidePlayer) Modifier.size(coverSizeDp)
+                        if (usesSideCover) Modifier.size(coverSizeDp)
                         else Modifier.fillMaxWidth().aspectRatio(1f)
                     )
                     .graphicsLayer {
                         val p = progress.value
                         val normalizedP = ((p - 0.2f) / 0.8f).coerceIn(0f, 1f)
-                        // 宽屏封面恒为大图（缩到 mini 是窄屏"大封面↔歌词"切换的语义）；
-                        // 宽屏下它随分栏进度在左栏与居中之间平滑移动。
-                        val lyricAnimValue = if (isWidePlayer) 0f else lyricAnimProgress.value
+                        // 侧栏布局（宽屏两栏 / 大屏左栏）封面恒为大图（缩到 mini 是窄屏
+                        // "大封面↔歌词"切换的语义）；它随分栏进度在左栏与居中之间平滑移动。
+                        val lyricAnimValue = if (usesSideCover) 0f else lyricAnimProgress.value
 
                         val targetCenterX = largeCoverCenterX + lyricAnimValue * (miniCoverCenterX - largeCoverCenterX)
                         val targetCenterY = largeCoverCenterY + lyricAnimValue * (miniCoverCenterY - largeCoverCenterY)
@@ -1179,8 +1425,15 @@ fun PlayerCard(
             )
         }
 
-        // 收起按钮叠加层：z 序最高，保证触摸事件不被任何下层元素拦截
-        if (hasSong) {
+        // 收起按钮叠加层：z 序最高，保证触摸事件不被任何下层元素拦截。
+        // P1：大屏幕模式下**整层不挂载**：
+        //  ① 大屏没有"收起卡片"这个动作（出口是同一按钮 / 返回键 / 转回竖屏），
+        //     留一个收起键只会让用户掉进"横屏 + 卡片收起"的怪状态；
+        //  ② 它是全宽 56dp + CenterEnd 的叠加层，实测与右栏歌词面板右上角的 A-/A+
+        //     字号按钮**命中区重叠**（PCL110：A+ 2569..2723px，收起键 2604..2772px），
+        //     而它在 z 序更上 ⇒ 点 A+ 的右半边会被它抢走并收起卡片。
+        // 大屏幕模式的入口/出口都放在控制条的操作行里（见 FullPlayerControls.onToggleBigScreen）。
+        if (hasSong && !bigScreenActive) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()

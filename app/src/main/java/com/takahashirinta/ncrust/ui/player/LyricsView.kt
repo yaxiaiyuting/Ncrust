@@ -12,15 +12,20 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
@@ -233,7 +238,21 @@ fun LyricsView(
         }
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    // v1.7.0 · P1：上下渐隐高度跟随面板视口。
+    // 竖屏全屏播放器面板高约 700dp，100dp 渐隐只吃边角；但横屏大屏模式右栏只有
+    // 约 210dp 高（PCL110 实测：1272px 高 − 系统栏/挖孔 − 控制条 ~84dp），两条
+    // 100dp 的渐隐会把整块歌词糊掉。取 min(100dp, 30% 视口高)，竖屏数值分毫不变，
+    // 横屏自动收窄；不引入任何新的渲染路径（仍是同样两个 Box + 同一个 verticalGradient）。
+    var panelHeightPx by remember { mutableFloatStateOf(Float.MAX_VALUE) }
+    val fadeHeight = with(LocalDensity.current) {
+        minOf(100.dp.toPx(), panelHeightPx * 0.3f).coerceAtLeast(24.dp.toPx()).toDp()
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .onSizeChanged { panelHeightPx = it.height.toFloat() }
+    ) {
         NcrustLyricsPanel(
             lines = panelLines,
             currentPositionMillis = { displayPosition.longValue },
@@ -267,11 +286,11 @@ fun LyricsView(
                 .padding(horizontal = 20.dp),
         )
 
-        // 上下边缘淡出,让歌词从黑里浮出来(沿用原实现)
+        // 上下边缘淡出,让歌词从黑里浮出来(沿用原实现;高度见 fadeHeight)
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(100.dp)
+                .height(fadeHeight)
                 .align(Alignment.TopCenter)
                 .background(
                     Brush.verticalGradient(listOf(LocalMetroColors.current.background, Color.Transparent))
@@ -280,7 +299,7 @@ fun LyricsView(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(100.dp)
+                .height(fadeHeight)
                 .align(Alignment.BottomCenter)
                 .background(
                     Brush.verticalGradient(listOf(Color.Transparent, LocalMetroColors.current.background))

@@ -81,6 +81,10 @@ data class Strings(
     // v1.5.0 · C2：控制栏把手（全屏播放器底部那条 40×3dp 小横条）的无障碍描述。
     // 它此前对 TalkBack 完全不可见 —— 视力障碍用户收起控制栏后再也拿不回来。
     val controlsHandleLabel: String,
+    /** P1：大屏幕模式入口按钮（横屏桌面播放器布局）。 */
+    val bigScreenEnter: String,
+    /** P1：大屏幕模式出口按钮。与入口是同一个按钮，横屏大屏下图标与描述切换。 */
+    val bigScreenExit: String,
     val themeSectionTitle: String,
     val themeModeSectionTitle: String,
     val themeModeSystem: String,
