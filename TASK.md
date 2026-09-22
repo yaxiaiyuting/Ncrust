@@ -127,3 +127,8 @@
 4. 抓证据：听到不同步的那一刻抓 adb logcat -d | grep -E "PlayerViewModel|SongUrlFetcher|PlaybackService"。
 
 **临时绕过**：按一次「下一首」强制重建 media item，或 force-stop 后重进（已对用户说明）。
+
+> **2026-09-22 更新：本条已由并行分支 `fix/v1.5.2-desync` 定位并修复**（根因是同一首下一曲被预载两次，
+> ExoPlayer 播放列表变成 `[当前, 下一首, 下一首]`，播到重复项时 `pendingNext*` 已被改成下下首；
+> 修法是「待播槽位至多一首」不变量 + 媒体元数据跟随 media item）。详见该分支的 4 个 commit 与
+> `tools/evidence/desync-*.log`。
