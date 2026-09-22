@@ -109,26 +109,80 @@
 - PCL110 上遗留的测试状态：**设置 → 播放 → 「媒体面板显示歌词」= 开**（方便你直接看效果，关掉即可）；
   逐字动画模式 / 字号已改回默认（渐变扫过 / 1.0x）。
 
-## 8. ⚠️ 待修：UI/元数据与实际音频不同步（用户 2026-09-22 报告，未修）
+### 8 节（v1.5.2 串台）排查时用的临时手段
+
+- **只用 emulator-5554**，PCL110 / S6 全程未动。`adb root` + 把 `shared_prefs` 备份到
+  `/data/local/tmp/ncrust-backup`，再用 `run-as`（debug 包）写入 4 首匿名可播歌的队列复现。
+  注意：root 直接 `cat >` 新建的 prefs 文件属主/MLS 类别不对，App 读不到（日志是
+  `SharedPreferencesImpl: Permission denied` + `avc: denied { rename }`），必须走 `run-as`。
+- 临时加过 `NcrustProbe` 日志（`PRELOAD_ADD` / `TRANSITION` / `PRELOAD_REQ`），**提交前已删除**；
+  修复后的验证改用代码里长期保留的 `Queued next ... count=` 与 `gapless transition ->` 日志。
+- 工具（均在仓库外 `tools/`，不入 git）：`repro-desync.sh`、`verify-desync.sh`、`verify-slot.sh`、
+  `find-free-songs.py`、`song-url.py`、`seed-queue-desync.py`；证据在 `tools/evidence/`。
+  提醒：用 `am` 传带 `&` 的音频 URL 会被远端 shell 截断（后面的 `--es` 一起被吃掉），
+  必须先 `cut -d\& -f1`；`songId` 要用 `--el`（long extra），`--es` 读不到。
+- 遗留设备状态：**emulator-5554 装的是本次修复的 debug 包**（`dist/` 里没有 v1.5.1 的 APK，原 release
+  包无法还原）；app 数据已恢复为改动前的备份（无登录态、单曲队列）。
+
+## 8. ✅ 已修：UI/元数据与实际音频不同步（v1.5.2 · 串台）
 
 **症状（PCL110，v1.5.1 release）**：播放器标题 / 歌词面板 / 媒体卡片都显示下一首（如 Crucified、江南），
 但耳朵里放的仍是上一首的音频。用户确认「状态栏和歌词界面对，音频不对」。
 
-**不是 v1.5.1 引入的**：v1.5.1 只改了 metadata 的 ARTIST 文案与歌词渲染，没有动 ExoPlayer / 预载 / 切歌路径。
+**根因：预载项被重复 `addMediaItem`，播放列表累积；而元数据只是 last-write-wins 的旁路变量。**
 
-**下一轮从这里开始排查**：
+真机复现：API 24 模拟器（emulator-5554）+ `tools/repro-desync.sh`，完整 logcat 见
+`tools/evidence/desync-before.log`。关键三行：
 
-1. PlaybackService.onSongTransitioned（ExoPlayer onMediaItemTransition 回调）里 UI 直接切到 preloadedSongId；
-   若这次 transition 实际播的是旧 media item（预载 URL 是上一首的、或预载缓存 PreloadCacheEntry 的
-   requestedLevel 与降级重试串了），就会出现「UI 提前、音频滞后」。
-2. PlayerViewModel 的 preloadedSongId / preloadedResult / preloadedRequestedLevel 与
-   PlaybackService.pendingNextTitle 的配对时机（约 292-313 行）。
-3. 复现思路：连续快速切歌；或让一首歌在降档重试（handlePlaybackError 的 qualityRetryLadder）之后自然结束。
-4. 抓证据：听到不同步的那一刻抓 adb logcat -d | grep -E "PlayerViewModel|SongUrlFetcher|PlaybackService"。
+```
+PRELOAD_REQ  songId=25640004 current=400876427 preloadedSongId=-1        ← 切歌瞬间预载一次
+PRELOAD_ADD  before count=1 songId=25640004 → after count=2
+PRELOAD_REQ  songId=25640004 current=400876427 preloadedSongId=25640004  ← 最后 60s 又预载同一首
+PRELOAD_ADD  before count=2 songId=25640004 → after count=3              ← 重复入队（不变量被破坏）
+...
+TRANSITION reason=1 itemId=song:25640004 刀马旦 count=4
+           pendingTitle=The truth that you leave pendingSongId=139774    ← 元数据已是「下下首」
+```
 
-**临时绕过**：按一次「下一首」强制重建 media item，或 force-stop 后重进（已对用户说明）。
+触发条件链：
 
-> **2026-09-22 更新：本条已由并行分支 `fix/v1.5.2-desync` 定位并修复**（根因是同一首下一曲被预载两次，
-> ExoPlayer 播放列表变成 `[当前, 下一首, 下一首]`，播到重复项时 `pendingNext*` 已被改成下下首；
-> 修法是「待播槽位至多一首」不变量 + 媒体元数据跟随 media item）。详见该分支的 4 个 commit 与
-> `tools/evidence/desync-*.log`。
+1. `MainScreen` 对同一首下一曲预载**两次**：`playFromQueue` / `LaunchedEffect(songTransitioned)` 一次，
+   `needsPreload`（进入最后 60s）再一次（MainActivity.kt:540 / 706 / 772）。
+2. 上游 `preloadNextSong` 有一条「URL 已缓存就整体 return」的去重，`19f2969`（2026-09-10，
+   「无缝播放单曲循环/拖带…」）为了让缓存命中时也能入队把它删了 —— 第二次预载于是又
+   `player.addMediaItem` 了一遍，播放列表变成 `[当前, 下一首, 下一首]`。
+3. `onMediaItemTransition` 只判断 `reason==AUTO && pendingNextTitle != null` 就把 `pendingNext*` 写进
+   通知栏 / 歌词；播到那个重复项（= 刚放完的上一首）时，`pendingNext*` 已被后来的预载改成下下首
+   ⇒ **UI 显示下一首、音频是上一首**。`removeMediaItem(0)` 每次只清一项，错位会一直保留并随歌累积。
+4. 用户描述的临时绕过因此完全成立：按一次「下一首」会 `setMediaItem` 重建整个播放列表，错位立刻消失。
+
+**修复（3 个 commit）**：
+
+- `6a3706d` `test(player): 抽出预载槽位不变量并加 JVM 单测` —— 新增
+  [PreloadSlot.kt](app/src/main/java/com/takahashirinta/ncrust/player/PreloadSlot.kt)（纯逻辑，无 Android 依赖）：
+  `decide()` → APPEND / REPLACE / IGNORE，`transitionMatches()` 判定起播项是否就是槽位项；13 条单测。
+- `e787755` `fix(player): 待播槽位至多一首，杜绝重复预载造成的串台` —— 服务端「待播槽位」以新字段
+  `pendingNextUrl` 作占用标记（PlaybackService.kt:426），重复预载幂等忽略、换歌替换
+  （`removePendingItems()`，PlaybackService.kt:685）；`playUrl` / `stop` / `onTaskRemoved` 统一走
+  `clearPendingNext()`；ViewModel 侧 `preloadedSongId` 作为槽位镜像，`clearPreloadedState()`
+  （PlayerViewModel.kt:681）在每条替换播放列表的路径上成对清空，`preloadNextSong` 对「已在槽位」的同一首
+  直接返回（PlayerViewModel.kt:705）。
+- `4900004` `fix(player): 媒体元数据跟随 media item，transition 加槽位守卫` —— 预载项自带
+  `mediaId=song:<id>` 与 `MediaMetadata`（`buildPreloadMediaItem`，PlaybackService.kt:661）；
+  `onMediaItemTransition` 只在「起播项 == 槽位项」时才写元数据（PlaybackService.kt:340），
+  否则 `Log.w` + 清槽位 + UI 不动（宁可不更新，也绝不显示错歌）。
+
+**不变量（写进 PreloadSlot 的 KDoc）**：ExoPlayer 播放列表里当前项之后**至多一首**预载项，
+且 `pendingNext*` 必须与它一一对应。
+
+**验证**：
+
+- 单测 `./gradlew test` **69/69 通过**（PreloadSlotTest 13 条 + 既有 56 条）；`./gradlew :app:minifyReleaseWithR8` 通过。
+- API 24 模拟器（debug 包）跑与复现完全相同的驱动序列：`Queued next ... count=2` 恒定、
+  每条 `gapless transition -> songId=X title=<X 的标题>` 自洽、无重复预载（`tools/evidence/desync-after-natural.log`）。
+- 直接 `am startservice` 连打两次同名 `preload_next`：第二次 `preload_next ignored, slot already holds songId=400876427`；
+  换成另一首则 `preload_next replaces stale slot songId=400876427 -> 25640004`，count 始终为 2
+  （`tools/evidence/desync-after-slotguard.log`）。
+- **未验证**：release（R8）APK 没能在本 worktree 出包 —— `keystore.properties` 指向的 `ncrust-release.jks`
+  不在本 worktree，按红线未改配置、未拷贝密钥；只跑了 R8 任务本身。发布前请在主 checkout 出 release 包复测一次。
+

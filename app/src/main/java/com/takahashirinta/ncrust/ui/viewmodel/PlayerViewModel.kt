@@ -317,7 +317,7 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                     preloadedTitle, preloadedArtist, preloadedArtwork, true
                 )
                 viewModelScope.launch { fetchLyrics(preloadedSongId) }
-                preloadedSongId = -1L
+                clearPreloadedState()
                 needsPreload.value = false
             }
             onSongTransitionedCallback?.invoke()
@@ -583,8 +583,7 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
             it.requestedLevel == selectedQuality && System.currentTimeMillis() - it.timestamp <= CACHE_TTL_MS
         }
         if (cachedEntry != null) {
-            preloadedSongId = -1L; preloadedTitle = ""; preloadedArtist = ""
-            preloadedArtwork = ""; preloadedResult = null; preloadedRequestedLevel = ""; preloadedUrl = ""
+            clearPreloadedState()
             applyQualityVerdict(
                 selectedQuality,
                 SongUrlResult(
@@ -631,6 +630,8 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                 // 本次结果作废: 再发一次 "url" intent 会让 ExoPlayer setMediaItem
                 // 把同一首歌重播一遍 —— 就是"听起来像拖带"的卡顿。
                 if (fetchVersion != songPlayVersion) return@launch
+                // setMediaItem 会替换整个播放列表，槽位随之作废。
+                clearPreloadedState()
                 resetLyricsForNewSong()
                 // 歌词请求异步化: 旧实现在这里顺序等待(失败退避最坏 3s+),
                 // 开播被歌词请求拖住, 慢网络/风控下"点了没反应"。切到 launch 后
@@ -704,6 +705,24 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         )
     }
 
+    /**
+     * 清空「待播槽位」的本地镜像（preloaded*），与 PlaybackService.clearPendingNext 成对。
+     *
+     * 任何一次**替换 ExoPlayer 播放列表**的开播动作都必须调用它（playSong 两条路径、
+     * 预载接管、stopService）。否则残留的 preloadedSongId 会同时造成两个后果：
+     *  1. preloadNextSong 误判「这首已经在槽位里」而不再预载 → 无缝播放静默失效；
+     *  2. onSongTransitioned 把一首并不在播放列表里的歌当成已切歌 → 串台。
+     */
+    private fun clearPreloadedState() {
+        preloadedSongId = -1L
+        preloadedTitle = ""
+        preloadedArtist = ""
+        preloadedArtwork = ""
+        preloadedResult = null
+        preloadedRequestedLevel = ""
+        preloadedUrl = ""
+    }
+
     fun preloadNextSong(songId: Long, title: String, artist: String, artworkUrl: String, allowCurrent: Boolean = false) {
         // Dedup: skip only if the SAME song is already being fetched/in queue.
         // 不能因 URL 已缓存而整体跳过——缓存意味着"省的再取链", 但下一首仍需
@@ -713,6 +732,12 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         // 把当前正在播的歌再入队(除单曲循环由 MainScreen 显式 allowCurrent 外)——
         // 队尾回绕/单曲队列等边界会让 [A,A] 自动过渡成"假单曲循环"。
         if (!allowCurrent && songId == currentSongId.value && songId > 0) return
+        // v1.5.2 串台修复：这一首已经在待播槽位里 → 幂等跳过，绝不再发一次 preload_next。
+        // preloadedSongId 是槽位的本地镜像，被消费（onSongTransitioned）或播放列表被替换
+        // （clearPreloadedState）时清空。19f2969 拆掉上游「URL 已缓存就整体 return」之后，
+        // 同一首下一曲会在「切歌瞬间」和「进入最后 60s」各预载一次，第二次会把同一个
+        // media item 再 addMediaItem 一遍，播放列表变成 [当前, 下一首, 下一首']。
+        if (songId > 0 && songId == preloadedSongId) return
 
         val capturedVersion = songPlayVersion
         preloadJob?.cancel()
@@ -757,6 +782,8 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                             playJob?.cancel()
                             lastRequestedLevel = quality
                             applyQualityVerdict(quality, result)
+                            // 接管同样是一次替换播放列表的开播，槽位镜像必须一并作废。
+                            clearPreloadedState()
                             resetLyricsForNewSong()
                             currentSongId.value = songId
                             currentSongName.value = title
@@ -1025,6 +1052,7 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         }
         app.startService(intent)
         isPlaying.value = false
+        clearPreloadedState()
         resetLyricsForNewSong()
         currentSongId.value = null
         currentSongName.value = null

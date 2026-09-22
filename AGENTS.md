@@ -306,6 +306,12 @@ standard -> standard
   **客户端侧配套（v1.3.0 · B4）**：档位上限为 `sky` 的曲子，用户在设置里选 hires/无损时，`QualityAssessment` 会把 `sky` 归一化成 `exhigh` 再比较上限（`CAPABILITY_ALIASES`），角标显示「该曲无此档位」；选 exhigh 则不加角标。归一化只改判定、不改档位表（设置页仍是 8 档，不含 sky）。
 - **Auto quality downgrade**: `PlayerViewModel.handlePlaybackError` retries the same song one rung lower on `qualityRetryLadder` (reverse order, deduped 3 s per `songId@level`), skipping to the next song only when even `standard` fails. `AudioSink` failures are covered too. The badge is decided by `QualityAssessment` from the **actual file params** (br/type) plus the song cap: a `sky`-capped song requested at hires/无损 shows 「该曲无此档位」, not 「已降级」/「无权限」.
 - **Level-aware preload cache**: `PreloadCacheEntry` records `requestedLevel`; a downgrade retry never replays an already-failed higher-tier URL. TTL = 5 min. Gapless preload window = **60 s** (`PRELOAD_THRESHOLD_MS`), despite some older comments saying 20 s.
+- **待播槽位不变量（v1.5.2 串台修复）**：ExoPlayer 播放列表里**当前项之后至多一首预载项**，
+  且 `PlaybackService.pendingNext*` 必须与它一一对应（判定抽在 `player/PreloadSlot.kt`，JVM 单测覆盖）。
+  同一首下一曲会被 MainScreen 预载两次（切歌瞬间 + 最后 60s），第二次必须幂等忽略、换歌必须替换
+  （`removePendingItems`），绝不重复 `addMediaItem`；预载项自带 `mediaId=song:<id>` 与 `MediaMetadata`，
+  `onMediaItemTransition` 只在「起播项 == 槽位项」时才写元数据。破坏它 = 用户报告的
+  「UI/歌词/媒体卡片显示下一首、耳朵还是上一首」串台（根因链与真机 logcat 见 TASK.md 第 8 节）。
 - A song that yields no playable URL at any tier is skipped — **never** fall back to `.../song/media/outer/url?id=X.mp3` (it 302→404s HTML and buffers forever).
 
 Quality preferences (indices into the 8-level ladder) live in `ncrust_settings` (migrated once by `QualityLadder.migrate` at app start):
