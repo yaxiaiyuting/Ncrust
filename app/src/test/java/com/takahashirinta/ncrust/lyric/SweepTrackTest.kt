@@ -143,6 +143,77 @@ class SweepTrackTest {
         assertEquals(atEnd, track.sample(60_000)!!.x, 0.001f)
     }
 
+    /**
+     * **v1.5.2 真机 bug 回归 ①**：相邻词之间绝不能出现「倒扫」。
+     *
+     * 初版把「首尾各外扩半个渐变带」错用到了**每一个**词：w_i 的末节点落在 charEnd_i + 半带、
+     * w_{i+1} 的首节点落在 charStart_{i+1} - 半带，于是每个词间隙光标都要**后退一整个渐变带宽度**，
+     * 画面上就是高亮唱完一个词又倒着缩回去一点。折行处词间隙更长，倒扫更明显。
+     */
+    @Test
+    fun 相邻词之间不得倒扫() {
+        val geo = FakeGeometry(charCount = 12, charsPerLine = 12)
+        val track = SweepTrack.build(
+            words = listOf(word(0, 300, 0, 3), word(300, 300, 3, 6), word(600, 300, 6, 9)),
+            textLength = 12,
+            endMs = 900,
+            geo = geo,
+            fadePx = 24f,
+        )!!
+        assertEquals("整行首词要外扩半个渐变带", -12f, track.sample(0)!!.x, 0.01f)
+        assertEquals("整行末词要外扩半个渐变带", 102f, track.sample(900)!!.x, 0.01f)
+        var prev = Float.NEGATIVE_INFINITY
+        for (t in 0L..900L step 5L) {
+            val x = track.sample(t)!!.x
+            assertTrue("t=$t 光标从 $prev 倒退到 $x（词间隙倒扫）", x >= prev - 0.001f)
+            prev = x
+        }
+        // 中间词的边界正好落在字符边界上：不能带外扩。
+        assertEquals(30f, track.sample(300)!!.x, 0.01f)
+        assertEquals(60f, track.sample(600)!!.x, 0.01f)
+    }
+
+    /**
+     * **v1.5.2 真机 bug 回归 ②**：软换行（一句话占两行）处不得把光标插值回下一行行首。
+     *
+     * 折行时上一行末词的 x 接近行尾、下一行首词的 x 接近行首，直接插值等于让整行高亮
+     * 从行尾倒着扫回行首 —— 用户描述为「这句话的特效又从头播了一遍、歌词对不上」。
+     * 正确行为是：**停在上一行行尾**，等下一行的词真的开始时再瞬移过去。
+     */
+    @Test
+    fun 折行处停在上一行行尾不得倒扫回行首() {
+        val geo = FakeGeometry(charCount = 20, charsPerLine = 10)
+        // 词 1 在第 0 行末尾 char[7,10)，词 2 在第 1 行开头 char[10,13)，中间有 600ms 停顿。
+        val track = SweepTrack.build(
+            words = listOf(word(0, 300, 7, 10), word(900, 300, 10, 13)),
+            textLength = 20,
+            endMs = 1200,
+            geo = geo,
+            fadePx = 0f,
+        )!!
+        assertEquals(0, track.sample(300)!!.lineIndex)
+        assertEquals(100f, track.sample(300)!!.x, 0.01f)
+        // 停顿区间：停在**第 0 行的行尾 100px**，而不是往第 1 行的行首 0px 倒着插值。
+        assertEquals(0, track.sample(600)!!.lineIndex)
+        assertEquals(100f, track.sample(600)!!.x, 0.01f)
+        assertEquals(100f, track.sample(899)!!.x, 0.01f)
+        // 下一个词真正开始的时刻才瞬移到第 1 行。
+        assertEquals(1, track.sample(900)!!.lineIndex)
+        assertEquals(0f, track.sample(900)!!.x, 0.01f)
+        assertEquals(30f, track.sample(1200)!!.x, 0.01f)
+        // 同一视觉行内光标必须单调不减 —— 这条不变量同时覆盖上面两条回归。
+        var prevLine = -1
+        var prevX = Float.NEGATIVE_INFINITY
+        for (t in 0L..1200L step 5L) {
+            val s = track.sample(t)!!
+            if (s.lineIndex == prevLine) {
+                assertTrue("第 $prevLine 行内 t=$t 倒退：$prevX -> ${s.x}", s.x >= prevX - 0.001f)
+            }
+            prevLine = s.lineIndex
+            prevX = s.x
+        }
+    }
+
     // ---------------------------------------------------------------- 行尾收束
 
     /** yrc 的词没铺满展示文本（行尾标点 / 尾音留白）时，光标要匀速走到行尾，而不是停在半路。 */

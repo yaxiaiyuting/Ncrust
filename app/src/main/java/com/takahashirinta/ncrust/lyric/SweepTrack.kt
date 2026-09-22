@@ -167,6 +167,12 @@ class SweepTrack private constructor(
     private val times: LongArray,
     private val xs: FloatArray,
     private val lines: IntArray,
+    /**
+     * 每个节点的「行尾保持位」：当**下一个节点在另一个视觉行**时，光标必须停在这一行的
+     * 阅读顺序行尾（再多走半个渐变带，让渐变整条滑出行外），**绝不能**把 x 从上一行的行尾
+     * 直接插值到下一行的行首 —— 那等于让高亮倒着扫回行首。
+     */
+    private val holds: FloatArray,
     val rtl: Boolean,
     val endMs: Long?,
     private val easing: SweepEasing,
@@ -193,6 +199,12 @@ class SweepTrack private constructor(
             if (times[mid] <= positionMillis) lo = mid else hi = mid - 1
         }
         if (lo >= last) return SweepSample(lines[last], xs[last], rtl)
+        // 跨视觉行（软换行）的区间：**保持**在上一行的行尾，不做插值。
+        // 折行处两个节点分属不同视觉行，x 分别接近「上一行行尾」与「下一行行首」，
+        // 一旦插值就等于整行高亮从行尾倒着扫回行首 —— 用户看到的是「这句话的特效又从头播了一遍」。
+        if (lines[lo] != lines[lo + 1]) {
+            return SweepSample(lines[lo], holds[lo], rtl)
+        }
         val t0 = times[lo]
         val t1 = times[lo + 1]
         val span = t1 - t0
@@ -231,9 +243,21 @@ class SweepTrack private constructor(
             // yrc 实测段起始单调不减，但坏数据不该让整行错位：排一次序（时间，再字符序号）。
             val ordered = words.sortedWith(compareBy({ it.startMs }, { it.charStart }))
 
-            val times = ArrayList<Long>(ordered.size * 2 + 2)
-            val xs = ArrayList<Float>(ordered.size * 2 + 2)
-            val lines = ArrayList<Int>(ordered.size * 2 + 2)
+            // ① 先筛出**有效词**（字符区间非空且落在文本内）。
+            //    首/末外扩必须知道谁是有效的首词与末词，所以这一步不能和推节点混在一起做。
+            val valid = ArrayList<LrcWord>(ordered.size)
+            for (w in ordered) {
+                val s = w.charStart.coerceIn(0, textLength)
+                val e = w.charEndExclusive.coerceIn(s, textLength)
+                if (e > s) valid.add(w)
+            }
+            if (valid.isEmpty()) return null
+            val lastWordIndex = valid.size - 1
+
+            val times = ArrayList<Long>(valid.size * 2 + 2)
+            val xs = ArrayList<Float>(valid.size * 2 + 2)
+            val lines = ArrayList<Int>(valid.size * 2 + 2)
+            val holds = ArrayList<Float>(valid.size * 2 + 2)
 
             fun push(t: Long, x: Float, line: Int) {
                 val n = times.size
@@ -245,18 +269,19 @@ class SweepTrack private constructor(
                     if (t == prev) {
                         xs[n - 1] = x
                         lines[n - 1] = line
+                        holds[n - 1] = geo.lineEnd(line) + dir * half
                         return
                     }
                 }
                 times.add(t)
                 xs.add(x)
                 lines.add(line)
+                holds.add(geo.lineEnd(line) + dir * half)
             }
 
-            for (w in ordered) {
+            valid.forEachIndexed { index, w ->
                 val s = w.charStart.coerceIn(0, textLength)
                 val e = w.charEndExclusive.coerceIn(s, textLength)
-                if (e <= s) continue
                 val firstChar = s
                 val lastChar = e - 1
                 val l0 = geo.lineForChar(firstChar)
@@ -265,8 +290,14 @@ class SweepTrack private constructor(
                 // 时长非正视为瞬时点亮：两个节点同刻，push 会保留后者（即词的末位置）。
                 val endTime = startTime + w.durationMs.coerceAtLeast(0L)
 
-                val x0 = geo.charStart(firstChar) - dir * half
-                val x1 = geo.charEnd(lastChar) + dir * half
+                // ② **只有整行的首词向左、末词向右各外扩半个渐变带**，让渐变完整地滑入 / 滑出整行。
+                //    中间词绝不能外扩 —— 否则 w_i 的末节点是 charEnd_i + 半带、w_{i+1} 的首节点是
+                //    charStart_{i+1} - 半带，相邻词之间会凭空多出一段「后退一个渐变带宽度」的倒扫，
+                //    表现为每唱完一个词高亮就倒着缩回去一点。折行处词间隙更长，倒扫更明显，
+                //    看上去就像「这句话的特效又从头播了一遍」。
+                val x0 = geo.charStart(firstChar) - (if (index == 0) dir * half else 0f)
+                val x1 = geo.charEnd(lastChar) +
+                    (if (index == lastWordIndex) dir * half else 0f)
 
                 if (l0 == l1) {
                     push(startTime, x0, l0)
@@ -298,6 +329,7 @@ class SweepTrack private constructor(
                 times = times.toLongArray(),
                 xs = FloatArray(xs.size) { xs[it] },
                 lines = lines.toIntArray(),
+                holds = FloatArray(holds.size) { holds[it] },
                 rtl = geo.rtl,
                 endMs = endMs,
                 easing = easing,
