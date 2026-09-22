@@ -55,7 +55,9 @@ Single source of truth: `app/build.gradle.kts` → `defaultConfig.versionName` /
 
 - `AboutScreen.kt` reads `BuildConfig.VERSION_NAME` — **never hardcode a version constant**. This needs `buildFeatures.buildConfig = true`.
 - Release flow: bump `versionCode` + `versionName` → commit `build: 升级至 vX.Y.Z ...` → `./gradlew assembleRelease` → `gh release create vX.Y.Z --draft <apk>` → user smoke-tests and publishes manually.
-- Current: `versionName = "1.5.1-gpl"`, `versionCode = 16`. Latest release: `v1.5.1-gpl`.
+- Current: `versionName = "1.7.0-gpl"`, `versionCode = 20`. Latest release: `v1.7.0-gpl`.
+  （**注意 versionCode 必须递增**：v1.6.1 = 19，所以 v1.7.0 是 20 —— 任务书里写「v1.7.0 = 19」是错的，
+  19 已经被 v1.6.1 占用，照抄会导致无法覆盖安装。）
 
 ## Commit Convention
 
@@ -478,12 +480,24 @@ To add a locale: create `xx_XX.kt` with a `Strings(...)` and add a `LanguagePres
 | **触发版本** | 把手本身 v1.4.2（`094675e`）加入，v1.4.2（`b513359`）修「恢复手势被整卡拖拽抢走」；命中区显式化 + 无障碍语义 v1.5.0 · C2（`fd15b89`） |
 | **相关文件** | [PlayerCard.kt](app/src/main/java/com/takahashirinta/ncrust/ui/player/PlayerCard.kt)（控制栏把手 Box） |
 
+### 8. 手势吸附阈值必须按「可拖动行程」核对，不能凭比例拍脑袋（v1.7.0 · P0）
+
+| | |
+|---|---|
+| **症状** | 收起态 mini bar **向上拖不出播放器**（松手弹回），用户描述为「只能拖下去不能拖上来」「手势像是被歌词界面吃掉了」；控制栏把手「上拖收起」时灵时不灵 |
+| **根因** | 命中测试完全正常，问题在**吸附判定**：卡片要走完 `totalDragDistancePx = contentHeightPx × 0.85`（PCL110 = 2380px）才让 progress 从 0 到 1，而旧判据要求 `progress >= 0.5` 才展开 ⇒ 手指要跨 **1190px ≈ 340dp**。真机实测 150/250/400px 上滑只到 progress 0.045/0.087/0.147，全部被判成弹回。另外检测器挂在被 `graphicsLayer` 平移的节点里，**拖动中局部坐标随卡片一起移动**，用 `position` 差分算速度会系统性低估 |
+| **修法** | ① 阈值改成方向敏感的**小比例**（上滑 8% / 下滑 8% / 控制栏收起 12%，恢复保持 5%）；② 补**甩动**判据（≥600px/s 按方向直接提交）；③ 速度从 **progress 域**反推（`progressDelta × 行程 ÷ 耗时`）；④ 越过触摸 slop 的那段位移补进 progress（注入/稀疏事件下否则「划了但没动」）。判定抽成 [PlayerDragSnap.kt](app/src/main/java/com/takahashirinta/ncrust/ui/player/PlayerDragSnap.kt) + JVM 单测 |
+| **触发版本** | 自播放器分层架构起；v1.7.0（`0a167ec`）修复 |
+| **相关文件** | [PlayerCard.kt](app/src/main/java/com/takahashirinta/ncrust/ui/player/PlayerCard.kt)（整卡拖拽 / `controlsCollapseDrag`）、[PlayerDragSnap.kt](app/src/main/java/com/takahashirinta/ncrust/ui/player/PlayerDragSnap.kt) |
+
 ### 一句话总结（给改播放器的自己）
 
 `graphicsLayer` 的 `translationY`/`scale`/`alpha` 里，**只有 `alpha` 不影响命中测试**；
 `translationY` 会把命中区一起搬走，`fillMaxSize` 的根节点即使一个子节点都没有也照样吃事件。
 凡是「看不见的地方还能点」或「看得见的地方点不到」，先问三件事：
 **这个节点挂载了吗？它的 `pointerInput` 在哪一层？它的命中区被 `graphicsLayer` 搬到哪去了？**
+凡是「拖不动 / 拖一半弹回 / 时灵时不灵」，再补问两件事：
+**这个手势的行程阈值换算成 dp 是多少？检测器所在节点的坐标系在拖动过程中会不会跟着动？**
 
 ## v1.4.0 新增（本 fork）
 
