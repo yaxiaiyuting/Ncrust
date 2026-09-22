@@ -50,9 +50,11 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.liveRegion
@@ -63,6 +65,7 @@ import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -70,7 +73,11 @@ import androidx.compose.ui.util.lerp
 import io.github.takahashirinta.kanesumi.anim.sokuou.SokuouTweens
 import io.github.takahashirinta.kanesumi.core.theme.LocalMetroColors
 import com.takahashirinta.ncrust.lyric.LrcWord
+import com.takahashirinta.ncrust.lyric.LyricsSweepConfig
 import com.takahashirinta.ncrust.lyric.LyricsWordAnimationMode
+import com.takahashirinta.ncrust.lyric.SweepGeometry
+import com.takahashirinta.ncrust.lyric.SweepSample
+import com.takahashirinta.ncrust.lyric.SweepTrack
 import io.github.takahashirinta.kanesumi.core.theme.MetroText
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -140,6 +147,9 @@ fun NcrustLyricsPanel(
     karaokeEnabled: Boolean = true,
     // v1.5.1 · A：逐字动画模式（见 LyricsWordAnimationMode）。只在当前行 + 有逐字数据时起作用。
     wordAnimationMode: Int = LyricsWordAnimationMode.GRADIENT_SWEEP,
+    // v1.5.2：逐字扫过的可调参数（渐变带宽度 / 未唱透明度 / 缓动 / 是否用离屏软边）。
+    // 默认值即定稿参数，见 LyricsSweepConfig 的逐项说明。
+    sweepConfig: LyricsSweepConfig = LyricsSweepConfig.DEFAULT,
     onLineClick: (Long) -> Unit = {},
     onUserScrolled: () -> Unit = {},
 ) {
@@ -311,6 +321,7 @@ fun NcrustLyricsPanel(
                             // 若在那些行上再叠高亮色，整行会被重新点亮成 primary，破坏过去行的弱化。
                             enabled = karaokeEnabled && index == currentIndex,
                             mode = wordAnimationMode,
+                            sweepConfig = sweepConfig,
                             currentPositionMillis = currentPosition,
                             style = TextStyle(
                                 fontSize = fontSize,
@@ -345,21 +356,38 @@ fun NcrustLyricsPanel(
 
 
 /**
- * v1.5.0 · B / v1.5.1 · A —— 单行歌词渲染。
+ * v1.5.0 · B / v1.5.1 · A / v1.5.2 —— 单行歌词渲染。
  *
  * 三种模式（[mode]，见 [LyricsWordAnimationMode]）：
  *  - [LyricsWordAnimationMode.OFF]：不做逐字，当前行整行高亮 —— 与 v1.4.1 逐字节一致；
- *  - [LyricsWordAnimationMode.HARD_CUT]：v1.5.0 的逐词硬切，向后兼容保留；
- *  - [LyricsWordAnimationMode.GRADIENT_SWEEP]（默认）：软边横扫，词内按时间线性推进。
+ *  - [LyricsWordAnimationMode.HARD_CUT]：v1.5.0 的逐词硬切，向后兼容保留（按**词**离散跳）；
+ *  - [LyricsWordAnimationMode.GRADIENT_SWEEP]（默认）：连续光标 + 软边横扫。
  *
- * 实现要点（v1.5.1 · A 重写）：
- *  1. **弃用 `TextLayoutResult.getPathForRange` + `clipPath`**。该 API 内部走
- *     `android.text.Layout.getSelectionPath`，在 Android 16 (API 36) 上取不到可用的裁剪
- *     区域 —— v1.5.0 因此在 PCL110 上完全没有逐字效果（S6 / API 24 正常）。现在改用
- *     两条只用最稳定原语的路径：硬切走 `clipRect`，软边走
- *     `canvas.saveLayer` + `drawRect(blendMode = DstIn)`（不用
- *     `CompositingStrategy.Offscreen`：它在低版本上会回落成 Auto，DstIn 就会作用到
- *     整个目标画布、把底下的文字一起擦掉）；
+ * **v1.5.2 修掉的问题**（PCL110 上肉眼可见的「一顿一顿 + 行首硬切」）：
+ *
+ *  1. **光标不再按词跳变**。v1.5.1 的 [playedCutCharCount] 里那段「词内按时间线性插值」在真机上
+ *     从未生效 —— 调用方 [LyricsView] 只在「行时间戳 ∪ 词起始时刻」写播放位置，绘制阶段永远读到
+ *     词边界那一刻，于是每个词唱完才跳一格，软边只在替跳变磨圆。现在位置在**当前行正在唱**的
+ *     窗口内逐帧推进，[SweepTrack] 给出任意时刻的连续光标。
+ *  2. **渐变带宽度绑字号，不绑整行宽度**。v1.5.1 取整行宽度的 12%（`SWEEP_EDGE_FRACTION`），
+ *     短行糊成一片、长行细得看不见，且与字号无关。现在取 [LyricsSweepConfig.fadeEm] × 字号
+ *     （默认 0.65 em ≈ 0.65 个字宽），与 AMLL 的 `wordFadeWidth = 0.5 × 行高` 等效。
+ *  3. **渐变带以光标为中心**，光标恰好落在 50% 透明度处 —— 「光标 == 播放进度」由单测断言，
+ *     v1.5.1 的渐变带是「光标贴右沿、整条带向左展开」，光标与进度差着半个带宽。
+ *  4. **首尾各外扩半个渐变带**，渐变完整地滑入 / 滑出整行，行首不再是硬切（v1.5.1 把
+ *     `edge` 夹在「行左沿 → 扫过点」之间，行首那个词的软边会被夹到 ~1px，等于硬切）。
+ *  5. **离屏层只开在渐变带这条窄带上**，而不是整行。离屏面积从「整行宽 × 行高」降到
+ *     「0.65 em × 行高」（约 1/20），低端机的 render-target 切换代价随之下降。
+ *     [LyricsSweepConfig.softEdge] = false 时完全不用离屏层，退化成纯 `clipRect` 硬边扫过 ——
+ *     **位置仍然是连续的**，只是边缘不磨圆；这是 API 24 / 低内存设备的自动降级档。
+ *
+ * **v1.5.1 · A 的既有设计原样保留**：
+ *  1. 弃用 `TextLayoutResult.getPathForRange` + `clipPath`（该 API 内部走
+ *     `android.text.Layout.getSelectionPath`，在 Android 16 (API 36) 上取不到可用的裁剪区域，
+ *     v1.5.0 因此在 PCL110 上完全没有逐字效果）；现在只用 `clipRect` 与
+ *     `canvas.saveLayer` + `drawRect(blendMode = DstIn)` 这两条最稳定的原语。
+ *     不用 `CompositingStrategy.Offscreen`：它在低版本上会回落成 Auto，DstIn 就会作用到
+ *     整个目标画布、把底下的文字一起擦掉；
  *  2. **零重组**：播放位置只在 draw 阶段读 —— 逐字推进只让这一行重绘，不触发任何重组；
  *  3. **不自己排版**：高亮层与底层用同一 [TextStyle]（只差颜色）排版，换行 / 断字 / CJK
  *     避头尾完全交给 Compose，两层版面逐像素一致；
@@ -378,6 +406,7 @@ private fun LyricLineBody(
     mode: Int,
     currentPositionMillis: () -> Long,
     style: TextStyle,
+    sweepConfig: LyricsSweepConfig,
 ) {
     if (!enabled || words.isEmpty() || mode == LyricsWordAnimationMode.OFF) {
         MetroText(
@@ -389,11 +418,36 @@ private fun LyricLineBody(
         )
         return
     }
-    // 未唱部分弱化到 45%：当前行原来的整行 primary 变成「已唱的实心 + 未唱的淡影」，
+    // 未唱部分弱化：当前行原来的整行 primary 变成「已唱的实心 + 未唱的淡影」，
     // 与 Kanesumi 的离散取色一致；唱完的部分才回到满色 primary。
-    val unsungColor = color.copy(alpha = color.alpha * 0.45f)
+    // 比例可配（默认 0.4，与 AMLL 当前行的 --dark-mask-alpha 同档）。
+    val unsungColor = color.copy(alpha = color.alpha * sweepConfig.inactiveAlpha)
+    // 渐变带宽度绑字号：不随行宽变化，短行长行观感一致。
+    val density = LocalDensity.current
+    val fadePx = remember(style.fontSize, sweepConfig.fadeEm, density) {
+        val fs = style.fontSize
+        if (fs.isSp) with(density) { fs.toPx() * sweepConfig.fadeEm }
+        else with(density) { LyricsSweepConfig.DEFAULT_FADE_DP.dp.toPx() }
+    }
     // 底层排版结果同时给高亮层用：两层 style 只差颜色，版面完全一致。
     var layout by remember(text) { mutableStateOf<TextLayoutResult?>(null) }
+    // 扫过轨道：由排版结果**派生**（不是塞在 onTextLayout 回调里 —— 否则 fadePx / 配置变化
+    // 不会触发重排版，轨道就永远停在 null）。remember 的键保证只在真正变样时重建。
+    val track = remember(layout, words, endMs, fadePx, sweepConfig.easing, mode, text.length) {
+        val lr = layout
+        if (lr == null || mode == LyricsWordAnimationMode.HARD_CUT) {
+            null
+        } else {
+            SweepTrack.build(
+                words = words,
+                textLength = text.length,
+                endMs = endMs,
+                geo = TextLayoutSweepGeometry(lr),
+                fadePx = fadePx,
+                easing = sweepConfig.easing,
+            )
+        }
+    }
     Box(modifier = Modifier.fillMaxWidth()) {
         // 底层：整行用弱化色画一遍。
         BasicText(
@@ -413,63 +467,152 @@ private fun LyricLineBody(
                 .fillMaxWidth()
                 .clearAndSetSemantics { }
                 .drawWithContent {
-                    // clipRect 的 block 接收者是 DrawScope（没有 drawContent），
-                    // 所以先把 ContentDrawScope 捕获下来，三条绘制路径都用显式接收者。
-                    val content = this
                     val lr = layout ?: return@drawWithContent
-                    // 已唱到的位置用「字符数」的浮点数表示：词内按时间线性推进，
-                    // 这样软边横扫是连续的，而不是逐词跳。
-                    val cut = playedCutCharCount(words, currentPositionMillis(), text.length, endMs)
-                    if (cut <= 0f) return@drawWithContent
-                    val anchor = cutAnchor(lr, cut, text.length)
-                    val lineTop = lr.getLineTop(anchor.lineIndex)
-                    val lineBottom = lr.getLineBottom(anchor.lineIndex)
+                    val pos = currentPositionMillis()
                     if (mode == LyricsWordAnimationMode.HARD_CUT) {
-                        // 硬切：已唱完的行整行保留，正在唱的这行只保留到 x。
-                        if (anchor.lineIndex > 0) {
-                            clipRect(bottom = lr.getLineBottom(anchor.lineIndex - 1)) { content.drawContent() }
-                        }
-                        clipRect(top = lineTop, right = anchor.x, bottom = lineBottom) { content.drawContent() }
-                    } else {
-                        // 软边横扫：整行高亮先画进一个离屏层，再用 DstIn 遮罩把未唱的部分擦掉。
-                        // 软边宽度取整行宽度的 12%（约 0.5~1 个字宽），并夹在「行左沿 → 扫过点」
-                        // 之间，避免软边越过已经唱完的区域。
-                        val edge = (size.width * SWEEP_EDGE_FRACTION)
-                            .coerceAtMost((anchor.x - lr.getLineLeft(anchor.lineIndex)).coerceAtLeast(1f))
-                        // 直接取 drawContext.canvas（而不用 drawIntoCanvas 的 lambda）：
-                        // 后者会把隐式接收者换成 Canvas，drawContent() 就解析不到了。
-                        val canvas = drawContext.canvas
-                        canvas.saveLayer(Rect(Offset.Zero, size), Paint())
-                        content.drawContent()
-                        // ① 已唱完的行：整行保留（不透明遮罩 = DstIn 下原样保留）。
-                        if (anchor.lineIndex > 0) {
-                            drawRect(
-                                color = Color.Black,
-                                size = Size(size.width, lr.getLineBottom(anchor.lineIndex - 1)),
-                                blendMode = BlendMode.DstIn,
-                            )
-                        }
-                        // ② 正在唱的行：左实右透的横向渐变，越界部分靠 TileMode.Clamp
-                        //    自动钳到两端（左边全保留、右边全擦除）。
-                        drawRect(
-                            brush = Brush.horizontalGradient(
-                                colorStops = arrayOf(0f to Color.Black, 1f to Color.Transparent),
-                                startX = anchor.x - edge,
-                                endX = anchor.x,
-                            ),
-                            topLeft = Offset(0f, lineTop),
-                            size = Size(size.width, lineBottom - lineTop),
-                            blendMode = BlendMode.DstIn,
-                        )
-                        canvas.restore()
+                        drawHardCut(lr, pos, words, text.length, endMs)
+                        return@drawWithContent
                     }
+                    val sweep = track
+                    if (sweep == null) {
+                        // 有词、但词的字符区间全部越界（坏数据）：整行高亮，与 v1.5.1 行为一致。
+                        drawContent()
+                        return@drawWithContent
+                    }
+                    // 还没唱到第一个词 → 高亮层整层不画，露出的就是底层的未唱色。
+                    val sample = sweep.sample(pos) ?: return@drawWithContent
+                    drawSweep(lr, sample, fadePx, sweepConfig.softEdge)
                 },
         )
     }
 }
 
-/** 软边横扫的渐变带宽度占整行宽度的比例（A5：0.5~1 个字宽，真机可调）。 */
-private const val SWEEP_EDGE_FRACTION = 0.12f
+/**
+ * v1.5.0 的逐词硬切：按**词**离散推进（词内不插值），保留只为向后兼容。
+ * 已唱完的行整行保留，正在唱的这行只保留到扫过点。
+ */
+private fun ContentDrawScope.drawHardCut(
+    lr: TextLayoutResult,
+    positionMillis: Long,
+    words: List<LrcWord>,
+    textLength: Int,
+    endMs: Long?,
+) {
+    val cut = playedCutCharCount(words, positionMillis, textLength, endMs)
+    if (cut <= 0f) return
+    val anchor = cutAnchor(lr, cut, textLength)
+    val lineTop = lr.getLineTop(anchor.lineIndex)
+    val lineBottom = lr.getLineBottom(anchor.lineIndex)
+    // clipRect 的 block 接收者是 DrawScope（没有 drawContent），
+    // 所以先把 ContentDrawScope 捕获下来，两条绘制路径都用显式接收者。
+    val content = this
+    if (anchor.lineIndex > 0) {
+        clipRect(bottom = lr.getLineBottom(anchor.lineIndex - 1)) { content.drawContent() }
+    }
+    clipRect(top = lineTop, right = anchor.x, bottom = lineBottom) { content.drawContent() }
+}
+
+/**
+ * v1.5.2 的扫过绘制：**只有中间那条窄渐变带需要离屏层**。
+ *
+ *  ① 光标所在排版行**之上**的行：整行保留（不透明裁剪，零离屏）；
+ *  ② 当前行里「已唱实心」的一段：由 [SweepBand.litOnLeft] 决定它在渐变带的左侧还是右侧（零离屏）；
+ *  ③ 渐变带本身：把高亮文字画进一个**只有渐变带那么大**的离屏层，再用 DstIn + 横向渐变擦出软边。
+ *
+ * [softEdge] = false 时跳过 ③，②的边界直接取光标 —— 硬边但仍然是连续运动。
+ */
+private fun ContentDrawScope.drawSweep(
+    lr: TextLayoutResult,
+    sample: SweepSample,
+    fadePx: Float,
+    softEdge: Boolean,
+) {
+    val content = this
+    val band = sample.band(fadePx)
+    // 轨道保证 lineIndex 落在版面内，这里再夹一次纯粹是防御（版面在极端情况下可能先变）。
+    val lineIndex = sample.lineIndex.coerceIn(0, (lr.lineCount - 1).coerceAtLeast(0))
+    val lineTop = lr.getLineTop(lineIndex)
+    val lineBottom = lr.getLineBottom(lineIndex)
+
+    // ① 已经整行唱完的行。用「当前行上沿」而不是「上一行下沿」：两行之间的行距也归上一行，
+    //    避免行距里的抗锯齿残影被切掉。
+    if (lineIndex > 0) {
+        clipRect(bottom = lineTop) { content.drawContent() }
+    }
+
+    // ② 当前行的实心部分。软边时边界在渐变带的外端，硬边时边界就是光标本身。
+    val solidEdge = if (softEdge) {
+        if (band.litOnLeft) band.fadeStart else band.fadeEnd
+    } else {
+        sample.x
+    }
+    if (band.litOnLeft) {
+        clipRect(top = lineTop, right = solidEdge, bottom = lineBottom) { content.drawContent() }
+    } else {
+        clipRect(top = lineTop, left = solidEdge, bottom = lineBottom) { content.drawContent() }
+    }
+
+    if (!softEdge) return
+
+    // ③ 渐变带：离屏层只覆盖这一段。夹到版面内，避免光标远离文字时开一块巨大的离屏缓冲。
+    val left = band.fadeStart.coerceIn(0f, size.width)
+    val right = band.fadeEnd.coerceIn(0f, size.width)
+    if (right <= left) return
+    val canvas = drawContext.canvas
+    canvas.saveLayer(Rect(left, lineTop, right, lineBottom), Paint())
+    clipRect(left = left, top = lineTop, right = right, bottom = lineBottom) { content.drawContent() }
+    // 渐变用**未夹取**的原始带宽，这样夹取只影响离屏层大小、不影响渐变斜率。
+    // 越界部分靠 TileMode.Clamp 自动钳到两端（实心侧全保留、未唱侧全擦除）。
+    drawRect(
+        brush = if (band.litOnLeft) {
+            Brush.horizontalGradient(
+                colorStops = arrayOf(0f to Color.Black, 1f to Color.Transparent),
+                startX = band.fadeStart,
+                endX = band.fadeEnd,
+            )
+        } else {
+            Brush.horizontalGradient(
+                colorStops = arrayOf(0f to Color.Transparent, 1f to Color.Black),
+                startX = band.fadeStart,
+                endX = band.fadeEnd,
+            )
+        },
+        topLeft = Offset(left, lineTop),
+        size = Size(right - left, lineBottom - lineTop),
+        blendMode = BlendMode.DstIn,
+    )
+    canvas.restore()
+}
+
+/**
+ * 把 Compose 的 [TextLayoutResult] 适配成 [SweepGeometry]。
+ *
+ * Compose 的 `getLineLeft/getLineRight/getBoundingBox` 全部是**视觉坐标**，而轨道要的是
+ * **阅读顺序**（RTL 下「前缘」在右边）。方向翻转统一收在这一层，于是 [SweepTrack] 完全与
+ * 书写方向无关，可以脱离 Compose 单测（见 SweepTrackTest 的 RTL 用例）。
+ */
+private class TextLayoutSweepGeometry(private val lr: TextLayoutResult) : SweepGeometry {
+
+    override val rtl: Boolean = lr.layoutInput.layoutDirection == LayoutDirection.Rtl
+
+    override fun lineForChar(charIndex: Int): Int = lr.getLineForOffset(charIndex)
+
+    override fun lineStart(lineIndex: Int): Float =
+        if (rtl) lr.getLineRight(lineIndex) else lr.getLineLeft(lineIndex)
+
+    override fun lineEnd(lineIndex: Int): Float =
+        if (rtl) lr.getLineLeft(lineIndex) else lr.getLineRight(lineIndex)
+
+    override fun charStart(charIndex: Int): Float {
+        val box = lr.getBoundingBox(charIndex)
+        return if (rtl) box.right else box.left
+    }
+
+    override fun charEnd(charIndex: Int): Float {
+        val box = lr.getBoundingBox(charIndex)
+        return if (rtl) box.left else box.right
+    }
+}
 
 /**
  * 已唱到的位置，用「字符数」的浮点值表示。
@@ -517,7 +660,9 @@ private fun cutAnchor(lr: TextLayoutResult, cut: Float, textLength: Int): CutAnc
 }
 
 // 播放位置(ms) -> 当前行索引。-1 表示还没到第一行(全部未来行)。
-private fun currentLineIndex(positionMillis: Long, timestamps: LongArray): Int {
+// v1.5.2：提升为 internal —— LyricsView 的逐帧扫过窗口也要用它判「当前行」，
+// 两处必须是同一份二分查找，否则「面板高亮的行」与「正在推进的窗口」会错开一行。
+internal fun currentLineIndex(positionMillis: Long, timestamps: LongArray): Int {
     if (timestamps.isEmpty()) return -1
     if (positionMillis < timestamps[0]) return -1
     var lo = 0

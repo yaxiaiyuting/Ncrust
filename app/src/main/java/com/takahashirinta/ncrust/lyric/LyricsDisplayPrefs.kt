@@ -8,6 +8,8 @@
 
 package com.takahashirinta.ncrust.lyric
 
+import android.app.ActivityManager
+import android.content.Context
 import android.content.SharedPreferences
 
 /**
@@ -33,7 +35,28 @@ object LyricsWordAnimationMode {
 }
 
 /**
- * 歌词显示相关的持久化设置（v1.5.1 · A/E）。
+ * v1.5.2：逐字扫过的绘制质量。
+ *
+ * [SOFT] 与 [EDGE] 的**光标位置算法完全相同**（都走 SweepTrack），差别只在渐变带的边缘：
+ * SOFT 用 `saveLayer` + `DstIn` 磨出软边，EDGE 只用 `clipRect` 画硬边。
+ * 所以降到 EDGE 只会失去「柔化」，**不会退回 v1.5.1 那种按词跳变**。
+ */
+object LyricsSweepQuality {
+    /** 按设备能力自动决定（默认）。 */
+    const val AUTO = 0
+
+    /** 强制软边（离屏层只覆盖渐变带，代价很小）。 */
+    const val SOFT = 1
+
+    /** 强制硬边：完全不分配离屏层，最省。 */
+    const val EDGE = 2
+
+    /** 越界值一律回落 AUTO，绝不因为 prefs 被写坏而崩或不显示。 */
+    fun normalize(raw: Int): Int = if (raw in AUTO..EDGE) raw else AUTO
+}
+
+/**
+ * 歌词显示相关的持久化设置（v1.5.1 · A/E，v1.5.2 扩展）。
  *
  * 全部落在 `ncrust_settings`，与其余设置项一致（无 DI、无 Room，读时现取）。
  */
@@ -49,6 +72,16 @@ object LyricsDisplayPrefs {
 
     /** 歌词字号倍率（Float，0.7~1.5）。 */
     const val KEY_FONT_SCALE = "lyrics_font_scale"
+
+    /** v1.5.2：扫过绘制质量（Int，取值见 [LyricsSweepQuality]）。 */
+    const val KEY_SWEEP_QUALITY = "lyrics_sweep_quality"
+
+    // v1.5.2：扫过参数的高级覆盖项。默认值（见 LyricsSweepConfig）就是定稿值；留这几个键是为了
+    // **不重新构建**就能在真机上扫参数——低端机调 fadeEm、浅色主题调 inactiveAlpha、慢歌试 easing。
+    // 键不存在 / 值非法时一律回落默认值，所以普通用户永远不会碰到它们。
+    const val KEY_SWEEP_FADE_EM = "lyrics_sweep_fade_em"
+    const val KEY_SWEEP_INACTIVE_ALPHA = "lyrics_sweep_inactive_alpha"
+    const val KEY_SWEEP_EASING = "lyrics_sweep_easing"
 
     const val FONT_SCALE_MIN = 0.7f
     const val FONT_SCALE_MAX = 1.5f
@@ -84,6 +117,15 @@ object LyricsDisplayPrefs {
         prefs.edit().putInt(KEY_WORD_ANIMATION, LyricsWordAnimationMode.normalize(mode)).apply()
     }
 
+    fun readSweepQuality(prefs: SharedPreferences): Int =
+        LyricsSweepQuality.normalize(
+            prefs.getInt(KEY_SWEEP_QUALITY, LyricsSweepQuality.AUTO)
+        )
+
+    fun writeSweepQuality(prefs: SharedPreferences, quality: Int) {
+        prefs.edit().putInt(KEY_SWEEP_QUALITY, LyricsSweepQuality.normalize(quality)).apply()
+    }
+
     fun readFontScale(prefs: SharedPreferences): Float =
         prefs.getFloat(KEY_FONT_SCALE, FONT_SCALE_DEFAULT).coerceIn(FONT_SCALE_MIN, FONT_SCALE_MAX)
 
@@ -106,5 +148,59 @@ object LyricsDisplayPrefs {
     fun steppedFontScale(scale: Float, delta: Int): Float {
         val i = (fontScaleStepIndex(scale) + delta).coerceIn(0, FONT_SCALE_STEPS.size - 1)
         return FONT_SCALE_STEPS[i]
+    }
+}
+
+/**
+ * v1.5.2：把「设备能力 + 用户设置 + 高级覆盖」解析成一份 [LyricsSweepConfig]。
+ *
+ * 解析只做三件事，全部是纯读，无副作用：
+ *  1. 质量档 [LyricsSweepQuality.AUTO] → 问设备（见 [autoSoftEdge]）；
+ *  2. 三个高级覆盖键（[LyricsDisplayPrefs.KEY_SWEEP_FADE_EM] / ..._INACTIVE_ALPHA / ..._EASING）
+ *     存在且合法时覆盖默认值，否则回落 [LyricsSweepConfig.DEFAULT]；
+ *  3. easing 的越界值一律回落 LINEAR。
+ *
+ * **为什么自动降级选「离屏软边」而不是「整个动画」**：两种画法的光标位置算法完全相同
+ * （都走 SweepTrack），差的只是渐变带边缘磨不磨圆。所以降级绝不会退回到 v1.5.1 那种按词跳变，
+ * 只是「柔化没了」——这是最划算的一刀。
+ */
+object LyricsSweepPerf {
+
+    /**
+     * 自动决定是否使用离屏软边。
+     *
+     * 判据只有一条：**低内存设备**（[ActivityManager.isLowRamDevice]）走硬边。
+     * v1.5.2 起离屏层只覆盖渐变带（0.65 em × 行高，约整行面积的 1/20），
+     * 真机实测（见 TASK.md「v1.5.2 性能」节）在 S6 / API 24 与 PCL110 / API 36 上帧时间都无可见差异，
+     * 因此**不**按 API 等级一刀切把老设备降级 —— 老设备也配得上软边。
+     * 只有厂商明确标了 low-RAM 的机器才退到硬边。
+     */
+    fun autoSoftEdge(context: Context): Boolean {
+        val am = context.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager
+        return am == null || !am.isLowRamDevice
+    }
+
+    fun resolve(context: Context, prefs: SharedPreferences): LyricsSweepConfig {
+        val def = LyricsSweepConfig.DEFAULT
+        val softEdge = when (LyricsDisplayPrefs.readSweepQuality(prefs)) {
+            LyricsSweepQuality.SOFT -> true
+            LyricsSweepQuality.EDGE -> false
+            else -> autoSoftEdge(context)
+        }
+        val fadeEm = prefs.getFloat(LyricsDisplayPrefs.KEY_SWEEP_FADE_EM, def.fadeEm)
+            .takeIf { it.isFinite() && it > 0f } ?: def.fadeEm
+        val inactiveAlpha = prefs.getFloat(LyricsDisplayPrefs.KEY_SWEEP_INACTIVE_ALPHA, def.inactiveAlpha)
+            .takeIf { it.isFinite() }?.coerceIn(0f, 1f) ?: def.inactiveAlpha
+        val easing = when (prefs.getInt(LyricsDisplayPrefs.KEY_SWEEP_EASING, def.easing.ordinal)) {
+            SweepEasing.SMOOTH.ordinal -> SweepEasing.SMOOTH
+            SweepEasing.EASE_OUT.ordinal -> SweepEasing.EASE_OUT
+            else -> SweepEasing.LINEAR
+        }
+        return LyricsSweepConfig(
+            fadeEm = fadeEm,
+            inactiveAlpha = inactiveAlpha,
+            easing = easing,
+            softEdge = softEdge,
+        )
     }
 }

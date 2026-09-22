@@ -15,10 +15,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
@@ -26,7 +28,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.takahashirinta.ncrust.lyric.LrcLine
 import com.takahashirinta.ncrust.lyric.LyricsDisplayPrefs
+import com.takahashirinta.ncrust.lyric.LyricsSweepPerf
+import com.takahashirinta.ncrust.lyric.LyricsSweepQuality
 import com.takahashirinta.ncrust.lyric.LyricsWordAnimationMode
+import com.takahashirinta.ncrust.lyric.SweepTrack
 import com.takahashirinta.ncrust.ui.i18n.LocalStrings
 import io.github.takahashirinta.kanesumi.core.theme.LocalMetroColors
 import io.github.takahashirinta.kanesumi.core.theme.MetroText
@@ -67,6 +72,9 @@ fun LyricsView(
     // v1.5.1 · E：歌词字号倍率（0.7~1.5，默认 1.0）。乘在面板的 fontSize/lineHeight 上，
     // 逐字裁剪与自动换行都跟着 TextLayoutResult 走，不需要额外补偿。
     fontScale: Float = 1f,
+    // v1.5.2：逐字扫过的绘制质量（LyricsSweepQuality.AUTO/SOFT/EDGE）。
+    // 只在「软边 vs 硬边」之间切换，光标位置算法两者完全相同，所以降级不会退回按词跳变。
+    sweepQuality: Int = LyricsSweepQuality.AUTO,
     // 点一下 A- / A+ 回调一步（±1 档），倍率换算在 ViewModel 里做。
     onFontScaleStep: (Int) -> Unit = {},
 ) {
@@ -125,6 +133,30 @@ fun LyricsView(
         LongArray(set.size) { set.elementAt(it) }
     }
 
+    // v1.5.2：行时间戳数组。与面板内部用的是**同一个** currentLineIndex 二分查找 ——
+    // 两边必须是同一份判定，否则「面板高亮的行」和「正在逐帧推进的窗口」会错开一行。
+    val timestamps = remember(lyrics) { LongArray(lyrics.size) { lyrics[it].timeMs } }
+
+    // v1.5.2：逐字扫过的「活动窗口」——每行从**第一个词开始**到**最后一个词唱完（含行尾收束）**。
+    // 只有落在这个窗口里才逐帧推进位置；前奏 / 间奏 / 行尾留白一律回到按需唤醒，
+    // 静态期仍然是零状态写入、零帧调度（v1.4.1 的性质一行未丢）。
+    // 一个窗口 ≈ 这一行真正在唱的 2~5 秒，所以整首歌的帧调度时间与「一直在唱」的直觉一致。
+    val sweepWindows = remember(lyrics, wordByWordEnabled, wordAnimationMode) {
+        buildSweepWindows(lyrics, wordByWordEnabled, wordAnimationMode)
+    }
+
+    // v1.5.2：扫过参数（渐变带宽度 / 未唱透明度 / 缓动 / 软边），由设备能力 + 设置解析。
+    val context = LocalContext.current
+    val sweepConfig = remember(context, sweepQuality) {
+        LyricsSweepPerf.resolve(
+            context,
+            context.getSharedPreferences(
+                LyricsDisplayPrefs.PREFS_NAME,
+                android.content.Context.MODE_PRIVATE,
+            ),
+        )
+    }
+
     // 2Hz 采样到达时重置外推锚点(首帧前锚点已就位,避免一帧闪到末尾)。
     // v1.4.1：同时把"位置流与显示位置脱节"的情况拉回来 —— 旧实现只在
     // isPlaying/isVisible/timestamps 变化时同步 displayPosition，于是
@@ -143,18 +175,32 @@ fun LyricsView(
         }
     }
 
-    // 按需外推:播放且可见时,睡到"下一行时间戳"再写一次 displayPosition,而不是
-    // 每帧轮询。withFrameNanos 会持续请求帧回调,歌词常驻时等于让渲染管线一直
-    // 60fps 空转;改为按需唤醒后,静态时零状态写入、零帧调度,只在跨行瞬间动一下。
-    // 2Hz 采样会把锚点重置回真实值,所以外推误差不会累积。暂停/隐藏即停。
-    LaunchedEffect(isPlaying, isVisible, boundaries) {
-        if (!isPlaying || !isVisible) {
+    // 外推循环 = v1.4.1 的按需唤醒 + v1.5.2 的逐字逐帧窗口:
+    //
+    //  - **逐字活动窗口内**（当前行有 yrc 且正在唱）：用 `withFrameNanos` 逐帧把 displayPosition
+    //    推到真实时刻。这是 v1.5.2 修掉的核心问题 —— v1.5.1 只在「行时间戳 ∪ 词起始时刻」写一次
+    //    位置，绘制阶段永远读到词边界那一刻，于是 playedCutCharCount 里那段「词内线性插值」
+    //    在真机上**从未被喂到中间值**，光标每唱完一个词才跳一格，软边只是替跳变磨圆。
+    //  - **窗口外**（前奏 / 间奏 / 行尾留白 / 没有逐字数据）：原样回到按需唤醒 —— 睡到下一个
+    //    行/词边界再写一次。静态时零状态写入、零帧调度，不会让渲染管线在整首歌里 60fps 空转。
+    //
+    // 2Hz 采样会把锚点重置回真实值，所以两种模式下的外推误差都不累积。暂停 / 隐藏 / 面板不可交互即停。
+    LaunchedEffect(isPlaying, isVisible, enabled, boundaries, sweepWindows) {
+        if (!isPlaying || !isVisible || !enabled) {
             displayPosition.longValue = positionState.value
             return@LaunchedEffect
         }
         while (true) {
             val nowMs =
                 anchor.anchorPosMs + (System.nanoTime() - anchor.anchorNanos) / 1_000_000L
+            // ① 正在唱的这一行 → 逐帧推进。
+            if (inSweepWindow(nowMs, sweepWindows, timestamps)) {
+                withFrameNanos { }
+                val t = anchor.anchorPosMs + (System.nanoTime() - anchor.anchorNanos) / 1_000_000L
+                if (t > displayPosition.longValue) displayPosition.longValue = t
+                continue
+            }
+            // ② 其余时间 → 按需唤醒。
             val next = nextLineBoundaryAfter(boundaries, nowMs)
             if (next == null) {
                 // 已越过最后一行:无跨行可等,低频醒来等采样/seek 改变锚点。
@@ -182,6 +228,7 @@ fun LyricsView(
             enabled = enabled,
             karaokeEnabled = wordByWordEnabled,
             wordAnimationMode = wordAnimationMode,
+            sweepConfig = sweepConfig,
             onLineClick = if (enabled) { ms ->
                 // 点击行:本地立即定位,不等 2Hz 采样回传,seek 手感即时。
                 anchor.anchorPosMs = ms
@@ -297,4 +344,70 @@ private fun nextLineBoundaryAfter(timestamps: LongArray, positionMillis: Long): 
         if (timestamps[mid] <= positionMillis) lo = mid + 1 else hi = mid
     }
     return timestamps[lo]
+}
+
+// ---------------------------------------------------------------------------
+// v1.5.2：逐字扫过的活动窗口
+// ---------------------------------------------------------------------------
+
+/** 该行没有逐字扫过窗口（无 yrc / 开关关掉 / 时间轴不可用）的哨兵值。 */
+private const val NO_SWEEP_WINDOW = Long.MIN_VALUE
+
+/**
+ * 每行的扫过活动窗口，与歌词行下标一一对应。
+ *
+ * 存在的意义是把「逐帧」严格限制在**真正在唱**的那几秒里：窗口外一律回到 v1.4.1 的按需唤醒，
+ * 于是前奏 / 间奏 / 行尾留白期间既不写状态也不请求帧。这不是可选的优化 ——
+ * 不加窗口就等于整首歌 60fps 空转，S6 这种 2015 年的机器上会白掉电。
+ */
+private class SweepWindows(val starts: LongArray, val ends: LongArray) {
+    val size: Int get() = starts.size
+}
+
+private fun buildSweepWindows(
+    lyrics: List<LrcLine>,
+    wordByWordEnabled: Boolean,
+    wordAnimationMode: Int,
+): SweepWindows {
+    val starts = LongArray(lyrics.size) { NO_SWEEP_WINDOW }
+    val ends = LongArray(lyrics.size) { NO_SWEEP_WINDOW }
+    if (!wordByWordEnabled || wordAnimationMode == LyricsWordAnimationMode.OFF) {
+        return SweepWindows(starts, ends)
+    }
+    lyrics.forEachIndexed { index, line ->
+        val words = line.words
+        if (words.isEmpty()) return@forEachIndexed
+        var first = Long.MAX_VALUE
+        var lastEnd = Long.MIN_VALUE
+        for (w in words) {
+            if (w.startMs < first) first = w.startMs
+            val e = w.startMs + w.durationMs
+            if (e > lastEnd) lastEnd = e
+        }
+        if (first == Long.MAX_VALUE || lastEnd < first) return@forEachIndexed
+        // 行尾：yrc 的「行首 + 行时长」与「末段 start + dur」实测只有 92.7% 相等，取较大者兜住
+        // 行尾留白；再按 SweepTrack 的行尾收束封顶，让窗口结束时刻与轨道最后一个节点**完全对齐**
+        // （早一帧退回按需唤醒没关系，晚一帧就白烧帧）。
+        val lineEnd = maxOf(line.endMs ?: lastEnd, lastEnd)
+        starts[index] = first
+        ends[index] = minOf(lineEnd, lastEnd + SweepTrack.TERMINAL_MAX_MS)
+    }
+    return SweepWindows(starts, ends)
+}
+
+/**
+ * 当前位置是否落在「正在唱的那一行」的扫过窗口里。
+ *
+ * 与面板用同一个 [currentLineIndex]，所以「哪一行是高亮行」与「哪一行在逐帧推进」永远一致。
+ */
+private fun inSweepWindow(
+    positionMs: Long,
+    windows: SweepWindows,
+    timestamps: LongArray,
+): Boolean {
+    val index = currentLineIndex(positionMs, timestamps)
+    if (index < 0 || index >= windows.size) return false
+    val start = windows.starts[index]
+    if (start == NO_SWEEP_WINDOW) return false
+    return positionMs >= start && positionMs < windows.ends[index]
 }
