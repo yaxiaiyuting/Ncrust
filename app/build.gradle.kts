@@ -39,8 +39,12 @@ android {
         // 照抄 22 会与已发布的 v1.8.1 撞号、导致无法覆盖安装，故本版取 23。
         // v1.9.1 是 v1.9.0 的 hotfix：修正镜像回退逻辑（jsdelivr 的 403/404 不能判「无此歌词」）。
         // 已发布的 v1.9.0-gpl 制品**不原地替换**，走新的 versionCode，保持发布产物可复现。
-        versionCode = 24
-        versionName = "1.9.1-gpl"
+        // v1.9.2 修的是 v1.9.0 的分轨缺陷（TTML 胜出时整轨丢弃网易云的译文/音译）。
+        // **第三次撞号教训**：任务书写「本版 v1.9.1」，但 aapt2 实测 v1.9.1-gpl 早已发布
+        // （versionCode 24，修的是歌词镜像回退），照抄会与线上包撞号、无法覆盖安装 ⇒ 本版取 25。
+        // 动版本号之前必须先实测 dist/ 里的最新包。
+        versionCode = 25
+        versionName = "1.9.2-gpl"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
