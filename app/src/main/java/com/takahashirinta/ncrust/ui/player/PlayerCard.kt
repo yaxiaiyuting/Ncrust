@@ -106,7 +106,6 @@ fun PlayerCard(
     onSongInfoClick: () -> Unit = {},
     onClearQueue: () -> Unit = {},
     onSavePlaylist: () -> Unit = {},
-    onNavigateToUser: () -> Unit = {},
     // P1：大屏幕模式（横屏桌面播放器布局）开关 + 入口/出口回调。
     // bigScreen 是"用户意图"，还要叠加当前窗口方向才是生效态（见 bigScreenActive）。
     bigScreen: Boolean = false,
@@ -196,12 +195,10 @@ fun PlayerCard(
         PlayerLayout.splitBoundaryPx(screenWidthPx, isWidePlayer, wideSplit)
     }
 
-    // P1：大屏左栏的音质选择器（就地切换档位，不再是"跳设置页"）。
-    var showQualityPicker by remember { mutableStateOf(false) }
-    // 选择器高亮的档位：打开那一刻现读一次真实偏好（冷启动后 preferredQualityIndex 可能
-    // 还是默认档，直接用它会把「我选的是哪档」显示错）。
-    var preferredQualityIndex by remember { mutableIntStateOf(0) }
-    LaunchedEffect(Unit) { preferredQualityIndex = playerViewModel.currentQualityPreferenceIndex() }
+    // P1 / v1.8.0 · T2：音质选择器的状态（打开态、高亮档位）已经搬进 FullPlayerControls
+    // 的 PlayerQualityChip —— 竖屏 / 宽屏控制条 / 横屏大屏左栏三处共用一份实现，
+    // 否则必然出现"某处高亮错档、某处少 FLAC 提示"的漂移。这里只保留高度上限，
+    // 由调用点传给组件（大屏要按窗口高夹，竖屏那份在 FullPlayerControls 里按屏高夹）。
     // 选择器高度上限：竖屏 400dp 够用；横屏大屏只有 ~363dp 高（PCL110 实测 1272px），
     // 400dp 的弹层会被屏幕裁掉底部档位 —— 实测第 8 档「杜比全景声」落在屏幕外、点不到。
     // 这里按窗口高的 70% 夹一下，选择器本身是 LazyColumn，放不下时可以滚。
@@ -707,7 +704,6 @@ fun PlayerCard(
                                 playerViewModel.seekTo((fraction * dur).toLong())
                             }
                         },
-                        onNavigateToUser = onNavigateToUser,
                         lyricsUnavailable = lyricsUnavailable,
                         previousEnabled = playMode != QueueModes.INFINITY,
                         // 大屏模式也用扁平横向控制条（竖屏那套大按钮堆叠在 300dp 高里放不下）。
@@ -724,6 +720,11 @@ fun PlayerCard(
                         // v1.8.0 · T4：竖屏控制栏里的自动旋转图标。
                         autoRotate = autoRotate,
                         onToggleAutoRotate = onToggleAutoRotate,
+                        // v1.8.0 · T2：竖屏 / 宽屏控制条的音质选择器。
+                        preferredQualityIndexProvider = {
+                            playerViewModel.currentQualityPreferenceIndex()
+                        },
+                        onQualitySelect = { playerViewModel.setQualityPreference(it) },
                         trailing = if (bigScreenActive) {
                             {
                                 Box(
@@ -946,59 +947,33 @@ fun PlayerCard(
                                     // （PlayerViewModel.setQualityPreference → 按当前网络写 prefs，
                                     // 再走 onQualityPreferenceChanged：只改偏好、档位真变了才重取链），
                                     // 不再是"点一下跳设置页"。
-                                    Box {
-                                        Box(
-                                            modifier = Modifier
-                                                .background(LocalMetroColors.current.surfaceVariant)
-                                                .clickable(
-                                                    interactionSource = remember { MutableInteractionSource() },
-                                                    indication = null
-                                                ) {
-                                                    // 每次打开都现读一次：网络在 Wi-Fi/移动之间切换过、
-                                                    // 或刚冷启动时，StateFlow 里的值可能已过期。
-                                                    preferredQualityIndex =
-                                                        playerViewModel.currentQualityPreferenceIndex()
-                                                    showQualityPicker = true
-                                                }
-                                                .padding(horizontal = 10.dp, vertical = 5.dp)
-                                                .semantics { contentDescription = strings.qualitySectionTitle },
-                                        ) {
-                                            PlayerQualityLabel(
-                                                qualityIndexFlow = playerViewModel.currentQualityIndex,
-                                                qualityStatusFlow = playerViewModel.qualityStatus,
-                                                options = strings.qualityOptions
-                                            )
-                                        }
-                                        // UWP ComboBox 移植：选中档位落回 chip 原位，菜单从锚点展开。
-                                        // 高亮的是**偏好档位**（preferredQualityIndex）而不是实际档位 ——
-                                        // 实际档位可能因版权/设备被降级，选择器要反映"我选的是哪档"。
-                                        MetroSelectorFlyout(
-                                            expanded = showQualityPicker,
-                                            onDismissRequest = { showQualityPicker = false },
-                                            options = strings.qualityOptions,
-                                            selectedIndex = preferredQualityIndex,
-                                            onSelect = { index ->
-                                                playerViewModel.setQualityPreference(index)
-                                                // API < 27 无 FLAC 解码器时这些档位会在取链阶段被跳过
-                                                // （与设置页同一条提示，避免"选了无损却没无损"）。
-                                                val level = PlayerViewModel.QUALITY_LEVELS
-                                                    .getOrNull(index)
-                                                if (level != null &&
-                                                    !SongUrlFetcher.deviceSupportsFlac &&
-                                                    SongUrlFetcher.isFlacTier(level)
-                                                ) {
-                                                    Toast.makeText(
-                                                        context,
-                                                        strings.qualityFlacUnsupportedHint,
-                                                        Toast.LENGTH_SHORT
-                                                    ).show()
-                                                }
-                                                showQualityPicker = false
-                                            },
-                                            horizontalAlignment = Alignment.End,
-                                            maxHeightDp = qualityPickerMaxHeightDp,
-                                        )
-                                    }
+                                    // v1.8.0 · T2：改用与竖屏 / 宽屏共用的 PlayerQualityChip。
+                                    // UWP ComboBox 移植：选中档位落回 chip 原位，菜单从锚点展开。
+                                    // 高亮的是**偏好档位**（打开那一刻现读）而不是实际档位 ——
+                                    // 实际档位可能因版权/设备被降级，选择器要反映"我选的是哪档"。
+                                    PlayerQualityChip(
+                                        qualityIndexFlow = playerViewModel.currentQualityIndex,
+                                        qualityStatusFlow = playerViewModel.qualityStatus,
+                                        options = strings.qualityOptions,
+                                        preferredIndexProvider = {
+                                            playerViewModel.currentQualityPreferenceIndex()
+                                        },
+                                        onSelect = { playerViewModel.setQualityPreference(it) },
+                                        maxHeightDp = qualityPickerMaxHeightDp,
+                                        horizontalAlignment = Alignment.End,
+                                    )
+                                    // v1.8.0 · T4：大屏里的自动旋转开关。放在左栏信息行
+                                    // （音质 chip 右侧）而不是控制条：横向控制条是"左组贴左 +
+                                    // 传输组居中 + 右组贴右"的三段式，左组已经 3 个按钮，
+                                    // 再加一个会顶到居中的传输组（P1 实测过这个重叠）。
+                                    RotationToggleButton(
+                                        autoRotate = autoRotate,
+                                        onToggle = onToggleAutoRotate,
+                                        size = 40.dp,
+                                        iconSize = 22.dp,
+                                        contentDescription =
+                                            if (autoRotate) strings.autoRotateOn else strings.autoRotateOff,
+                                    )
                                 }
                                 Spacer(Modifier.height(8.dp))
                             }

@@ -32,7 +32,6 @@ fun PlayerCardOverlay(
     onSongInfoClick: () -> Unit = {},
     onClearQueue: () -> Unit = {},
     onSavePlaylist: () -> Unit = {},
-    onNavigateToUser: () -> Unit = {},
     // P1：大屏幕模式（横屏桌面播放器布局）开关与入口/出口按钮回调，纯透传。
     bigScreen: Boolean = false,
     onToggleBigScreen: () -> Unit = {},
@@ -68,7 +67,6 @@ fun PlayerCardOverlay(
             onSongInfoClick = onSongInfoClick,
             onClearQueue = onClearQueue,
             onSavePlaylist = onSavePlaylist,
-            onNavigateToUser = onNavigateToUser,
             bigScreen = bigScreen,
             onToggleBigScreen = onToggleBigScreen,
             autoRotate = autoRotate,

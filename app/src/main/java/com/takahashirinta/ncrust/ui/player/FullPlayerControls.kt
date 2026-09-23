@@ -19,23 +19,35 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.PlaylistPlay
 import androidx.compose.material.icons.filled.*
+import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.takahashirinta.ncrust.formatDuration
 import com.takahashirinta.ncrust.player.QualityStatus
+import com.takahashirinta.ncrust.player.SongUrlFetcher
 import com.takahashirinta.ncrust.ui.i18n.LocalStrings
+import com.takahashirinta.ncrust.ui.viewmodel.PlayerViewModel
+import io.github.takahashirinta.kanesumi.controls.MetroSelectorFlyout
 import io.github.takahashirinta.kanesumi.core.theme.LocalMetroColors
 import io.github.takahashirinta.kanesumi.core.theme.MetroIcon
 import io.github.takahashirinta.kanesumi.core.theme.MetroText
@@ -62,7 +74,6 @@ fun FullPlayerControls(
     isInLibrary: Boolean = false,
     isBufferingFlow: StateFlow<Boolean>,
     onSeek: (Float) -> Unit = {},
-    onNavigateToUser: () -> Unit = {},
     lyricsUnavailable: Boolean = false,
     previousEnabled: Boolean = true,
     // 宽屏左栏用紧凑尺寸：缩小按钮/间距，把纵向空间让给封面区。
@@ -93,6 +104,14 @@ fun FullPlayerControls(
     /** v1.8.0 · T4：切换「自动旋转」。 */
     onToggleAutoRotate: () -> Unit = {},
     /**
+     * v1.8.0 · T2：音质选择器打开那一刻**现读**的偏好档位下标。
+     *
+     * 必须现读、不能读 preferredQualityIndex 这个 StateFlow：冷启动后那个流还是默认值，
+     * 已实测过"高亮错档"（见 PlayerCard 里 qualityPicker 的注释）。
+     */
+    preferredQualityIndexProvider: () -> Int = { 0 },
+    /** v1.8.0 · T2：选中档位（→ PlayerViewModel.setQualityPreference）。 */
+    onQualitySelect: (Int) -> Unit = {},
     /**
      * 横向控制条右端的替代槽位（仅 [showQuality] = false 时使用）。
      *
@@ -104,6 +123,11 @@ fun FullPlayerControls(
     trailing: (@Composable () -> Unit)? = null
 ) {
     val strings = LocalStrings.current
+    // v1.8.0 · T2：音质选择器弹层的高度上限。横屏可用高只有 ~360dp，8 档 × 44dp = 352dp
+    // 会顶出屏幕（PCL110 实测第 8 档被裁）；竖屏按 60% 屏高留白，不把播放器上下文全遮住。
+    // 与 PlayerCard 大屏那份同一口径（那里另有更精确的窗口高取值）。
+    val qualityPickerMaxHeightDp =
+        minOf(400.dp, LocalConfiguration.current.screenHeightDp.dp * 0.6f)
     // 触觉反馈:播放/暂停/切歌/开关面板给一个轻振,补足无 ripple 时代的确认感
     val haptic = LocalHapticFeedback.current
     fun tick() = haptic.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -259,22 +283,18 @@ fun FullPlayerControls(
                     }
                 }
                 if (showQuality) {
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.CenterEnd)
-                            .background(LocalMetroColors.current.surfaceVariant)
-                            .clickable(
-                                indication = null,
-                                interactionSource = remember { MutableInteractionSource() }
-                            ) { onNavigateToUser() }
-                            .padding(horizontal = 8.dp, vertical = 3.dp)
-                    ) {
-                        PlayerQualityLabel(
-                            qualityIndexFlow = qualityIndexFlow,
-                            qualityStatusFlow = qualityStatusFlow,
-                            options = qualityOptions
-                        )
-                    }
+                    // v1.8.0 · T2：宽屏竖屏（平板/折叠展开）的控制条右端也改成就地选择器，
+                    // 与竖屏 / 横屏大屏两处共用同一个组件。
+                    PlayerQualityChip(
+                        qualityIndexFlow = qualityIndexFlow,
+                        qualityStatusFlow = qualityStatusFlow,
+                        options = qualityOptions,
+                        preferredIndexProvider = preferredQualityIndexProvider,
+                        onSelect = onQualitySelect,
+                        modifier = Modifier.align(Alignment.CenterEnd),
+                        maxHeightDp = qualityPickerMaxHeightDp,
+                        horizontalAlignment = Alignment.End,
+                    )
                 } else if (trailing != null) {
                     Box(modifier = Modifier.align(Alignment.CenterEnd)) { trailing() }
                 }
@@ -295,22 +315,19 @@ fun FullPlayerControls(
                 positionFlow = positionFlow,
                 modifier = Modifier.align(Alignment.CenterStart)
             )
-            Box(
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .background(LocalMetroColors.current.surfaceVariant)
-                    .clickable(
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() }
-                    ) { onNavigateToUser() }
-                    .padding(horizontal = 8.dp, vertical = 3.dp)
-            ) {
-                PlayerQualityLabel(
-                    qualityIndexFlow = qualityIndexFlow,
-                    qualityStatusFlow = qualityStatusFlow,
-                    options = qualityOptions
-                )
-            }
+            // v1.8.0 · T2：竖屏也做成**就地选择器**（此前这个 chip 点了是"跳设置页"，
+            // 用户得离开播放器才能换档）。菜单形态与横屏大屏共用同一个组件，
+            // 档位表、降级角标语义、"档位真变了才重取播放链"的行为天然一致。
+            PlayerQualityChip(
+                qualityIndexFlow = qualityIndexFlow,
+                qualityStatusFlow = qualityStatusFlow,
+                options = qualityOptions,
+                preferredIndexProvider = preferredQualityIndexProvider,
+                onSelect = onQualitySelect,
+                modifier = Modifier.align(Alignment.Center),
+                maxHeightDp = qualityPickerMaxHeightDp,
+                horizontalAlignment = Alignment.CenterHorizontally,
+            )
             DurationText(
                 durationFlow = durationFlow,
                 modifier = Modifier.align(Alignment.CenterEnd)
@@ -507,6 +524,89 @@ fun RotationToggleButton(
 }
 
 /**
+ * v1.8.0 · T2：音质 chip + 二级选择器（竖屏控制栏 / 宽屏控制条 / 横屏大屏左栏三处共用）。
+ *
+ * 为什么抽出来：三处要展示的是同一件事 —— 「当前实际档位 + 降级角标」，点开是
+ * 「按**偏好**档位高亮的 8 档选择器」。分开实现必然出现「某处角标语义不同 / 某处高亮错档」
+ * 这类漂移（v1.0.4 修过一次，见 PlayerQualityLabel 的注释）。
+ *
+ * 两个容易写错的点：
+ *  1. [preferredIndexProvider] 必须在**打开那一刻**现读。冷启动后偏好 StateFlow 还是默认值，
+ *     直接拿它当 selectedIndex 会高亮错档（PCL110 实测踩过）。
+ *  2. FLAC 设备门控提示放在这里而不是调用点：三处都要，放调用点必然漏一处
+ *     （API < 27 没有系统 FLAC 解码器时选无损会被取链阶段静默跳过）。
+ *
+ * 触摸契约：外层是 >= [minHitHeightDp] 的**命中盒**（视觉 chip 仍是 ~22dp 的小色块，
+ * 与 v1.7.0 逐像素一致），并以 semantics 暴露给 TalkBack；菜单走 Kanesumi 的 Popup
+ * 选择器，是独立窗口，不受播放器卡片「展开态吞事件」的影响。
+ */
+@Composable
+fun PlayerQualityChip(
+    qualityIndexFlow: StateFlow<Int>,
+    qualityStatusFlow: StateFlow<QualityStatus>,
+    options: List<String>,
+    preferredIndexProvider: () -> Int,
+    onSelect: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+    maxHeightDp: Dp = 400.dp,
+    horizontalAlignment: Alignment.Horizontal = Alignment.End,
+    minHitHeightDp: Dp = 48.dp,
+) {
+    val strings = LocalStrings.current
+    val context = LocalContext.current
+    var expanded by remember { mutableStateOf(false) }
+    var preferredIndex by remember { mutableIntStateOf(0) }
+
+    Box(
+        modifier = modifier.heightIn(min = minHitHeightDp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Box(
+            modifier = Modifier
+                .background(LocalMetroColors.current.surfaceVariant)
+                .clickable(
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() }
+                ) {
+                    // 每次打开都现读一次：网络在 Wi-Fi/移动之间切换过、或刚冷启动时，
+                    // 偏好 StateFlow 里的值可能已过期。
+                    preferredIndex = preferredIndexProvider()
+                    expanded = true
+                }
+                .padding(horizontal = 8.dp, vertical = 3.dp)
+                .semantics { contentDescription = strings.qualitySectionTitle },
+        ) {
+            PlayerQualityLabel(
+                qualityIndexFlow = qualityIndexFlow,
+                qualityStatusFlow = qualityStatusFlow,
+                options = options
+            )
+        }
+        MetroSelectorFlyout(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            options = options,
+            selectedIndex = preferredIndex,
+            onSelect = { index ->
+                onSelect(index)
+                if (shouldHintFlacUnsupported(index)) {
+                    Toast.makeText(context, strings.qualityFlacUnsupportedHint, Toast.LENGTH_SHORT)
+                        .show()
+                }
+                expanded = false
+            },
+            horizontalAlignment = horizontalAlignment,
+            maxHeightDp = maxHeightDp,
+        )
+    }
+}
+
+/** API < 27 无系统 FLAC 解码器时，选到无损以上要提示"选了也不会有"（与设置页同一条文案）。 */
+private fun shouldHintFlacUnsupported(index: Int): Boolean {
+    val level = PlayerViewModel.QUALITY_LEVELS.getOrNull(index) ?: return false
+    return !SongUrlFetcher.deviceSupportsFlac && SongUrlFetcher.isFlacTier(level)
+}
+
 @Composable
 private fun PositionText(positionFlow: StateFlow<Long>, modifier: Modifier) {
     val position by positionFlow.collectAsState()

@@ -1585,13 +1585,6 @@ fun MainScreen(
                 playlistSnapshot = playbackQueue
                 showCreatePlaylist = true
             },
-            onNavigateToUser = {
-                selectedTab = 3
-                if (!isInMain) navController.popBackStack(NavRoutes.HOME, false)
-                coroutineScope.launch {
-                    progress.animateTo(0f, tween(260, easing = FastOutSlowInEasing))
-                }
-            },
             // P1：大屏模式开关。退出大屏时进度保持 1（回到竖屏全屏播放器，不是收起态）。
             bigScreen = bigScreen,
             onToggleBigScreen = onToggleBigScreen,
