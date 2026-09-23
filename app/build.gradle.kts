@@ -34,8 +34,11 @@ android {
         targetSdk = 36
         // 本 fork 自有的版本线：基于上游 1.3.1 (versionCode 6)。
         // versionCode 必须严格大于上游，否则后续 fork 版本无法覆盖安装。
-        versionCode = 22
-        versionName = "1.8.1-gpl"
+        // v1.9.0 的 versionCode 是**实测**定的，不是按任务书推的：任务书写「v1.8.0 = 21，本版 22」，
+        // 但 aapt2 dump badging dist/Ncrust-v1.8.1-gpl-release.apk 实测 v1.8.1 已经是 22。
+        // 照抄 22 会与已发布的 v1.8.1 撞号、导致无法覆盖安装，故本版取 23。
+        versionCode = 23
+        versionName = "1.9.0-gpl"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
