@@ -133,4 +133,80 @@ class LyricsCacheModelTest {
             LyricsCache.ttmlOf(CachedLyrics("", "", 1L, null, "<tt/>", 0L), 1_000L, requireFresh = true)
         )
     }
+
+    // ---------- v1.9.2：romalrc + 译文/音译来源标记 ----------
+
+    /** v1.9.1 的缓存格式：有 ttml/ttmlAt，没有 romalrc / translationSource / romanSource。 */
+    private val v191Json =
+        """{"lrc":"[00:01.00]甲","tlyric":"[00:01.00]A","timestamp":1700000000000,""" +
+            """"ttml":"<tt/>","ttmlAt":1700000000000}"""
+
+    @Test
+    fun `老缓存 JSON——v1_9_1 格式真解析不抛，三个新字段都是 null`() {
+        val entry = gson.fromJson(v191Json, CachedLyrics::class.java)
+        assertNotNull(entry)
+        assertEquals("<tt/>", entry.ttml)
+        assertNull("老缓存没有 romalrc key ⇒ null（读取处 orEmpty() 退化成没有音译轨）", entry.romalrc)
+        assertNull("老缓存没有 translationSource ⇒ null（= 来源未知，不影响任何决策）", entry.translationSource)
+        assertNull(entry.romanSource)
+    }
+
+    @Test
+    fun `整表 map——v1_9_1 的老表混进新条目也能解析`() {
+        val raw = """{"5257138":$v191Json,"22704409":""" +
+            """{"lrc":"a","tlyric":"b","timestamp":2,"romalrc":"c","translationSource":"NETEASE","romanSource":"MIXED"}}"""
+        val type = object : TypeToken<MutableMap<String, CachedLyrics>>() {}.type
+        val map = gson.fromJson<MutableMap<String, CachedLyrics>>(raw, type)
+        assertEquals(2, map.size)
+        assertNull(map["5257138"]!!.romalrc)
+        assertEquals("c", map["22704409"]!!.romalrc)
+        assertEquals("NETEASE", map["22704409"]!!.translationSource)
+        assertEquals("MIXED", map["22704409"]!!.romanSource)
+    }
+
+    @Test
+    fun `新格式——romalrc 与两个来源标记能写能读回，来源用枚举名当稳定标记`() {
+        val entry = CachedLyrics(
+            lrc = "[00:01.00]甲", tlyric = "A", timestamp = 1L,
+            romalrc = "[00:01.00]jia", translationSource = "TTML", romanSource = "MIXED"
+        )
+        val back = gson.fromJson(gson.toJson(entry), CachedLyrics::class.java)
+        assertEquals("[00:01.00]jia", back.romalrc)
+        assertEquals("TTML", back.translationSource)
+        assertEquals("MIXED", back.romanSource)
+        assertEquals("TTML", LyricTrackSource.TTML.cacheTag)
+        assertEquals("NETEASE", LyricTrackSource.NETEASE.cacheTag)
+        assertEquals("MIXED", LyricTrackSource.MIXED.cacheTag)
+    }
+
+    @Test
+    fun `withTrackSources——没有条目就不建条目（绝不为了记标记写出 lrc=空 的假「确无歌词」）`() {
+        assertNull(LyricsCache.withTrackSources(null, "TTML", "NETEASE"))
+    }
+
+    @Test
+    fun `withTrackSources——值未变返回 null（缓存命中路径不该反复序列化整张表）`() {
+        val entry = CachedLyrics("a", "b", 1L, null, null, 0L, "r", "TTML", "NETEASE")
+        assertNull(LyricsCache.withTrackSources(entry, "TTML", "NETEASE"))
+        assertNull("两边都是未知也视为未变", LyricsCache.withTrackSources(CachedLyrics("a", "b", 1L), null, null))
+    }
+
+    @Test
+    fun `withTrackSources——值变了返回新条目，其余字段原样保留`() {
+        val entry = CachedLyrics("a", "b", 7L, "y", "<tt/>", 9L, "r", "TTML", null)
+        val updated = LyricsCache.withTrackSources(entry, "MIXED", "NETEASE")!!
+        assertEquals("MIXED", updated.translationSource)
+        assertEquals("NETEASE", updated.romanSource)
+        assertEquals("原文与时间戳不得被顺手改掉", entry.copy(
+            translationSource = "MIXED", romanSource = "NETEASE"
+        ), updated)
+    }
+
+    @Test
+    fun `withTrackSources——源退回「没有这一轨」时标记被清成 null`() {
+        val entry = CachedLyrics("a", "b", 1L, null, null, 0L, null, "NETEASE", "NETEASE")
+        val cleared = LyricsCache.withTrackSources(entry, null, null)!!
+        assertNull(cleared.translationSource)
+        assertNull(cleared.romanSource)
+    }
 }

@@ -23,6 +23,15 @@ import kotlinx.coroutines.withContext
  * [ttml] / [ttmlAt] 是 v1.9.0 新增的 AMLL TTML 原文与写入时刻，同样必须**可空 + 有默认值**：
  * 老缓存的 JSON 里没有这两个 key，Gson 同样走 Unsafe，缺字段时 [ttml] 是 null、[ttmlAt] 是 0，
  * 正好等于「没有 TTML」—— 既不崩，也不会被误判成新鲜数据。
+ *
+ * [romalrc] / [translationSource] / [romanSource] 是 v1.9.2 新增的，**同一条规矩**（可空 + 默认值）：
+ * - [romalrc]：网易云音译轨原文。它本来就在 `/api/song/lyric` 的响应里（实测 `rv=0` 与 `rv=-1`
+ *   对同一首歌返回逐字节相同的 body），v1.9.2 之前只是没有解析；
+ * - [translationSource] / [romanSource]：译文轨 / 音译轨**上一次实际展示用的源**
+ *   （[LyricTrackSource] 的枚举名，见 [LyricTrackSource.cacheTag]）。
+ *   **它只是观测字段**：显示哪一份永远由 `LyricTrackMerge` 拿当下的设置 + 当下的原文当场算，
+ *   缓存里的标记不参与任何决策。记它的用处是「这首歌的译文到底来自谁」可归因，
+ *   以及源真的换了的时候能看出来（值未变时 [putTrackSources] 不落盘）。
  */
 data class CachedLyrics(
     val lrc: String,
@@ -30,7 +39,10 @@ data class CachedLyrics(
     val timestamp: Long,
     val yrc: String? = null,
     val ttml: String? = null,
-    val ttmlAt: Long = 0
+    val ttmlAt: Long = 0,
+    val romalrc: String? = null,
+    val translationSource: String? = null,
+    val romanSource: String? = null
 )
 
 /**
@@ -108,12 +120,23 @@ object LyricsCache {
     }
 
     /**
-     * 写入 LRC / 译文 / 逐字。
+     * 写入 LRC / 译文 / 逐字 / 音译。
      *
-     * [yrc] 保持默认参数，v1.5.0 的调用点（PlayerViewModel）签名不变。
+     * [yrc] / [romalrc] 保持默认参数，v1.5.0 / v1.9.0 的调用点签名不变（v1.9.2 只是多接一个字段）。
      * 若这首歌之前只有 TTML 暂存条目，这里把它并进正式条目并删掉暂存，避免同一首歌留两条。
+     *
+     * 上一次记下的 [CachedLyrics.translationSource] / [CachedLyrics.romanSource] **原样保留**：
+     * 它们描述的是「上一次实际展示了谁」，而这次只是刷新了原文；新的展示结果会由
+     * [putTrackSources] 在落地那一步改写（值没变就不写盘）。
      */
-    suspend fun put(context: Context, songId: Long, lrc: String, tlyric: String, yrc: String = "") {
+    suspend fun put(
+        context: Context,
+        songId: Long,
+        lrc: String,
+        tlyric: String,
+        yrc: String = "",
+        romalrc: String = "",
+    ) {
         withContext(Dispatchers.IO) {
             synchronized(lock) {
                 val map = loadLocked(context)
@@ -125,12 +148,54 @@ object LyricsCache {
                 val ttmlSource = old?.takeIf { it.ttml != null } ?: staged
                 map[key] = CachedLyrics(
                     lrc, tlyric, now, yrc,
-                    ttmlSource?.ttml, ttmlSource?.ttmlAt ?: 0
+                    ttmlSource?.ttml, ttmlSource?.ttmlAt ?: 0,
+                    romalrc,
+                    old?.translationSource, old?.romanSource
                 )
                 trimLocked(map)
                 persistLocked(context, map)
             }
         }
+    }
+
+    /**
+     * 记录译文轨 / 音译轨**这一次实际用的源**（v1.9.2 观测字段，见 [CachedLyrics.translationSource]）。
+     *
+     * 不新建条目：这首歌还没有正式条目时直接 no-op（绝不能为了记一个标记建出 `lrc=""` 的条目，
+     * 那等于把它判成「确无歌词」）。值没变就不落盘 —— 缓存命中路径每次都要调它，
+     * 而 [persistLocked] 会把整张表序列化一遍，不能为了记一个没变的标记反复写。
+     */
+    suspend fun putTrackSources(
+        context: Context,
+        songId: Long,
+        translation: LyricTrackSource?,
+        roman: LyricTrackSource?,
+    ) {
+        val translationTag = translation?.cacheTag
+        val romanTag = roman?.cacheTag
+        withContext(Dispatchers.IO) {
+            synchronized(lock) {
+                val map = loadLocked(context)
+                val key = songId.toString()
+                val updated = withTrackSources(map[key], translationTag, romanTag) ?: return@withContext
+                map[key] = updated
+                persistLocked(context, map)
+            }
+        }
+    }
+
+    /**
+     * 纯函数：把源标记写进条目。**没有条目、或标记没变**时返回 null（调用方据此跳过落盘）。
+     * 抽出来是为了能在 JVM 上直接测「值未变不写盘」这条语义，不必起 Android 环境。
+     */
+    internal fun withTrackSources(
+        entry: CachedLyrics?,
+        translationTag: String?,
+        romanTag: String?,
+    ): CachedLyrics? = when {
+        entry == null -> null
+        entry.translationSource == translationTag && entry.romanSource == romanTag -> null
+        else -> entry.copy(translationSource = translationTag, romanSource = romanTag)
     }
 
     /**
