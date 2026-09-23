@@ -33,6 +33,7 @@ import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import android.os.SystemClock
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
@@ -52,6 +53,7 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.LoadControl
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
+import com.takahashirinta.ncrust.BuildConfig
 import com.takahashirinta.ncrust.cache.OfflineAudioCache
 import com.takahashirinta.ncrust.cache.OfflineUrlStore
 import androidx.media3.extractor.DefaultExtractorsFactory
@@ -134,6 +136,16 @@ class PlaybackService : MediaLibraryService() {
          * 关闭或没有歌词时这里保持 null，ARTIST 一字不变。
          */
         @Volatile var mediaLyricLine: String? = null
+            set(value) {
+                if (field == value) return
+                field = value
+                // v1.8.0 · T5：跨行时给老系统补一次通知重 post。
+                // 为什么必须在这里：媒体通知的正文是**应用 post 时**烘进去的，
+                // 而 API < 28 的 SystemUI 根本不会从 MediaSession metadata 重建它
+                // （见 onMediaLyricLineChanged 的完整论证）。字段是唯一的变化点，
+                // 所以通知也挂在这里 —— 散在 ViewModel 里迟早会漏。
+                instance?.onMediaLyricLineChanged(value)
+            }
         var onPlaybackEnded: (() -> Unit)? = null
         var onPlaybackPrevious: (() -> Unit)? = null
         var onIsPlayingChanged: ((Boolean) -> Unit)? = null
@@ -151,6 +163,18 @@ class PlaybackService : MediaLibraryService() {
         var mediaArtist: String = ""
         var mediaSongId: Long? = null
         var instance: PlaybackService? = null
+
+        /**
+         * v1.8.0 · T5：跨行重 post 通知的**最小间隔**（毫秒）。
+         *
+         * 只对 API < 28 生效。Android 7 的 NotificationManager 有 `post_frequency` 限流，
+         * 逐字密集段落里行变化可能快到几百毫秒一次，加一道下限既能避开限流，
+         * 也不会让通知在通知栏里"闪"。正常人声段落一行 2–4 秒，完全不受影响。
+         */
+        private const val LYRIC_NOTIFY_MIN_INTERVAL_MS = 250L
+
+        /** v1.8.0 · T5：探针 tag（debug 包用来看"到底 post 了几次"）。 */
+        private const val TAG_LYRIC_NOTIFY = "NcrustLyricNotify"
     }
 
     // Metadata staged for the next gapless transition.
@@ -860,6 +884,9 @@ class PlaybackService : MediaLibraryService() {
     // 只要位图实例变了就重发, 保证任务栏封面最终切到新歌
     private var lastMetadataBitmap: Bitmap? = null
 
+    /** v1.8.0 · T5：上一次"因跨行而重 post 通知"的时刻（elapsedRealtime）。见 [onMediaLyricLineChanged]。 */
+    private var lastLyricNotifyAt = 0L
+
     // setPlaybackState 去重：state 未变且距上次刷新 < STATE_MIN_INTERVAL_MS 时跳过
     // 位置精度对锁屏/通知条完全足够，跨进程 Binder 每次 1~3 ms，低端机 4Hz IPC 就吃满
     private var lastPlaybackStateInt: Int = -1
@@ -979,6 +1006,50 @@ class PlaybackService : MediaLibraryService() {
         }
     }
 
+    /**
+     * v1.8.0 · T5：S6（Android 7.0 / API 24）「状态栏歌词不更新」的修复。
+     *
+     * ## 根因（探针 + 平台侧证据，不是猜的）
+     *
+     * 用户现象：播放中歌词停在第一句，**暂停再播放才刷新**。整条链只有一处不对：
+     *
+     *  - 歌词行本身是**通的** —— `PlayerViewModel` 的 2Hz 位置流算出当前行，跨行时写
+     *    `mediaLyricLine`；`updatePlaybackState()`（2Hz）也一直在更新 **MediaSession 的
+     *    metadata**（锁屏 / 蓝牙 / 车机拿到的就是新行）。
+     *  - 但**通知正文**只在 6 个事件点重新 post（播放态变化 / 切歌 / 封面加载完 / 取色完成 /
+     *    服务启动 / 无缝预载），**没有一处是"跨行"**。于是通知停在最后一次 post 的那一行 ——
+     *    而"暂停/播放"恰好会走 `onIsPlayingChanged → updateNotify()`，这正是用户看到
+     *    "暂停再播放才能刷新"的原因；"只停留在第一句"则对应起播后 `loadArtwork` 那次 post
+     *    （约 0.3–1s，通常正好是第一句）。
+     *  - 为什么 PCL110（API 36）没问题：现代 SystemUI 的媒体面板（`MediaDataManager` /
+     *    `MediaCarouselController` / `NotificationMediaManager`）**从会话 metadata 重建**，
+     *    不读应用 post 的 extras。S6 的 SystemUI dex 里 `NotificationMediaManager` 命中数为
+     *    **0**；AOSP 里这个类是 **android-9.0.0_r1（API 28）才出现**的。
+     *
+     * ## 为什么只在 API < 28 做
+     *
+     * API 28+ 的系统会自己重建媒体通知，逐行重 post 反而会让媒体轮播卡反复刷新。
+     * 所以这里按版本闸门走：老系统补 post，新系统保持 v1.7.0 的"只更新会话"行为（零回归）。
+     *
+     * ## 限流
+     *
+     * 逐字歌词密集段落里行变化可能很快（说唱）。Android 7 的 NotificationManager 有
+     * `post_frequency` 限流/降级，所以这里再加一道**最小间隔**；配合
+     * `setOnlyAlertOnce(true)`（见 buildNotification），重 post 不会响铃/震动，
+     * 也不会在通知栏里"跳出来"。
+     */
+    private fun onMediaLyricLineChanged(line: String?) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) return
+        if (!isServiceStarted) return
+        val now = SystemClock.elapsedRealtime()
+        if (now - lastLyricNotifyAt < LYRIC_NOTIFY_MIN_INTERVAL_MS) return
+        lastLyricNotifyAt = now
+        updateNotify()
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG_LYRIC_NOTIFY, "re-post on lyric line change: $line")
+        }
+    }
+
     private fun updateNotify() {
         // v1.6.0 · D3：API 36 的实时更新（Live Updates）。与媒体通知并行、互不依赖，
         // 失败只打日志（见 LiveUpdateNotifier）。
@@ -1020,6 +1091,10 @@ class PlaybackService : MediaLibraryService() {
             .setContentText(display.subtitle)
             .setSmallIcon(android.R.drawable.ic_media_play)
             .setOngoing(false)
+            // v1.8.0 · T5：逐行重 post 时不要再次提醒。媒体通知本身在 S6 上
+            // defaults/sound/vibrate 全为空，但其它 ROM 未必 —— 显式声明，
+            // 保证"刷新歌词"不会被用户感知成"又弹了一条通知"。
+            .setOnlyAlertOnce(true)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(
