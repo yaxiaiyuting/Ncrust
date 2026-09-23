@@ -114,6 +114,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.withContext
 
 class MainActivity : ComponentActivity() {
@@ -141,6 +142,21 @@ class MainActivity : ComponentActivity() {
     /** 物理朝向门控：只有设备真的横过来了才放宽成 SENSOR，见 [startBigScreenOrientationGate]。 */
     private var bigScreenOrientationGate: OrientationEventListener? = null
 
+    // ---------- v1.8.0 · T4：自动旋转（双向） ----------
+    /**
+     * 应用内「自动旋转」开关的镜像。**唯一事实源是 [RotationSetting]**，这里只是
+     * 让非 Compose 的 [applyOrientationPolicy] 能同步读到值（onConfigurationChanged 里
+     * 读不到 Compose 状态）。
+     */
+    private var autoRotateEnabled = RotationSetting.DEFAULT_ENABLED
+
+    /**
+     * 全屏播放器是否处于展开态。由 `MainScreen` 的 progress 派生后回传（见那里的
+     * snapshotFlow）—— **自动进大屏的触发范围必须限定在播放器界面**，
+     * 首页 / 库 / 搜索转横屏不能进大屏。
+     */
+    private val playerExpanded = mutableStateOf(false)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // 手机锁竖屏、大屏(平板/折叠展开/车机)放开方向。见 applyOrientationPolicy。
@@ -154,6 +170,23 @@ class MainActivity : ComponentActivity() {
         AppWarmup.start(this)
         enableEdgeToEdge()
         setContent {
+            // ---------- v1.8.0 · T4：自动旋转 / 双向进出大屏 ----------
+            // 订阅范围刻意收在一个小组件里（见 AutoRotateWatcher）：把
+            // 「播放器展开态」这种每次展开/收起都会翻转的状态读在根作用域，会让整个
+            // Activity 内容（含 MainScreen）跟着重组一次。
+            val autoRotate = RotationSetting.state.value
+            AutoRotateWatcher(
+                playerExpanded = playerExpanded,
+                onAutoEnter = { enterBigScreenMode(auto = true) },
+            )
+
+            // 开关一变立刻作用到方向策略：用户不需要重启 App，也不用手动重进播放器。
+            LaunchedEffect(autoRotate) {
+                autoRotateEnabled = autoRotate
+                applyOrientationPolicy()
+                Log.i(TAG, "auto-rotate setting = $autoRotate")
+            }
+
             var themeIndex by remember {
                 mutableIntStateOf(getSavedThemeIndex(this@MainActivity))
             }
@@ -239,7 +272,12 @@ class MainActivity : ComponentActivity() {
                             bigScreen = bigScreenMode.value,
                             onToggleBigScreen = {
                                 if (bigScreenMode.value) exitBigScreenMode() else enterBigScreenMode()
-                            }
+                            },
+                            // T4：自动旋转开关（设置页与播放器图标共享同一份状态，见 RotationSetting）。
+                            autoRotate = autoRotate,
+                            onToggleAutoRotate = { RotationSetting.write(this@MainActivity, !autoRotate) },
+                            // T4：播放器展开态回传 —— 自动进大屏必须限定在播放器界面。
+                            onPlayerExpandedChange = { playerExpanded.value = it }
                         )
                         if (showSplash) {
                             SplashScreen(onFinished = { showSplash = false })
@@ -322,12 +360,23 @@ class MainActivity : ComponentActivity() {
      * 照旧判定就会在同一帧把刚转过去的横屏锁回竖屏，大屏模式等于进不去。
      */
     private fun applyOrientationPolicy() {
-        if (bigScreenMode.value) return
-        val smallestWidthDp = resources.configuration.smallestScreenWidthDp
-        requestedOrientation = if (smallestWidthDp < 600) {
-            ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-        } else {
-            ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+        autoRotateEnabled = RotationSetting.read(this)
+        val desired = BigScreenOrientation.orientationFor(
+            autoRotate = autoRotateEnabled,
+            bigScreen = bigScreenMode.value,
+            bigScreenRelaxed = bigScreenOrientationRelaxed,
+            isLargeScreen = resources.configuration.smallestScreenWidthDp >= 600,
+        )
+        val requested = when (desired) {
+            BigScreenOrientation.DesiredOrientation.PORTRAIT -> ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            BigScreenOrientation.DesiredOrientation.SENSOR_LANDSCAPE ->
+                ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+            BigScreenOrientation.DesiredOrientation.SENSOR -> ActivityInfo.SCREEN_ORIENTATION_SENSOR
+            BigScreenOrientation.DesiredOrientation.UNSPECIFIED ->
+                ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+        }
+        if (requestedOrientation != requested) {
+            requestedOrientation = requested
         }
     }
 
@@ -340,12 +389,21 @@ class MainActivity : ComponentActivity() {
      *  ② 设备一旦物理横过来就放宽成 `SCREEN_ORIENTATION_SENSOR`，此后方向完全交给用户，
      *     **绝不长期强制锁横屏**；转回竖屏即退出大屏模式。
      */
-    private fun enterBigScreenMode() {
+    private fun enterBigScreenMode(auto: Boolean = false) {
         if (bigScreenMode.value) return
         bigScreenMode.value = true
-        bigScreenOrientationRelaxed = false
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
-        startBigScreenOrientationGate()
+        if (auto) {
+            // v1.8.0 · T4：自动进入的**触发源就是"配置已经变成横屏"**，所以不存在
+            // "手机还竖着"的问题 —— 直接标记已放宽，省掉一次 SENSOR_LANDSCAPE 设置
+            // （那一次设置会触发一次方向重算，在快速来回转时是多余抖动）。
+            bigScreenOrientationRelaxed = true
+            stopBigScreenOrientationGate()
+            Log.i(TAG, "big screen: auto-entered (auto-rotate on, player expanded, window landscape)")
+        } else {
+            bigScreenOrientationRelaxed = false
+            startBigScreenOrientationGate()
+        }
+        applyOrientationPolicy()
     }
 
     /** P1：退出大屏模式，并恢复既有的方向策略（手机锁竖屏 / 大屏不限制）。 */
@@ -429,6 +487,49 @@ object QueueModes {
     const val INFINITY = 4
 }
 
+/**
+ * v1.8.0 · T4：自动进入大屏的**观察者**（无 UI，只做判定与回调）。
+ *
+ * 为什么单独抽成一个 composable：它要订阅「应用内开关」「播放器展开态」「窗口方向」三个状态，
+ * 其中"播放器展开态"每次展开/收起都会翻转 —— 写在外层 setContent 的作用域里，
+ * 等于让整个 Activity 内容（含 MainScreen）跟着重组一次。这里把订阅范围收进小组件内，
+ * MainScreen 只在它自己的参数变化时才重组。
+ *
+ * 触发源刻意只有三个值：**用户手动退出大屏（⤢ 按钮 / 返回键）不会改变其中任何一个**，
+ * 所以不会立刻又被自动拽回大屏 —— 这就是"手动退出"语义的实现方式（不需要额外的抑制标志，
+ * 也就不会出现"抑制标志忘了清、自动进入从此失效"的经典 bug）。转回竖屏再转横、
+ * 或收起播放器再展开，都是新的显式意图 → 重新允许自动进入。
+ */
+@Composable
+private fun AutoRotateWatcher(
+    playerExpanded: State<Boolean>,
+    onAutoEnter: () -> Unit,
+) {
+    val windowLandscape =
+        LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+    val autoRotate = RotationSetting.state.value
+    val expanded = playerExpanded.value
+    val currentOnAutoEnter = rememberUpdatedState(onAutoEnter)
+
+    LaunchedEffect(autoRotate, expanded, windowLandscape) {
+        if (!BigScreenOrientation.shouldAutoEnterBigScreen(
+                autoRotate = autoRotate,
+                playerExpanded = expanded,
+                windowLandscape = windowLandscape,
+                bigScreen = false,
+            )
+        ) return@LaunchedEffect
+        // 防抖：快速转来转去时把连续的方向变化**合并**成一次提交（不是丢弃 ——
+        // 丢弃会把状态留在错误的一侧）。LaunchedEffect 在 key 变化时自动取消上一个协程，
+        // 正好就是"重新计时"的语义。
+        delay(BigScreenOrientation.AUTO_ENTER_SETTLE_MS)
+        // 等待期间方向可能又变了：LaunchedEffect 已被取消，不会走到这里；
+        // 能走到这里说明三个 key 都没再变过。
+        currentOnAutoEnter.value()
+    }
+}
+
+/**
 @Composable
 fun MainScreen(
     themeIndex: Int = 0,
@@ -445,7 +546,21 @@ fun MainScreen(
     // P1：大屏幕模式（横屏桌面播放器布局）。状态由 MainActivity 持有（方向策略要用），
     // 这里只负责把它透传给播放器 + 用它隐藏大屏下不该出现的导航层。
     bigScreen: Boolean = false,
-    onToggleBigScreen: () -> Unit = {}
+    onToggleBigScreen: () -> Unit = {},
+    /**
+     * v1.8.0 · T4：应用内「自动旋转」开关。设置页与播放器图标共享同一份状态
+     * （事实源是 [RotationSetting]），这里只做透传。
+     */
+    autoRotate: Boolean = false,
+    onToggleAutoRotate: () -> Unit = {},
+    /**
+     * v1.8.0 · T4：把"全屏播放器是否展开"回传给 Activity。
+     *
+     * 自动进入大屏**必须限定在播放器界面**（首页 / 库 / 搜索转横屏不进大屏），
+     * 而这个判断只有 MainScreen 知道（progress 是它持有的）。回传的是**布尔**而不是
+     * progress 本身：布尔只在阈值穿越时翻转一次，不会让 Activity 跟着动画帧重组。
+     */
+    onPlayerExpandedChange: (Boolean) -> Unit = {}
 ) {
     var selectedTab by remember { mutableIntStateOf(1) }
     // 根布局实测高度(px)：车机会把窗口内容区 inset 到系统栏之间，但 WindowInsets
@@ -518,6 +633,16 @@ fun MainScreen(
     }
 
     val progress = remember { Animatable(0f) }
+
+    // v1.8.0 · T4：把"播放器是否展开"回传给 Activity（自动进大屏的触发范围判定）。
+    // 走 snapshotFlow 而不是在组合期读 progress —— 后者会让整个 MainScreen 跟着
+    // 展开/收起动画逐帧重组（v1.7.0 在 BackHandler 那里已经踩过一次，见下方注释）。
+    // 阈值 0.99f = 与 PlayerCard 的 cardExpandedForInput 同一口径（"真的全展开了"）。
+    LaunchedEffect(onPlayerExpandedChange) {
+        snapshotFlow { progress.value > 0.99f }
+            .distinctUntilChanged()
+            .collect(onPlayerExpandedChange)
+    }
 
     var menuSong by remember { mutableStateOf<SongItem?>(null) }
     var menuSongActions by remember { mutableStateOf<List<SongMenuAction>>(emptyList()) }
@@ -1383,7 +1508,10 @@ fun MainScreen(
             },
             // P1：大屏模式开关。退出大屏时进度保持 1（回到竖屏全屏播放器，不是收起态）。
             bigScreen = bigScreen,
-            onToggleBigScreen = onToggleBigScreen
+            onToggleBigScreen = onToggleBigScreen,
+            // T4：自动旋转开关（播放器里的旋转图标）。
+            autoRotate = autoRotate,
+            onToggleAutoRotate = onToggleAutoRotate
         )
         } // end PlayerCardOverlay wrapper
         } // end if (currentSong != null) —— 死带修复 A：无播放时不挂载

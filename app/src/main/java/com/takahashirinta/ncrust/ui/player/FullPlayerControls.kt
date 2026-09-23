@@ -84,6 +84,16 @@ fun FullPlayerControls(
      */
     onToggleBigScreen: () -> Unit = {},
     /**
+     * v1.8.0 · T4：应用内「自动旋转」开关的当前值。
+     *
+     * 图标语义只有两种状态（跟随传感器 / 锁定方向），所以这里传布尔而不是三态 ——
+     * 事实源是 RotationSetting，播放器图标与设置页开关读写同一份值。
+     */
+    autoRotate: Boolean = false,
+    /** v1.8.0 · T4：切换「自动旋转」。 */
+    onToggleAutoRotate: () -> Unit = {},
+    /**
+    /**
      * 横向控制条右端的替代槽位（仅 [showQuality] = false 时使用）。
      *
      * 大屏模式用它放「退出大屏」：**不能**放进左端那组按钮 —— 横向控制条是
@@ -444,10 +454,59 @@ fun FullPlayerControls(
                     sizeDp = toggleIcon
                 )
             }
+            // v1.8.0 · T4：自动旋转开关（竖屏入口）。
+            // 开 = 跟随传感器（在播放器里转横屏 → 自动进大屏；转回竖屏 → 自动退出）；
+            // 关 = 锁定竖屏，进出大屏只走 ⤢ 按钮。图标用"两态"而不是"高亮/置灰"：
+            // 高亮只能表达开/关，表达不了"开着的时候会跟随旋转"。
+            RotationToggleButton(
+                autoRotate = autoRotate,
+                onToggle = {
+                    tick()
+                    onToggleAutoRotate()
+                },
+                size = toggleBtn,
+                iconSize = toggleIcon,
+                contentDescription = if (autoRotate) strings.autoRotateOn else strings.autoRotateOff,
+            )
         }
     }
 }
 
+/**
+ * v1.8.0 · T4：「自动旋转」图标开关（竖屏控制栏 / 大屏左栏共用）。
+ *
+ * 抽成独立 composable 的原因：两处的尺寸不同、位置不同，但图标与配色语义必须一致
+ * —— 同一功能出现两种样子，用户会以为是两个开关。
+ *
+ * 触摸契约（AGENTS.md 第 7 条）：视觉是 [iconSize] 的图标，命中盒是 [size]，
+ * 调用方传的竖屏值 56dp / 26dp —— **命中区只增不减**。外层显式加 semantics：
+ * MetroIcon 只画图，不给语义的话 TalkBack 摸不到这个开关。
+ */
+@Composable
+fun RotationToggleButton(
+    autoRotate: Boolean,
+    onToggle: () -> Unit,
+    size: Dp,
+    iconSize: Dp,
+    contentDescription: String,
+) {
+    Box(
+        modifier = Modifier
+            .size(size)
+            .clickable { onToggle() }
+            .semantics { this.contentDescription = contentDescription },
+        contentAlignment = Alignment.Center
+    ) {
+        MetroIcon(
+            imageVector = if (autoRotate) Icons.Default.ScreenRotation else Icons.Default.ScreenLockPortrait,
+            contentDescription = null, // 语义在外层 Box 上，避免 TalkBack 读两遍
+            tint = if (autoRotate) LocalMetroColors.current.primary else LocalMetroColors.current.onBackground,
+            sizeDp = iconSize
+        )
+    }
+}
+
+/**
 @Composable
 private fun PositionText(positionFlow: StateFlow<Long>, modifier: Modifier) {
     val position by positionFlow.collectAsState()

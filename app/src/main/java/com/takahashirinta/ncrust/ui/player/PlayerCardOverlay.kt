@@ -35,7 +35,10 @@ fun PlayerCardOverlay(
     onNavigateToUser: () -> Unit = {},
     // P1：大屏幕模式（横屏桌面播放器布局）开关与入口/出口按钮回调，纯透传。
     bigScreen: Boolean = false,
-    onToggleBigScreen: () -> Unit = {}
+    onToggleBigScreen: () -> Unit = {},
+    // v1.8.0 · T4：自动旋转开关与切换回调（纯透传，状态事实源在 RotationSetting）。
+    autoRotate: Boolean = false,
+    onToggleAutoRotate: () -> Unit = {}
 ) {
     Box(
         modifier = Modifier
@@ -67,7 +70,9 @@ fun PlayerCardOverlay(
             onSavePlaylist = onSavePlaylist,
             onNavigateToUser = onNavigateToUser,
             bigScreen = bigScreen,
-            onToggleBigScreen = onToggleBigScreen
+            onToggleBigScreen = onToggleBigScreen,
+            autoRotate = autoRotate,
+            onToggleAutoRotate = onToggleAutoRotate
         )
     }
 }

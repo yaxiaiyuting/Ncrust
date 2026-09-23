@@ -110,7 +110,10 @@ fun PlayerCard(
     // P1：大屏幕模式（横屏桌面播放器布局）开关 + 入口/出口回调。
     // bigScreen 是"用户意图"，还要叠加当前窗口方向才是生效态（见 bigScreenActive）。
     bigScreen: Boolean = false,
-    onToggleBigScreen: () -> Unit = {}
+    onToggleBigScreen: () -> Unit = {},
+    // v1.8.0 · T4：自动旋转开关（竖屏控制栏 + 大屏左栏两处图标入口，同一份状态）。
+    autoRotate: Boolean = false,
+    onToggleAutoRotate: () -> Unit = {}
 ) {
     val hasSong = song != null
     // 初始落大封面: 歌词未就绪时(加载中/确无), 全屏默认看封面而非空歌词面板;
@@ -718,6 +721,9 @@ fun PlayerCard(
                         // 第 4 个在横向三段式布局里会顶到居中的传输组（实测与"上一首"重叠）。
                         bigScreen = bigScreenActive,
                         onToggleBigScreen = onToggleBigScreen,
+                        // v1.8.0 · T4：竖屏控制栏里的自动旋转图标。
+                        autoRotate = autoRotate,
+                        onToggleAutoRotate = onToggleAutoRotate,
                         trailing = if (bigScreenActive) {
                             {
                                 Box(
