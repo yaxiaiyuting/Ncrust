@@ -1142,6 +1142,14 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         )
         if (neteasePick != null) {
             applyNeteaseLyrics(songId, seq, neteaseLines, netease.tlyric)
+            // v1.9.1：把「最终用了哪个源」显式打出来。此前只能从网络请求侧反推，
+            // 独立验证者因此把「优先级开关是否真的改变选中源」列为未验证项（U3）——
+            // 两相结构下「有没有发 TTML 请求」推不出「最后显示的是谁」。
+            Log.i(
+                "PlayerViewModel",
+                "歌词源 songId=$songId phase=1 picked=${neteasePick.kind} " +
+                    "lines=${neteasePick.lineCount} words=${neteasePick.hasWordLevel}"
+            )
             // 歌词已经落到 StateFlow：先把加载态收掉，UI 才能立刻显示它（lyricsReady 要求
             // !lyricsLoading）。第二相只是「再挑一次、择优升级」，不该让它继续转圈。
             if (lyricReqGate.isCurrent(seq) && currentSongId.value == songId) {
@@ -1167,6 +1175,20 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                 if (picked?.kind == LyricSourceKind.TTML) {
                     applyTtmlLyrics(songId, doc)
                     ttmlWon = true
+                    Log.i(
+                        "PlayerViewModel",
+                        "歌词源 songId=$songId phase=2 picked=TTML " +
+                            "lines=${doc.lines.size} words=${TtmlParser.hasWordLevel(doc)} " +
+                            "(覆盖了 phase=1)"
+                    )
+                } else {
+                    // 拉了 TTML 但没赢（没有逐字 span / 排序后被 YRC 压过）—— 显式记一行，
+                    // 否则「用户开了 TTML 却仍是整行」在线上无法归因。
+                    Log.i(
+                        "PlayerViewModel",
+                        "歌词源 songId=$songId phase=2 picked=${picked?.kind} " +
+                            "(TTML 未胜出，保留 phase=1)"
+                    )
                 }
             }
         }
