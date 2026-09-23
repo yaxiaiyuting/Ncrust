@@ -77,6 +77,7 @@ import com.takahashirinta.ncrust.network.PlaylistApi
 import com.takahashirinta.ncrust.network.SongItem
 import com.takahashirinta.ncrust.ui.i18n.getSavedLanguageCode
 import com.takahashirinta.ncrust.ui.i18n.stringsForCode
+import com.takahashirinta.ncrust.ui.player.VisualizerSetting
 import kotlinx.coroutines.*
 
 @OptIn(UnstableApi::class)
@@ -250,7 +251,14 @@ class PlaybackService : MediaLibraryService() {
         // 扩展渲染器模式 ON：优先用平台解码器（API 27+ 的 FLAC 走系统解码，省电），
         // 只有当平台没有任何解码器支持该格式时才回退到扩展里的 FFmpeg 软件解码器。
         // 这正是 API 24–26 播放无损 FLAC 所需要的路径。
-        val renderersFactory = DefaultRenderersFactory(this)
+        // v1.8.0 · T3：用子类替换裸的 DefaultRenderersFactory —— 唯一的差别是
+        // override 了 buildAudioSink，在音频处理链最前面插一个 TeeAudioProcessor，
+        // 把解码后的 PCM 旁路给可视化（见 VisualizerRenderersFactory 的 KDoc：
+        // 任务书假设的 AudioListener.onAudioSamples 在 media3 里不存在，
+        // 而 Visualizer 那条路要 RECORD_AUDIO，不能用）。
+        // 开关关掉时音频线程侧只剩一次 volatile 读，等于零开销。
+        VisualizerSetting.read(this)
+        val renderersFactory = VisualizerRenderersFactory(this)
             .setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON)
 
         // 流内嵌的 ID3 元数据（尤其封面图，单张可达数百 KB）在本 App 里毫无用处：

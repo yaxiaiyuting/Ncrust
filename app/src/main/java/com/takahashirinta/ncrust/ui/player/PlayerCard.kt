@@ -205,6 +205,13 @@ fun PlayerCard(
     val qualityPickerMaxHeightDp = with(density) {
         minOf(400.dp.toPx(), screenHeightPx * 0.7f).toDp()
     }
+    // v1.8.0 · T3：可视化条的开关与高度。
+    // 高度 = 窗口高 × 11%，夹在 32~56dp：PCL110 横屏（363dp 高）得 40dp、
+    // S6（480dp 高）得 53dp —— 矮屏少占、高屏多给，封面区用 weight(1f) 自动让位。
+    val visualizerEnabled = VisualizerSetting.state.value
+    val visualizerHeightDp =
+        (LocalConfiguration.current.screenHeightDp.dp * 0.11f).coerceIn(32.dp, 56.dp)
+
     // 迷你条与顶栏按钮的触觉反馈
     val haptic = LocalHapticFeedback.current
 
@@ -914,6 +921,29 @@ fun PlayerCard(
                                                 PlayerLayout.squareCoverSizePx(b.width, b.height)
                                         }
                                 )
+                                // v1.8.0 · T3：音频可视化条（**封面下、歌名/作者上**）。
+                                // 高度按窗口高动态算：PCL110 横屏只有 363dp 可用高，
+                                // 固定 48dp 会把封面压掉一整圈；S6（480dp）则给足 53dp。
+                                // 封面区是 weight(1f)，自己吸收这段高度 —— 任何一级都
+                                // 不会溢出屏幕（这正是"按可用高度动态计算"的落点）。
+                                //
+                                // 关掉开关时**整块不挂载**（不是 alpha=0 —— 见 AGENTS.md
+                                // 第 1/4 条：alpha 不退出命中测试，且帧循环会白跑）。
+                                if (visualizerEnabled) {
+                                    AudioVisualizerBars(
+                                        // 只在帧循环里读，不在这里订阅 isBuffering：
+                                        // 在 PlayerCard 组合期订阅缓冲状态会让整棵子树随
+                                        // 缓冲抖动重组（既有注释 warn 过同一件事）。
+                                        activeProvider = {
+                                            isPlaying && !playerViewModel.isBuffering.value
+                                        },
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 16.dp)
+                                            .height(visualizerHeightDp),
+                                    )
+                                    Spacer(Modifier.height(8.dp))
+                                }
                                 Spacer(Modifier.height(10.dp))
                                 Row(
                                     modifier = Modifier

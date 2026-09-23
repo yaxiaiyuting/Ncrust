@@ -12,6 +12,7 @@
  */
 
 package com.takahashirinta.ncrust
+import com.takahashirinta.ncrust.ui.player.VisualizerSetting
 import com.takahashirinta.ncrust.ui.theme.LocalNcrustColors
 
 import android.Manifest
@@ -170,6 +171,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         // 手机锁竖屏、大屏(平板/折叠展开/车机)放开方向。见 applyOrientationPolicy。
         applyOrientationPolicy()
+        // v1.8.0：设置项的进程内镜像要在任何 UI 读它之前就位（同步读 SharedPreferences，
+        // 之后只走内存）。缺了这一步，播放器里的旋转图标/可视化会先按默认值渲染一帧。
+        VisualizerSetting.read(this)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1001)
         }

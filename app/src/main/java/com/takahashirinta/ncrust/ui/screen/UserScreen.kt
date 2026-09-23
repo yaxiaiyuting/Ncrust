@@ -42,6 +42,7 @@ import io.github.takahashirinta.kanesumi.controls.MetroSelectorFlyout
 import com.takahashirinta.ncrust.RotationSetting
 import com.takahashirinta.ncrust.cache.OfflineAudioCache
 import com.takahashirinta.ncrust.reco.ArtistReco
+import com.takahashirinta.ncrust.ui.player.VisualizerSetting
 import io.github.takahashirinta.kanesumi.controls.MetroSwitch
 import io.github.takahashirinta.kanesumi.core.theme.LocalMetroColors
 import io.github.takahashirinta.kanesumi.core.theme.LocalMetroTypography
@@ -122,6 +123,8 @@ fun UserScreen(
     // v1.8.0 · T4：应用内「自动旋转」。走 RotationSetting（唯一读写入口）——
     // 播放器里的旋转图标与这里共享同一份状态，"改一处另一处立刻同步"。
     var autoRotateEnabled by remember { mutableStateOf(RotationSetting.read(context)) }
+    // v1.8.0 · T3：大屏模式音频可视化（默认开；关掉后可视化整块不挂载，零开销）。
+    var audioVisualizerEnabled by remember { mutableStateOf(VisualizerSetting.read(context)) }
     var lyricsTranslation by remember { mutableStateOf(prefs.getBoolean("lyrics_translation", true)) }
     // v1.4.0 · 音乐人推荐开关
     var artistRecoEnabled by remember { mutableStateOf(ArtistReco.isEnabled(context)) }
@@ -348,6 +351,16 @@ fun UserScreen(
                 onCheckedChange = {
                     autoRotateEnabled = it
                     RotationSetting.write(context, it)
+                }
+            )
+            // v1.8.0 · T3：大屏模式音频可视化。
+            SettingSwitchRow(
+                title = strings.audioVisualizerLabel,
+                description = strings.audioVisualizerDescription,
+                checked = audioVisualizerEnabled,
+                onCheckedChange = {
+                    audioVisualizerEnabled = it
+                    VisualizerSetting.write(context, it)
                 }
             )
             // v1.4.0 · 音乐人推荐卡片开关。默认关；目标艺人与锚点配置存在 prefs 且默认空，
