@@ -55,10 +55,13 @@ Single source of truth: `app/build.gradle.kts` → `defaultConfig.versionName` /
 
 - `AboutScreen.kt` reads `BuildConfig.VERSION_NAME` — **never hardcode a version constant**. This needs `buildFeatures.buildConfig = true`.
 - Release flow: bump `versionCode` + `versionName` → commit `build: 升级至 vX.Y.Z ...` → `./gradlew assembleRelease` → `gh release create vX.Y.Z --draft <apk>` → user smoke-tests and publishes manually.
-- Current: `versionName = "1.9.1-gpl"`, `versionCode = 24`. Latest release: `v1.9.1-gpl`.
+- Current: `versionName = "1.9.2-gpl"`, `versionCode = 25`. Latest release: `v1.9.2-gpl`.
   （**注意 versionCode 必须递增**：v1.6.1 = 19，所以 v1.7.0 是 20 —— 任务书里写「v1.7.0 = 19」是错的，
   19 已经被 v1.6.1 占用，照抄会导致无法覆盖安装。同理本版 **23**：任务书说「v1.8.0 = 21、本版 22」，
   但 `aapt2 dump badging` 实测 v1.8.1 已经是 **22**，照抄 22 会与线上包撞号、无法覆盖安装。）
+  **第三次（v1.9.2）**：任务书写「当前状态 v1.9.0 已发布、本版 v1.9.1」，但 `git tag` +
+  `aapt2 dump badging` 实测 v1.9.1-gpl 早已发布（versionCode **24**，修的是歌词镜像回退判定）。
+  所以本版是 **v1.9.2-gpl / versionCode 25**。**动版本号之前永远先实测 `dist/` 里的最新包**。）
 
 ## Commit Convention
 
@@ -1417,4 +1420,132 @@ I PlayerViewModel: 歌词源 songId=X phase=2 picked=null (TTML 未胜出，保�
   （需要 `316100 雨爱` 这类歌；设备 UI 自动化切歌不稳定，prefs 注入又被 App 启动时覆盖）。
   复现方法：用 `316100` 播放并分别切两种模式，看 `歌词源 … picked=` 那行。
 - v1.9.0 其余未验证项（S6 TTML 视觉确认、帧率对比、离线飞行模式、双源译文合并等）**均未因本版改变**。
+
+
+## v1.9.2 新增（本 fork · 修 v1.9.0 的分轨缺陷）
+
+### 症状与根因
+
+v1.9.0 的 `PlayerViewModel.applyTtmlLyrics()` 在 TTML 胜出时**整体覆盖**译文轨：
+
+`@kotlin
+translatedLyrics.value = doc.translations.filter { it.timeMs in lineTimes }
+`@
+
+TTML 那份没有 `x-translation` 时这个列表就是空的 ⇒ 第一相刚从网易云拿到的 `tlyric` 被**整轨清空**。
+调研实测（667 首候选池 + 42 份 TTML 缓存）：该判据命中 **1 首** = `22704409 DAY BY DAY`
+（TTML 79 行逐字、0 翻译；网易云 tlyric 79 行）—— 与 `RESEARCH-ttml-vs-netease.md` §3.4 一致。
+
+### 音译轨的真相：v1.9.0/v1.9.1 **从来没有渲染过音译**
+
+| 检查 | v1.9.1 的实际情况 |
+|---|---|
+| `TtmlDoc.romans` 的消费者 | **只有单测**（TtmlScannerTest / TtmlWordOrderTest） |
+| `PlayerViewModel` 里的音译状态 | 不存在（只有 `translatedLyrics`） |
+| `LyricResponse` 模型字段 | `lrc` / `tlyric` / `yrc` —— **没有 `romalrc`** |
+| `LyricsView` / `NcrustLyricsPanel` | 只有 `translation` 一个副文本槽 |
+
+所以调研报告「TTML 胜出会把音译整轨清空」在**用户可见层面并不成立** —— 它是**数据层/潜在**缺陷。
+本版把音译轨做成完整的数据层轨道（取数 + 缓存 + 合并 + 来源标记 + 单测 + 日志），
+**但 UI 仍然不显示音译**：要显示必须给 `LyricsView` / `NcrustLyricsPanel` 加副文本槽，
+而「渲染层 diff 必须为空」是本版硬约束。渲染接线留给解禁渲染层的版本（届时 `LyricsView` 只多收一个参数）。
+
+### 分轨合并规则（`lyric/LyricTrackMerge.kt`，纯函数）
+
+1. **TTML 行优先**：能落到主轨时间轴上的行原样保留（顺序、重复行、内容都不动）⇒
+   「TTML 有译文」的歌输出与 v1.9.0 **逐行相同**（单测直接与老表达式比对）；
+2. **缺口按文本/行序回退**：主轨里没有任何 TTML 副文本的行才算缺口；用 `YrcAligner.lcsPairs`
+   （归一化去空白 + LCS 保序，与 v1.6.0 逐字对齐**同一份实现**）在两源**主轨文本**上配对，
+   配对成功才补一行，并把时间戳改写成**主轨那一行**的（副文本轨自己的时间戳一律不用）；
+3. **逐行丢弃**：文本对不上、或网易云那一行没有内容 ⇒ 这一行没有副文本，不猜、不过桥、不硬塞。
+
+**为什么是逐行而不是「整轨二选一」**：轨级规则在实测数据上会丢东西 —— `1959528822 紫荆花盛开`
+的 TTML 有 **16 行 `x-roman`**、网易云有 **41 行 romalrc**（且 TTML 那 16 行文本与网易云**逐字相同**，
+是子集），轨级规则取 16 行、丢掉 13 行能对上的。逐行合并严格不劣：覆盖满时一行不多一行不少。
+
+> ⚠️ **数据勘误**：`RESEARCH-ttml-vs-netease.md` R311 写「紫荆花盛开 TTML 只有 1 处 `x-roman`」是错的
+> （把「池里 1/100 的样本带 x-roman」误抄成单曲数字）。实测该文件有 **16 处**，上一轮 `analysis.json`
+> 也记 `x_roman_n: 16`。这个数字直接决定合并规则，所以必须纠正。
+
+### 关键实测（PCL110 真机 + 缓存复算）
+
+| songId | 主轨 | 译文轨 | 音译轨 | 说明 |
+|---|---|---|---|---|
+| 22704409 DAY BY DAY | TTML/79 words=true | **NETEASE/64** | **NETEASE/52** | v1.9.0 是 **0 行**；直接修复 |
+| 1959528822 紫荆花盛开 | TTML/57 words=true | none/0 | TTML/16 → 修缓存后 **MIXED/29** | 网易云 tlyric 本就为 0 |
+| 36990266 Faded | TTML/54 | TTML/54 | none/0 | 两源译文 54/54 相同，不重复 |
+| 16686599 Numb | TTML/47 | TTML/49 | none/0 | 两源行数不等（47/35）不崩 |
+| 2645500113 跳楼机 | TTML/57 | none/0 | none/0 | 两源都无译文 ⇒ **不产生空轨** |
+
+42 份 TTML 缓存的统计：TTML 无译文但有网易云 tlyric = **1 首**（22704409）；两源都有译文 = 21 首
+（其中 8 首 TTML 覆盖行数少于网易云）；TTML 有可用音译 = 4 首；**网易云有 romalrc 而 TTML 无音译 = 1 首
+（22704409，53 行）** —— 这才是音译回退最干净的验证样本。
+
+### 缓存：新字段与**升级迁移**（本版真机发现的第二个 bug）
+
+`CachedLyrics` 新增 `romalrc` / `translationSource` / `romanSource`，一律**可空 + 有默认值**
+（Gson 走 Unsafe，老缓存缺 key 必须是 null 而不是崩）。后两个是**观测字段**（枚举名，见
+`LyricTrackSource.cacheTag`），记录两条轨上一次实际展示用的源，**不参与任何决策**。
+
+真机发现的坑：**LRC 条目没有 TTL**（只有 200 条的 LRU 上限），所以 v1.9.1 及更早写下的条目
+`romalrc` 永远是 null。PCL110 实测 **64 条里 63 条是老条目**，`1959528822` 因此只拿到 TTML 的 16 行音译、
+网易云那 41 行 romalrc 明明在服务端却用不上。修法：`LyricsCache.needsRomalrcRefetch(entry)`
+（纯函数，判「字段缺失」而不是「字段为空」—— 空串是「确实没有音译」的权威结论）为 true 的条目
+**按 miss 处理重取一次**，补完即恢复缓存命中；**网络失败时回落到这份老缓存**（`degraded()`），
+不让离线用户从「有歌词」变成「没歌词」。代价：升级后每首老歌第一次播放多一次歌词请求（一次性、自愈）。
+
+### 与序列号闸门 / 渲染层的约束
+
+- 网易云三条轨（主轨 + tlyric + romalrc）在**同一次** `withContext(Dispatchers.Default)` 里解析完，
+  第一相与第二相共用 ⇒ 合并只发生在**一次 fetch 内部**，不存在「A 歌的译文配 B 歌的主轨」；
+- 合并结果在 `withContext` 之后**复查** `lyricReqGate.isCurrent(seq)` 与 `currentSongId` 再落地；
+- 产出的每一行 `timeMs` 都取自主轨 ⇒ `LyricsView` 的 `translatedLyrics.associateBy { timeMs }`
+  一行都不用改（`SweepTrack` / `LyricsView` / `NcrustLyricsPanel` 的 diff 为空）；
+- **不新增依赖、不新增权限、不新增网络请求**：`romalrc` 本来就在 `/api/song/lyric` 的响应里
+  （实测 `rv=0` 与 `rv=-1` 对同一首歌返回**逐字节相同**的 body，4/4 首 sha256 一致），
+  所以本版**没动请求参数**，只是把此前没解析的字段接上。
+
+### 附带发现：AMLL DB 的 `.yrc` **不能**替代网易云的 yrc
+
+AMLL DB 的 `ncm-lyrics/` 目录除了 TTML 还存了每首歌的 yrc/qrc/lys/lrc/eslrc sidecar，容易被当成
+「yrc 服务端开关抖动时的补充路径」。调研已验证**不可替代**（`PHASE0-REPORT-v1.9.0.md` §10）：
+21 首 API-yrc 里 18 首 DB 无 yrc 文件、3 首有但**逐字节不同**，且 DB 的 yrc 只存在于有 TTML 的曲目
+（3356 ⊂ 3544）。**不要**把这批 sidecar 当成 yrc 的替代源接进来。
+
+### 各语种覆盖现实（**只写在文档里，不做 UI 提示、不加弹窗、不加设置项**）
+
+数据源：`RESEARCH-ttml-vs-netease.md` §2.2 / §3.5（100 首收藏样本 + 667 首池）。
+
+| 语种 | 网易云 YRC | 逐字并集（YRC ∪ TTML） | tlyric |
+|---|---|---|---|
+| 中文 | 16/30 = **53.3%** | 66.7% | 池内 232 首只有 4 首（2%） |
+| 英文 | 24/30 = **80.0%** | 83.3% | 池内 274 首 248 首（91%） |
+| 日文 | 1/20 = **5.0%** | 5.0% | 90% |
+| 韩文 | **0/10 = 0%** | 0% | 100% |
+
+⇒ TTML 的定位是「**英文歌的逐字 + 翻译源**」，覆盖率上限只有 10.2%（与热度强相关），
+**不是覆盖率主力，也不能宣传成「大幅提升逐字覆盖率」**（真实增量 +5.1pp）。
+日韩用户拿不到逐字（TTML 在日韩基本 0 命中、YRC 也是 0–5%），但译文与音译接近 100% ——
+译文质量的天花板在网易云。**不做按语言分流**（§6.1 数据不支持：语言维度相关的是覆盖率，不是「哪个源更好」），
+**不做语言检测**（脚本判定本身就会误判），**不做同名异版模糊匹配**（会导致逐字错位）。
+
+### v1.9.2 的测试与实测
+
+| 项 | 结果 |
+|---|---|
+| JVM 单测 | **276 个全绿**（v1.9.1 = 255，本版 +21：`LyricTrackMergeTest` 13 + `LyricsCacheModelTest` 16−9+8） |
+| 合并单测的样本 | 4 首真实样本夹具（`app/src/test/resources/lyric-tracks/`，由 `tools/gen-merge-fixtures.py` 从调研原始响应生成）；期望值另由 `tools/expected-merge.py` 独立复算 |
+| 合并单测的关键断言 | 22704409 译文 64 / 音译 52；1959528822 音译 29 = TTML 16 + 网易云补 13；Faded 与 v1.9.0 逐行相同；Numb 行数不等不崩 |
+| PCL110 真机 | `轨道 translation=NETEASE/64 roman=NETEASE/52`（22704409）；翻译渲染截图复核（韩文逐字行下方出现中文译文） |
+| 渲染层 | `SweepTrack` / `LyricsView` / `NcrustLyricsPanel` `git diff` **为空** |
+
+### v1.9.2 仍未验证
+
+- **音译轨没有 UI**（见上）：本版的音译回退只能在单测与日志层验证，**没有任何截图能证明它显示出来**；
+- **P1 时间轴对拍未做**：环境无播放/录音能力（`RESEARCH` §1.4 已声明），只做了跨源对照，
+  **不能证明 TTML 与网易云谁更准**；
+- **1959528822 的 MIXED/29 只在单测夹具上复算过**：真机第一次跑的是 v1.9.1 老缓存（得到 TTML/16），
+  修掉缓存迁移后需要再看一次真机日志才算端到端确认；
+- **S6（API 24）未跑本版**：本版只装了 PCL110；
+- v1.9.0/v1.9.1 的其余未验证项均未因本版改变。
 

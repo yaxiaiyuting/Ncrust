@@ -780,3 +780,29 @@ S6（慢设备 + debug 包）上一次拖动结束时 Animatable 还没追上手
 - 同一账号同一 WiFi 下 S6 4 秒内出结果 ⇒ 服务端/链路侧。
 
 **结论：v1.8.0 无相关回归。** 唯一可讨论的是「加载中无超时/失败提示」，属既有设计，本轮不动。
+
+# 16. v1.9.2（2026-09-23 · 分支 `feature/v1.9.2-lyrics-track-merge`）—— 译文 / 音译分轨合并
+
+**一句话**：v1.9.0 的 `applyTtmlLyrics()` 在 TTML 胜出时整体覆盖译文轨，TTML 没有 `x-translation` 的歌
+会把网易云 tlyric 整轨清空（实测 `22704409`）。本版把译文 / 音译做成**独立回退的轨道**：
+TTML 行优先，缺口按文本 / 行序（LCS）回退网易云 `tlyric` / `romalrc`，对不上的逐行丢弃。
+
+- **版本**：任务书写「本版 v1.9.1」，但 v1.9.1-gpl 早已发布（versionCode 24，镜象回退 hotfix）
+  ⇒ 本版 **v1.9.2-gpl / versionCode 25**（第三次撞号，动版本号前必须实测 `dist/` 里的最新包）。
+- **新增文件**：`lyric/LyricTrackMerge.kt`（纯函数）、`LyricTrackMergeTest.kt`、
+  `app/src/test/resources/lyric-tracks/`（4 份真实样本夹具）。
+- **改动的既有文件**：`LyricsCache.kt`（`romalrc` + 两个来源标记 + `needsRomalrcRefetch` +
+  `putTrackSources` / `withTrackSources`）、`SongDetail.kt`（`romalrc` 字段）、
+  `PlayerViewModel.kt`（三条轨一次解析、phase-1 / phase-2 落地、来源日志）、`NcmApi.kt`（只加注释）。
+- **渲染层零改动**：`SweepTrack` / `LyricsView` / `NcrustLyricsPanel` diff 为空。
+- **不新增依赖 / 权限 / 网络请求**：`romalrc` 本来就在 `/api/song/lyric` 的响应里
+  （实测 `rv=0` 与 `rv=-1` 逐字节相同，4/4 首）。
+- **真机实测（PCL110）**：`22704409 → 轨道 translation=NETEASE/64 roman=NETEASE/52`（v1.9.0 是 0 行），
+  歌词界面截图复核有中文译文；Faded `translation=TTML/54`（不重复）；Numb `TTML/49`（行数不等不崩）；
+  跳楼机 `translation=none/0 roman=none/0`（不产生空轨）。
+- **真机发现的第二个 bug**：LRC 缓存条目**没有 TTL** ⇒ v1.9.1 及更早的条目缺 `romalrc` 字段，
+  音译回退对升级用户永远不生效（实测 64 条里 63 条是老条目）。修法：缺字段的条目按 miss 重取一次
+  （自愈、一次性），**网络失败回落到老缓存**，不让离线用户丢歌词。
+- **未验证**：音译轨**没有 UI**（渲染接线需改 `LyricsView`，属本版红线之外）；
+  1959528822 的 `MIXED/29` 端到端待复测；未做音频对拍（不能证明谁的时间轴更准）；
+  S6 未装本版；本轮服务端 `yrc` 为空，逐字由 TTML 提供。
