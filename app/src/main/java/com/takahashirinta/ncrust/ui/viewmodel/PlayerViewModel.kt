@@ -39,6 +39,10 @@ import com.takahashirinta.ncrust.lyric.LyricRequestGate
 import com.takahashirinta.ncrust.lyric.LyricSourceChain
 import com.takahashirinta.ncrust.lyric.LyricSourceKind
 import com.takahashirinta.ncrust.lyric.LyricSourcePrefs
+import com.takahashirinta.ncrust.lyric.LyricTrack
+import com.takahashirinta.ncrust.lyric.LyricTrackMerge
+import com.takahashirinta.ncrust.lyric.LyricTrackSource
+import com.takahashirinta.ncrust.lyric.cacheTag
 import com.takahashirinta.ncrust.lyric.LyricsCache
 import com.takahashirinta.ncrust.lyric.LyricsDisplayPrefs
 import com.takahashirinta.ncrust.lyric.LyricsSweepQuality
@@ -71,6 +75,16 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
     val lyricsSongId = MutableStateFlow(-1L)
     // 外文歌词的译文(tlyric),Spotify 式渲染在原句下方。
     val translatedLyrics = MutableStateFlow<List<LrcLine>>(emptyList())
+    /**
+     * v1.9.2：音译轨（罗马音 / 粤拼），与 [translatedLyrics] 同构的行级轨道，来源可以是 TTML 的
+     * `x-roman`，也可以是网易云的 `romalrc`，缺口按文本逐行回退（见 [LyricTrackMerge]）。
+     *
+     * **本版没有 UI 消费者**：v1.9.0/v1.9.1 从来没有渲染过音译（TtmlDoc.romans 无引用、
+     * 网易云 romalrc 也没解析），要显示它必须给 LyricsView / NcrustLyricsPanel 加一个副文本槽，
+     * 而「渲染层 diff 必须为空」是本版的硬约束。所以这里先把**数据层**做完整并单测覆盖，
+     * 渲染接线留给解禁渲染层的版本（届时 LyricsView 只需多收一个参数）。
+     */
+    val romanizedLyrics = MutableStateFlow<List<LrcLine>>(emptyList())
     // 歌词是否仍在加载中(网络往返未返回)。UI 用它区分「真的没歌词」与「还没加载出来」:
     // 加载中或成功为空 → 全屏默认大封面、歌词按钮置灰;加载出非空 → 自动切回歌词视图。
     val lyricsLoading = MutableStateFlow(false)
@@ -266,7 +280,7 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
     private val lyricReqGate = LyricRequestGate()
 
     /** 闸门判定「这次请求已经被新歌取代」时的返回：调用方拿到它只会原样丢弃，不会写任何状态。 */
-    private val STALE_NETEASE_LYRICS = NeteaseLyrics("", "", "", authoritative = false)
+    private val STALE_NETEASE_LYRICS = NeteaseLyrics("", "", "", "", authoritative = false)
 
     init {
         refreshGaplessSetting()
@@ -433,6 +447,7 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
     private fun resetLyricsForNewSong() {
         lyrics.value = emptyList()
         translatedLyrics.value = emptyList()
+        romanizedLyrics.value = emptyList()
         lyricsLoading.value = true
         // 旧歌词是渐隐过渡素材, 不属于新歌; 在"当前歌歌词就绪"判定里立即失效
         lyricsSongId.value = -1L
@@ -1005,9 +1020,28 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         val lrc: String,
         val tlyric: String,
         val yrc: String,
+        /** v1.9.2：音译轨原文（romalrc）。与 rv 参数无关，实测 rv=0 也会返回，缺 key 时为空串。 */
+        val romalrc: String,
         /** 服务端 code==200 的**权威**答复（有歌词或确无歌词）；false = 瞬时失败，不能判成「确无歌词」。 */
         val authoritative: Boolean,
     )
+
+    /** 网易云一侧解析好的三条轨（主轨 + 译文 + 音译），一次解析、两相共用。 */
+    private data class NeteaseTracks(
+        val lines: List<LrcLine> = emptyList(),
+        val tlyric: List<LrcLine> = emptyList(),
+        val romalrc: List<LrcLine> = emptyList(),
+    )
+
+    /** TTML 胜出时算好的两条副文本轨，连同它们的来源标记一起交给落地函数。 */
+    private data class LyricTracks(
+        val translation: LyricTrack = LyricTrack(),
+        val roman: LyricTrack = LyricTrack(),
+    )
+
+    /** 日志用：「来源/行数」。 */
+    private fun trackText(track: LyricTrack): String =
+        (track.source?.cacheTag ?: "none") + "/" + track.lines.size
 
     private suspend fun fetchLyrics(songId: Long) {
         // 去重必须排在 begin() 之前：同歌并发时第二次直接返回；若先 begin()，第二次会把第一次
@@ -1049,7 +1083,10 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         if (!lyricReqGate.isCurrent(seq)) return STALE_NETEASE_LYRICS
         if (cached != null) {
             Log.d("PlayerViewModel", "fetchLyrics cache hit id=$songId lrc=${cached.lrc.length}")
-            return NeteaseLyrics(cached.lrc, cached.tlyric, cached.yrc.orEmpty(), authoritative = true)
+            return NeteaseLyrics(
+                cached.lrc, cached.tlyric, cached.yrc.orEmpty(), cached.romalrc.orEmpty(),
+                authoritative = true
+            )
         }
         // 失败重试(最多 4 次, 递增退避): 冷启动时 AppWarmup 与恢复请求同时在
         // 打网络, 歌词请求的瞬时超时/限流不该让歌词永久消失。关键是**响应层面的
@@ -1068,6 +1105,9 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                 // v1.5.0 · B：逐字时间轴。实测该曲没挂逐字资产时响应里连 yrc 这个 key
                 // 都没有(不是 null)，所以这里为空是常态，不是错误。
                 val yrcText = lyricResponse.yrc?.lyric ?: ""
+                // v1.9.2：音译轨。同一个响应里本来就有这个字段（实测与 rv 取值无关），
+                // 此前一直没有解析，于是「TTML 胜出」时音译轨只能是 TTML 那一份（多半为空）。
+                val romalrcText = lyricResponse.romalrc?.lyric ?: ""
                 if (code != 200 && attempt < 3) {
                     Log.w("PlayerViewModel", "fetchLyrics unsettled songId=$songId code=$code, retry ${attempt + 1}")
                     delay(700L + attempt * 400L)
@@ -1077,14 +1117,19 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                 // 只缓存 code==200 的权威结果(有歌词/确无歌词)。code!=200 是瞬时
                 // 失败(风控/需登录), 不写缓存也不置"确无歌词", 按钮保持可点可重试。
                 if (code == 200) {
-                    LyricsCache.put(getApplication(), songId, lrcText, tlyricText, yrcText)
+                    LyricsCache.put(
+                        getApplication(), songId, lrcText, tlyricText, yrcText, romalrcText
+                    )
                 }
                 Log.d(
                     "PlayerViewModel",
                     "fetchLyrics id=$songId code=$code lrc=${lrcText.length} " +
-                        "tlyric=${tlyricText.length} yrc=${yrcText.length} current=${currentSongId.value}"
+                        "tlyric=${tlyricText.length} yrc=${yrcText.length} " +
+                        "romalrc=${romalrcText.length} current=${currentSongId.value}"
                 )
-                return NeteaseLyrics(lrcText, tlyricText, yrcText, authoritative = code == 200)
+                return NeteaseLyrics(
+                    lrcText, tlyricText, yrcText, romalrcText, authoritative = code == 200
+                )
             } catch (e: Exception) {
                 // 失败不清空已有歌词(网络抖动不该把 UI 变空白), 重试后仍失败才退出
                 if (attempt == 3) {
@@ -1115,19 +1160,27 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         )
         val order = LyricSourceChain.order(sourcePrefs)
         // 解析是 CPU 活(逐行正则), 放 Default 上跑, 别让主线程在切歌瞬间一边处理重组一边解 LRC。
-        val neteaseLines = if (netease.lrc.isNotEmpty()) {
-            withContext(Dispatchers.Default) { parseLyrics(netease.lrc, netease.yrc) }
+        // v1.9.2：网易云三条轨（主轨 + 译文 + 音译）在**同一次** withContext 里解析完，
+        // 第一相与第二相共用同一份结果 —— 合并只发生在一次 fetch 内部，不会把两次请求的数据拼起来。
+        val parsed = if (netease.lrc.isNotEmpty()) {
+            withContext(Dispatchers.Default) {
+                NeteaseTracks(
+                    lines = parseLyrics(netease.lrc, netease.yrc),
+                    tlyric = if (netease.tlyric.isEmpty()) emptyList() else LrcParser.parse(netease.tlyric),
+                    romalrc = if (netease.romalrc.isEmpty()) emptyList() else LrcParser.parse(netease.romalrc),
+                )
+            }
         } else {
-            emptyList()
+            NeteaseTracks()
         }
         if (!lyricReqGate.isCurrent(seq)) return
-        val neteaseHasWords = neteaseLines.any { it.words.isNotEmpty() }
+        val neteaseHasWords = parsed.lines.any { it.words.isNotEmpty() }
 
         fun candidate(kind: LyricSourceKind, ttml: TtmlDoc?): LyricCandidate? = when (kind) {
             // YRC 与 LRC 都来自同一份网易云响应：行文本是同一份，差别只在有没有逐字时间轴。
-            LyricSourceKind.YRC -> neteaseLines.takeIf { it.isNotEmpty() }
+            LyricSourceKind.YRC -> parsed.lines.takeIf { it.isNotEmpty() }
                 ?.let { LyricCandidate(kind, it.size, neteaseHasWords) }
-            LyricSourceKind.LRC -> neteaseLines.takeIf { it.isNotEmpty() }
+            LyricSourceKind.LRC -> parsed.lines.takeIf { it.isNotEmpty() }
                 ?.let { LyricCandidate(kind, it.size, false) }
             LyricSourceKind.TTML -> ttml?.let {
                 // hasWordLevel 必须由解析器判「有没有词」——只有整句的 TTML 投稿
@@ -1141,7 +1194,7 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
             order.filter { it != LyricSourceKind.TTML }.mapNotNull { candidate(it, null) }
         )
         if (neteasePick != null) {
-            applyNeteaseLyrics(songId, seq, neteaseLines, netease.tlyric)
+            applyNeteaseLyrics(songId, seq, parsed.lines, parsed.tlyric, parsed.romalrc)
             // v1.9.1：把「最终用了哪个源」显式打出来。此前只能从网络请求侧反推，
             // 独立验证者因此把「优先级开关是否真的改变选中源」列为未验证项（U3）——
             // 两相结构下「有没有发 TTML 请求」推不出「最后显示的是谁」。
@@ -1173,13 +1226,27 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
             if (doc != null) {
                 val picked = LyricSourceChain.pick(order.mapNotNull { candidate(it, doc) })
                 if (picked?.kind == LyricSourceKind.TTML) {
-                    applyTtmlLyrics(songId, doc)
+                    // v1.9.2：两条副文本轨在这里一次算完（纯函数，放 Default 上跑 —— 里面有一次
+                    // O(n·m) 的 LCS）。withContext 是挂起点，回来必须复查闸门与当前歌。
+                    val tracks = withContext(Dispatchers.Default) {
+                        LyricTracks(
+                            translation = LyricTrackMerge.merge(
+                                doc.lines, doc.translations, parsed.lines, parsed.tlyric
+                            ),
+                            roman = LyricTrackMerge.merge(
+                                doc.lines, doc.romans, parsed.lines, parsed.romalrc
+                            ),
+                        )
+                    }
+                    if (!lyricReqGate.isCurrent(seq) || currentSongId.value != songId) return
+                    applyTtmlLyrics(songId, doc, tracks)
                     ttmlWon = true
                     Log.i(
                         "PlayerViewModel",
                         "歌词源 songId=$songId phase=2 picked=TTML " +
                             "lines=${doc.lines.size} words=${TtmlParser.hasWordLevel(doc)} " +
-                            "(覆盖了 phase=1)"
+                            "轨道 translation=${trackText(tracks.translation)} " +
+                            "roman=${trackText(tracks.roman)} (覆盖了 phase=1)"
                     )
                 } else {
                     // 拉了 TTML 但没赢（没有逐字 span / 排序后被 YRC 压过）—— 显式记一行，
@@ -1199,22 +1266,25 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         ) {
             lyricsNoContentSongId.value = songId
             translatedLyrics.value = emptyList()
+            romanizedLyrics.value = emptyList()
         }
     }
 
-    /** 把网易云那份落地：行来自 lrc（有 yrc 时已挂上逐字），译文来自 tlyric。 */
+    /**
+     * 把网易云那份落地：行来自 lrc（有 yrc 时已挂上逐字），译文来自 tlyric，音译来自 romalrc。
+     *
+     * 三条轨的解析已经在 [applyBestLyricSource] 里（Default 线程上）做完，这里只写状态。
+     * 网易云源的两条副文本轨**按时间戳与原行配对**是既有语义（tlyric/romalrc 与 lrc 是同一份资产、
+     * 时间戳同刻），v1.5.0 起就是这么显示的，本版一行不改 —— 分轨合并只在 TTML 胜出时介入。
+     */
     private suspend fun applyNeteaseLyrics(
         songId: Long,
         seq: Long,
         lines: List<LrcLine>,
-        tlyricText: String,
+        translations: List<LrcLine>,
+        romans: List<LrcLine>,
     ) {
-        val translations = if (tlyricText.isNotEmpty()) {
-            withContext(Dispatchers.Default) { LrcParser.parse(tlyricText) }
-        } else {
-            emptyList()
-        }
-        // 解析是挂起点：回来必须重新确认「仍是当前号 + 仍是当前歌」再写状态。
+        // 状态写入前必须重新确认「仍是当前号 + 仍是当前歌」。
         if (!lyricReqGate.isCurrent(seq) || currentSongId.value != songId) return
         if (lines.isNotEmpty()) {
             lyrics.value = lines
@@ -1223,22 +1293,38 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
             lyricsNoContentSongId.value = -1L
         }
         translatedLyrics.value = translations
+        romanizedLyrics.value = romans
+        // v1.9.2：记下这两条轨实际来自谁（观测字段；值未变则不落盘）。
+        LyricsCache.putTrackSources(
+            getApplication(),
+            songId,
+            LyricTrackSource.NETEASE.takeIf { translations.isNotEmpty() },
+            LyricTrackSource.NETEASE.takeIf { romans.isNotEmpty() },
+        )
     }
 
     /**
-     * 把 TTML 那份落地。
+     * 把 TTML 那份落地（v1.9.2：分轨合并）。
      *
-     * 译文是**独立的行级轨道**，LyricsView 按 timeMs 精确配对（translatedLyrics.associateBy { timeMs }），
-     * 所以这里只保留能对上原行时间戳的译文 —— 对不上的直接丢弃，宁可这一行没有译文，
-     * 也不把某句译文硬配到别的行上。
+     * 主轨是 TTML 的行；译文轨与音译轨各自独立决定（[LyricTrackMerge]）：
+     * TTML 那一轨能对上主轨时间戳的行原样用，**缺的行**按文本/行序回退到网易云的 tlyric / romalrc，
+     * 对不上的逐行丢弃。v1.9.0 是直接把 `doc.translations.filter { ... }` 覆盖上去 ——
+     * TTML 没有译文时那是个空表，会把刚显示的网易云译文**整轨清空**（实测 22704409）。
+     *
+     * 渲染层按 timeMs 精确配对（translatedLyrics.associateBy { timeMs }），而合并产出的每一行
+     * 时间戳都取自 [TtmlDoc.lines]，所以这里不需要动渲染层一行。
      */
-    private fun applyTtmlLyrics(songId: Long, doc: TtmlDoc) {
+    private suspend fun applyTtmlLyrics(songId: Long, doc: TtmlDoc, tracks: LyricTracks) {
         if (currentSongId.value != songId) return
-        val lineTimes = doc.lines.mapTo(HashSet<Long>()) { it.timeMs }
         lyrics.value = doc.lines
-        translatedLyrics.value = doc.translations.filter { it.timeMs in lineTimes }
+        translatedLyrics.value = tracks.translation.lines
+        romanizedLyrics.value = tracks.roman.lines
         lyricsSongId.value = songId
         lyricsNoContentSongId.value = -1L
+        // v1.9.2：记下两条轨实际来自谁（观测字段；值未变则不落盘）。
+        LyricsCache.putTrackSources(
+            getApplication(), songId, tracks.translation.source, tracks.roman.source
+        )
     }
 
     /**

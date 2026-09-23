@@ -46,6 +46,10 @@ interface NcmApi {
         @Field("cp") cp: String = "false",
         @Field("tv") tv: String = "-1",
         @Field("lv") lv: String = "-1",
+        // v1.9.2 实测：rv=0 与 rv=-1 对同一首歌返回**逐字节相同**的 body（22704409 / 1959528822 /
+        // 3431697106 / 16686599 四首，sha256 一致），romalrc 本来就在响应里。所以本版**不动这个参数**
+        // （不新增请求、不改载荷），只是把 romalrc 解析出来用。若将来服务端改成只在 rv=-1 时返回，
+        // 把默认值改成 "-1" 即可 —— 仍是既有字段，不是新请求。
         @Field("rv") rv: String = "0",
         @Field("kv") kv: String = "0",
         // v1.5.0 · B：yv=-1 是「要逐字歌词」的开关。实测 yv 一次带回 yrc + ytlrc +
