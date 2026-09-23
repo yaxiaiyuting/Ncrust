@@ -384,6 +384,27 @@ SharedPreferences files:
 | `ncrust_lyrics_cache` | `LyricsCache` | `entries` (≤ 200；LRC/译文/逐字与 TTML 共用同一张表，TTML 另有 7 天 TTL) |
 | `search_history` | `SearchHistoryManager` | `songs`, `albums`, `artists` (≤ 10 each, 14-day TTL) |
 
+#### 歌词缓存字段迁移策略（v1.9.3 固化：**加字段 = 加迁移逻辑 = 加单测**）
+
+`ncrust_lyrics_cache` 是一张**跨版本存活**的表：LRC 条目只有 200 条的 LRU 上限、**没有 TTL**，
+所以「新版本给 `CachedLyrics` 加一个字段」在真机上的表现就是「老条目里那个字段是 null」。
+两次实测踩坑（都不是理论风险，是真机上复现过的）：
+
+| 版本 | 新字段 | 踩到的坑 |
+|---|---|---|
+| v1.9.0 | `ttml: String?` + `ttmlAt: Long = 0` | Gson 走 Unsafe 反序列化、不调用构造函数 ⇒ 老条目缺 key 时字段是 null。必须**可空 + 有默认值**，否则读的地方 NPE 或把「没有 TTML」误判成新鲜缓存 |
+| v1.9.2 | `romalrc: String?` | 老条目该字段为 null，语义是「**字段缺失**」而不是「这首歌没有音译」。PCL110 实测 64 条里 **63 条**是老条目，`1959528822` 因此只拿到 TTML 的 16 行音译、网易云那 41 行 romalrc 明明在服务端却用不上。修法 `LyricsCache.needsRomalrcRefetch(entry)`：缺失按 miss 重取一次（一次性、自愈），网络失败回落老缓存（`degraded()`） |
+
+**通用规则**（下一个加字段的人照着做）：
+
+1. 新字段一律**可空 + 默认值**（Gson 走 Unsafe，不调用构造函数）；
+2. 判「老条目」只看**字段缺失**（null），**不能**用「字段为空串」—— 空串往往是「服务端确实没有这份数据」
+   的权威结论，误判会让每次都重取；
+3. 缺字段的条目按 **miss 处理、重取一次**，补完即恢复缓存命中；重取失败必须能回落到老缓存；
+4. 迁移判定抽成**纯函数**并加单测（`LyricsCacheModelTest` 已有 16 个用例覆盖「缺失 vs 空」的两义性）；
+5. **能不加字段就不加**：v1.9.3 的音译显示是纯显示偏好（存 `ncrust_settings` 的 `lyrics_romanization`，
+   不进歌词缓存），因此本版没有任何新缓存字段、没有新迁移逻辑 —— 这是这条规则的正向用法。
+
 ### Auth & Login
 
 `CookieManager` stores the raw cookie in `ncrust_prefs`. Login paths:
@@ -1457,6 +1478,17 @@ TTML 那份没有 `x-translation` 时这个列表就是空的 ⇒ 第一相刚�
 **但 UI 仍然不显示音译**：要显示必须给 `LyricsView` / `NcrustLyricsPanel` 加副文本槽，
 而「渲染层 diff 必须为空」是本版硬约束。渲染接线留给解禁渲染层的版本（届时 `LyricsView` 只多收一个参数）。
 
+### 偏离记录：任务书要求「整轨二选一」，实现改为「逐行合并」
+
+| | |
+|---|---|
+| 任务书原文 | TTML 与网易云两条副文本轨按「**整轨二选一**」取用（TTML 有就用 TTML 那一整轨，没有就整轨用网易云） |
+| 实际实现 | **逐行合并**：TTML 里能落到主轨时间轴上的行原样保留；主轨里没有任何 TTML 副文本的行算缺口，缺口按文本/行序逐行回退到网易云 |
+| 偏离理由 | 实测 `1959528822` 紫荆花盛开：TTML 有 **16 行 `x-roman`**，网易云有 **41 行 `romalrc`**，且 TTML 那 16 行与网易云**逐字相同**（是子集）。轨级规则取 16 行 ⇒ **丢掉 13 行明明能对上的音译** |
+| 偏离代价 | 合并从「选一条轨」变成「逐行配对」，需要 `YrcAligner.lcsPairs` 的 LCS 文本配对（复用 v1.6.0 逐字对齐那一份实现），并新增 `LyricTrackSource.MIXED` 这个来源标记 |
+| 影响面 | **严格不劣**：覆盖满时一行不多一行不少（单测直接与 v1.9.0 的老表达式逐行比对）；只有缺口才补，补不上就丢这一行，不猜不过桥 |
+| 审计证据 | `LyricTrackMergeTest` 13 例（4 首真实样本夹具 + 合成用例）；期望值另由仓库外 `tools/expected-merge.py` 独立复算 |
+| 已在何处声明 | 本节 + v1.9.2 release notes 的「与任务书的偏离」小节；v1.9.3 起凡偏离任务书都在 AGENTS.md 留一条同款记录 |
 ### 分轨合并规则（`lyric/LyricTrackMerge.kt`，纯函数）
 
 1. **TTML 行优先**：能落到主轨时间轴上的行原样保留（顺序、重复行、内容都不动）⇒
