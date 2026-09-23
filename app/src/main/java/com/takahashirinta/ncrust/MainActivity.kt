@@ -40,6 +40,9 @@ import androidx.compose.material.icons.filled.PlaylistAdd
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.compose.runtime.*
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
@@ -157,6 +160,12 @@ class MainActivity : ComponentActivity() {
      */
     private val playerExpanded = mutableStateOf(false)
 
+    /** T1：大屏模式是否已经进入沉浸式（避免重复 hide/show 触发无谓的 inset 重算）。 */
+    private var immersiveApplied = false
+
+    /** T1：期望的沉浸式状态。用于窗口重新获得焦点后幂等重放（见 [onWindowFocusChanged]）。 */
+    private var immersiveDesired = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // 手机锁竖屏、大屏(平板/折叠展开/车机)放开方向。见 applyOrientationPolicy。
@@ -186,6 +195,14 @@ class MainActivity : ComponentActivity() {
                 applyOrientationPolicy()
                 Log.i(TAG, "auto-rotate setting = $autoRotate")
             }
+
+            // ---------- v1.8.0 · T1：横屏大屏模式沉浸式（隐藏状态栏） ----------
+            // 判定条件与 PlayerCard 的 bigScreenActive 完全一致（意图 + 窗口真的横过来），
+            // 避免"按钮刚点、窗口还没转"的那一两百毫秒里状态栏先消失。
+            ImmersiveEffect(
+                bigScreen = bigScreenMode.value,
+                onImmersiveChange = { applyImmersive(it) },
+            )
 
             var themeIndex by remember {
                 mutableIntStateOf(getSavedThemeIndex(this@MainActivity))
@@ -345,6 +362,57 @@ class MainActivity : ComponentActivity() {
     override fun onDestroy() {
         stopBigScreenOrientationGate()
         super.onDestroy()
+    }
+
+    /**
+     * v1.8.0 · T1：窗口重新获得焦点时把沉浸式状态补回去。
+     *
+     * 部分 ROM（以及从最近任务/锁屏回来时）会重置窗口的 systemUi 标志，只靠进入大屏那一次
+     * hide() 会出现"切出去再回来状态栏又冒出来了"。这里按**期望值**重放一次，幂等。
+     */
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) {
+            // 强制重放：把"已应用"标记反相，绕过 applyImmersive 的幂等短路
+            // （否则从最近任务回来时状态栏被系统恢复、这里却因为"标记说已经藏好了"而不补）。
+            immersiveApplied = !immersiveDesired
+            applyImmersive(immersiveDesired)
+        }
+    }
+
+    /**
+     * v1.8.0 · T1：横屏大屏模式的沉浸式（隐藏**状态栏**）。
+     *
+     * 设计取舍（调研结论，写在这里防止被后续"顺手优化"掉）：
+     *
+     *  - **只隐藏状态栏，不隐藏导航栏**。横屏下状态栏是一条 ~24-32dp 的通栏，
+     *    藏掉它封面能多拿这段高度；而导航栏是**两条退出路径的载体** ——
+     *    S6（API 24）的三大金刚键里有返回键，PCL110 的手势条是返回手势的起手边。
+     *    把导航栏也藏了，用户在大屏里就只剩 ⤢ 按钮一条明确的退出路径。
+     *    底部控制条（进度条横向拖拽）也贴着屏幕下沿，隐藏导航栏后从边缘起手的滑动
+     *    会先被系统拿去"临时唤出系统栏"，与手势冲突。
+     *  - **sticky（BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE）而非 full**：用户从顶部下拉
+     *    仍能临时看到状态栏（看时间/电量），几秒后自动收回；不会出现"拉出来就赖着不走、
+     *    把大屏布局挤矮一截"。
+     *  - **API 24 与 API 30+ 走同一条代码**：`WindowInsetsControllerCompat` 在
+     *    androidx.core 内部按版本分派（API 30+ 用 `WindowInsetsController`，
+     *    API 24~29 落到 `View.setSystemUiVisibility` + `SYSTEM_UI_FLAG_IMMERSIVE_STICKY`），
+     *    不需要在业务代码里手写 `Build.VERSION.SDK_INT` 分支 —— 手写反而容易在某个版本上漏掉。
+     */
+    private fun applyImmersive(immersive: Boolean) {
+        immersiveDesired = immersive
+        if (immersiveApplied == immersive) return
+        immersiveApplied = immersive
+        val controller = WindowCompat.getInsetsController(window, window.decorView)
+        controller.systemBarsBehavior =
+            WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        if (immersive) {
+            controller.hide(WindowInsetsCompat.Type.statusBars())
+            Log.i(TAG, "immersive: status bar hidden")
+        } else {
+            controller.show(WindowInsetsCompat.Type.statusBars())
+            Log.i(TAG, "immersive: status bar shown")
+        }
     }
 
     /**
@@ -530,6 +598,24 @@ private fun AutoRotateWatcher(
 }
 
 /**
+ * v1.8.0 · T1：沉浸式（隐藏状态栏）的**条件订阅点**。
+ *
+ * 生效条件与 PlayerCard 的 bigScreenActive 完全一致（用户意图 + 窗口真的横过来）——
+ * 少了后半句，会在"按钮刚点、窗口还没转"的那一两百毫秒里把状态栏先藏掉，
+ * 视觉上是"整个屏幕抖一下"。
+ */
+@Composable
+private fun ImmersiveEffect(
+    bigScreen: Boolean,
+    onImmersiveChange: (Boolean) -> Unit,
+) {
+    val landscape =
+        LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+    val active = bigScreen && landscape
+    val currentOnChange = rememberUpdatedState(onImmersiveChange)
+    LaunchedEffect(active) { currentOnChange.value(active) }
+}
+
 @Composable
 fun MainScreen(
     themeIndex: Int = 0,
