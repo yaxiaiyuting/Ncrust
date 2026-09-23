@@ -55,7 +55,7 @@ Single source of truth: `app/build.gradle.kts` → `defaultConfig.versionName` /
 
 - `AboutScreen.kt` reads `BuildConfig.VERSION_NAME` — **never hardcode a version constant**. This needs `buildFeatures.buildConfig = true`.
 - Release flow: bump `versionCode` + `versionName` → commit `build: 升级至 vX.Y.Z ...` → `./gradlew assembleRelease` → `gh release create vX.Y.Z --draft <apk>` → user smoke-tests and publishes manually.
-- Current: `versionName = "1.3.1"`, `versionCode = 6`. Latest release: `v1.3.1` (2026-09-11).
+- Current: `versionName = "1.8.0-gpl"`, `versionCode = 21`. Latest release: `v1.8.0-gpl`.
 
 ## Commit Convention
 
@@ -853,3 +853,69 @@ S6（API 24 / debug / 1440×2560）`dumpsys gfxinfo framestats`，22s 窗口：
 - **Stale comments**: some comments say "last 20 s" for the gapless preload window (actual 60 s) and "4 Hz" for progress ticks (actual 2 Hz). Trust the code.
 - **`SongDetailScreen` / `NavRoutes.song(...)` are registered but unreachable** — clipboard song links load into the player instead.
 - **`ncrust-api/` is not part of the app** — see Repository Layout.
+## v1.8.0 新增（本 fork）
+
+四个交互任务 + 一个 API 24 bugfix：**T1 沉浸式 · T2 竖屏音质 · T3 音频可视化 · T4 自动旋转 · T5 S6 状态栏歌词**。
+
+### T4 · 自动旋转（双向）
+
+| 项 | 说明 |
+|---|---|
+| 开关语义（调研后定为**选项 C**） | **开** = 应用跟随传感器旋转（SCREEN_ORIENTATION_SENSOR）+ 在播放器界面转横屏自动进大屏；**关** = 手机锁竖屏（= v1.7.0 行为）+ 只能用 ⤢ 手动进大屏 |
+| ⚠️ 应用内开关 ≠ 系统开关 | 用 SENSOR（**不是** USER），即应用自己决定是否跟随传感器，**既不读也不写** Settings.System.ACCELEROMETER_ROTATION |
+| 用户报的「竖屏→横屏不生效」根因 | v1.7.0 里手机恒被锁 SCREEN_ORIENTATION_PORTRAIT，窗口根本不会转 ⇒ 没有配置变化 ⇒ 自动进大屏无从触发（横屏→竖屏能退，是因为那时方向已被大屏模式放宽成 SENSOR） |
+| 触发范围 | **只限播放器界面**：playerExpanded（MainScreen 用 snapshotFlow{progress.value > 0.99f} 回传）+ 窗口已横屏 + 开关开 + 还没进大屏，四者同时成立 |
+| 手动退出的抑制 | **没有抑制标志**（那种写法会「忘了清 ⇒ 自动进入从此失效」）：LaunchedEffect 的三个 key 在「用户按按钮/返回键退出」时都不变 ⇒ 不会重新触发。转回竖屏再转横、或收起播放器再展开 = 新的显式意图 |
+| 防抖 | AUTO_ENTER_SETTLE_MS = 250ms：方向变化时 LaunchedEffect 自动取消上一个协程 ⇒ **合并**连续变化并重新计时（不是丢弃，丢弃会把状态留在错误的一侧） |
+| 纯逻辑 | BigScreenOrientation.kt（orientationFor / shouldAutoEnterBigScreen + 单测）· RotationSetting.kt（唯一读写入口：落盘 + 进程内 Compose 广播，三人消费者共享） |
+| UI | 设置页整行 toggleable+Role.Switch；播放器竖屏控制栏第 5 个图标 + 大屏左栏音质 chip 右侧（同一个 RotationToggleButton，两态图标，56dp/40dp 命中盒 + semantics） |
+| 退出大屏的方向恢复 | auto-rotate 开 → 交还传感器（手机还横着就保持横屏，此时走**宽屏两栏**播放器）；关 → 回 PORTRAIT |
+
+### T1 · 大屏模式沉浸式（隐藏状态栏）
+
+- **只隐藏状态栏，不隐藏导航栏**：导航栏是 S6 三大金刚键 / 手势返回的载体，也是 ⤢ 之外唯一的明确退出路径；底部控制条的横向拖拽也贴着屏幕下沿（藏了会被系统「临时唤出」抢手势）。
+- **sticky**（BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE）：下拉能临时看时间/电量，几秒后自动收回，不会把布局挤矮。
+- **API 24 与 API 30+ 走同一条代码**：WindowInsetsControllerCompat 在 androidx.core 内部按版本分派（30+ → WindowInsetsController；24~29 → setSystemUiVisibility + IMMERSIVE_STICKY）。业务代码里**不要**再手写 Build.VERSION.SDK_INT 分支。
+- 生效条件与 PlayerCard 的 bigScreenActive 完全一致（用户意图 + 窗口真的横过来），避免「按钮刚点、窗口还没转」的几百毫秒里状态栏先消失。
+- onWindowFocusChanged(true) 幂等重放一次：部分 ROM 从最近任务回来会重置窗口标志。
+- 实测：PCL110（Android 16 / 手势导航）与 **S6（Android 7.0 / 三大金刚键）** 都打出 immersive: status bar hidden；返回键退出后 immersive: status bar shown。
+
+### T2 · 竖屏音质就地选择器
+
+- 竖屏控制栏中间那个音质 chip 此前点了**跳设置页**（onNavigateToUser）；现在改成与横屏大屏同一个 PlayerQualityChip（Kanesumi MetroSelectorFlyout，UWP ComboBox 移植）。onNavigateToUser 这条链路已整条删除。
+- 三处共用：竖屏控制栏 / 宽屏控制条右端 / 横屏大屏左栏 —— 档位表、降级角标、「档位真变了才重取链」的行为天然一致。
+- 两件容易写错的事写在组件 KDoc 里：① 高亮档位必须**打开那一刻现读**（currentQualityPreferenceIndex()）；② FLAC 设备门控提示（API<27 选了无损也不会有）放在组件内 —— 放调用点必然漏一处。
+- 触摸：外层 ≥48dp 命中盒（视觉 chip 仍是 ~22dp 小色块，与 v1.7.0 逐像素一致）+ semantics{contentDescription = qualitySectionTitle}（此前只有横屏那份有）。
+
+### T3 · 大屏幕模式音频可视化
+
+**数据来源结论（调研，别再找别的 API）**：任务书假设的 AudioListener.onAudioSamples **在 media3 里根本不存在** —— javap 逐个版本核实 1.4.1 / 1.5.0 / 1.6.0 / 1.7.0 / 1.8.x / 1.9.0 / 1.11.1 都没有 AudioSamples / AudioListener 类。官方可用的是 **TeeAudioProcessor + WaveformAudioBufferSink**（1.4.1 起就有，1.11.1 签名逐字一致）。
+
+| 项 | 结论 |
+|---|---|
+| 权限 | **零新增权限**（在应用自己的音频处理链上取数据）。备选 android.media.audiofx.Visualizer 从 AOSP 7.1.1 起就要求 **RECORD_AUDIO**（不是「Android 10+ 才要」），与项目红线冲突，**未采用** |
+| FFmpeg 路径 | 完全兼容：FfmpegAudioRenderer extends DecoderAudioRenderer，而 DefaultRenderersFactory 反射创建它时传的是**同一个 AudioSink 实例** ⇒ MediaCodec 与 FFmpeg 两条解码路径都经过 tee |
+| 注入点 | VisualizerRenderersFactory.kt override buildAudioSink（**base 的三个参数必须逐项复刻**，否则静默改掉音频输出行为） |
+| 线程 | 回调在 ExoPlayer:Playback（THREAD_PRIORITY_AUDIO）⇒ WaveformRing.push 只做一次数组写 + 一次 volatile 自增：**零分配 / 零锁 / 零 IO** |
+| 环形缓冲 | 单写者无锁；UI 卡顿时**丢最旧的**，绝不回压音频线程；NaN/Inf 与非 [0,1] 全部夹紧 |
+| 渲染 | Canvas + drawRect；WaveformStore.generation **只在 draw 阶段读**（只重绘不重组）；柱高数组 remember 出来逐帧原地更新 |
+| 帧率 | 20fps（VISUALIZER_FRAME_INTERVAL_MS = 50），与数据速率 1:1；暂停/缓冲走 delay 并把窗口**指数衰减**到 0（不是瞬间清零，避免闪），归零后不再要求重绘 |
+| 幅度 | 用 **sqrt** 映射到高度：音乐 RMS 常落在 0.05~0.3，线性只能画出一排小方块 |
+| 布局 | 封面下、歌名/作者上；高度 = screenHeightDp × 11% 夹在 32~56dp（PCL110 横屏 363dp→40dp、S6 480dp→53dp），封面区 weight(1f) 自动让位 ⇒ 不溢出 |
+| 开关 | 设置页 audio_visualizer（默认**开**）。关掉时整块**不挂载**（不是 alpha=0），连帧时钟都不跑 |
+| S6 实测 A/B（同协议：重启 → 展开播放器自动进大屏 → 播放 → gfxinfo 25s） | 可视化**开**：485 帧 / Janky 44.12% / 50th **15ms** / 90th 25ms；**关**：157 帧 / Janky 78.98% / 50th **20ms** / 90th 36ms ⇒ 可视化把重绘摊平成稳定的 20fps 增量重绘，单帧反而更短，**不劣化 S6 基线**（对比 v1.6.0 的 S6 GPU 瓶颈记录：展开播放器+歌词 50th 18.6ms / 98% jank） |
+
+### T5 · S6（API 24）状态栏歌词不更新（bugfix）
+
+**根因（探针 + 平台侧证据）**：歌词行数据链是通的（2Hz 位置流 → 当前行 → PlaybackService.mediaLyricLine，会话 metadata 也一直在更新），但**通知正文只在 6 个事件点重新 post，没有一处是「跨行」**；而 **API < 28 的 SystemUI 不会从 MediaSession metadata 重建媒体通知**（S6 真机 SystemUI dex 里 NotificationMediaManager 命中数 = 0；AOSP 里这个类 **android-9.0.0_r1 才出现**）。于是通知停在最后一次 post 的那一行 —— 「暂停/播放恰好会走 onIsPlayingChanged → updateNotify()」正是用户看到「只有暂停再播放才刷新」的原因。
+
+修法：跨行时补一次重 post，**只在 SDK_INT < P 生效**（28+ 的系统自己会重建，重 post 反而让媒体轮播卡反复刷新）；配套 setOnlyAlertOnce(true) + LYRIC_NOTIFY_MIN_INTERVAL_MS = 250 限流（Android 7 有 post_frequency 限流）+ debug 包 NcrustLyricNotify 计数日志。实测 S6：一次播放 14 次跨行重 post，通知栏标题随歌词推进（截图复核）。
+
+### v1.8.0 的未验证项（如实）
+
+1. **真人手持旋转没有做**：测试机平放在桌上，自动进大屏的**传感器路径**（OrientationEventListener 放宽）无法物理触发。已验证的是「窗口变成横屏 ⇒ 自动进大屏」这条（S6 上通过「展开播放器时窗口已经是横屏」触发成功，且关闭大屏后保持宽屏两栏布局符合设计）。**请手持转一次确认。**
+2. T2 的 FLAC 提示在真机上未触发（PCL110 与 S6 都有 FLAC 解码器）。
+3. 大屏下的 S6 A/B 只测了 25s 窗口，未跑 perfetto；未做「可视化 ON 但歌词完全静止」的极端对照。
+4. 可视化只出现在大屏模式左栏（竖屏不出现，设计如此）。
+5. 与本次改动无关的老功能（榜单、推荐卡、离线缓存、媒体中心歌词等）本轮未逐项复测。
+

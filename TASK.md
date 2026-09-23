@@ -700,3 +700,42 @@ S6（慢设备 + debug 包）上一次拖动结束时 Animatable 还没追上手
 
 
 
+
+## 14. v1.8.0（T1 沉浸式 / T2 竖屏音质 / T3 音频可视化 / T4 自动旋转 / T5 S6 状态栏歌词）
+
+**版本**：`1.8.0-gpl` / **versionCode = 21**（`aapt2 dump badging` 实测：v1.7.0 = 20，本版 = 21）。
+
+**调研结论先行**（决定了 T3 是否落地）：
+- T3 的「方案 A：Media3 `AudioListener.onAudioSamples`」**在 media3 里根本不存在**（javap 核实 1.4.1/1.5.0/1.6.0/1.7.0/1.8.x/1.9.0/1.11.1 均无该类）；「方案 B：`android.media.audiofx.Visualizer`」
+  从 AOSP 7.1.1 起就要 **RECORD_AUDIO**（不是 Android 10+ 才要）⇒ 触红线，**不采用**；
+  **方案 C'（自研 tee）落地**：media3 官方 `TeeAudioProcessor + WaveformAudioBufferSink` 插在应用自己的
+  音频处理链上（`DefaultRenderersFactory.buildAudioSink` override），**零新增权限**，且
+  MediaCodec 与 FFmpeg 两条解码路径都经过它（两者共用同一个 AudioSink 实例）。⇒ **T3 落地，未砍未降级。**
+- T4 设计决策定为**选项 C**：开关开 = 跟随传感器 + 播放器界面自动进出大屏；关 = 锁竖屏 + ⤢ 手动进。
+  用 `SENSOR`（不是 `USER`），**既不读也不写** `Settings.System.ACCELEROMETER_ROTATION`。
+
+**测试矩阵（发布前实测）**
+
+| 项 | 设备 | 结果 |
+|---|---|---|
+| JVM 单测 | 本机 | ✅ **181 / 181 通过**（v1.7.0 的 169 + T4 状态机 5 + T3 环形缓冲 7） |
+| release / debug 构建 | 本机 | ✅ 两个都过 |
+| release 覆盖升级 | PCL110 | ✅ `versionCode=21`、`firstInstallTime` 未变（登录态保留） |
+| debug 覆盖升级 | S6 | ✅ `versionCode=21`、`firstInstallTime` 未变 |
+| T1 沉浸式 | PCL110 + S6 | ✅ 两台都 `immersive: status bar hidden`；返回键退出 → `status bar shown` |
+| T2 音质二级菜单 | PCL110 | ✅ 8 档菜单弹出并高亮「超清母带」；选「无损」后 chip 变「无损」且继续播放 |
+| T2 a11y / 命中盒 | S6（uiautomator） | ✅ 音质 chip 有 `content-desc=音质偏好`、旋转开关 `content-desc=自动旋转已开启`（224×224px ≈ 74dp） |
+| T3 可视化布局 | PCL110 2800×1272 / S6 2560×1440 | ✅ 封面下、歌名上，28 根包络条随音乐起伏，不溢出 |
+| T3 性能 A/B | S6 | ✅ 开：485 帧 / 44.12% janky / 50th **15ms**；关：157 帧 / 78.98% / 50th **20ms** ⇒ 不劣化 |
+| T4 自动进大屏（窗口路径） | S6 | ✅ 「窗口已横屏 + 展开播放器」触发进入 2560×1440 |
+| T4 退出后方向 | PCL110 | ✅ auto-rotate 开 → 退出后交还传感器（保持横屏，走宽屏两栏），状态栏恢复 |
+| T5 状态栏歌词 | S6 | ✅ 一次播放 **14 次**跨行重 post；通知栏标题随歌词推进（截图 + uiautomator 文本复核） |
+| 浅色主题（v1.7.0 遗留未验证项） | S6 | ✅ 大屏浅色主题截图复核通过 |
+| 崩溃 | 两台 | ✅ 冷启动/播放/进出大屏/切音质全程 **0 条 FATAL/ANR** |
+
+**未验证项**：真人手持旋转（传感器路径）、T2 的 FLAC 提示（两台都有 FLAC 解码器）、S6 大屏 perfetto、
+无关老功能未逐项复测、S6 用的是 debug 包。详见 `dist/RELEASE-NOTES-v1.8.0-gpl.md` 的「未验证项」节。
+
+**一处流程说明（如实）**：本轮的「卡片渲染（sqrt 幅度曲线）」是在 A/B 测量**之前**补的小改动，
+按 `feat(visualizer)` 那一个 commit 一起提交，没有单独拆 commit —— 它与可视化是同一个逻辑单元
+（同一次调研的产物），拆开反而会让中间那个 commit 的可视化观感与最终态不一致。
