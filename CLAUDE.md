@@ -55,7 +55,7 @@ Single source of truth: `app/build.gradle.kts` → `defaultConfig.versionName` /
 
 - `AboutScreen.kt` reads `BuildConfig.VERSION_NAME` — **never hardcode a version constant**. This needs `buildFeatures.buildConfig = true`.
 - Release flow: bump `versionCode` + `versionName` → commit `build: 升级至 vX.Y.Z ...` → `./gradlew assembleRelease` → `gh release create vX.Y.Z --draft <apk>` → user smoke-tests and publishes manually.
-- Current: `versionName = "1.9.2-gpl"`, `versionCode = 25`. Latest release: `v1.9.2-gpl`.
+- Current: `versionName = "1.9.3-gpl"`, `versionCode = 26`. Latest release: `v1.9.3-gpl`.
   （**注意 versionCode 必须递增**：v1.6.1 = 19，所以 v1.7.0 是 20 —— 任务书里写「v1.7.0 = 19」是错的，
   19 已经被 v1.6.1 占用，照抄会导致无法覆盖安装。同理本版 **23**：任务书说「v1.8.0 = 21、本版 22」，
   但 `aapt2 dump badging` 实测 v1.8.1 已经是 **22**，照抄 22 会与线上包撞号、无法覆盖安装。
@@ -378,7 +378,7 @@ SharedPreferences files:
 | File | Owner(s) | Contents |
 |---|---|---|
 | `ncrust_prefs` | `CookieManager` | `user_cookie` |
-| `ncrust_settings` | `ThemeManager`, `LanguageManager`, `PlayerViewModel`, `UserScreen`, `MainActivity` | theme index/mode, language, quality, gapless, lyrics translation, `lyrics_word_by_word`, `lyrics_ttml_enabled` / `lyrics_ttml_first` (v1.9.0), `battery_prompt_done` |
+| `ncrust_settings` | `ThemeManager`, `LanguageManager`, `PlayerViewModel`, `UserScreen`, `MainActivity` | theme index/mode, language, quality, gapless, lyrics translation, `lyrics_word_by_word`, `lyrics_word_animation` / `lyrics_font_scale` / `lyrics_sweep_quality` (v1.5.1/2), `lyrics_ttml_enabled` / `lyrics_ttml_first` (v1.9.0), `lyrics_romanization` (v1.9.3), `battery_prompt_done` |
 | `ncrust_library` | `LibraryManager` | `saved_songs`, `saved_albums`, `liked_ids` |
 | `ncrust_playback_state` | `PlaybackStateManager` | last song + `queue` / `queue_index` |
 | `ncrust_lyrics_cache` | `LyricsCache` | `entries` (≤ 200；LRC/译文/逐字与 TTML 共用同一张表，TTML 另有 7 天 TTL) |
@@ -1588,3 +1588,69 @@ AMLL DB 的 `ncm-lyrics/` 目录除了 TTML 还存了每首歌的 yrc/qrc/lys/lr
 - **S6（API 24）未跑本版**：本版只装了 PCL110；
 - v1.9.0/v1.9.1 的其余未验证项均未因本版改变。
 
+## v1.9.3 新增（本 fork · 音译显示，渲染层受控解禁）
+
+### 做了什么
+
+v1.9.2 把音译轨做进了数据层（TTML `x-roman` + 网易云 `romalrc`，缺口按文本逐行回退），
+但当时的硬约束是「渲染层 diff 必须为空」，于是数据只躺在缓存与日志里。本版**解禁音译行渲染**：
+原文 → 译文 → 音译，三行同在一个 LazyColumn item 内，跟着主行一起滚动 / 缩放 / 变色。
+
+| 项 | 决策 |
+|---|---|
+| 显示位置 | **原文下方小字，不替换原文**（PHASE0-REPORT-v1.9.3.md §2 逐条核对：逐字高亮的几何来自**原文那一个 BasicText** 的 TextLayoutResult，替换原文等于让 v1.5.2 的成果失去几何来源） |
+| 副文本顺序 | 原文 → **译文 → 音译**（与网易云官方客户端三层顺序一致） |
+| 开关 | `lyrics_romanization`，**默认关**：默认关时副文本槽条件挂载、连 Map 都不建，渲染路径与 v1.9.2 逐字节一致 |
+| 字号 | 音译 18sp / 行高 24sp（译文 20/26、原文 32/42），三者同乘 v1.5.1 的 fontScale ⇒ A- / A+ 一起缩放 |
+| 可点性 | 音译行**不新增任何 pointerInput**：它落在主行 Box 的 detectTapGestures 内，点它 == 点主行 |
+| 不显示的三类行 | 开关关 / 纯空白 / 与原文 trim 后逐字相同（英文歌的 `romalrc` 有时就是原文）—— 规则抽在 `lyric/LyricSubtitleText.kt`，JVM 单测覆盖 |
+
+### 渲染层解禁的**范围**（审计用）
+
+- **改了**：`NcrustLyricsPanel.kt`（音译槽 + `NcrustLyricLine.romanization` + a11y 走纯函数）、`LyricsView.kt`（两个新参数 + 按 timeMs 配对）、`PlayerCard.kt`、`PlayerViewModel.kt`、`UserScreen.kt`、`ui/i18n/`（8 语言）、`LyricsDisplayPrefs.kt`；
+- **一个字节都没改**：`lyric/SweepTrack.kt`（v1.5.2 冻结的渐变算法）、`LyricLineBody` 的 karaoke / drawSweep / drawHardCut 分支、`LyricTrackMerge.kt`、`LyricsCache.kt`、`player/MediaDisplayLines.kt`（v1.8.0 · T5 状态栏歌词）。
+
+**为什么音译行不影响 SweepTrack 的行高计算**：本应用的歌词定位从头到尾是「时间戳二分 + 视口比例滚动」
+（`currentLineIndex` 只吃 timestamps 数组、自动滚动按 viewportSize × 0.36 算偏移、渐隐高度按面板视口算），
+没有任何一处按行高反推位置；音译是原文节点的**兄弟节点**，不进那份 layout。因此本版不需要碰 SweepTrack，
+红线（若必须改 SweepTrack 的行高计算就先停下报告）没有触发。
+
+### 数据层与缓存：本版没有新字段
+
+音译数据来自 v1.9.2 就绪的 `PlayerViewModel.romanizedLyrics`，渲染层只按 `timeMs` 配对取用、**不重新合并**。
+开关是纯显示偏好（存 `ncrust_settings`，不进歌词缓存）⇒ **没有新的缓存字段、没有新的迁移逻辑** ——
+这正是下面那条「加字段 = 加迁移逻辑 = 加单测」规则的正向用法（能不加就不加）。
+
+### v1.9.3 的测试与实测（2026-09-24）
+
+| 项 | 结果 |
+|---|---|
+| JVM 单测 | **287 个全绿**（v1.9.2 = 276，本版 +11：`LyricSubtitleTextTest`，含 4 首真实夹具的端到端断言） |
+| release 覆盖升级 | PCL110：25 → 26 `adb install -r` Success，签名 `e75af3ff…5511` 未变 |
+| debug 覆盖升级 | S6：25 → 26 Success（**补上 v1.9.2 的遗留缺口 D1**：S6 装的是 debug 包，所以 release 覆盖必然被签名拒；改用 debug 包即闭环） |
+| 1959528822 紫荆花盛开 | 粤拼 29 行，PCL110 + S6 截图复核（`zi ging fa piu yoeng` 等） |
+| 22704409 DAY BY DAY | 韩文罗马音 52 行 + 译文 64 行同屏，顺序为 原文 / 译文 / 音译 |
+| 36990266 Faded（无音译） | 开关开着也不多一行、不产生空行（日志 `roman=none/0`） |
+| 默认关 | 同一首歌同一位置无音译行（与开启态截图对照） |
+| A- / A+ | S6 实测音译随主歌词同比放大 |
+| 逐字渐变回归 | S6 真机播放 0:28：当前行绿色渐变扫过、音译行同色跟随（SweepTrack 未改，行为一致） |
+| 帧时间 A/B（S6，滚动歌词，各 120 帧） | **无劣化**：total p50 14.9 vs 15.2 ms、p90 19.0 vs 19.1 ms、p99 22.4 vs 28.9 ms |
+
+### v1.9.3 仍未验证（如实）
+
+- **大屏 / 横屏**：PCL110 测试中途 USB 掉线未再回连，横屏大屏模式的音译显示没有真机证据；
+- **状态栏歌词（v1.8.0 · T5）**：`MediaDisplayLines` 未改，但本轮没重跑；
+- **逐字三档**只跑了「自动」档，高级 / 兼容两档未逐一切换（切换逻辑本版未改，与音译槽无交互）；
+- **TalkBack** 未实机验证（a11y 文本有单测断言：音译关闭时与 v1.9.2 表达式逐字节一致）；
+- **带声调符号的拼音样本未取到**：本轮音译全是 ASCII（粤拼数字声调 / 韩文罗马音 / 英文），
+  Latin Extended-A（ā á ǎ à）的系统字体覆盖未在真机验证；遇到豆腐块的退路是把声调降级为数字；
+- **PCL110 的帧时间对照没跑完**（掉线前只有一组无效样本）⇒ 性能结论只来自 S6 —— 低端机是更严的判据；
+- **YRC 服务端间歇开关（v1.9.2 遗留 D2）**本轮未复测；音译与 yrc 是两条独立轨，不受影响。
+
+### 与任务书的偏离
+
+- 任务书建议「选项 1（原文下方小字）」—— **采纳**；
+- **任务书未要求的一条显示规则**：「音译与原文 trim 后逐字相同则不显示」是自主加的（英文歌的 `romalrc` 有时等于原文，
+  显示两遍是噪音）。对本轮 3 首真实样本零影响（音译都与原文不同）；
+- 任务书要求一个 `chore(tools)` commit，但 `tools/` 按仓库惯例不入 git（`.gitignore` 里有 `.sh`）⇒
+  脚本留在仓库外，「动版本号前必须跑它」的规则写进 Versioning 一节，由该 commit 承载。
