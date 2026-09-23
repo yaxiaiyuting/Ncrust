@@ -42,9 +42,12 @@ android {
         // v1.9.2 修的是 v1.9.0 的分轨缺陷（TTML 胜出时整轨丢弃网易云的译文/音译）。
         // **第三次撞号教训**：任务书写「本版 v1.9.1」，但 aapt2 实测 v1.9.1-gpl 早已发布
         // （versionCode 24，修的是歌词镜像回退），照抄会与线上包撞号、无法覆盖安装 ⇒ 本版取 25。
-        // 动版本号之前必须先实测 dist/ 里的最新包。
-        versionCode = 25
-        versionName = "1.9.2-gpl"
+        // v1.9.3 是渲染层受控解禁：只加音译行渲染（开关默认关），SweepTrack 核心算法一个字节未改。
+        // **第四次**：任务书建议「versionCode 以 next-version.sh 输出为准」—— 本版起这就是硬流程，
+        // 脚本输出的 26 与上面三个来源一致（最近 5 个 tag / dist 36 个 APK / 仓库当前 build.gradle
+        // 的最大值都是 25）。动版本号之前必须先跑 tools/next-version.sh，不要再靠记忆推断。
+        versionCode = 26
+        versionName = "1.9.3-gpl"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
