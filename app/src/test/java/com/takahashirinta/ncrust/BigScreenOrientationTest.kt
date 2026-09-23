@@ -8,6 +8,7 @@
 
 package com.takahashirinta.ncrust
 
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -70,5 +71,108 @@ class BigScreenOrientationTest {
         assertTrue(BigScreenOrientation.shouldExitOnConfiguration(bigScreen = true, orientationLandscape = false))
         assertFalse(BigScreenOrientation.shouldExitOnConfiguration(bigScreen = true, orientationLandscape = true))
         assertFalse(BigScreenOrientation.shouldExitOnConfiguration(bigScreen = false, orientationLandscape = false))
+    }
+
+    // ---------- v1.8.0 · T4：方向策略总判定 ----------
+
+    @Test
+    fun `auto rotate off reproduces the v1_7_0 policy`() {
+        // 手机：锁竖屏；大屏设备（平板/折叠/车机）：不限制方向。
+        assertEquals(
+            BigScreenOrientation.DesiredOrientation.PORTRAIT,
+            BigScreenOrientation.orientationFor(
+                autoRotate = false, bigScreen = false, bigScreenRelaxed = false, isLargeScreen = false
+            )
+        )
+        assertEquals(
+            BigScreenOrientation.DesiredOrientation.UNSPECIFIED,
+            BigScreenOrientation.orientationFor(
+                autoRotate = false, bigScreen = false, bigScreenRelaxed = false, isLargeScreen = true
+            )
+        )
+    }
+
+    @Test
+    fun `auto rotate on follows the sensor on phones and ignores the large screen branch`() {
+        assertEquals(
+            BigScreenOrientation.DesiredOrientation.SENSOR,
+            BigScreenOrientation.orientationFor(
+                autoRotate = true, bigScreen = false, bigScreenRelaxed = false, isLargeScreen = false
+            )
+        )
+        assertEquals(
+            BigScreenOrientation.DesiredOrientation.SENSOR,
+            BigScreenOrientation.orientationFor(
+                autoRotate = true, bigScreen = false, bigScreenRelaxed = false, isLargeScreen = true
+            )
+        )
+    }
+
+    @Test
+    fun `big screen wins over auto rotate in both directions`() {
+        // 进入的第一步：还没放宽 → 强制横屏（用户此刻还竖着拿手机）。
+        assertEquals(
+            BigScreenOrientation.DesiredOrientation.SENSOR_LANDSCAPE,
+            BigScreenOrientation.orientationFor(
+                autoRotate = false, bigScreen = true, bigScreenRelaxed = false, isLargeScreen = false
+            )
+        )
+        // 已放宽 → SENSOR。"绝不长期锁横屏"对 auto-rotate 关的用户同样成立：
+        // 否则他在大屏里想退出就只剩按钮/返回键两条路。
+        assertEquals(
+            BigScreenOrientation.DesiredOrientation.SENSOR,
+            BigScreenOrientation.orientationFor(
+                autoRotate = false, bigScreen = true, bigScreenRelaxed = true, isLargeScreen = false
+            )
+        )
+        // autoRotate 开着但还没放宽：仍然是"先转过去"，不能被 SENSOR 分支抢先。
+        assertEquals(
+            BigScreenOrientation.DesiredOrientation.SENSOR_LANDSCAPE,
+            BigScreenOrientation.orientationFor(
+                autoRotate = true, bigScreen = true, bigScreenRelaxed = false, isLargeScreen = false
+            )
+        )
+    }
+
+    // ---------- v1.8.0 · T4：自动进入大屏 ----------
+
+    @Test
+    fun `auto enter needs all four conditions`() {
+        // 全开 = 竖屏播放器转横屏 → 自动进大屏（用户报的"竖屏到横屏不可以"就是这条）。
+        assertTrue(
+            BigScreenOrientation.shouldAutoEnterBigScreen(
+                autoRotate = true, playerExpanded = true, windowLandscape = true, bigScreen = false
+            )
+        )
+        // 开关关 → 转屏不触发（⤢ 按钮仍可手动进）。
+        assertFalse(
+            BigScreenOrientation.shouldAutoEnterBigScreen(
+                autoRotate = false, playerExpanded = true, windowLandscape = true, bigScreen = false
+            )
+        )
+        // 非播放界面（首页/库/搜索）转横屏 → 不进大屏。播放器收起时 playerExpanded = false。
+        assertFalse(
+            BigScreenOrientation.shouldAutoEnterBigScreen(
+                autoRotate = true, playerExpanded = false, windowLandscape = true, bigScreen = false
+            )
+        )
+        // 窗口还没转过去（旋转有延迟）→ 不在竖屏窗口里塞横屏两栏布局。
+        assertFalse(
+            BigScreenOrientation.shouldAutoEnterBigScreen(
+                autoRotate = true, playerExpanded = true, windowLandscape = false, bigScreen = false
+            )
+        )
+        // 已经在大屏里 → 幂等，不重复进。
+        assertFalse(
+            BigScreenOrientation.shouldAutoEnterBigScreen(
+                autoRotate = true, playerExpanded = true, windowLandscape = true, bigScreen = true
+            )
+        )
+    }
+
+    /** 防抖窗口必须是一个"人感觉不到、但足够吞掉连续配置回调"的量级。 */
+    @Test
+    fun `auto enter settle window is short but non zero`() {
+        assertTrue(BigScreenOrientation.AUTO_ENTER_SETTLE_MS in 100L..500L)
     }
 }

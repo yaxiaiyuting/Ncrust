@@ -30,6 +30,85 @@ object BigScreenOrientation {
     const val ORIENTATION_UNKNOWN = -1
 
     /**
+     * v1.8.0 · T4：自动进入大屏前的**稳定等待**（毫秒）。
+     *
+     * 用户快速把手机来回转时，`onConfigurationChanged` 会连续到达；平台自己已经有
+     * 45° 滞回，但"转过去又马上转回来"仍会让大屏模式进进出出。这里的做法不是"丢弃
+     * 短间隔内的转换"（那会丢掉最后一次、把状态留在错误的一侧），而是**合并**：
+     * 每次方向变化都把等待重新计时，只有方向真正稳定 [AUTO_ENTER_SETTLE_MS] 之后才提交。
+     * Compose 的 `LaunchedEffect(key)` 在 key 变化时自动取消上一个协程，天然就是这个语义。
+     */
+    const val AUTO_ENTER_SETTLE_MS = 250L
+
+    /**
+     * v1.8.0 · T4：当前应当写入 `Activity.requestedOrientation` 的方向意图。
+     *
+     * 不直接返回 `ActivityInfo` 常量是为了让判定能脱离 Android 单测（[BigScreenOrientationTest]）。
+     * 映射在 `MainActivity.applyOrientationPolicy()` 里做，只有一处。
+     */
+    enum class DesiredOrientation {
+        /** 手机竖屏锁定：auto-rotate 关且不在大屏（v1.7.0 及以前的默认行为）。 */
+        PORTRAIT,
+
+        /** 进入大屏的第一步：用户此刻还竖着拿手机，只有强制横屏能让窗口立刻转过去。 */
+        SENSOR_LANDSCAPE,
+
+        /** 跟随传感器（**不理会系统"自动旋转"锁**，见 [orientationFor] 的注释）。 */
+        SENSOR,
+
+        /** 不限制方向：平板 / 折叠展开 / 车机，避免信箱模式黑边。 */
+        UNSPECIFIED,
+    }
+
+    /**
+     * v1.8.0 · T4：方向策略的**唯一判定**。优先级从高到低：
+     *
+     *  1. **大屏模式未放宽** → [DesiredOrientation.SENSOR_LANDSCAPE]：立刻转过去；
+     *  2. **大屏模式已放宽** → [DesiredOrientation.SENSOR]：交给传感器，转回竖屏即退出
+     *     （"绝不长期锁横屏"这条 P1 契约在 T4 里对 auto-rotate 关的用户同样成立 ——
+     *     否则用户在大屏里想退出就只剩按钮和返回键两条路）；
+     *  3. **auto-rotate 开** → [DesiredOrientation.SENSOR]；
+     *  4. auto-rotate 关 → 大屏设备 UNSPECIFIED、手机 PORTRAIT（= v1.7.0 行为）。
+     *
+     * ⚠️ **应用内开关 ≠ 系统开关**：这里用 `SENSOR` 而不是 `USER`，即应用自己决定要不要
+     * 跟随传感器，**既不改写、也不读取** `Settings.System.ACCELEROMETER_ROTATION`。
+     * 选 `USER` 的话，系统自动旋转锁一开就"应用内开关看着是开的、实际不转"，
+     * 用户无从判断；现在应用内开关是唯一事实源，行为可预期、也能被真机测试稳定复现。
+     */
+    fun orientationFor(
+        autoRotate: Boolean,
+        bigScreen: Boolean,
+        bigScreenRelaxed: Boolean,
+        isLargeScreen: Boolean,
+    ): DesiredOrientation = when {
+        bigScreen && !bigScreenRelaxed -> DesiredOrientation.SENSOR_LANDSCAPE
+        bigScreen -> DesiredOrientation.SENSOR
+        autoRotate -> DesiredOrientation.SENSOR
+        isLargeScreen -> DesiredOrientation.UNSPECIFIED
+        else -> DesiredOrientation.PORTRAIT
+    }
+
+    /**
+     * v1.8.0 · T4：是否应该**自动进入**大屏模式。四个条件缺一不可：
+     *
+     *  - `autoRotate`：开关关着时转屏不触发（⤢ 按钮仍可手动进）；
+     *  - `playerExpanded`：**触发范围限定在播放器界面**。首页 / 库 / 搜索转横屏不进大屏；
+     *  - `windowLandscape`：窗口真的已经横过来了（旋转有延迟，提前进会在竖屏窗口里
+     *    塞一个横屏两栏布局）；
+     *  - `!bigScreen`：已经在里面就不重复进。
+     *
+     * "用户手动退出后不要立刻又自动进去"这件事**不在这里判**：它靠"触发源是
+     * 方向变化 / 播放器展开这两个边沿"来保证 —— 手动退出（按钮 / 返回键）不改变这两个
+     * 输入，所以不会重新触发。见 MainActivity 里那个 LaunchedEffect 的 key 选择。
+     */
+    fun shouldAutoEnterBigScreen(
+        autoRotate: Boolean,
+        playerExpanded: Boolean,
+        windowLandscape: Boolean,
+        bigScreen: Boolean,
+    ): Boolean = autoRotate && playerExpanded && windowLandscape && !bigScreen
+
+    /**
      * 设备是否物理横向。
      *
      * `OrientationEventListener` 的语义：0° = 自然方向竖直（竖屏正持），
