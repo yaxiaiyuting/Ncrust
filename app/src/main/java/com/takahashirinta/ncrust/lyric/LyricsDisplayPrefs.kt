@@ -82,6 +82,23 @@ object LyricsDisplayPrefs {
     /** v1.9.0：TTML 与网易云歌词都能用时，是否优先用 TTML。 */
     const val KEY_TTML_FIRST = "lyrics_ttml_first"
 
+    /**
+     * v1.9.3：音译显示开关（默认**关**）。渲染规则见 [LyricSubtitleText]。
+     *
+     * 它只影响「读出来的音译要不要画」，与歌词源、缓存、请求全都无关 ——
+     * 打开 / 关闭不会触发任何网络请求，也不需要重取歌词（音译数据一直在 [LrcLine] 那一轨上）。
+     */
+    const val KEY_ROMANIZATION = "lyrics_romanization"
+
+    /**
+     * v1.9.3：音译的基础字号 / 行高（sp）。
+     *
+     * 比译文（20 / 26）低一档，用来建立「原文 > 译文 > 音译」的层级；A- / A+ 与译文一样
+     * 把 fontScale 乘在上面（见 LyricsView 的传参），所以三者的比例恒定。
+     */
+    const val ROMANIZATION_FONT_SP = 18f
+    const val ROMANIZATION_LINE_HEIGHT_SP = 24f
+
     // v1.5.2：扫过参数的高级覆盖项。默认值（见 LyricsSweepConfig）就是定稿值；留这几个键是为了
     // **不重新构建**就能在真机上扫参数——低端机调 fadeEm、浅色主题调 inactiveAlpha、慢歌试 easing。
     // 键不存在 / 值非法时一律回落默认值，所以普通用户永远不会碰到它们。
@@ -150,6 +167,20 @@ object LyricsDisplayPrefs {
 
     fun writeTtmlFirst(prefs: SharedPreferences, first: Boolean) {
         prefs.edit().putBoolean(KEY_TTML_FIRST, first).apply()
+    }
+
+    /**
+     * v1.9.3：读「显示音译」开关，**默认关**。
+     *
+     * 默认关是刻意的：音译轨是 v1.9.2 才进缓存的数据，老用户升级后不该因为「服务端刚好有这份
+     * 数据」就凭空多出一行小字。想要的人自己去设置页打开；打开后由 [LyricSubtitleText] 负责
+     * 丢掉空白行与「与原文逐字相同」的行，所以打开也不会多出噪音行。
+     */
+    fun readRomanization(prefs: SharedPreferences): Boolean =
+        readBooleanSafely(prefs, KEY_ROMANIZATION, false)
+
+    fun writeRomanization(prefs: SharedPreferences, enabled: Boolean) {
+        prefs.edit().putBoolean(KEY_ROMANIZATION, enabled).apply()
     }
 
     private fun readBooleanSafely(prefs: SharedPreferences, key: String, def: Boolean): Boolean =

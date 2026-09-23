@@ -136,6 +136,9 @@ fun PlayerCard(
     val lyricsSongId by playerViewModel.lyricsSongId.collectAsState()
     val lyricsNoContentSongId by playerViewModel.lyricsNoContentSongId.collectAsState()
     val showLyricsTranslation by playerViewModel.showLyricsTranslation.collectAsState()
+    // v1.9.3：音译显示开关（默认关）+ 音译轨（v1.9.2 的音译数据，渲染层只读不重合并）。
+    val showLyricsRomanization by playerViewModel.showLyricsRomanization.collectAsState()
+    val romanizedLyrics by playerViewModel.romanizedLyrics.collectAsState()
     // v1.5.1 · A：逐字动画模式（0 渐变扫过 / 1 逐字硬切 / 2 关闭逐字）。
     // 模式 2 时 karaokeEnabled=false，行内渲染退回 v1.4.1 的整行路径。
     val lyricsWordAnimation by playerViewModel.lyricsWordAnimation.collectAsState()
@@ -783,6 +786,8 @@ fun PlayerCard(
                                     lyrics = lyrics,
                                     translatedLyrics = translatedLyrics,
                                     showTranslation = showLyricsTranslation,
+                                    romanizedLyrics = romanizedLyrics,
+                                    showRomanization = showLyricsRomanization,
                                     positionFlow = playerViewModel.currentPosition,
                                     isPlaying = isPlaying,
                                     isVisible = showLyrics,

@@ -73,6 +73,8 @@ import androidx.compose.ui.util.lerp
 import io.github.takahashirinta.kanesumi.anim.sokuou.SokuouTweens
 import io.github.takahashirinta.kanesumi.core.theme.LocalMetroColors
 import com.takahashirinta.ncrust.lyric.LrcWord
+import com.takahashirinta.ncrust.lyric.LyricSubtitleText
+import com.takahashirinta.ncrust.lyric.LyricsDisplayPrefs
 import com.takahashirinta.ncrust.lyric.LyricsSweepConfig
 import com.takahashirinta.ncrust.lyric.LyricsWordAnimationMode
 import com.takahashirinta.ncrust.lyric.SweepGeometry
@@ -119,6 +121,10 @@ data class NcrustLyricLine(
     val text: String,
     // 可选翻译(Spotify 式双语):非空时渲染在原句下方,小号降透明度。
     val translation: String = "",
+    // v1.9.3：可选音译（罗马音 / 粤拼）：非空时渲染在**译文下方**，字号再低一档。
+    // 「要不要显示」由调用方用 LyricSubtitleText.visibleRomanization 决定（开关 / 空白行 /
+    // 与原文逐字相同都在那里被丢掉），面板只负责「非空就挂载」。
+    val romanization: String = "",
     // v1.5.0 · B：逐字时间轴（来自 yrc）。空 = 该行没有逐字数据，按普通整行渲染。
     val words: List<LrcWord> = emptyList(),
     // v1.5.0 · B：整行结束时刻（yrc 的行时长）。null = 未知。
@@ -141,6 +147,10 @@ fun NcrustLyricsPanel(
     lineHeight: TextUnit = 42.sp,
     translationFontSize: TextUnit = 20.sp,
     translationLineHeight: TextUnit = 26.sp,
+    // v1.9.3：音译字号 / 行高。调用方（LyricsView）把 fontScale 乘好后传入，
+    // 所以 A- / A+ 会同时缩放原文 / 译文 / 音译三者，比例恒定。
+    romanizationFontSize: TextUnit = LyricsDisplayPrefs.ROMANIZATION_FONT_SP.sp,
+    romanizationLineHeight: TextUnit = LyricsDisplayPrefs.ROMANIZATION_LINE_HEIGHT_SP.sp,
     inactiveScale: Float = 0.82f,
     enabled: Boolean = true,
     // v1.5.0 · B：逐字高亮开关。false（或该行没有逐字数据）时行内渲染与 v1.4.1 相同。
@@ -184,8 +194,10 @@ fun NcrustLyricsPanel(
             .distinctUntilChanged()
             .collect { idx ->
                 val line = if (idx >= 0 && idx < lines.size) lines[idx] else null
+                // v1.9.3：拼接收进 LyricSubtitleText（JVM 单测覆盖）。音译开关关掉时
+                // 它的输出与 v1.9.2 的表达式逐字节一致 —— TalkBack 播报内容不变。
                 val text = line?.let {
-                    if (it.translation.isEmpty()) it.text else "${it.text}\n${it.translation}"
+                    LyricSubtitleText.a11yText(it.text, it.translation, it.romanization)
                 } ?: ""
                 if (text != a11yText.value) a11yText.value = text
             }
@@ -336,6 +348,30 @@ fun NcrustLyricsPanel(
                                 style = TextStyle(
                                     fontSize = translationFontSize,
                                     lineHeight = translationLineHeight,
+                                    fontWeight = FontWeight.Normal,
+                                ),
+                                softWrap = true,
+                                color = color.copy(alpha = color.alpha * 0.6f),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 2.dp),
+                            )
+                        }
+                        // v1.9.3：音译槽（原文 → 译文 → 音译，与网易云官方客户端的三层顺序一致）。
+                        // 刻意**不**把上面那个译文槽重构成共用的私有 composable：本版的红线之一是
+                        // 「关掉音译开关时渲染路径与 v1.9.2 逐字节一致」，让译文分支源码保持原样是
+                        // 最省事的证明方式（同构的十来行重复一次，换一条可审计的不变量）。
+                        //
+                        // 隐藏走**条件挂载**：romanization 为空时这个 MetroText 根本不在 Composition 里
+                        // （AGENTS.md「Compose 触摸陷阱」第 1/4 条：alpha=0 的节点仍然参与命中测试）。
+                        // 也没有任何 pointerInput：它落在主行 Box 的 detectTapGestures 命中区内，
+                        // 点它 == 点主行（seek 到本行），不新增任何命中区。
+                        if (line.romanization.isNotEmpty()) {
+                            MetroText(
+                                text = line.romanization,
+                                style = TextStyle(
+                                    fontSize = romanizationFontSize,
+                                    lineHeight = romanizationLineHeight,
                                     fontWeight = FontWeight.Normal,
                                 ),
                                 softWrap = true,

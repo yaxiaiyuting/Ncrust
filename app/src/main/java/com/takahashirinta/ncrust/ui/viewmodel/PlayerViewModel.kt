@@ -94,6 +94,17 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
     val lyricsNoContentSongId = MutableStateFlow(-1L)
     // 设置页开关:是否显示歌词翻译。默认开——外文歌直接看到双语,中文歌 tlyric 为空不受影响。
     val showLyricsTranslation = MutableStateFlow(true)
+
+    /**
+     * v1.9.3：是否显示音译轨（罗马音 / 粤拼）。**默认关**。
+     *
+     * 默认关是刻意的：音译数据（[romanizedLyrics]）是 v1.9.2 才进缓存的新资产，老用户升级后
+     * 不该因为「服务端刚好有这份数据」就凭空多出一行小字。打开后渲染层按 timeMs 逐行配对，
+     * 缺音译的行、空白行、与原文逐字相同的行都不显示（规则见 [com.takahashirinta.ncrust.lyric.LyricSubtitleText]）。
+     *
+     * 它只控制**显示**：与歌词源、缓存、请求全都无关，切换即时生效且不重取歌词。
+     */
+    val showLyricsRomanization = MutableStateFlow(false)
     // v1.5.1 · D：上一次推给媒体面板的歌词行（去重用，避免 2Hz 采样反复写同一个值）。
     private var lastMediaLyricLine: String? = null
 
@@ -312,6 +323,8 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
             .getSharedPreferences(LyricsDisplayPrefs.PREFS_NAME, android.content.Context.MODE_PRIVATE)
         lyricsTtmlEnabled.value = LyricsDisplayPrefs.readTtmlEnabled(lyricPrefs)
         lyricsTtmlFirst.value = LyricsDisplayPrefs.readTtmlFirst(lyricPrefs)
+        // v1.9.3：音译显示开关（默认关）。同样是「键被写坏就回落默认」的安全读。
+        showLyricsRomanization.value = LyricsDisplayPrefs.readRomanization(lyricPrefs)
 
         // v1.5.1 · D：把「当前行」推给 PlaybackService —— 只在**跨行**时写一次
         // （currentPosition 是 2Hz 采样，这里每次采样只做一次 O(行数) 的二分/线性比较，
@@ -544,6 +557,19 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         showLyricsTranslation.value = enabled
         getApplication<Application>().getSharedPreferences("ncrust_settings", 0)
             .edit().putBoolean("lyrics_translation", enabled).apply()
+    }
+
+    /**
+     * v1.9.3：设置页「显示音译」开关。只改显示，不重取歌词（音译轨一直在 StateFlow 上），
+     * 所以切换是即时的；落盘同样即时（它不是连续点按的控件，不需要字号那种防抖）。
+     */
+    fun setLyricsRomanization(enabled: Boolean) {
+        showLyricsRomanization.value = enabled
+        LyricsDisplayPrefs.writeRomanization(
+            getApplication<Application>()
+                .getSharedPreferences(LyricsDisplayPrefs.PREFS_NAME, android.content.Context.MODE_PRIVATE),
+            enabled
+        )
     }
 
     /**

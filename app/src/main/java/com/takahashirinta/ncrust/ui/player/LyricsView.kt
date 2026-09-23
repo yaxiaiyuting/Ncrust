@@ -32,6 +32,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.takahashirinta.ncrust.lyric.LrcLine
+import com.takahashirinta.ncrust.lyric.LyricSubtitleText
 import com.takahashirinta.ncrust.lyric.LyricsDisplayPrefs
 import com.takahashirinta.ncrust.lyric.LyricsSweepPerf
 import com.takahashirinta.ncrust.lyric.LyricsSweepQuality
@@ -60,6 +61,11 @@ fun LyricsView(
     lyrics: List<LrcLine>,
     translatedLyrics: List<LrcLine> = emptyList(),
     showTranslation: Boolean = true,
+    // v1.9.3：音译轨（罗马音 / 粤拼），与 translatedLyrics 同构。数据来自 PlayerViewModel
+    // 的 v1.9.2 音译轨，渲染层**不重新合并**，只按 timeMs 配对取用。
+    romanizedLyrics: List<LrcLine> = emptyList(),
+    // v1.9.3：音译显示开关（默认关 ⇒ 渲染路径与 v1.9.2 逐字节一致）。
+    showRomanization: Boolean = false,
     positionFlow: StateFlow<Long>,
     isPlaying: Boolean,
     isVisible: Boolean,
@@ -97,13 +103,25 @@ fun LyricsView(
     // 翻译按时间戳精确对齐原句(网易 tlyric 与原 lrc 时间戳一致),缺失的行不显示译文。
     // v1.5.0 · B：逐字时间轴(words/endMs)由 LrcLine 原样带过去 —— 它来自 yrc，已经由
     // YrcParser 对齐到 LRC 的文本上；这里不做任何加工，也不改变行的集合与顺序。
-    val panelLines = remember(lyrics, translatedLyrics, showTranslation) {
+    // v1.9.3：音译同理 —— 按 timeMs 精确配对，配不上的行就是空串（不显示）。
+    // 开关关掉时连 Map 都不建（默认路径零额外分配）。
+    // "要不要显示这一行"由 LyricSubtitleText.visibleRomanization 决定：空白行、与原文逐字相同的行
+    // 都被丢掉，所以「无音译的歌」打开开关也不会多出一行空行（有 JVM 单测 + 真实样本断言）。
+    val panelLines = remember(
+        lyrics, translatedLyrics, showTranslation, romanizedLyrics, showRomanization,
+    ) {
         val tMap = if (showTranslation) translatedLyrics.associateBy { it.timeMs } else emptyMap()
+        val rMap = if (showRomanization) romanizedLyrics.associateBy { it.timeMs } else emptyMap()
         lyrics.map {
             NcrustLyricLine(
                 timestampMillis = it.timeMs,
                 text = it.text,
                 translation = tMap[it.timeMs]?.text ?: "",
+                romanization = LyricSubtitleText.visibleRomanization(
+                    main = it.text,
+                    romanization = rMap[it.timeMs]?.text ?: "",
+                    show = showRomanization,
+                ),
                 words = it.words,
                 endMs = it.endMs,
             )
@@ -281,6 +299,9 @@ fun LyricsView(
             lineHeight = (42 * fontScale).sp,
             translationFontSize = (20 * fontScale).sp,
             translationLineHeight = (26 * fontScale).sp,
+            // v1.9.3：音译字号同样乘 fontScale（A- / A+ 三档一起缩放，层级比例恒定）。
+            romanizationFontSize = (LyricsDisplayPrefs.ROMANIZATION_FONT_SP * fontScale).sp,
+            romanizationLineHeight = (LyricsDisplayPrefs.ROMANIZATION_LINE_HEIGHT_SP * fontScale).sp,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 20.dp),

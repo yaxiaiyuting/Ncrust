@@ -143,6 +143,8 @@ fun UserScreen(
     // 两者都只是歌词源的选择，改完由 ViewModel 对当前歌重新 fetch（缓存里那份未必是最终源）。
     var lyricsTtmlEnabled by remember { mutableStateOf(LyricsDisplayPrefs.readTtmlEnabled(prefs)) }
     var lyricsTtmlFirst by remember { mutableStateOf(LyricsDisplayPrefs.readTtmlFirst(prefs)) }
+    // v1.9.3：音译显示（默认关）。只影响显示，不改歌词源、不重取歌词。
+    var lyricsRomanization by remember { mutableStateOf(LyricsDisplayPrefs.readRomanization(prefs)) }
 
     var selectedLanguageCode by remember { mutableStateOf(getSavedLanguageCode(context)) }
 
@@ -453,6 +455,17 @@ fun UserScreen(
                     }
                 )
             }
+            // v1.9.3：音译（罗马音 / 粤拼）显示开关，**默认关**。开启后原文下方多一行音译小字
+            // （有译文时排在译文下面）；没有音译数据的歌不受影响，不会多出空行。
+            SettingSwitchRow(
+                title = strings.lyricsRomanizationLabel,
+                description = strings.lyricsRomanizationHint,
+                checked = lyricsRomanization,
+                onCheckedChange = {
+                    lyricsRomanization = it
+                    playerViewModel.setLyricsRomanization(it)
+                }
+            )
             Spacer(Modifier.height(24.dp))
         }
 
