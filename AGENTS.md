@@ -55,9 +55,10 @@ Single source of truth: `app/build.gradle.kts` → `defaultConfig.versionName` /
 
 - `AboutScreen.kt` reads `BuildConfig.VERSION_NAME` — **never hardcode a version constant**. This needs `buildFeatures.buildConfig = true`.
 - Release flow: bump `versionCode` + `versionName` → commit `build: 升级至 vX.Y.Z ...` → `./gradlew assembleRelease` → `gh release create vX.Y.Z --draft <apk>` → user smoke-tests and publishes manually.
-- Current: `versionName = "1.8.1-gpl"`, `versionCode = 22`. Latest release: `v1.8.1-gpl`.
+- Current: `versionName = "1.9.0-gpl"`, `versionCode = 23`. Latest release: `v1.8.1-gpl`.
   （**注意 versionCode 必须递增**：v1.6.1 = 19，所以 v1.7.0 是 20 —— 任务书里写「v1.7.0 = 19」是错的，
-  19 已经被 v1.6.1 占用，照抄会导致无法覆盖安装。）
+  19 已经被 v1.6.1 占用，照抄会导致无法覆盖安装。同理本版 **23**：任务书说「v1.8.0 = 21、本版 22」，
+  但 `aapt2 dump badging` 实测 v1.8.1 已经是 **22**，照抄 22 会与线上包撞号、无法覆盖安装。）
 
 ## Commit Convention
 
@@ -125,7 +126,7 @@ Under `com.takahashirinta.ncrust/`:
 | `auth/` | `CookieManager` (SharedPreferences), `QrPair` / `QrPairClient` / `QrPairServer` (LAN QR handoff) |
 | `library/` | `LibraryManager` (cloud-synced liked songs + subscribed albums), `SearchHistoryManager` |
 | `cache/` | `ContentCache` — in-memory network snapshot (home + LRU detail caches + user profile) |
-| `lyric/` | `LrcParser` (`[MM:SS.mm]` → `LrcLine.timeMs`), `LyricsCache` (200-entry persistent cache) |
+| `lyric/` | `LrcParser` (`[MM:SS.mm]` → `LrcLine.timeMs`), `YrcParser` / `YrcAligner` (word-level), `SweepTrack` (sweep cursor), `LyricsDisplayPrefs`; **v1.9.0**: `TtmlParser` / `TtmlScanner` (AMLL TTML), `AmllTtmlClient`, `LyricSourceChain`, `LyricRequestGate`; `LyricsCache` (200-entry persistent cache, LRC + TTML) |
 | `warmup/` | `AppWarmup` — cold-start preload singleton |
 | `power/` | `BackgroundActivity` — battery-optimisation whitelist intents |
 | `ui/navigation/` | `NavRoutes` route constants and `MainNavGraph` |
@@ -366,10 +367,10 @@ SharedPreferences files:
 | File | Owner(s) | Contents |
 |---|---|---|
 | `ncrust_prefs` | `CookieManager` | `user_cookie` |
-| `ncrust_settings` | `ThemeManager`, `LanguageManager`, `PlayerViewModel`, `UserScreen`, `MainActivity` | theme index/mode, language, quality, gapless, lyrics translation, `battery_prompt_done` |
+| `ncrust_settings` | `ThemeManager`, `LanguageManager`, `PlayerViewModel`, `UserScreen`, `MainActivity` | theme index/mode, language, quality, gapless, lyrics translation, `lyrics_word_by_word`, `lyrics_ttml_enabled` / `lyrics_ttml_first` (v1.9.0), `battery_prompt_done` |
 | `ncrust_library` | `LibraryManager` | `saved_songs`, `saved_albums`, `liked_ids` |
 | `ncrust_playback_state` | `PlaybackStateManager` | last song + `queue` / `queue_index` |
-| `ncrust_lyrics_cache` | `LyricsCache` | `entries` (≤ 200) |
+| `ncrust_lyrics_cache` | `LyricsCache` | `entries` (≤ 200；LRC/译文/逐字与 TTML 共用同一张表，TTML 另有 7 天 TTL) |
 | `search_history` | `SearchHistoryManager` | `songs`, `albums`, `artists` (≤ 10 each, 14-day TTL) |
 
 ### Auth & Login
@@ -1138,3 +1139,209 @@ M3 在本仓库只当**取值参照系**。落地的是三件与 Kanesumi「无�
 
 **没有为此改任何代码。** 唯一可讨论的点是「加载中没有任何超时/失败提示」——
 现在的行为是失败后静默回落到未登录态，属于既有设计，不在本轮范围。
+
+## v1.9.0 新增（本 fork）
+
+**AMLL TTML 逐字歌词源 + TTML → YRC → LRC 三级回退链**。渲染层**零改动**：TTML 解析结果直接落成既有的
+`LrcLine` / `LrcWord`，`SweepTrack` / `NcrustLyricsPanel` 完全不需要知道歌词来自哪个源。
+
+### 版本：`1.9.0-gpl` / versionCode **23**
+
+| 项 | 实测值 |
+|---|---|
+| versionName / versionCode | `1.9.0-gpl` / **23**（`app/build.gradle.kts`） |
+| v1.8.1 的 versionCode | **22**（`aapt2 dump badging dist/Ncrust-v1.8.1-gpl-release.apk` 实测） |
+| applicationId | `com.takahashirinta.ncrust`（不变） |
+| 签名证书 SHA-256 | `e75af3ff…5511`（与 v1.0.4 起历次发布同一张；PCL110 上安装的 23 与 v1.8.1 release 实测一致） |
+
+⚠️ **任务书的「v1.8.0 = 21，本版 22」是过时的**：v1.8.0 确实是 21，但 **v1.8.1 已经用掉 22**
+（`1341169 build: 升级至 v1.8.1-gpl (versionCode 22)`）。照抄 22 会与线上包**撞号、装不上**；
+versionCode 必须严格递增。
+
+### 覆盖率实测（三口径，**不许写「大幅提升」**）
+
+样本 = PCL110 实机导出的**单账号真实收藏 98 首**（偏华语流行 + 部分欧美摇滚 / 电子）。
+YRC 可用判据用**当前实现语义**（v1.6.0 `YrcAligner`：LCS 保序对齐 + 漂移 ≤ 2000ms + 挂载率 ≥ 50%），
+不是 v1.5.x 的「行数必须完全相等」。
+
+| 口径 | 命中 | 覆盖率 |
+|---|---|---|
+| 仅 YRC 可用 | 40 / 98 | **40.8%** |
+| 仅 AMLL TTML 可用 | 10 / 98 | **10.2%** |
+| **YRC ∪ TTML（逐字总覆盖）** | **45 / 98** | **45.9%** |
+| 两者都无逐字（只能整行 LRC） | 53 / 98 | 54.1% |
+
+- **TTML 的净增量 = 5 首 = +5.1 个百分点**（40.8% → 45.9%，相对 +12.5%），不是任务书预期的量级；
+- 拆分：仅 YRC 35 首 · 仅 TTML 5 首 · **两者都有 5 首** ⇒ **TTML 命中里有一半（5/10）是 YRC 已有覆盖的「重复投资」**；
+- 覆盖率与热度强相关：10 首 TTML 命中全部 `pop=100`，冷门曲基本没有 TTML；
+- **已知偏差（如实）**：98 首来自单个账号，不代表全体用户；**ACG / vocaloid / 日系用户的实际 TTML 覆盖率会显著更高**；
+- 任务书「88% 的歌看不到逐字」的前提也已过时：当前实测是 **54.1%**（YRC 的 40.8% 已经覆盖大部分）。
+
+**不做「按歌名 / 歌手模糊匹配」的兜底**：AMLL README 明确警告不同版本 / 不同音源的歌词时间轴不可混用，
+同名异版的 TTML 会导致**逐字错位** —— 那比没有逐字更糟。宁可少 5 首，不给错位高亮。
+
+### 三级回退链（纯函数，JVM 可单测）
+
+```
+TTML 总开关关闭                     → YRC → LRC
+TTML 开启 + ttmlFirst=true（默认）   → TTML → YRC → LRC
+TTML 开启 + ttmlFirst=false         → YRC → TTML → LRC
+```
+
+- **决策规则**（`LyricSourceChain.pick`）：**先从「有逐字」的候选里按优先级取第一个；都没有，才退到第一个
+  「有内容」的候选；再没有 → 无歌词。** 语义要点：LRC 是整行，只要还有任何逐字候选可用，就不该退到 LRC
+  （哪怕它排在更前面 —— 比如 TTML 只有整句、YRC 有逐字时选 YRC）。
+- `hasWordLevel` **必须由解析器判「有没有词」**（`TtmlParser.hasWordLevel`），不能拿「解析成功」冒充 ——
+  AMLL DB 里有只有 `<p>` 没有 `<span>` 的逐句投稿，用它替换 LRC 只会白丢网易云的行级数据。
+- **关掉总开关时 TTML 根本不进 `order`**，不是「排在最后」：用户关掉的源一个字节都不该拉。
+- 不做的事：不删改既有 YRC / LRC 路径；TTML 取不到 / 解析失败 / 没有逐字一律**静默回退**，不弹错、不新增 Toast。
+
+### 数据来源与许可
+
+| 项 | 结论 |
+|---|---|
+| 数据源 | [AMLL TTML DB](https://github.com/amll-dev/amll-ttml-db)（社区维护的公开静态文件仓库） |
+| 许可 | **CC0-1.0**，明确允许音乐播放器使用；**不引入任何新的运行时依赖** |
+| 取数方式 | 按网易云 `songId` 直接 GET `ncm-lyrics/<id>.ttml`（只读公开静态文件） |
+| 红线 | **不爬虫、不模拟登录、不绕过任何保护**；不发网易云请求、不碰 cookie / 用户凭据 |
+| 超时 | 自建 OkHttp（连接 5s / 读 10s），不复用 `RetrofitClient` 的 30s/30s —— 补充源拿不到必须立刻回退 |
+
+### 镜像表与 HTTP 语义（2026-09 curl 实测）
+
+| # | 镜像 | 与主镜像 |
+|---|---|---|
+| 1 | `https://amlldb.bikonoo.com/ncm-lyrics/<id>.ttml` | 基准 |
+| 2 | `https://raw.githubusercontent.com/amll-dev/amll-ttml-db/main/ncm-lyrics/<id>.ttml` | sha256 **逐字节一致** |
+| 3 | `https://cdn.jsdelivr.net/gh/amll-dev/amll-ttml-db@main/ncm-lyrics/<id>.ttml` | sha256 **逐字节一致** |
+| 4 | `https://amlldb.bikonoo.com/lyrics/ncm-lyrics/<id>.ttml` | 直连路径（免 302） |
+
+```
+文件存在  → HTTP 200（无重定向），body 以 <tt 开头
+文件不存在 → HTTP 302 → /lyrics/ncm-lyrics/<id> → 最终 404，body = 「歌词不存在」
+```
+
+**判据必须是「跟随重定向后的最终状态码 == 200 且 body 以 `<tt` 开头」**，只看 3xx 会把「不存在」当「存在」。
+某面镜子一旦给出确定性答复（404，或 200 但不是 TTML）**立刻收工、不再试其它镜子** —— 四个镜像实测内容逐字节一致，
+继续试不可能变出歌词，只会白烧流量。404 是常态（本机 90%+ 收藏都没有），走 `Log.d`；只有网络异常才 `Log.w`。
+
+### TTML DB 真实规模（官方 tarball 完整枚举，非抽样）
+
+| 目录 | 文件数 | 说明 |
+|---|---|---|
+| `ncm-lyrics/` | **20,326** | 按**网易云 ID** 命名的派生产物，每 ID 最多 6 种格式 |
+| `qq-lyrics/` | 16,833 | QQ 音乐 ID |
+| `am-lyrics/` | 14,906 | Apple Music ID |
+| `spotify-lyrics/` | 14,121 | Spotify ID |
+| `raw-lyrics/` | 3,291 | 社区原始投稿（文件名 = 时间戳-作者ID-哈希.ttml） |
+| **全仓库** | **69,572** | |
+
+- `ncm-lyrics/` 的 20,326 个文件里，**`.ttml` 只有 3,544 个唯一数字 ID**（其余是同一批 ID 的
+  `.yrc` / `.qrc` / `.lys` / `.lrc` / `.eslrc` 派生物）
+  ⇒ **能按网易云 `songId` 直接拉取的 TTML 上限 = 3,544 首**。
+- ⚠️ **别误读 `/api/lyrics-status` 的 `ttmlFilesCount: 3288`**：那个计数**只数了 `raw-lyrics/` 那一层**
+  （3,291 条投稿），**不是** `ncm-lyrics/` 的规模，更不是全库规模 —— 这两个数必须分开说，否则覆盖率会算错一个数量级。
+
+### 解析器：自研纯 Kotlin 手写扫描器（零依赖、无 Android 框架依赖、JVM 可单测）
+
+`TtmlParser.parse` 是冻结契约（调用方只认它），实现委托给 `TtmlScanner`（约 600 行，内部可独立演进）。
+
+| | 手写扫描器（选定） | `android.util.Xml` / `XmlPullParser` | kxml2（testImplementation） |
+|---|---|---|---|
+| 新依赖 | **零** | 零 | +1（仅测试） |
+| JVM 可单测 | ✅ | ❌（框架 API 在单测里是抛异常的桩） | ✅ |
+| **测的与线上跑的是同一份实现** | ✅ | — | ❌（单测跑 kxml2、线上跑 Android） |
+| API 24 兼容风险 | 无 | 无 | 无 |
+
+- **为什么不选 `android.util.Xml`**：它是 Android 框架 API，JVM 单测里只是桩
+  （`unitTests.isReturnDefaultValues = true` 只让它返回默认值，并不会真解析）⇒「线上能跑、单测跑不了」。
+- **为什么不选 kxml2**：单测验的是 kxml2 的行为、线上跑的是 Android 的 XmlPullParser，**两份不同实现**；
+  对本版专门要求的容错输入（截断、多余结束标签、裸 `&`）处理并不一致，保真度反而更差。
+- 手写扫描器让**同一份实现既被测又上线**；TTML 用到的 XML 子集很小（元素 / 属性 / 文本 / CDATA / 注释 / 实体）。
+- 契约：**任何输入都返回 `null` 而绝不抛异常**；入口有长度（4 MiB）/ 元素数（10 万）/ 嵌套深度（24）三重上限；
+  单个 `<p>` 坏掉只跳过这一行。时间格式 `MM:SS.fff` / `HH:MM:SS.fff` / offset-time，另外**额外**接受裸数字（按秒）。
+
+### 两条硬不变量（本版最容易踩的坑）
+
+**① TTML 的 `LrcLine.words` 必须「文本顺序 == 时间顺序」。**
+冻结的 `SweepTrack.build` 会做 `words.sortedWith(compareBy({ it.startMs }, { it.charStart }))`
+（[SweepTrack.kt:244](app/src/main/java/com/takahashirinta/ncrust/lyric/SweepTrack.kt#L244)）——
+只要有一个词的开始时间早于文本序在它前面的词，排序就会把它的字符区间搬到前面，逐字高亮表现为**倒着扫**。
+现实来源只有 `ttm:role="x-bg"`（背景人声）：子 span 按文本顺序进本行，但背景人声的时间经常排在文本末尾却先唱
+（实测《孤勇者》L51：主唱唱到 03:44.938，文本序最后的背景词是 03:42.019）。解析器用**单调过滤把时间倒退的词丢弃**
+（[TtmlScanner.kt:191-197](app/src/main/java/com/takahashirinta/ncrust/lyric/TtmlScanner.kt#L191-L197)），
+**行文本仍完整保留**，只是那几个字不给逐字高亮 —— 宁可少高亮几个字，也不给一次倒扫。
+`x-bg` 本版**不单独建模**，背景人声与主唱混在同一行（有意的取舍，收益是背景人声也能逐字高亮）。
+
+**② `PlayerViewModel` 里供 `fetchLyrics` 使用的字段必须声明在 `init` 块之前。**
+Kotlin 属性初始化与 `init` 块按**声明顺序**执行，而 `init` 里的
+`viewModelScope.launch { fetchLyrics(...) }` 在 `Main.immediate` 下**可能在构造期就同步执行**
+（构造本身就在主线程）—— 声明在 `init` 之后的**引用类型**字段此刻还是 `null` ⇒ **NPE 崩溃**。
+v1.9.0 首次真机安装就是这么崩的：
+`NullPointerException: Attempt to invoke virtual method 'long ...LyricRequestGate.begin()' on a null object reference`
+at `PlayerViewModel.<init>` → `fetchLyrics`。老代码里 `lyricsFetchingSongId` 是 `Long`
+（读成 0 只是判等失真、不崩），所以这个坑一直潜伏；v1.9.0 新增的 `lyricReqGate` 与 `STALE_NETEASE_LYRICS`
+是**对象引用**，一读就炸。**单测抓不到**（项目没有 Robolectric，构造 AndroidViewModel 需要真 Application），
+**只有真机冷启能暴露**。修法：把 `lyricsFetchingSongId` / `lyricReqGate` / `STALE_NETEASE_LYRICS`
+一起挪到 `init` 之前并写明注释
+（[PlayerViewModel.kt:240-269](app/src/main/java/com/takahashirinta/ncrust/ui/viewmodel/PlayerViewModel.kt#L240-L269)），
+**新增供 `fetchLyrics` 使用的字段时一律放这一段**。
+
+### 实现要点（缓存 / 竞态 / 两相落地）
+
+| 项 | 做法 |
+|---|---|
+| 缓存 | 复用既有 `ncrust_lyrics_cache`（≤200 条 LRU）；`CachedLyrics` 新增 `ttml: String?` + `ttmlAt: Long = 0`，**可空 + 有默认值**（老缓存 Gson 走 Unsafe，缺字段 = 没 TTML，不崩也不误判新鲜）；**TTL 7 天**，另留 `getTtmlStale` 给离线兜底 |
+| 暂存 | 预取下一首时往往还没有 LRC 正式条目；**绝不为了存 TTML 建 `lrc=""` 的正式条目**（那是「确无歌词」的权威标记），先落在 `ttml:<songId>` 暂存键，写正式条目时合并 |
+| 预取 | 复用既有预载时机预取**下一首**（`AmllTtmlClient.prefetch`，单独 `launch`，不挤占取链）；已新鲜则幂等跳过，同一首一轮播放被调多次也只打一次网络 |
+| 竞态 | `LyricRequestGate`（`AtomicLong`）：每次 `fetchLyrics` 先 `begin()` 领号，每个挂起点之后校验 `isCurrent(seq)`，不匹配整包丢弃。**去重（同歌在途）与闸门（旧歌响应盖新歌）是两件事**，且去重必须排在 `begin()` **之前** |
+| 两相落地 | 第一相只用网易云候选（YRC / LRC）决策、**选中立刻显示**（时机与 v1.8.1 一致）；第二相才拉 TTML，连同第一相候选重新 `pick`，TTML 赢了才替换。**绝不把 TTML 放在第一相之前** —— 最坏 4 面镜子 × 5s 连接会把「本来有歌词」变成「一直转圈」 |
+| 译文 | TTML 的 `x-translation` 是独立行级轨道，按 `timeMs` 与正文行精确配对，对不上的丢弃；**TTML 译文与网易云 `tlyric` 不会同时显示**（TTML 赢了就只有 TTML 的译文） |
+
+### 设置项（`ncrust_settings`）
+
+| 键 | 默认 | 说明 |
+|---|---|---|
+| `lyrics_ttml_enabled` | **开** | 总开关。关掉后一个 TTML 请求都不发（`order` 里根本没有 TTML） |
+| `lyrics_ttml_first` | **开** | 「TTML 优先」（`TTML → YRC → LRC`）；关掉则是 `YRC → TTML → LRC` |
+
+- 8 语言文案已补齐（`lyricsTtmlEnabledLabel` / `lyricsTtmlFirstLabel`）；两个开关切换后都会 `retryLyrics()` 重拉当前歌；
+- **「TTML 优先」在总开关关闭时整行不挂载**（不是 `alpha=0`）—— 见「Compose 触摸陷阱」第 1 条：
+  `alpha=0` 的节点照样参与命中测试，会在播放器死带里变成一个看不见的开关。
+
+### 测试与真机实测
+
+**JVM 单测**：`./gradlew test --offline` 实测 **250 个全绿**（`testDebugUnitTest`：250 tests / 0 failures / 0 errors / 0 skipped）。
+v1.9.0 新增 **66 个**：
+
+| 测试 | 条数 | 覆盖 |
+|---|---|---|
+| `TtmlScannerTest` | 14 | 真实 AMLL 样本 + 畸形输入（截断 / 多余结束标签 / 裸 `&` / CDATA / 实体） |
+| `TtmlWordOrderTest` | 8 | **文本顺序 == 时间顺序**不变量、x-bg 时间倒退丢弃、行文本完整保留 |
+| `AmllTtmlClientTest` | 15 | 镜像回退、404 即收工、非 TTML 的 200 拒绝、注入假 fetcher（**不发真实网络请求**） |
+| `LyricsCacheModelTest` | 9 | TTML TTL / 纯函数 `isTtmlFresh` / 老缓存缺字段 |
+| `LyricSourceChainTest` | 10 | `order` 三态、`pick` 跨源优先逐字、LRC 恒兜底 |
+| `LyricRequestGateTest` | 5 | 连续 `begin` 只有最后一个有效 / `invalidate` / 并发唯一递增 |
+| `LyricsSourcePrefsTest` | 5 | 两个开关的读写与坏值回落 |
+
+> 任务书写「249 个、新增 65 个」是旧数；本次实跑的权威结果是 **250 / 新增 66**（任务书清单里 7 个文件相加就是 66）。
+
+**真机实测（PCL110 / Android 16 / API 36）**：
+
+| 项 | 结果 |
+|---|---|
+| 覆盖安装 | **22 → 23 成功**（未卸载；`dumpsys package` 实测 `versionCode=23`，`lastUpdateTime` 2026-09-23 22:16） |
+| 签名指纹 | 与 v1.8.1 release 一致（APK 实测 SHA-256 `e75af3ffbcf76a36a567188d88d132adf3c7484c53c20a3a083cb1d222025511`） |
+| yrc-less 的歌 | `36990266`（Faded）走 TTML，并渲染出**逐字 + 中文翻译**（该 TTML 样本实测含 54 处 `x-translation`） |
+| 快速切歌 | 10 连切无崩溃、无串词 |
+| 没有 TTML 的歌 | 404 **静默回退**到 YRC / LRC，只打 `Log.d`，无 Toast、无错误 |
+| S6（API 24） | **未跑 TTML 专项**（`dumpsys package` 实测该机仍是 `versionCode=22` / `1.8.1-gpl`） |
+
+### v1.9.0 的已知未验证项（如实）
+
+1. **S6（API 24）未跑 TTML 专项**：TTML 路径的 API 24 兼容性没有真机验证（扫描器是纯 Kotlin、无框架依赖，风险低，但**没跑过就是没跑过**）。
+2. **TTML 逐字渐变的帧率未与 YRC 对比**：渲染层零改动意味着它走同一条 `SweepTrack` 路径，但 TTML 的词密度普遍高于 yrc，帧率没有实测对照。
+3. **离线飞行模式未实测**：`getTtmlStale` 的离线兜底路径只有单测覆盖，没有真机飞行模式验证。
+4. **`x-bg` 背景人声不单独建模**：与主唱混在同一行，时间倒退的词被丢弃（有意取舍，不是 bug）。
+5. **TTML 译文与网易云 `tlyric` 不会同时显示**：TTML 赢了就只有 TTML 的 `x-translation`；双源译文合并没有实现。
+6. 未做「按歌名 / 歌手模糊匹配」的兜底（有意不做，不是遗漏）。
+
