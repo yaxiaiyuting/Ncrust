@@ -85,6 +85,21 @@ data class Strings(
     val bigScreenEnter: String,
     /** P1：大屏幕模式出口按钮。与入口是同一个按钮，横屏大屏下图标与描述切换。 */
     val bigScreenExit: String,
+    // v1.8.0 · T4：应用内「自动旋转」。⚠️ 它只控制本应用是否跟随传感器，
+    // 与系统设置里的"自动旋转"互相独立（应用既不读也不改系统设置）。
+    /** 开启态（跟随传感器旋转；在播放器里转横屏会自动进入大屏幕模式）。 */
+    val autoRotateOn: String,
+    /** 关闭态（锁定竖屏；进出大屏幕模式只走 ⤢ 按钮）。 */
+    val autoRotateOff: String,
+    /** 设置页整行开关的标题。 */
+    val autoRotateLabel: String,
+    /** 设置页整行开关的说明。 */
+    val autoRotateDescription: String,
+    // v1.8.0 · T3：音频可视化（大屏幕模式左栏、封面下方的波形条）。
+    /** 设置页整行开关的标题。 */
+    val audioVisualizerLabel: String,
+    /** 设置页整行开关的说明。 */
+    val audioVisualizerDescription: String,
     val themeSectionTitle: String,
     val themeModeSectionTitle: String,
     val themeModeSystem: String,
