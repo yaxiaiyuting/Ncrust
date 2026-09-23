@@ -73,6 +73,10 @@ data class Strings(
     // LyricsSweepQuality 的常量一一对应。
     val lyricsSweepQualityLabel: String,
     val lyricsSweepQualityOptions: List<String>,
+    // v1.9.0：AMLL TTML 歌词源总开关（默认开）+ 与网易云歌词同时可用时是否优先用 TTML（默认开）。
+    // 两者都只在「用户开了 TTML」时才有意义；关掉后行为与 v1.8.1 完全一致（一个 TTML 请求都不发）。
+    val lyricsTtmlEnabledLabel: String,
+    val lyricsTtmlFirstLabel: String,
     // v1.5.1 · E：歌词字号（倍率档位文案是纯数字，与语言无关，不进 i18n）。
     val lyricsFontScaleLabel: String,
     /** 歌词界面 A- / A+ 的无障碍描述。 */

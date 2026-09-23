@@ -139,6 +139,10 @@ fun UserScreen(
     var lyricsFontScale by remember { mutableStateOf(LyricsDisplayPrefs.readFontScale(prefs)) }
     // v1.5.2 逐字扫过绘制质量（0 自动 / 1 高级软边 / 2 兼容硬边，默认自动）。
     var lyricsSweepQuality by remember { mutableIntStateOf(LyricsDisplayPrefs.readSweepQuality(prefs)) }
+    // v1.9.0：AMLL TTML 歌词源总开关 + 「TTML 优先」，默认都开。
+    // 两者都只是歌词源的选择，改完由 ViewModel 对当前歌重新 fetch（缓存里那份未必是最终源）。
+    var lyricsTtmlEnabled by remember { mutableStateOf(LyricsDisplayPrefs.readTtmlEnabled(prefs)) }
+    var lyricsTtmlFirst by remember { mutableStateOf(LyricsDisplayPrefs.readTtmlFirst(prefs)) }
 
     var selectedLanguageCode by remember { mutableStateOf(getSavedLanguageCode(context)) }
 
@@ -427,6 +431,28 @@ fun UserScreen(
                     playerViewModel.setLyricsInMediaSession(it)
                 }
             )
+            // v1.9.0：AMLL TTML（逐字）歌词源。关掉后一个 TTML 请求都不发，与 v1.8.1 行为一致。
+            SettingSwitchRow(
+                title = strings.lyricsTtmlEnabledLabel,
+                checked = lyricsTtmlEnabled,
+                onCheckedChange = {
+                    lyricsTtmlEnabled = it
+                    playerViewModel.setLyricsTtmlEnabled(it)
+                }
+            )
+            // 「TTML 优先」只在 TTML 开着时才有意义（关掉 TTML 时它不影响任何结果），
+            // 因此**整行不挂载**而不是 alpha 隐藏 —— 见 AGENTS.md「Compose 触摸陷阱」第 1 条：
+            // alpha=0 的节点照样参与命中测试，会在播放器死带里变成一个看不见的开关。
+            if (lyricsTtmlEnabled) {
+                SettingSwitchRow(
+                    title = strings.lyricsTtmlFirstLabel,
+                    checked = lyricsTtmlFirst,
+                    onCheckedChange = {
+                        lyricsTtmlFirst = it
+                        playerViewModel.setLyricsTtmlFirst(it)
+                    }
+                )
+            }
             Spacer(Modifier.height(24.dp))
         }
 

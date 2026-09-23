@@ -76,6 +76,12 @@ object LyricsDisplayPrefs {
     /** v1.5.2：扫过绘制质量（Int，取值见 [LyricsSweepQuality]）。 */
     const val KEY_SWEEP_QUALITY = "lyrics_sweep_quality"
 
+    /** v1.9.0：AMLL TTML 歌词源总开关。关掉 = 一个 TTML 请求都不发，行为与 v1.8.1 完全一致。 */
+    const val KEY_TTML_ENABLED = "lyrics_ttml_enabled"
+
+    /** v1.9.0：TTML 与网易云歌词都能用时，是否优先用 TTML。 */
+    const val KEY_TTML_FIRST = "lyrics_ttml_first"
+
     // v1.5.2：扫过参数的高级覆盖项。默认值（见 LyricsSweepConfig）就是定稿值；留这几个键是为了
     // **不重新构建**就能在真机上扫参数——低端机调 fadeEm、浅色主题调 inactiveAlpha、慢歌试 easing。
     // 键不存在 / 值非法时一律回落默认值，所以普通用户永远不会碰到它们。
@@ -125,6 +131,29 @@ object LyricsDisplayPrefs {
     fun writeSweepQuality(prefs: SharedPreferences, quality: Int) {
         prefs.edit().putInt(KEY_SWEEP_QUALITY, LyricsSweepQuality.normalize(quality)).apply()
     }
+
+    /**
+     * v1.9.0：读 AMLL TTML 歌词源开关，默认开。
+     *
+     * 「非法值回落默认」在这里的含义与 [readSweepQuality] 的取整回落是同一件事：
+     * SharedPreferences 对**类型不符**的键会抛 ClassCastException（键里是 String 而调
+     * getBoolean），脏键不该让播放器崩 —— 一律回落默认值，最坏也只是退回既有 LRC 路径。
+     */
+    fun readTtmlEnabled(prefs: SharedPreferences): Boolean = readBooleanSafely(prefs, KEY_TTML_ENABLED, true)
+
+    fun writeTtmlEnabled(prefs: SharedPreferences, enabled: Boolean) {
+        prefs.edit().putBoolean(KEY_TTML_ENABLED, enabled).apply()
+    }
+
+    /** v1.9.0：读「TTML 优先」开关，默认开。非法值同样回落默认。 */
+    fun readTtmlFirst(prefs: SharedPreferences): Boolean = readBooleanSafely(prefs, KEY_TTML_FIRST, true)
+
+    fun writeTtmlFirst(prefs: SharedPreferences, first: Boolean) {
+        prefs.edit().putBoolean(KEY_TTML_FIRST, first).apply()
+    }
+
+    private fun readBooleanSafely(prefs: SharedPreferences, key: String, def: Boolean): Boolean =
+        runCatching { prefs.getBoolean(key, def) }.getOrDefault(def)
 
     fun readFontScale(prefs: SharedPreferences): Float =
         prefs.getFloat(KEY_FONT_SCALE, FONT_SCALE_DEFAULT).coerceIn(FONT_SCALE_MIN, FONT_SCALE_MAX)

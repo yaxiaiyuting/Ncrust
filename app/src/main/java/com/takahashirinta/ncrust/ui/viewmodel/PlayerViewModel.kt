@@ -30,13 +30,21 @@ import com.takahashirinta.ncrust.cache.OfflineUrlStore
 import com.takahashirinta.ncrust.player.QualityAssessment
 import com.takahashirinta.ncrust.player.QualityLadder
 import com.takahashirinta.ncrust.player.QualityStatus
+import com.takahashirinta.ncrust.lyric.AmllTtmlClient
 import com.takahashirinta.ncrust.lyric.LrcLine
 import com.takahashirinta.ncrust.lyric.LrcParser
 import com.takahashirinta.ncrust.lyric.YrcParser
+import com.takahashirinta.ncrust.lyric.LyricCandidate
+import com.takahashirinta.ncrust.lyric.LyricRequestGate
+import com.takahashirinta.ncrust.lyric.LyricSourceChain
+import com.takahashirinta.ncrust.lyric.LyricSourceKind
+import com.takahashirinta.ncrust.lyric.LyricSourcePrefs
 import com.takahashirinta.ncrust.lyric.LyricsCache
 import com.takahashirinta.ncrust.lyric.LyricsDisplayPrefs
 import com.takahashirinta.ncrust.lyric.LyricsSweepQuality
 import com.takahashirinta.ncrust.lyric.LyricsWordAnimationMode
+import com.takahashirinta.ncrust.lyric.TtmlDoc
+import com.takahashirinta.ncrust.lyric.TtmlParser
 import com.takahashirinta.ncrust.network.RetrofitClient
 import com.takahashirinta.ncrust.player.PlaybackService
 import com.takahashirinta.ncrust.player.PlaybackStateManager
@@ -94,6 +102,18 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
      * 「艺人 · 歌词行」，这是对既有语义的改写 —— 只有用户明确打开才做。
      */
     val lyricsInMediaSession = MutableStateFlow(false)
+
+    /**
+     * v1.9.0：AMLL TTML 歌词源总开关（默认开）。关掉 = 一个 TTML 请求都不发，
+     * 既有 LRC / yrc 路径原样保留，等价于 v1.8.1 的行为。
+     */
+    val lyricsTtmlEnabled = MutableStateFlow(true)
+
+    /**
+     * v1.9.0：TTML 与网易云歌词都可用时是否优先用 TTML（默认开）。
+     * 只在 [lyricsTtmlEnabled] 开着时有意义 —— 关掉 TTML 时它不影响任何结果。
+     */
+    val lyricsTtmlFirst = MutableStateFlow(true)
 
     /**
      * v1.5.1 · E：歌词字号倍率（0.7~1.5，默认 1.0）。设置页与歌词界面的 A- / A+ 共用它，
@@ -217,6 +237,37 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
     // Prevents duplicate preload launches for the same song while one is in flight.
     private var currentlyPreloadingSongId = -1L
 
+    // ⚠️ 下面这三个**必须声明在 init 块之前**（v1.9.0 · S1 hotfix）。
+    //
+    // Kotlin 的属性初始化与 init 块**按声明顺序**执行，而 init 块里的
+    // `viewModelScope.launch { fetchLyrics(...) }` 在 Main.immediate 下可能**在构造期就同步跑起来**
+    // （构造本身就在主线程）—— 于是 fetchLyrics 会在构造函数返回之前执行。
+    // 声明在 init 之后的属性此刻还是默认值：引用类型是 null，基本类型是 0。
+    //
+    // 实测崩溃（v1.9.0 首次真机安装，PCL110）：
+    // `NullPointerException: Attempt to invoke virtual method 'long ...LyricRequestGate.begin()'
+    //  on a null object reference` at PlayerViewModel.<init> → fetchLyrics。
+    // 老代码里 `lyricsFetchingSongId` 是 Long（读成 0 只是判等失真，不崩），所以这个坑一直潜伏；
+    // v1.9.0 新增的 [lyricReqGate] 与 [STALE_NETEASE_LYRICS] 是**对象引用**，一读就炸。
+    //
+    // 单测抓不到：项目里没有 Robolectric，构造 AndroidViewModel 需要真 Application，
+    // 所以只有「装到真机冷启」能暴露。**新增供 fetchLyrics 使用的字段时，一律放这一段。**
+
+    // 同一首歌的歌词请求只允许一个在途(playSong / onSongTransitioned / 冷启动恢复
+    // 会并发发起, 不打去重会瞬间打 3×n 个请求, 触发服务端限流反而更拉胯)。
+    private var lyricsFetchingSongId = -1L
+
+    /**
+     * v1.9.0：歌词请求序列号闸门（见 [LyricRequestGate]）。
+     *
+     * 去重（[lyricsFetchingSongId]）挡的是「同一首歌的重复请求」，闸门挡的是「旧歌的响应盖掉
+     * 新歌」—— 两件事必须分开：A 歌请求还在飞时切到 B，去重放行 B，闸门作废 A。
+     */
+    private val lyricReqGate = LyricRequestGate()
+
+    /** 闸门判定「这次请求已经被新歌取代」时的返回：调用方拿到它只会原样丢弃，不会写任何状态。 */
+    private val STALE_NETEASE_LYRICS = NeteaseLyrics("", "", "", authoritative = false)
+
     init {
         refreshGaplessSetting()
         // 从设置读歌词开关(默认开);设置页切换时经 setLyricsTranslation /
@@ -242,6 +293,11 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         lyricsInMediaSession.value = getApplication<Application>()
             .getSharedPreferences("ncrust_settings", 0)
             .getBoolean("lyrics_in_media_session", false)
+        // v1.9.0：TTML 歌词源两个开关（默认都开）。read* 自身会把「键被写坏」回落成默认值。
+        val lyricPrefs = getApplication<Application>()
+            .getSharedPreferences(LyricsDisplayPrefs.PREFS_NAME, android.content.Context.MODE_PRIVATE)
+        lyricsTtmlEnabled.value = LyricsDisplayPrefs.readTtmlEnabled(lyricPrefs)
+        lyricsTtmlFirst.value = LyricsDisplayPrefs.readTtmlFirst(lyricPrefs)
 
         // v1.5.1 · D：把「当前行」推给 PlaybackService —— 只在**跨行**时写一次
         // （currentPosition 是 2Hz 采样，这里每次采样只做一次 O(行数) 的二分/线性比较，
@@ -474,6 +530,36 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         getApplication<Application>().getSharedPreferences("ncrust_settings", 0)
             .edit().putBoolean("lyrics_translation", enabled).apply()
     }
+
+    /**
+     * v1.9.0：AMLL TTML 歌词源开关。写盘 + **立即对当前歌重拉一次** ——
+     * 「用哪一份歌词」是源选择的结果，本地缓存里存的是上一次选择的结果，
+     * 不重拉的话用户会看到开关拨了却什么都没变。
+     */
+    fun setLyricsTtmlEnabled(enabled: Boolean) {
+        lyricsTtmlEnabled.value = enabled
+        LyricsDisplayPrefs.writeTtmlEnabled(prefs(), enabled)
+        refetchLyricsForSourceChange()
+    }
+
+    /**
+     * v1.9.0：「TTML 优先」开关。语义同样是源选择，因此与总开关一样需要重拉当前歌。
+     * 总开关关着时这个值不影响任何结果（UI 侧此时也不挂载这一行）。
+     */
+    fun setLyricsTtmlFirst(first: Boolean) {
+        lyricsTtmlFirst.value = first
+        LyricsDisplayPrefs.writeTtmlFirst(prefs(), first)
+        refetchLyricsForSourceChange()
+    }
+
+    private fun prefs(): SharedPreferences = getApplication<Application>()
+        .getSharedPreferences(LyricsDisplayPrefs.PREFS_NAME, Context.MODE_PRIVATE)
+
+    /**
+     * 歌词源设置变化后重拉当前歌。复用 [retryLyrics]：它会清掉去重与「确无歌词」标记，
+     * 这两件事都必须做 —— 否则同一首歌的第二次请求会被去重挡掉、脏标记还会让 UI 置灰。
+     */
+    private fun refetchLyricsForSourceChange() = retryLyrics()
 
     /**
      * 读取当前**生效的偏好档位**：设置页 wifi_quality / mobile_quality 按当前网络二选一。
@@ -812,6 +898,13 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                     currentlyPreloadingSongId = -1L
                     return@launch
                 }
+                // v1.9.0：顺手预取**下一首**的 TTML 歌词。这里是「下一首是谁」唯一的确定入口
+                // （MainScreen 在切歌瞬间与进入最后 60s 各调一次，重复调用已被上面的槽位判断
+                // 挡掉），所以挂在这里最准。单独 launch：预取是为了省掉切歌时的等待，
+                // 绝不能反过来挤占取链、把播放拖慢；拿不到下一首时根本不会走到这里。
+                if (lyricsTtmlEnabled.value) {
+                    launch { AmllTtmlClient.prefetch(getApplication(), songId) }
+                }
                 val quality = if (isOnWifi())
                     qualityApiLevels.getOrElse(prefs.getInt("wifi_quality", 3)) { "lossless" }
                 else
@@ -907,112 +1000,223 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         viewModelScope.launch { fetchLyrics(songId) }
     }
 
-    // 同一首歌的歌词请求只允许一个在途(playSong / onSongTransitioned / 冷启动恢复
-    // 会并发发起, 不打去重会瞬间打 3×n 个请求, 触发服务端限流反而更拉胯)。
-    private var lyricsFetchingSongId = -1L
+    /** v1.9.0：一次网易云歌词取数的结果。抽出来是为了让「缓存命中」与「网络返回」共用同一条源选择路径。 */
+    private data class NeteaseLyrics(
+        val lrc: String,
+        val tlyric: String,
+        val yrc: String,
+        /** 服务端 code==200 的**权威**答复（有歌词或确无歌词）；false = 瞬时失败，不能判成「确无歌词」。 */
+        val authoritative: Boolean,
+    )
 
     private suspend fun fetchLyrics(songId: Long) {
+        // 去重必须排在 begin() 之前：同歌并发时第二次直接返回；若先 begin()，第二次会把第一次
+        // 的号作废 —— 第一次的结果整包丢弃、第二次又不干活，歌词反而永远出不来。
         if (lyricsFetchingSongId == songId) return
+        // v1.9.0：领号。此后每个挂起点之后都要问一次「我还是当前号吗」，不是就整包丢弃；
+        // 这是「A 歌请求还在飞、用户已切到 B 歌」时不把 A 的歌词盖到 B 上的唯一保证。
+        val seq = lyricReqGate.begin()
         lyricsFetchingSongId = songId
         lyricsLoading.value = true
         try {
-            // 先查本地缓存：命中则直接呈现，不再打网络（歌词几乎不变）。
-            // 这是进程被杀重进时歌词能秒回、且不受冷启动风控/限流影响的关键。
-            val cached = LyricsCache.get(getApplication(), songId)
-            if (cached != null) {
-                if (currentSongId.value == songId) {
-                    // 解析是 CPU 活(逐行正则), 放 Default 上跑, 别让主线程在切歌瞬间
-                    // 一边处理重组一边解 LRC。
-                    if (cached.lrc.isNotEmpty()) {
-                        lyrics.value = withContext(Dispatchers.Default) {
-                            parseLyrics(cached.lrc, cached.yrc.orEmpty())
-                        }
-                        lyricsSongId.value = songId
-                    } else {
-                        // 缓存里就是"确无歌词"，保持按钮置灰语义
-                        lyricsNoContentSongId.value = songId
-                    }
-                    translatedLyrics.value =
-                        if (cached.tlyric.isNotEmpty()) {
-                            withContext(Dispatchers.Default) { LrcParser.parse(cached.tlyric) }
-                        } else {
-                            emptyList()
-                        }
-                }
-                Log.d("PlayerViewModel", "fetchLyrics cache hit id=$songId lrc=${cached.lrc.length}")
-                return
-            }
-            // 失败重试(最多 4 次, 递增退避): 冷启动时 AppWarmup 与恢复请求同时在
-            // 打网络, 歌词请求的瞬时超时/限流不该让歌词永久消失。关键是**响应层面的
-            // 失败也要重试** —— 服务端风控(-460/-462)或需登录(301)返回的 code!=200
-            // 响应里 lrc 为空, 旧实现当成"这首歌没歌词"直接结束, 用户必须切歌才能
-            // 重新触发加载; 这些失败码是瞬时的, 退避重试大概率能拿到真歌词。
-            // code==200 是服务端的权威答复(有歌词或无歌词), 不再重试。
-            repeat(4) { attempt ->
-                try {
-                    val lyricResponse = RetrofitClient.api.getLyric(id = songId)
-                    val code = lyricResponse.code
-                    val lrcText = lyricResponse.lrc?.lyric ?: ""
-                    val tlyricText = lyricResponse.tlyric?.lyric ?: ""
-                    // v1.5.0 · B：逐字时间轴。实测该曲没挂逐字资产时响应里连 yrc 这个 key
-                    // 都没有(不是 null)，所以这里为空是常态，不是错误。
-                    val yrcText = lyricResponse.yrc?.lyric ?: ""
-                    if (code != 200 && attempt < 3) {
-                        Log.w("PlayerViewModel", "fetchLyrics unsettled songId=$songId code=$code, retry ${attempt + 1}")
-                        delay(700L + attempt * 400L)
-                        return@repeat
-                    }
-                    // 只缓存 code==200 的权威结果(有歌词/确无歌词)。code!=200 是瞬时
-                    // 失败(风控/需登录), 不写缓存也不置"确无歌词", 按钮保持可点可重试。
-                    if (code == 200) {
-                        LyricsCache.put(getApplication(), songId, lrcText, tlyricText, yrcText)
-                    }
-                    // 只在本请求仍是"当前歌"时写入——恢复路径与 playSong 的并发请求
-                    // 返回乱序时, 旧请求不得覆盖新歌的歌词/译文
-                    if (currentSongId.value == songId && code == 200) {
-                        // 同上: 解析放 Default, 避免网络返回后在主线程解 LRC。
-                        if (lrcText.isNotEmpty()) {
-                            lyrics.value = withContext(Dispatchers.Default) {
-                                parseLyrics(lrcText, yrcText)
-                            }
-                            // 有歌词：标记为"当前歌的歌词就绪"（供 UI 自动回切歌词视图）
-                            lyricsSongId.value = songId
-                            lyricsNoContentSongId.value = -1L
-                        } else {
-                            // lrc 为空（确无歌词）: 标记当前歌，UI 置灰歌词按钮。
-                            lyricsNoContentSongId.value = songId
-                        }
-                        translatedLyrics.value =
-                            if (tlyricText.isNotEmpty()) {
-                                withContext(Dispatchers.Default) { LrcParser.parse(tlyricText) }
-                            } else {
-                                emptyList()
-                            }
-                    }
-                    Log.d(
-                        "PlayerViewModel",
-                        "fetchLyrics id=$songId code=$code lrc=${lrcText.length} " +
-                            "tlyric=${tlyricText.length} yrc=${yrcText.length} current=${currentSongId.value}"
-                    )
-                    return
-                } catch (e: Exception) {
-                    // 失败不清空已有歌词(网络抖动不该把 UI 变空白), 重试后仍失败才退出
-                    if (attempt == 3) {
-                        Log.e("PlayerViewModel", "fetchLyrics failed for songId=$songId", e)
-                        return
-                    }
-                    delay(700L + attempt * 400L)
-                }
-            }
+            val netease = loadNeteaseLyrics(songId, seq)
+            if (!lyricReqGate.isCurrent(seq)) return
+            // 瞬时失败（风控 / 需登录 / 断网）：保持既有行为 —— 什么都不写、按钮保持可点可重试，
+            // 也**不**去拉 TTML（拉 TTML 的前提是「已经拿到网易云的权威答复」）。
+            if (!netease.authoritative) return
+            applyBestLyricSource(songId, seq, netease)
         } finally {
             // 只有本次请求仍是"当前在途"时才清加载态。旧歌请求的 finally 若在
             // 新歌请求在途时无条件清 lyricsLoading=false, 会让 UI 误判新歌"加载已结束
             // 且无歌词"→ 关歌词回封面, 表现为"听几首后歌词莫名不见"。
-            if (lyricsFetchingSongId == songId) {
+            if (lyricsFetchingSongId == songId && lyricReqGate.isCurrent(seq)) {
                 lyricsLoading.value = false
                 lyricsFetchingSongId = -1L
             }
         }
+    }
+
+    /**
+     * 取网易云那份歌词：先缓存、后网络（含既有 4 次退避重试）。
+     *
+     * 缓存命中也不在这里直接落地：TTML 开关是**播放期**策略，缓存里只有 LRC 原文，
+     * 最终显示哪一份统一交给 [applyBestLyricSource] 用 [LyricSourceChain] 决定。
+     */
+    private suspend fun loadNeteaseLyrics(songId: Long, seq: Long): NeteaseLyrics {
+        // 先查本地缓存：命中则不再打网络（歌词几乎不变）。
+        // 这是进程被杀重进时歌词能秒回、且不受冷启动风控/限流影响的关键。
+        val cached = LyricsCache.get(getApplication(), songId)
+        if (!lyricReqGate.isCurrent(seq)) return STALE_NETEASE_LYRICS
+        if (cached != null) {
+            Log.d("PlayerViewModel", "fetchLyrics cache hit id=$songId lrc=${cached.lrc.length}")
+            return NeteaseLyrics(cached.lrc, cached.tlyric, cached.yrc.orEmpty(), authoritative = true)
+        }
+        // 失败重试(最多 4 次, 递增退避): 冷启动时 AppWarmup 与恢复请求同时在
+        // 打网络, 歌词请求的瞬时超时/限流不该让歌词永久消失。关键是**响应层面的
+        // 失败也要重试** —— 服务端风控(-460/-462)或需登录(301)返回的 code!=200
+        // 响应里 lrc 为空, 旧实现当成"这首歌没歌词"直接结束, 用户必须切歌才能
+        // 重新触发加载; 这些失败码是瞬时的, 退避重试大概率能拿到真歌词。
+        // code==200 是服务端的权威答复(有歌词或无歌词), 不再重试。
+        repeat(4) { attempt ->
+            try {
+                val lyricResponse = RetrofitClient.api.getLyric(id = songId)
+                // 已经切歌了就别再解析/重试：这一整轮请求的结果对当前歌没有任何意义。
+                if (!lyricReqGate.isCurrent(seq)) return STALE_NETEASE_LYRICS
+                val code = lyricResponse.code
+                val lrcText = lyricResponse.lrc?.lyric ?: ""
+                val tlyricText = lyricResponse.tlyric?.lyric ?: ""
+                // v1.5.0 · B：逐字时间轴。实测该曲没挂逐字资产时响应里连 yrc 这个 key
+                // 都没有(不是 null)，所以这里为空是常态，不是错误。
+                val yrcText = lyricResponse.yrc?.lyric ?: ""
+                if (code != 200 && attempt < 3) {
+                    Log.w("PlayerViewModel", "fetchLyrics unsettled songId=$songId code=$code, retry ${attempt + 1}")
+                    delay(700L + attempt * 400L)
+                    if (!lyricReqGate.isCurrent(seq)) return STALE_NETEASE_LYRICS
+                    return@repeat
+                }
+                // 只缓存 code==200 的权威结果(有歌词/确无歌词)。code!=200 是瞬时
+                // 失败(风控/需登录), 不写缓存也不置"确无歌词", 按钮保持可点可重试。
+                if (code == 200) {
+                    LyricsCache.put(getApplication(), songId, lrcText, tlyricText, yrcText)
+                }
+                Log.d(
+                    "PlayerViewModel",
+                    "fetchLyrics id=$songId code=$code lrc=${lrcText.length} " +
+                        "tlyric=${tlyricText.length} yrc=${yrcText.length} current=${currentSongId.value}"
+                )
+                return NeteaseLyrics(lrcText, tlyricText, yrcText, authoritative = code == 200)
+            } catch (e: Exception) {
+                // 失败不清空已有歌词(网络抖动不该把 UI 变空白), 重试后仍失败才退出
+                if (attempt == 3) {
+                    Log.e("PlayerViewModel", "fetchLyrics failed for songId=$songId", e)
+                    return STALE_NETEASE_LYRICS
+                }
+                delay(700L + attempt * 400L)
+                if (!lyricReqGate.isCurrent(seq)) return STALE_NETEASE_LYRICS
+            }
+        }
+        return STALE_NETEASE_LYRICS
+    }
+
+    /**
+     * v1.9.0：按 [LyricSourceChain] 选源并落地。分两相，为的是**不让 TTML 拖住既有 LRC 的显示**：
+     *
+     *  1. 第一相只用网易云的候选（YRC / LRC）决策，选中立刻显示 —— 显示时机与 v1.8.1 完全一致；
+     *  2. 第二相在「用户开了 TTML」时拉一次 TTML，连同第一相的候选重新 [LyricSourceChain.pick]
+     *     一次，TTML 赢了才替换。TTML 是第三方镜像（最坏要跑 4 面镜子、每面 connect 5s），
+     *     把它放在第一相之前，会把「本来就有歌词」变成「一直转圈」，那是对既有行为的倒退。
+     *
+     * 失败一律静默：拉不到 / 解析不出 / 没有逐字 span，都保留第一相的结果，不弹错、不新增 Toast。
+     */
+    private suspend fun applyBestLyricSource(songId: Long, seq: Long, netease: NeteaseLyrics) {
+        val sourcePrefs = LyricSourcePrefs(
+            ttmlEnabled = lyricsTtmlEnabled.value,
+            ttmlFirst = lyricsTtmlFirst.value,
+        )
+        val order = LyricSourceChain.order(sourcePrefs)
+        // 解析是 CPU 活(逐行正则), 放 Default 上跑, 别让主线程在切歌瞬间一边处理重组一边解 LRC。
+        val neteaseLines = if (netease.lrc.isNotEmpty()) {
+            withContext(Dispatchers.Default) { parseLyrics(netease.lrc, netease.yrc) }
+        } else {
+            emptyList()
+        }
+        if (!lyricReqGate.isCurrent(seq)) return
+        val neteaseHasWords = neteaseLines.any { it.words.isNotEmpty() }
+
+        fun candidate(kind: LyricSourceKind, ttml: TtmlDoc?): LyricCandidate? = when (kind) {
+            // YRC 与 LRC 都来自同一份网易云响应：行文本是同一份，差别只在有没有逐字时间轴。
+            LyricSourceKind.YRC -> neteaseLines.takeIf { it.isNotEmpty() }
+                ?.let { LyricCandidate(kind, it.size, neteaseHasWords) }
+            LyricSourceKind.LRC -> neteaseLines.takeIf { it.isNotEmpty() }
+                ?.let { LyricCandidate(kind, it.size, false) }
+            LyricSourceKind.TTML -> ttml?.let {
+                // hasWordLevel 必须由解析器判「有没有词」——只有整句的 TTML 投稿
+                // 用它替换 LRC 只会白白丢掉网易云的行级数据。
+                LyricCandidate(kind, it.lines.size, TtmlParser.hasWordLevel(it))
+            }
+        }
+
+        // 第一相：网易云的候选按 order 排好（TTML 先缺席）交给 pick，选中就落地显示。
+        val neteasePick = LyricSourceChain.pick(
+            order.filter { it != LyricSourceKind.TTML }.mapNotNull { candidate(it, null) }
+        )
+        if (neteasePick != null) {
+            applyNeteaseLyrics(songId, seq, neteaseLines, netease.tlyric)
+            // 歌词已经落到 StateFlow：先把加载态收掉，UI 才能立刻显示它（lyricsReady 要求
+            // !lyricsLoading）。第二相只是「再挑一次、择优升级」，不该让它继续转圈。
+            if (lyricReqGate.isCurrent(seq) && currentSongId.value == songId) {
+                lyricsLoading.value = false
+            }
+        }
+
+        // 第二相：只有用户开了 TTML 才发请求；关掉就一个字节都不拉（隐私开关不能形同虚设）。
+        var ttmlWon = false
+        if (sourcePrefs.ttmlEnabled && currentSongId.value == songId) {
+            // AmllTtmlClient 自己吞掉网络异常并返回 null；这里的 runCatching 只是兜底
+            // 「绝不让补充源把播放路径搞崩」—— 失败静默，走上面那一相的结果。
+            val raw = runCatching { AmllTtmlClient.load(getApplication(), songId) }.getOrNull()
+            if (!lyricReqGate.isCurrent(seq)) return
+            val doc = if (raw.isNullOrBlank()) {
+                null
+            } else {
+                withContext(Dispatchers.Default) { TtmlParser.parse(raw) }
+            }
+            if (!lyricReqGate.isCurrent(seq)) return
+            if (doc != null) {
+                val picked = LyricSourceChain.pick(order.mapNotNull { candidate(it, doc) })
+                if (picked?.kind == LyricSourceKind.TTML) {
+                    applyTtmlLyrics(songId, doc)
+                    ttmlWon = true
+                }
+            }
+        }
+
+        // 两个源都没得用，才是「确无歌词」：与既有语义一致，置灰歌词按钮。
+        if (!ttmlWon && neteasePick == null &&
+            lyricReqGate.isCurrent(seq) && currentSongId.value == songId
+        ) {
+            lyricsNoContentSongId.value = songId
+            translatedLyrics.value = emptyList()
+        }
+    }
+
+    /** 把网易云那份落地：行来自 lrc（有 yrc 时已挂上逐字），译文来自 tlyric。 */
+    private suspend fun applyNeteaseLyrics(
+        songId: Long,
+        seq: Long,
+        lines: List<LrcLine>,
+        tlyricText: String,
+    ) {
+        val translations = if (tlyricText.isNotEmpty()) {
+            withContext(Dispatchers.Default) { LrcParser.parse(tlyricText) }
+        } else {
+            emptyList()
+        }
+        // 解析是挂起点：回来必须重新确认「仍是当前号 + 仍是当前歌」再写状态。
+        if (!lyricReqGate.isCurrent(seq) || currentSongId.value != songId) return
+        if (lines.isNotEmpty()) {
+            lyrics.value = lines
+            // 有歌词：标记为"当前歌的歌词就绪"（供 UI 自动回切歌词视图）
+            lyricsSongId.value = songId
+            lyricsNoContentSongId.value = -1L
+        }
+        translatedLyrics.value = translations
+    }
+
+    /**
+     * 把 TTML 那份落地。
+     *
+     * 译文是**独立的行级轨道**，LyricsView 按 timeMs 精确配对（translatedLyrics.associateBy { timeMs }），
+     * 所以这里只保留能对上原行时间戳的译文 —— 对不上的直接丢弃，宁可这一行没有译文，
+     * 也不把某句译文硬配到别的行上。
+     */
+    private fun applyTtmlLyrics(songId: Long, doc: TtmlDoc) {
+        if (currentSongId.value != songId) return
+        val lineTimes = doc.lines.mapTo(HashSet<Long>()) { it.timeMs }
+        lyrics.value = doc.lines
+        translatedLyrics.value = doc.translations.filter { it.timeMs in lineTimes }
+        lyricsSongId.value = songId
+        lyricsNoContentSongId.value = -1L
     }
 
     /**
@@ -1109,6 +1313,8 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         val app = getApplication<Application>()
         PlaybackStateManager.clearState(app)
         PlaybackStateManager.clearQueue(app)
+        // v1.9.0：退出播放器时作废所有在途的歌词请求，别让它们的响应落回已经清空的播放器状态。
+        lyricReqGate.invalidate()
 
         val intent = Intent(app, PlaybackService::class.java).apply {
             putExtra("action", "stop")
