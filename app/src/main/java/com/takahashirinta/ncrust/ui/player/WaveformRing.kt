@@ -9,9 +9,10 @@
 package com.takahashirinta.ncrust.ui.player
 
 import kotlin.math.abs
+import kotlin.math.exp
 
 /**
- * v1.8.0 · T3：音频可视化的**无锁单写者环形缓冲 + 柱状滚动窗口**（纯逻辑，可 JVM 单测）。
+ * v1.8.0 · T3：音频可视化的**无锁单写者环形缓冲 + 柱状滚动窗口 + 时间常数平滑**（纯逻辑，可 JVM 单测）。
  *
  * 线程模型是本文件存在的全部理由：
  *
@@ -22,8 +23,18 @@ import kotlin.math.abs
  *  - 两侧唯一的同步是 `writeIndex` 的 volatile 语义（单写者 ⇒ 读到的一定是某个一致前缀）。
  *    溢出时**丢最旧的**而不是等 —— 可视化允许丢帧，绝不允许回压到音频线程。
  *
- * [bars] 是 UI 侧直接拿去 draw 的滚动窗口（下标 0 = 最旧，最后一项 = 最新）。
- * 不做任何插值：数据本身 20 柱/秒，插值只会让 S6 多画几十次没信息量的帧。
+ * ## v1.8.1：为什么加了平滑
+ *
+ * 音频数据只有 30 柱/秒，直接把这 30 个值画成柱高，画面就是"每 33ms 硬跳一次"，
+ * 观感上明显是一跳一跳的（用户反馈"帧率太低"。**根因不是帧率而是阶跃**）。
+ * 现在拆成两层：
+ *
+ *  - [targets] = 最新数据（阶跃）；
+ *  - [bars] = 画面值，用**时间常数**指数逼近 targets：起音快（[ATTACK_TAU_MS]，跟得上鼓点）、
+ *    回落慢（[RELEASE_TAU_MS]，像 VU 表一样自然衰减）。
+ *
+ * 时间常数形式（`k = 1 - exp(-dt/tau)`）而不是固定系数，是为了**与刷新率无关**：
+ * 60fps 与 30fps 下同一条曲线，低端机降帧率不会让观感变形。
  */
 class WaveformRing(
     /** 环形缓冲容量（柱数）。UI 掉帧时最多积压这么多，再多就丢最旧的。 */
@@ -50,7 +61,10 @@ class WaveformRing(
     /** UI 侧已消费到的位置。只有 UI 线程读写。 */
     private var readIndex: Int = 0
 
-    /** 画面上的柱子高度（0..1）。UI 线程原地更新，绝不重新分配 —— 见 AGENTS.md 的零重组原则。 */
+    /** 最新数据（阶跃）。UI 线程原地更新，绝不重新分配。 */
+    private val targets = FloatArray(barCount)
+
+    /** 画面上的柱子高度（0..1）= 平滑后的值。UI 线程原地更新。 */
     private val bars = FloatArray(barCount)
 
     /** 音频线程：推入一根柱（RMS 幅度，0..1）。 */
@@ -65,18 +79,32 @@ class WaveformRing(
     fun clear() {
         readIndex = writeIndex
         bars.fill(0f)
+        targets.fill(0f)
     }
 
     /**
      * UI 线程按帧率调用。
      *
-     * @param active 播放中（且不在缓冲）时为 true：消费新柱；false 时把窗口**指数衰减**到 0
+     * @param active 播放中（且不在缓冲）时为 true：消费新柱并把画面值逼近数据值；
+     *   false 时把**数据值**归零，画面值按 [RELEASE_TAU_MS] 衰减到 0
      *   —— 暂停/缓冲瞬间清零会"闪一下"，衰减看起来像余震自然消失。
-     * @param decay 每帧的衰减系数（0..1）。0.7 在 20fps 下约 0.3s 归零。
-     * @return 画面是否需要重绘（没有新数据且已经完全归零时返回 false ⇒ 零帧调度）。
+     * @param dtMs 距上一帧的毫秒数。平滑系数由它算出来，所以 30fps 与 60fps 观感一致。
+     * @return 画面是否需要重绘。**完全静止（没有新数据且已收敛）时返回 false** ——
+     *   这是"暂停后不再白烧 GPU"的保证。
      */
-    fun pump(active: Boolean, decay: Float = DEFAULT_DECAY): Boolean {
-        if (!active) return decayToZero(decay)
+    fun pump(active: Boolean, dtMs: Float): Boolean {
+        var changed = false
+        if (active) {
+            changed = consumePending()
+        } else if (targets.any { it != 0f }) {
+            targets.fill(0f)
+            changed = true
+        }
+        return approach(dtMs) || changed
+    }
+
+    /** 把环形缓冲里 UI 还没消费的柱搬进 [targets]。 */
+    private fun consumePending(): Boolean {
         val snapshot = writeIndex
         var pending = snapshot - readIndex
         if (pending <= 0) return false
@@ -85,28 +113,57 @@ class WaveformRing(
             readIndex = snapshot - capacity
             pending = capacity
         }
+        var changed = false
         repeat(pending) {
             // 注意：读到的是"某一时刻的值"，写者可能刚好覆盖同一格（只在溢出时发生）。
             // 单根柱失真在视觉上不可见，也不影响后续帧 —— 因此这里不用锁。
-            shiftIn(ring[readIndex % capacity])
+            if (shiftIn(ring[readIndex % capacity])) changed = true
             readIndex += 1
         }
-        return true
+        return changed
     }
 
-    private fun shiftIn(value: Float) {
-        for (i in 0 until barCount - 1) bars[i] = bars[i + 1]
-        bars[barCount - 1] = if (value.isFinite()) value.coerceIn(0f, 1f) else 0f
-    }
-
-    private fun decayToZero(decay: Float): Boolean {
+    /** @return 这一根新柱是否真的改变了窗口内容（全等值时不必重绘）。 */
+    private fun shiftIn(value: Float): Boolean {
         var changed = false
-        val d = decay.coerceIn(0f, 1f)
+        for (i in 0 until barCount - 1) {
+            if (targets[i] != targets[i + 1]) {
+                targets[i] = targets[i + 1]
+                changed = true
+            }
+        }
+        val last = if (value.isFinite()) value.coerceIn(0f, 1f) else 0f
+        if (targets[barCount - 1] != last) {
+            targets[barCount - 1] = last
+            changed = true
+        }
+        return changed
+    }
+
+    /**
+     * 让画面值朝数据值走一步（时间常数形式，与刷新率无关）。
+     *
+     * **重绘判据刻意不用"位移是否大于某个 epsilon"**：回落尾段每帧位移会越来越小，
+     * 用位移阈值会让 [pump] 在柱子还停在 ~1.5% 的时候就报"不用重绘" —— 柱子冻在
+     * 非零值上（v1.8.1 实现时被单测抓到的真实缺陷）。现在的判据是"这一根还没到位"
+     * （`current != target`），配合下面的收敛截断：只要没到位就继续重绘，一旦吸附到
+     * 目标值就精确相等、下一帧自然停。
+     *
+     * @return 有柱子还没到位（需要重绘）时为 true。
+     */
+    private fun approach(dtMs: Float): Boolean {
+        val dt = dtMs.coerceIn(0f, 200f)
+        val kAttack = 1f - exp(-dt / ATTACK_TAU_MS)
+        val kRelease = 1f - exp(-dt / RELEASE_TAU_MS)
+        var changed = false
         for (i in bars.indices) {
-            val v = bars[i]
-            if (v == 0f) continue
-            val next = v * d
-            bars[i] = if (abs(next) < SILENCE_EPSILON) 0f else next
+            val target = targets[i]
+            val current = bars[i]
+            if (current == target) continue
+            val k = if (target > current) kAttack else kRelease
+            val next = current + (target - current) * k
+            // 收敛截断：无限逼近永远不等于目标，不截断就会永远"需要重绘"。
+            bars[i] = if (abs(next - target) < SETTLE_EPSILON) target else next
             changed = true
         }
         return changed
@@ -118,17 +175,23 @@ class WaveformRing(
         for (i in 0 until n) destination[i] = bars[i]
     }
 
-    /** 单测用：读第 index 根柱。 */
+    /** 单测用：画面值（平滑后）。 */
     fun barAt(index: Int): Float = bars[index]
+
+    /** 单测用：数据值（未平滑）。 */
+    fun targetAt(index: Int): Float = targets[index]
 
     /** 单测用：还没被 UI 消费的柱数。 */
     val pendingCount: Int get() = writeIndex - readIndex
 
     companion object {
-        /** 每帧衰减系数。20fps 下 0.7^k 大约 0.3 秒归零。 */
-        const val DEFAULT_DECAY = 0.7f
+        /** 起音时间常数（毫秒）：跟得上鼓点，又不至于把 30Hz 的阶跃原样画出来。 */
+        const val ATTACK_TAU_MS = 22f
 
-        /** 小于它就当 0 —— 避免指数衰减永远逼近而不等于 0，导致 UI 无限重绘。 */
-        const val SILENCE_EPSILON = 0.002f
+        /** 回落时间常数（毫秒）：VU 表式的自然衰减。 */
+        const val RELEASE_TAU_MS = 130f
+
+        /** 收敛判据：低于它就吸附到目标值，避免"永远差一点点"导致无限重绘。 */
+        const val SETTLE_EPSILON = 0.004f
     }
 }

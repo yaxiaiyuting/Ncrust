@@ -8,7 +8,9 @@
 
 package com.takahashirinta.ncrust.ui.player
 
+import android.app.ActivityManager
 import android.content.Context
+import android.os.Build
 import androidx.compose.foundation.Canvas
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -19,7 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import io.github.takahashirinta.kanesumi.core.theme.LocalMetroColors
 import kotlinx.coroutines.delay
@@ -89,13 +91,13 @@ object WaveformStore {
     /**
      * 每秒生成多少根柱。
      *
-     * 20 与 media3 的建议区间（10–30）一致：再高只会让音频线程多做无用的聚合，
-     * 再低波形就跟不上鼓点。注意这个值**只影响音频线程的聚合粒度**，
-     * 画面刷新率由 [VISUALIZER_FRAME_INTERVAL_MS] 单独控制。
+     * v1.8.1：20 → **30**。用户反馈"帧率太低"，一路查下来真正的瓶颈是**信息速率**
+     * （20 柱/秒 = 每 50ms 才有一个新值），而不是重绘帧率。30 是 media3 建议区间
+     * （10–30）的上限：再高音频线程只是白做聚合，再低波形跟不上鼓点。
      */
-    const val BARS_PER_SECOND = 20
+    const val BARS_PER_SECOND = 30
 
-    /** 环形缓冲容量：UI 卡顿时最多积压 12.8 秒，再多丢最旧的（绝不回压音频线程）。 */
+    /** 环形缓冲容量：UI 卡顿时最多积压 8.5 秒，再多丢最旧的（绝不回压音频线程）。 */
     private const val CAPACITY = 256
 
     private val ring = WaveformRing(capacity = CAPACITY, barCount = BAR_COUNT)
@@ -118,9 +120,12 @@ object WaveformStore {
         if (enabled) ring.push(rootMeanSquare.toFloat())
     }
 
-    /** UI 线程按帧率调用；有新数据（或衰减未结束）时才让画面失效。 */
-    fun pump(active: Boolean) {
-        if (ring.pump(active)) generationState.intValue++
+    /**
+     * UI 线程按帧率调用；有新数据（或平滑尚未收敛）时才让画面失效。
+     * @param dtMs 距上一帧的毫秒数（平滑系数由它算，见 [WaveformRing.pump]）。
+     */
+    fun pump(active: Boolean, dtMs: Float) {
+        if (ring.pump(active, dtMs)) generationState.intValue++
     }
 
     /** UI 线程：把滚动窗口拷进复用数组。 */
@@ -133,19 +138,43 @@ object WaveformStore {
     }
 }
 
-/** 画面刷新间隔（毫秒）。20fps 与数据速率 1:1 —— 画得更快没有新信息，只会白烧 GPU。 */
-const val VISUALIZER_FRAME_INTERVAL_MS = 50L
+/** 现代设备的可视权重绘间隔：16ms ≈ 60fps。 */
+const val VISUALIZER_FRAME_INTERVAL_FAST_MS = 16L
+
+/** 低端设备的可视权重绘间隔：33ms ≈ 30fps（数据仍是 30 柱/秒，只是平滑步长更大）。 */
+const val VISUALIZER_FRAME_INTERVAL_SLOW_MS = 33L
 
 /**
- * v1.8.0 · T3：横屏大屏模式左栏的**音频可视化条**（封面下、歌名/作者上）。
+ * v1.8.1：可视化的重绘上限间隔。
+ *
+ * - 现代设备（API 26+ 且非低内存）：**16ms ≈ 60fps**
+ * - API < 26 或 `isLowRamDevice`：**33ms ≈ 30fps**
+ *
+ * 为什么按"设备档位"而不是按"实测帧间隔"自动降级：S6 是流水线式掉帧（帧回调仍 60Hz、
+ * 每帧延迟 ~19ms），帧间隔量不出真实压力 —— v1.6.0 已经踩过这条并回退（见 AGENTS.md
+ * 的 D2 节）。设备档位是静态、可预期、可单测的判据。
+ *
+ * 注意：平滑是**时间常数**形式（`1 - exp(-dt/tau)`），所以 30fps 与 60fps 画出来的是
+ * 同一条运动曲线，降帧率只损失顺滑度、不改变幅度与节奏。
+ */
+fun visualizerFrameIntervalMs(context: Context): Long {
+    val activityManager =
+        context.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager
+    val lowTier = Build.VERSION.SDK_INT < Build.VERSION_CODES.O ||
+        activityManager?.isLowRamDevice == true
+    return if (lowTier) VISUALIZER_FRAME_INTERVAL_SLOW_MS else VISUALIZER_FRAME_INTERVAL_FAST_MS
+}
+
+/**
+ * v1.8.0 · T3（v1.8.1 提帧）：横屏大屏模式左栏的**音频可视化条**（封面下、歌名/作者上）。
  *
  * 性能契约（S6 基线是硬指标，写在这里防止被"顺手优化"掉）：
  *
  *  - **不重组**：[WaveformStore.generation] 只在 [Canvas] 的 draw lambda 里读，
  *    失效范围是"重绘这一块画布"；柱高数组是 `remember` 出来的 `FloatArray`，逐帧原地更新，
  *    **零分配**。
- *  - **不空转**：暂停 / 缓冲时走 `delay` 而不是帧时钟，衰减到 0 之后 [WaveformStore.pump]
- *    返回 false，画面不再失效（不会出现"暂停了还在 20fps 重绘"）。
+ *  - **不空转**：暂停 / 缓冲时走 `delay` 而不是帧时钟；数据归零且平滑收敛之后
+ *    [WaveformStore.pump] 返回 false，画面不再失效（不会出现"暂停了还在 60fps 重绘"）。
  *  - **不拖音频线程**：音频线程只做一次数组写；聚合（RMS）由 media3 的
  *    `WaveformAudioBufferSink` 在它自己的回调里完成。
  *
@@ -158,28 +187,35 @@ fun AudioVisualizerBars(
     activeProvider: () -> Boolean,
     modifier: Modifier = Modifier,
     barCount: Int = WaveformStore.BAR_COUNT,
-    frameIntervalMs: Long = VISUALIZER_FRAME_INTERVAL_MS,
 ) {
+    val context = LocalContext.current
     val barColor = LocalMetroColors.current.primary
     val currentActive = rememberUpdatedState(activeProvider)
     val bars = remember(barCount) { FloatArray(barCount) }
+    // 设备档位只算一次（isLowRamDevice 不会变）。
+    val frameIntervalMs = remember(context) { visualizerFrameIntervalMs(context) }
 
     LaunchedEffect(barCount, frameIntervalMs) {
         val budgetNs = frameIntervalMs * 1_000_000L
         var lastFrameNs = 0L
+        var lastPumpNs = 0L
         while (true) {
             if (currentActive.value()) {
                 withFrameNanos { now ->
                     if (lastFrameNs == 0L || now - lastFrameNs >= budgetNs) {
+                        val dtMs = if (lastPumpNs == 0L) frameIntervalMs.toFloat()
+                        else ((now - lastPumpNs) / 1_000_000f).coerceIn(1f, 100f)
                         lastFrameNs = now
-                        WaveformStore.pump(active = true)
+                        lastPumpNs = now
+                        WaveformStore.pump(active = true, dtMs = dtMs)
                     }
                 }
             } else {
                 // 暂停 / 缓冲：用 delay 而不是帧时钟 —— 归零过程不需要跟着刷新率走。
                 delay(frameIntervalMs)
                 lastFrameNs = 0L
-                WaveformStore.pump(active = false)
+                lastPumpNs = 0L
+                WaveformStore.pump(active = false, dtMs = frameIntervalMs.toFloat())
             }
         }
     }
