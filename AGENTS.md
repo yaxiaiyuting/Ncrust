@@ -62,6 +62,14 @@ Single source of truth: `app/build.gradle.kts` → `defaultConfig.versionName` /
   **第三次（v1.9.2）**：任务书写「当前状态 v1.9.0 已发布、本版 v1.9.1」，但 `git tag` +
   `aapt2 dump badging` 实测 v1.9.1-gpl 早已发布（versionCode **24**，修的是歌词镜像回退判定）。
   所以本版是 **v1.9.2-gpl / versionCode 25**。**动版本号之前永远先实测 `dist/` 里的最新包**。）
+- **动版本号之前必须先跑 `bash tools/next-version.sh`**（v1.9.3 固化；脚本在**仓库外**
+  `<repo>-gpl/tools/`，按本仓库惯例不入 git —— `.gitignore` 里有 `.sh`，且 `tools/` 全是探针脚本、
+  可能带账号凭证）。它交叉验证**三个来源**并取 `max + 1`，任何一个都不是可信的单点：
+  ① 最近 5 个 tag 指向的 `app/build.gradle.kts`；② `dist/*.apk` 的 `aapt2 dump badging`
+  （唯一可信的「这个号已经发布出去了」事实来源）；③ 仓库当前 `build.gradle.kts`。
+  三个来源在 v1.7.0 / v1.9.0 / v1.9.2 **各撞过一次号**，根因全是冷启动时只凭记忆、或只看单一来源。
+  用法：`tools/next-version.sh`（人类可读报告）/ `--code`（只输出数字，给脚本消费）/ `--json` / `--no-fetch`。
+  实测（v1.9.3 冷启动）：三源一致 = 25 ⇒ 下一个可用 **26**。
 
 ## Commit Convention
 

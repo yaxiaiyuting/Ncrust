@@ -58,10 +58,18 @@ Single source of truth: `app/build.gradle.kts` → `defaultConfig.versionName` /
 - Current: `versionName = "1.9.2-gpl"`, `versionCode = 25`. Latest release: `v1.9.2-gpl`.
   （**注意 versionCode 必须递增**：v1.6.1 = 19，所以 v1.7.0 是 20 —— 任务书里写「v1.7.0 = 19」是错的，
   19 已经被 v1.6.1 占用，照抄会导致无法覆盖安装。同理本版 **23**：任务书说「v1.8.0 = 21、本版 22」，
-  但 `aapt2 dump badging` 实测 v1.8.1 已经是 **22**，照抄 22 会与线上包撞号、无法覆盖安装。）
+  但 `aapt2 dump badging` 实测 v1.8.1 已经是 **22**，照抄 22 会与线上包撞号、无法覆盖安装。
   **第三次（v1.9.2）**：任务书写「当前状态 v1.9.0 已发布、本版 v1.9.1」，但 `git tag` +
   `aapt2 dump badging` 实测 v1.9.1-gpl 早已发布（versionCode **24**，修的是歌词镜像回退判定）。
   所以本版是 **v1.9.2-gpl / versionCode 25**。**动版本号之前永远先实测 `dist/` 里的最新包**。）
+- **动版本号之前必须先跑 `bash tools/next-version.sh`**（v1.9.3 固化；脚本在**仓库外**
+  `<repo>-gpl/tools/`，按本仓库惯例不入 git —— `.gitignore` 里有 `.sh`，且 `tools/` 全是探针脚本、
+  可能带账号凭证）。它交叉验证**三个来源**并取 `max + 1`，任何一个都不是可信的单点：
+  ① 最近 5 个 tag 指向的 `app/build.gradle.kts`；② `dist/*.apk` 的 `aapt2 dump badging`
+  （唯一可信的「这个号已经发布出去了」事实来源）；③ 仓库当前 `build.gradle.kts`。
+  三个来源在 v1.7.0 / v1.9.0 / v1.9.2 **各撞过一次号**，根因全是冷启动时只凭记忆、或只看单一来源。
+  用法：`tools/next-version.sh`（人类可读报告）/ `--code`（只输出数字，给脚本消费）/ `--json` / `--no-fetch`。
+  实测（v1.9.3 冷启动）：三源一致 = 25 ⇒ 下一个可用 **26**。
 
 ## Commit Convention
 
@@ -1420,7 +1428,6 @@ I PlayerViewModel: 歌词源 songId=X phase=2 picked=null (TTML 未胜出，保�
   （需要 `316100 雨爱` 这类歌；设备 UI 自动化切歌不稳定，prefs 注入又被 App 启动时覆盖）。
   复现方法：用 `316100` 播放并分别切两种模式，看 `歌词源 … picked=` 那行。
 - v1.9.0 其余未验证项（S6 TTML 视觉确认、帧率对比、离线飞行模式、双源译文合并等）**均未因本版改变**。
-
 
 ## v1.9.2 新增（本 fork · 修 v1.9.0 的分轨缺陷）
 
