@@ -55,7 +55,7 @@ Single source of truth: `app/build.gradle.kts` → `defaultConfig.versionName` /
 
 - `AboutScreen.kt` reads `BuildConfig.VERSION_NAME` — **never hardcode a version constant**. This needs `buildFeatures.buildConfig = true`.
 - Release flow: bump `versionCode` + `versionName` → commit `build: 升级至 vX.Y.Z ...` → `./gradlew assembleRelease` → `gh release create vX.Y.Z --draft <apk>` → user smoke-tests and publishes manually.
-- Current: `versionName = "1.9.0-gpl"`, `versionCode = 23`. Latest release: `v1.8.1-gpl`.
+- Current: `versionName = "1.9.1-gpl"`, `versionCode = 24`. Latest release: `v1.9.1-gpl`.
   （**注意 versionCode 必须递增**：v1.6.1 = 19，所以 v1.7.0 是 20 —— 任务书里写「v1.7.0 = 19」是错的，
   19 已经被 v1.6.1 占用，照抄会导致无法覆盖安装。同理本版 **23**：任务书说「v1.8.0 = 21、本版 22」，
   但 `aapt2 dump badging` 实测 v1.8.1 已经是 **22**，照抄 22 会与线上包撞号、无法覆盖安装。）
@@ -1344,4 +1344,77 @@ v1.9.0 新增 **66 个**：
 4. **`x-bg` 背景人声不单独建模**：与主唱混在同一行，时间倒退的词被丢弃（有意取舍，不是 bug）。
 5. **TTML 译文与网易云 `tlyric` 不会同时显示**：TTML 赢了就只有 TTML 的 `x-translation`；双源译文合并没有实现。
 6. 未做「按歌名 / 歌手模糊匹配」的兜底（有意不做，不是遗漏）。
+
+
+---
+
+## v1.9.1 新增（本 fork · v1.9.0 的 hotfix）
+
+| | |
+|---|---|
+| versionName | `1.9.1-gpl` |
+| versionCode | **24** |
+| 改动面 | **只有歌词镜像的回退判定 + 一行可观测性日志**。渲染层 / 播放路径 / 缓存格式 / 设置项一律未动 |
+
+### 修 · 一个镜像的 404 会让这首歌静默丢掉 TTML
+
+v1.9.0 的 `AmllTtmlClient` 对**任何**镜像的 404 都判「这首歌没有 TTML」并立刻 `return null`，
+不再试后面的镜像。这个判定只在**权威镜像**上成立 —— 第 3 面 jsdelivr 有自己的**单包 50 MB 上限**，
+对**确实存在**的文件也会返回 `403 Package size exceeded the configured limit of 50 MB`。
+
+最坏路径：`amlldb` 抖动 → `github-raw` 抖动 → `jsdelivr` 对存在文件报 403/404 → 判「无此歌词」收工
+→ **第 4 面 `amlldb-alt` 永远没机会被请求**，这首歌静默退回整行 LRC。
+
+**这是本版独立验证者发现的，不是实现者自测出来的**，值得连教训一起记下来：
+
+> Phase 0 时我抽了 10 首**热门**歌对 4 面镜像各拉一次、sha256 全部一致，据此写下
+> 「备用镜像与主镜像内容逐字节一致 ⇒ 继续试不可能变出歌词」。
+> 验证者按**可用性**维度重测：抽样 60 个确认存在于 DB 的 ID，有 **4 个**出现
+> 「其余三面均 200、只有 jsdelivr 拿不到」（3× 403 超限 + 1× 网络异常）。
+> **抽样偏差出现在「热度」这个维度上** —— 热门歌四面齐全，恰好掩盖了 jsdelivr 的超限行为。
+> 教训：**内容一致 ≠ 可用性一致**；验证镜像要多面**同时**成功才算等价。
+
+复现脚本：仓库外 `tools/verify-mirror-equivalence.py`（可重跑，60 个 ID 可稳定复现 4 个）。
+
+### 改法与镜像表契约（**新增镜像时必须遵守**）
+
+1. `Mirror` 新增 `authoritative` 字段：**只有直出官方仓库的三面**（`amlldb` / `amlldb-alt` /
+   `github-raw`）的 404 才可判「这首歌没有 TTML」；
+2. **非权威镜像**（`jsdelivr`）的 404 / 403 / 200-非TTML 一律当「这面镜子服务不了这个文件」，
+   **继续试下一面**（即使它已经是最后一面 —— 语义写对，避免以后在它后面加镜像时重新踩坑）；
+3. **顺序**：jsdelivr 排在**最后**。常见情形（有 / 没有 TTML）在第 1 面就终结，
+   它是否抽风不影响主路径；作为兜底仍有价值（实测在弱网下救回过命中）。
+4. 测试把顺序与权威位**当契约锁住**（`镜像表约定——前 3 面权威、jsdelivr 非权威且排最后`），
+   并逐面验证「权威镜像的 404 仍然立即收工」这个**省流量的正确行为没被修坏**。
+
+### 顺带补的可观测性（原 v1.9.0 未验证项 U3）
+
+v1.9.0 没有任何一行日志说明「最终选了哪个源」—— 验证者因此无法验证优先级开关是否真的生效。
+现在每个 `fetchLyrics` 会打：
+
+```
+I PlayerViewModel: 歌词源 songId=X phase=1 picked=KIND lines=N words=B
+I PlayerViewModel: 歌词源 songId=X phase=2 picked=TTML ... (覆盖了 phase=1)
+I PlayerViewModel: 歌词源 songId=X phase=2 picked=null (TTML 未胜出，保留 phase=1)
+```
+
+第三行是必要的：**拉了 TTML 但没赢**（没有逐字 span、或被 YRC 压过）必须能归因，
+否则「用户开了 TTML 却仍是整行」在线上无从判断。
+
+### v1.9.1 的测试与实测
+
+| 项 | 结果 |
+|---|---|
+| JVM 单测 | **255 个全绿**（v1.9.0 = 250，本版 +5；`AmllTtmlClientTest` 15 → 20） |
+| 新增用例 | 5 条全部是本次缺陷的回归，最关键一条复刻最坏路径并断言「四面都被请求过」 |
+| PCL110 覆盖安装 | v1.9.0(23) → v1.9.1(24) **Success**；签名 `e75af3ff…5511` 未变；权限集与 v1.9.0 **逐条一致** |
+| 真机日志 | `歌词源 songId=22765922 phase=1 picked=YRC lines=3 words=false` + `无此歌词 … mirror=amlldb code=404`（该曲确无 TTML；同时印证权威镜像 404 后不再空跑其余三面） |
+
+### v1.9.1 仍未验证
+
+- **优先级开关两种模式的端到端对照**：日志与机制已在真机验证会输出，但「同一首同时有 YRC 与 TTML 的歌，
+  分别切 `lyrics_ttml_first` true/false 看 `picked=` 变化」这一步**本 session 未取到证据**
+  （需要 `316100 雨爱` 这类歌；设备 UI 自动化切歌不稳定，prefs 注入又被 App 启动时覆盖）。
+  复现方法：用 `316100` 播放并分别切两种模式，看 `歌词源 … picked=` 那行。
+- v1.9.0 其余未验证项（S6 TTML 视觉确认、帧率对比、离线飞行模式、双源译文合并等）**均未因本版改变**。
 
