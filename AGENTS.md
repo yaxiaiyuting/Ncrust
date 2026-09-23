@@ -55,7 +55,7 @@ Single source of truth: `app/build.gradle.kts` → `defaultConfig.versionName` /
 
 - `AboutScreen.kt` reads `BuildConfig.VERSION_NAME` — **never hardcode a version constant**. This needs `buildFeatures.buildConfig = true`.
 - Release flow: bump `versionCode` + `versionName` → commit `build: 升级至 vX.Y.Z ...` → `./gradlew assembleRelease` → `gh release create vX.Y.Z --draft <apk>` → user smoke-tests and publishes manually.
-- Current: `versionName = "1.8.0-gpl"`, `versionCode = 21`. Latest release: `v1.8.0-gpl`.
+- Current: `versionName = "1.8.1-gpl"`, `versionCode = 22`. Latest release: `v1.8.1-gpl`.
   （**注意 versionCode 必须递增**：v1.6.1 = 19，所以 v1.7.0 是 20 —— 任务书里写「v1.7.0 = 19」是错的，
   19 已经被 v1.6.1 占用，照抄会导致无法覆盖安装。）
 
@@ -1088,3 +1088,53 @@ M3 在本仓库只当**取值参照系**。落地的是三件与 Kanesumi「无�
 4. 可视化只出现在大屏模式左栏（竖屏不出现，设计如此）。
 5. 与本次改动无关的老功能（榜单、推荐卡、离线缓存、媒体中心歌词等）本轮未逐项复测。
 
+## v1.8.1 修复（本 fork）
+
+### T3 · 音频可视化「帧率太低 / 一跳一跳」
+
+**用户反馈**：「感觉刷新率也就是帧率有点太低了，请调高使得流畅」。**先量了全 app 基线再动手**：
+
+| 场景（PCL110 / release） | 帧率 | Janky | 50th |
+|---|---|---|---|
+| 库列表滚动 | — | 2.61% | 5ms |
+| 竖屏播放器 + 逐字歌词 | 51fps | 0.49% | 6ms |
+| **大屏 + 可视化（v1.8.0）** | **~20fps** | — | — |
+
+⇒ 全 app 帧率健康，问题**只在可视化**。根因两条，都不是"GPU 不够"：
+
+1. **重绘被限成 20fps**（`VISUALIZER_FRAME_INTERVAL_MS = 50`），而数据是 **20 柱/秒** —— 一个阶跃一个阶跃地画，看着就是跳的；
+2. **柱高是硬切换**，柱与柱之间没有任何过渡。
+
+修法（三层，缺一层都还是跳）：
+
+| 层 | v1.8.0 | v1.8.1 | 为什么 |
+|---|---|---|---|
+| 数据速率 `BARS_PER_SECOND` | 20 | **30** | 真正的瓶颈是**信息速率**，不是重绘帧率。30 是 media3 建议区间（10–30）上限 |
+| 重绘上限 | 50ms（20fps） | **16ms（60fps）**；`SDK_INT < 26` 或 `isLowRamDevice` → 33ms（30fps） | 60fps 是"顺滑"的基准；低端机档位是**静态判据**（不按实测帧间隔自动降级 —— S6 是流水线式掉帧，帧间隔量不出压力，v1.6.0 已踩过并回退） |
+| 柱高 | 硬切 | **时间常数平滑**（起音 22ms / 回落 130ms，`1-exp(-dt/tau)`） | 数据只有 30Hz，靠**插值**把 30 个采样点连成连续运动；时间常数形式保证 60fps 与 30fps 画的是同一条曲线 |
+
+**顺手修掉一个实现期被单测抓到的真实缺陷**：重绘判据原本写成「本帧位移 > epsilon 才需要重绘」，
+结果回落尾段每帧位移越来越小，`pump` 在柱子还停在 **~1.5%** 时就报"不用重绘" ⇒ **暂停后柱子冻在非零值**。
+改成「这一根还没到位（`current != target`）就继续重绘」+ 收敛截断（`SETTLE_EPSILON`）后：
+衰减 45 帧精确归零、之后不再重绘。
+
+**实测（两台真机，25s 窗口）**
+
+| 设备 | v1.8.0 | v1.8.1 |
+|---|---|---|
+| PCL110（API 36 / release）大屏 | ~20fps | **61fps / Janky 0.00% / 50th 20ms**；两帧相隔 150ms 波形区域有 ~1000/14000 采样点变化 ⇒ **柱间确实在连续运动** |
+| S6（API 24 / debug）大屏 | 20fps / 44.12% janky / 50th 15ms | **29.2fps / 20.99% janky / 50th 13ms**（更好，不是"用帧率换观感"） |
+
+### 关于「用户页长时间显示加载中」（非本 fork 的 bug，记录备查）
+
+用户曾报「用户界面长时间显示加载中，约半分钟」。核实结论：**不是 v1.8.0 的回归**，
+是 `UserScreen` 的 `PlaylistApi.getUserProfile()` **真实网络等待**（用户随后自行确认为网络问题并作废）。
+
+证据与机制，写在这里免得下次再查一遍：
+
+- `loadProfile()` 有 `finally { isLoadingProfile = false }`，所以「一直转圈」= **请求本身慢**，不是状态没收尾；
+- 共享 OkHttp 客户端的 **read timeout 是 30s**，所以"约半分钟"正好是一个超时窗口的量级；
+- 同一时刻 S6（同一账号、同一 WiFi）4 秒内就出结果 ⇒ 服务端/链路侧，非客户端逻辑。
+
+**没有为此改任何代码。** 唯一可讨论的点是「加载中没有任何超时/失败提示」——
+现在的行为是失败后静默回落到未登录态，属于既有设计，不在本轮范围。
