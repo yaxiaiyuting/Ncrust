@@ -195,7 +195,12 @@ fun AudioVisualizerBars(
         val half = size.height / 2f
         val minBar = 1.dp.toPx()
         for (i in 0 until n) {
-            val height = (bars[i] * size.height).coerceAtLeast(minBar)
+            // 幅度用**平方根**映射到高度，而不是线性。
+            // 音乐（尤其母带压缩过的流行乐）的 RMS 通常落在 0.05~0.3，线性映射只能画出
+            // 带宽 5%~30% 的一排小方块，肉眼像"没在动"；sqrt 把 0.09→0.3、0.25→0.5，
+            // 既保留相对强弱，又让整条带子用得上高度。一次 sqrt/柱/帧（28 次）可忽略。
+            val amplitude = kotlin.math.sqrt(bars[i].coerceIn(0f, 1f))
+            val height = (amplitude * size.height).coerceAtLeast(minBar)
             // 越靠左（越旧）越淡 —— 不用渐变对象，一次 alpha 计算换来"余韵"观感。
             val alpha = 0.30f + 0.70f * (i + 1).toFloat() / n
             drawRect(
