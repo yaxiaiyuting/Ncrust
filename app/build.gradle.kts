@@ -37,8 +37,10 @@ android {
         // v1.9.0 的 versionCode 是**实测**定的，不是按任务书推的：任务书写「v1.8.0 = 21，本版 22」，
         // 但 aapt2 dump badging dist/Ncrust-v1.8.1-gpl-release.apk 实测 v1.8.1 已经是 22。
         // 照抄 22 会与已发布的 v1.8.1 撞号、导致无法覆盖安装，故本版取 23。
-        versionCode = 23
-        versionName = "1.9.0-gpl"
+        // v1.9.1 是 v1.9.0 的 hotfix：修正镜像回退逻辑（jsdelivr 的 403/404 不能判「无此歌词」）。
+        // 已发布的 v1.9.0-gpl 制品**不原地替换**，走新的 versionCode，保持发布产物可复现。
+        versionCode = 24
+        versionName = "1.9.1-gpl"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
