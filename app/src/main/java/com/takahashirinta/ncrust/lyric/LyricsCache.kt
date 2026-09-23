@@ -260,6 +260,19 @@ object LyricsCache {
         ttmlAt > 0 && now - ttmlAt < ttlMs
 
     /**
+     * 纯函数：这条缓存是不是**升级前写下的**（缺 v1.9.2 的 romalrc 字段）。
+     *
+     * 为什么需要它：LRC 条目**没有 TTL**（只有 200 条的 LRU 上限），所以 v1.9.1 及更早写下的条目
+     * 会一直躺在盘上、`romalrc` 一直是 null。若照旧当命中用，音译回退对升级用户就**永远不生效** ——
+     * 真机实测（PCL110，装着 v1.9.1 时期的缓存）：64 条里 63 条没有这个字段，1959528822 因此只拿到
+     * TTML 的 16 行音译，而网易云那 41 行 romalrc 明明在服务端、却一直用不上。判据用「字段缺失」
+     * 而不是「字段为空」：空串是「这首歌确实没有音译」的权威结论（v1.9.2 会写下去），缺失才是「没记过」。
+     *
+     * 条目为 null（本来就要打网络）返回 false。
+     */
+    internal fun needsRomalrcRefetch(entry: CachedLyrics?): Boolean = entry != null && entry.romalrc == null
+
+    /**
      * 纯函数：从缓存条目里挑出 TTML 原文。
      *
      * [requireFresh] = true 走在线路径（[isTtmlFresh] 过滤）；false 走离线兜底（忽略 TTL）。

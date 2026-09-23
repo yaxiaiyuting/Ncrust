@@ -179,6 +179,33 @@ class LyricsCacheModelTest {
         assertEquals("MIXED", LyricTrackSource.MIXED.cacheTag)
     }
 
+    // ---------- v1.9.2：升级前的老条目要重取一次 romalrc ----------
+
+    @Test
+    fun `needsRomalrcRefetch——缺字段的老条目要重取，空串（确实没有音译）不重取`() {
+        assertTrue(
+            "v1.9.1 写下的条目没有 romalrc 字段 ⇒ 当作 miss 重取一次",
+            LyricsCache.needsRomalrcRefetch(gson.fromJson(v191Json, CachedLyrics::class.java))
+        )
+        assertTrue(
+            "更老的缓存同样",
+            LyricsCache.needsRomalrcRefetch(gson.fromJson(v140Json, CachedLyrics::class.java))
+        )
+        assertFalse(
+            "v1.9.2 已经写过的「空音译轨」是权威结论，不该反复重取",
+            LyricsCache.needsRomalrcRefetch(
+                CachedLyrics("a", "b", 1L, null, null, 0L, romalrc = "")
+            )
+        )
+        assertFalse(
+            "有音译更不重取",
+            LyricsCache.needsRomalrcRefetch(
+                CachedLyrics("a", "b", 1L, null, null, 0L, romalrc = "[00:01.00]jia")
+            )
+        )
+        assertFalse("没有条目本来就打网络，不算「老条目」", LyricsCache.needsRomalrcRefetch(null))
+    }
+
     @Test
     fun `withTrackSources——没有条目就不建条目（绝不为了记标记写出 lrc=空 的假「确无歌词」）`() {
         assertNull(LyricsCache.withTrackSources(null, "TTML", "NETEASE"))

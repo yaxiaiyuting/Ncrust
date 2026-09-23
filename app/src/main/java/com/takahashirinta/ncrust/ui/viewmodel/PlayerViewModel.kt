@@ -1081,13 +1081,29 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         // 这是进程被杀重进时歌词能秒回、且不受冷启动风控/限流影响的关键。
         val cached = LyricsCache.get(getApplication(), songId)
         if (!lyricReqGate.isCurrent(seq)) return STALE_NETEASE_LYRICS
-        if (cached != null) {
+        // v1.9.2：升级前写下的条目没有 romalrc 字段（Gson Unsafe ⇒ null）。那不是「这首歌没有音译」，
+        // 而是「这份缓存没记过音译」—— 继续当命中用会让音译回退对升级用户永远不生效（LRC 条目没有
+        // TTL，只有 200 条的 LRU 上限）。所以这种条目按 miss 处理，重取一次把字段补上；
+        // 补完（哪怕是空串）就恢复缓存命中。**网络失败时回落到这份老缓存**（见 degraded()），
+        // 不能让离线用户从「有歌词」变成「没歌词」。
+        val legacyEntry = cached?.takeIf { LyricsCache.needsRomalrcRefetch(it) }
+        if (cached != null && legacyEntry == null) {
             Log.d("PlayerViewModel", "fetchLyrics cache hit id=$songId lrc=${cached.lrc.length}")
             return NeteaseLyrics(
                 cached.lrc, cached.tlyric, cached.yrc.orEmpty(), cached.romalrc.orEmpty(),
                 authoritative = true
             )
         }
+        if (legacyEntry != null) {
+            Log.d("PlayerViewModel", "fetchLyrics 老缓存缺 romalrc，重取一次 id=$songId")
+        }
+        // 老缓存兜底：只在「本来就要打网络」的路径上用，语义与缓存命中完全一致
+        // （缓存只写 code==200 的权威结果），没有条目时等价于原来的 STALE_NETEASE_LYRICS。
+        fun degraded(): NeteaseLyrics = legacyEntry?.let {
+            NeteaseLyrics(
+                it.lrc, it.tlyric, it.yrc.orEmpty(), it.romalrc.orEmpty(), authoritative = true
+            )
+        } ?: STALE_NETEASE_LYRICS
         // 失败重试(最多 4 次, 递增退避): 冷启动时 AppWarmup 与恢复请求同时在
         // 打网络, 歌词请求的瞬时超时/限流不该让歌词永久消失。关键是**响应层面的
         // 失败也要重试** —— 服务端风控(-460/-462)或需登录(301)返回的 code!=200
@@ -1121,6 +1137,8 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                         getApplication(), songId, lrcText, tlyricText, yrcText, romalrcText
                     )
                 }
+                // 瞬时失败（风控 / 需登录）且手上有老缓存：用它，别把已有歌词判成没有。
+                if (code != 200) return degraded()
                 Log.d(
                     "PlayerViewModel",
                     "fetchLyrics id=$songId code=$code lrc=${lrcText.length} " +
@@ -1134,7 +1152,7 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                 // 失败不清空已有歌词(网络抖动不该把 UI 变空白), 重试后仍失败才退出
                 if (attempt == 3) {
                     Log.e("PlayerViewModel", "fetchLyrics failed for songId=$songId", e)
-                    return STALE_NETEASE_LYRICS
+                    return degraded()
                 }
                 delay(700L + attempt * 400L)
                 if (!lyricReqGate.isCurrent(seq)) return STALE_NETEASE_LYRICS
