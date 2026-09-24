@@ -42,6 +42,16 @@ data class SongItem(
      * 同样可空 + 默认值，理由与 [source] 相同。
      */
     @SerializedName("mid") val sourceId: String? = null,
+    /**
+     * 平台侧**媒体文件** ID（v2.1.0 · B）：QQ 音乐的 `file.media_mid`。
+     *
+     * 为什么它与 [sourceId] 必须分开：QQ 的播放 URL 文件名按 **media_mid** 拼
+     * （`<音质前缀><media_mid>.<扩展名>`），而实测同一首歌这两个值经常不同
+     * （《晴天》`mid=0039MnYb0qxYhV` 而 `media_mid=003Qui1q2u1Zho`）。
+     * 用错一个就会静默拿不到 URL（服务端只回空 purl，不报错）。
+     * 网易云一侧恒为 null。可空 + 默认值，理由同 [source]。
+     */
+    @SerializedName("media_id") val mediaId: String? = null,
 )
 
 @Immutable

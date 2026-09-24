@@ -57,12 +57,20 @@ val SongItem.dedupeKey: String
  * 用在「只知道 id 就要把歌塞进队列」的场合（例如从 mediaId 反解、Android Auto browse tree）。
  * 元数据缺失时展示层会退回「加载中」而不是崩，这与既有行为一致。
  */
-fun songRefOf(source: MusicSource, id: Long, sourceId: String? = null): SongItem = SongItem(
+fun songRefOf(
+    source: MusicSource,
+    id: Long,
+    sourceId: String? = null,
+    mediaId: String? = null,
+): SongItem = SongItem(
     id = id,
     name = "",
     artists = null,
     album = null,
     duration = null,
+    // 网易云一侧刻意写 null 而不是 "netease"：这样它与 v2.1.0 之前持久化的条目
+    // 在 data class 意义上完全相等，队列判重/收藏命中/离线命中都不受影响。
     source = if (source == MusicSource.NETEASE) null else source.key,
     sourceId = sourceId,
+    mediaId = mediaId,
 )
