@@ -1065,3 +1065,117 @@ API 24 启动与歌词面板 ✅、全程零 `FATAL`。
 1. 任务书说「只有逐字歌词出现」，实测**与逐字无关**（判据是第一句时间戳 > 0）⇒ 修在面板滚动定位上；
 2. 额外收了同机制的两个表现（进大屏 / 点 A± 丢当前行），没有做任何无关改动；
 3. 探针代码在证据采集后已从最终 diff 移除（最终 diff = 1 个改动文件 + 2 个新增文件）。
+
+# v2.0.2（本次会话，2026-09-25）—— 媒体通知专项 hotfix：华为/荣耀「双通知栏」+「歌词只有暂停才刷新」
+
+## 任务与设备（实测，推翻任务书假设）
+
+任务书假设「华为平板是 HarmonyOS，需调研 5.0+ 的 AVSession 歌词」——
+`getprop` 实测是 **HarmonyOS 4.2.0（`EmotionUI_14.2.0` + `hw_sc.build.platform.version=4.2.0`，
+底层 Android 12 / API 31，`devicetype=tablet`）**，荣耀是 **MagicOS_9.0.0（Android 15 / API 35）**。
+两台都只有 ADB（无 root），且装的是 release 包（`run-as` 不可用）⇒ 偏好只能走 UI 点击。
+因此**方向 D（AVSession）与方向 C（引导用户改系统设置）都不做**，只做 A（通知策略）+ B（刷新）。
+
+| | 华为平板 | 荣耀 |
+|---|---|---|
+| serial | `WVQ6R22124000968` | `APFQUT2C15004471` |
+| model | `WGR-W09`（HUAWEI） | `AGT-AN00`（HONOR） |
+| Android | 12 / API 31 | 15 / API 35 |
+
+## 根因（三条，全部真机取证）
+
+**B1 双通知栏**：`PlaybackService` 是 media3 `MediaLibraryService` 且建了 `MediaLibrarySession`；
+media3 `MediaSessionService` 的**默认实现**会自己 post 一条媒体通知（`DefaultMediaNotificationProvider`：
+id=**1001** / channel=**`default_channel_id`** / groupKey=`media3_group_key`），
+而本类又发自己的 **id=1 / `ncrust_playback`**。两个 id 不同 ⇒ 谁也覆盖不了谁。
+修复前全仓库 `onUpdateNotification` / `setMediaNotificationProvider` **命中 0**（一直走默认实现）。
+
+**B1b 那条注定没歌词**：media3 通知正文取自 media3 会话 metadata ← 当前 `MediaItem` 的 `MediaMetadata`。
+`playUrl()` 建的是裸 `MediaItem.fromUri(url)`（一个字段都没有 ⇒ `title=null/text=null`）；
+预载项有 title/artist，但**歌词只写进 `MediaSessionCompat`**，从没进过 media3 会话。
+
+**三个平台三种表现（同一根因）**：
+
+| | 华为 API 31 | 荣耀 API 35 | AOSP 模拟器 API 34 |
+|---|---|---|---|
+| 修复前通知条数 | 2（都存活） | 2（都存活） | **1（只剩 media3 那条空的）** |
+| 前台通知归属 | 两条并存 | 两条并存 | `foregroundId=1001` ⇒ 应用那条被**取消** |
+| 用户看到 | 两张一样的媒体卡片 | 1 张卡片 = media3 会话的旧歌名 `下山`（无歌词） | 1 张空卡片 |
+
+**B2 歌词不刷新**：歌词行**不是**绑在状态回调上 —— `PlayerViewModel` 用
+`combine(lyrics, currentPosition, lyricsInMediaSession)` 从 2Hz 位置流算当前行，一直是通的
+（华为实测 47 秒内会话 metadata 推进 **14 个不同歌词行**）。断点在**通知正文**：
+正文只在 6 个事件点重发、**没有一处是「跨行」**；唯一那条跨行重发被 v1.8.0 · T5 的
+`if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) return` 关掉（两台设备 31/35 ⇒ 恒为 0 次）。
+**那个闸门的前提是错的**：v1.8.0 以为「API 28+ 系统会自己从会话 metadata 重建媒体通知」，
+实际 SystemUI **只在通知被 post 的那一刻读一次**会话 metadata、之后不轮询
+（AOSP `MediaDataManager.loadMediaDataInBg()` 即在 `onNotificationPosted` 里 `create(token)` 再读一次）；
+media3 自己那条通知的刷新白名单也只有 playbackState / playWhenReady / metadata / timeline 四类事件，
+**歌词行变化不在其中**。⇒ 不重发 = 不重读 = 不刷新。
+
+## 实施（两个独立 commit + 一个版本 commit）
+
+| commit | 内容 |
+|---|---|
+| `fix(player): media3 自动 post 的第二条媒体通知——覆盖 onUpdateNotification 关掉它` | 覆盖**双参** `onUpdateNotification` 且不调 super（`defaultMethodCalled` 不置位 ⇒ media3 彻底不 post；**只覆盖单参版挡不住**）；配套 `cancelStaleMedia3Notification()` 清掉升级前遗留的 id=1001。刻意**不**删 `default_channel_id` 渠道（删渠道会让仍往该渠道 post 的路径静默丢通知） |
+| `fix(player): 歌词跨行时重 post 通知不再按 API 版本闸门——修「只有暂停才刷新」` | 删掉 `SDK_INT < P` 闸门；判定收敛成纯逻辑 `LyricNotifyGate`（新增）+ 17 个 JVM 单测；限流从「丢弃」改成**延后重试**；`lastPostedLyricLine` 只在通知真的发出去后记账；哨兵 `NEVER_POSTED` 而非 `null` |
+| `build: 升级至 v2.0.2-gpl（versionCode 29）` | `tools/next-version.sh` 三源最大值 28 ⇒ **29** |
+
+最终 diff：4 个文件（+523 / −44）。**`SweepTrack.kt`、歌词渲染链路、`MediaDisplayLines` 契约、
+`applicationId`、签名、权限（11→11 逐条 diff 为空）、依赖全部未动。**
+
+## 测试与实测（2026-09-25）
+
+**JVM 单测 358 个全绿**（新增 `LyricNotifyGateTest` 17 例，含「密集段落最后一行一定会到达」的模型验证）。
+
+| 验证项 | 华为 WGR-W09 | 荣耀 AGT-AN00 | AOSP API 34 | AOSP API 24 |
+|---|---|---|---|---|
+| 媒体通知条数 | **1** | **1** | **1** | **1** |
+| 前台通知归属 | id=1 | id=1 | `foregroundId=1` / `ncrust_playback` / `color=0xff1db954` | id=1 |
+| 歌词随行刷新 | ✅ 45s 内 3 次行级跟随 | ✅ 40s 内 4 次行级跟随 | —（免登录本地音频探针，只验通知合并） | — |
+| 下拉通知栏 | **1 张卡片 + 实时歌词**（相隔 1 分钟两张截图，`Yeah I'm here anticipating` → `Let's go back back to the days of the boom boom pap`） | **1 张卡片 + 实时歌词** `You have a mental problems`（修复前是 `下山`） | — | — |
+| 暂停 / 恢复 | ✅ 通知保留当前行，状态 3→2→3 | — | — | — |
+| 切歌 | ✅ 立即切到新歌 + 新歌词行（`下山` → `最后一页`） | — | — | — |
+| 拖动进度条 | ✅ 42.5s → 190s → 72.7s，歌词三次同步 | — | — | — |
+| 重 post 是否打扰 | `flags=0x6a`（含 `ONLY_ALERT_ONCE`，不响不震） | 同 | 同 | 同 |
+| 崩溃 / 异常 | 无 | 无 | 无 | 无 |
+
+驱动脚本（仓库外）：`tools/wgr.sh`（UI dump / 按文本点击 / `WGR_SERIAL` 切设备）、
+`tools/wgr-lyric-probe.sh <秒> <间隔>`（**同时采样通知 extras 与 MediaSession metadata**）。
+原始证据：仓库外 `evidence-v2.0.2/`（4 份探针日志 + 4 份 dumpsys + 5 张下拉通知栏截图）；
+完整报告：仓库外 `PHASE0-REPORT-v2.0.2.md`。
+
+## 未验证（如实）
+
+1. **PCL110（ColorOS / Android 16）与 S6（Android 7 真机）本轮不在场**，回归改用 AOSP
+   **API 34 + API 24** 两个模拟器（通知条数 / 前台通知归属 / 播放切歌 / API 24 无异常）；
+   **没有真人手持的 PCL110 / S6 实测**。
+2. 修复后只跑了**两台**真机；其他华为/荣耀机型与其他 OEM ROM 未验证。
+3. **`lyrics_in_media_session` 默认仍是「关」**（本版没改默认值）—— 不开该开关时通知两行退回
+   「歌名 / 艺人」，这是 v1.5.1 · D 的设计，不是本版退化。
+4. 锁屏 / 车机（Android Auto）/ 蓝牙 AVRCP 歌词本轮未逐项复测。
+5. **EMUI / MagicOS 的通知节流阈值未找到可靠来源**；实测每歌词行一次（约 2–4 秒一行）的重 post
+   全部生效、未被限流。**不编造数值**。
+
+## 已知问题 / 系统限制（应用层无法解决）
+
+1. **华为「播控中心」不会出现本应用卡片、也不显示歌词**：它是独立的系统卡片（华为官方称
+   「系统设计的实况窗」），且有**官方支持应用清单**（音乐类只列了华为音乐/网易云/QQ/酷狗/酷我/
+   咪咕/波点/Apple Music/Spotify/TIDAL 等，不含第三方小众客户端）——需要厂商白名单/商业合作，
+   没有 API 可申请。
+2. **无法阻止 ROM 再画一张系统卡片**（系统侧行为）；本版能做的是不再自己多发一条。
+3. **无 root 无法实现系统级常驻状态栏歌词**（第三方方案走 LSPosed 系统级 Hook），与红线冲突，不做。
+4. **荣耀「通知栏播放器样式」一类的系统开关**属系统设置项，应用层无法强制或改写；
+   本版**不做任何引导用户改系统设置的提示**。
+5. 本版未修但已记录的相邻缺陷：① 自建通知缺 `setDeleteIntent`；② 歌词只写进
+   `MediaSessionCompat`、media3 会话 metadata 未同步（车机那条路）；③ `default_channel_id`
+   渠道保留未删。
+
+## 与任务书的偏离（逐条）
+
+1. 任务书四方向里只做 **A + B**；**C 不做**（与「不要求用户改系统设置」的补充约束冲突）、
+   **D 不做**（实测 HarmonyOS 4.2.0，与 5.0+ 无关；鸿蒙原生歌词 API 属 ArkTS 侧，普通 APK 不可用）。
+2. 任务书说「参考 v1.8.0 修 S6 歌词不刷新的方案」—— 本版**推翻了那个方案的版本闸门部分**
+   （真机证据见上），保留核心思路（跨行重 post + 限流 + `setOnlyAlertOnce`）。
+3. 任务书要求「一个修复点一个 commit」—— 两个 commit，各自独立可回滚。
+4. 任务书要求「不改动 `SweepTrack.kt` 核心算法」—— 未改动。

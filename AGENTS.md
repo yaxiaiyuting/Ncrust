@@ -55,7 +55,7 @@ Single source of truth: `app/build.gradle.kts` → `defaultConfig.versionName` /
 
 - `AboutScreen.kt` reads `BuildConfig.VERSION_NAME` — **never hardcode a version constant**. This needs `buildFeatures.buildConfig = true`.
 - Release flow: bump `versionCode` + `versionName` → commit `build: 升级至 vX.Y.Z ...` → `./gradlew assembleRelease` → `gh release create vX.Y.Z --draft <apk>` → user smoke-tests and publishes manually.
-- Current: `versionName = "2.0.1-gpl"`, `versionCode = 28`. Latest release: `v2.0.1-gpl`.
+- Current: `versionName = "2.0.2-gpl"`, `versionCode = 29`. Latest release: `v2.0.2-gpl`.
   （**注意 versionCode 必须递增**：v1.6.1 = 19，所以 v1.7.0 是 20 —— 任务书里写「v1.7.0 = 19」是错的，
   19 已经被 v1.6.1 占用，照抄会导致无法覆盖安装。同理本版 **23**：任务书说「v1.8.0 = 21、本版 22」，
   但 `aapt2 dump badging` 实测 v1.8.1 已经是 **22**，照抄 22 会与线上包撞号、无法覆盖安装。
@@ -2020,3 +2020,136 @@ I/LyricsScroll: ev=lines-reset OUT first=0 off=0      ← 回到最顶端，此�
 3. **探针用了日志打点构建**，证据采集后已把探针代码从最终 diff 中移除（最终 diff 只有
    `NcrustLyricsPanel.kt` 的定位/留白改动 + 新增 `LyricsPanelScroll.kt` 与它的单测）。
 
+
+## v2.0.2 新增（本 fork · 媒体通知专项：华为/荣耀「双通知栏」+「歌词只有暂停才刷新」）
+
+> 两个 bug 都是**应用层**缺陷，各一个独立 commit。`SweepTrack.kt`（v1.5.2 冻结）**一个字节未改**，
+> 歌词渲染链路、`MediaDisplayLines` 的两行排版契约、`applicationId`、签名、权限（11→11 逐条 diff 为空）、
+> 依赖全部未动。全部 diff = `PlaybackService.kt` + 新增纯逻辑 `LyricNotifyGate.kt` + 它的 17 个 JVM 单测
+> + `build.gradle.kts` 版本号，共 4 个文件（+523 / −44）。
+> 完整调研报告：仓库外 `../PHASE0-REPORT-v2.0.2.md`，原始证据 `../evidence-v2.0.2/`。
+
+### 真机信息（**实测，不按任务书假设**）
+
+| | 华为平板 | 荣耀手机 |
+|---|---|---|
+| serial | `WVQ6R22124000968` | `APFQUT2C15004471` |
+| model / brand | `WGR-W09` / HUAWEI | `AGT-AN00` / HONOR |
+| Android | **12（API 31）** | **15（API 35）** |
+| 厂商版本 | `EmotionUI_14.2.0` + `hw_sc.build.platform.version=4.2.0` ⇒ **HarmonyOS 4.2.0**，`devicetype=tablet` | **`MagicOS_9.0.0`** |
+| 其余 | 2560×1600；设备上另有一条 `wm size` override `1600x2560`（**环境既有，不是本次改动**） | 1080×2400 |
+
+⚠️ **任务书里「HarmonyOS 5.0+」的假设不成立** —— 实测是 HarmonyOS **4.2.0**（底层 Android 12）。
+所以本版**与 AVSession / 鸿蒙原生歌词 API 无关**，调研里也没按 5.0+ 的方向走。
+
+### B1 · 双通知栏 = media3 自己又发了一条（id=1001）
+
+`PlaybackService` 是 media3 的 `MediaLibraryService` 且建了 `MediaLibrarySession`。
+media3 `MediaSessionService` 的**默认实现**会在播放进行时自己 post 一条媒体通知，
+用的是 `DefaultMediaNotificationProvider` 的 **id=1001 / channel=`default_channel_id`（渠道名 "Now playing"）
+/ groupKey=`media3_group_key`**；本类同时又发自己的 **id=1 / channel=`ncrust_playback`**。
+两个 id 不同 ⇒ 谁也覆盖不了谁。（media3-session-1.5.0 字节码核实；修复前全仓库
+`onUpdateNotification` / `setMediaNotificationProvider` 命中数为 0。）
+
+**那条多出来的通知注定没有歌词**：media3 通知正文取自 media3 会话 metadata ← 当前 `MediaItem` 的
+`MediaMetadata`。`playUrl()` 建的是裸 `MediaItem.fromUri(url)`（一个字段都没有 ⇒ `title=null/text=null`），
+无缝预载项虽然有 title/artist，但**歌词只写进 `MediaSessionCompat`**，从来没进过 media3 会话。
+
+**三个平台三种表现（同一根因）**：
+
+| | 华为 API 31 | 荣耀 API 35 | AOSP 模拟器 API 34 |
+|---|---|---|---|
+| 修复前通知条数 | **2**（都存活） | **2**（都存活） | **1**（只剩 media3 那条空的） |
+| 前台通知归属 | 两条并存 | 两条并存 | `foregroundId=1001` ⇒ 应用那条被取消 |
+| 用户看到 | 两张一样的卡片 | 1 张卡片 = media3 会话的旧歌名（无歌词） | 1 张空卡片 |
+
+**修法**：覆盖**双参** `onUpdateNotification(session, startInForegroundRequired)` 且**不调 super**
+⇒ media3 的 `defaultMethodCalled` 不置位 ⇒ 彻底不 post（官方留的口子；**只覆盖单参版挡不住**）。
+配套 `cancelStaleMedia3Notification()`：通知不随进程死亡回收，升级后要显式撤掉旧版那条 id=1001。
+刻意**不**删 `default_channel_id` 渠道（删渠道会让仍往该渠道 post 的路径静默丢通知）。
+已核实 `MediaSessionService.onTaskRemoved` / `onDestroy` / `pauseAllPlayersAndStopSelf` 字节码
+**都不碰通知管理器**，覆盖后无副作用；`startForeground`/`stopForeground` 本来就在本类里。
+
+### B2 · 歌词不刷新 = 唯一那条跨行重 post 被 API 版本闸门关掉
+
+**先澄清**：歌词行**不是**绑在状态回调上 —— `PlayerViewModel` 用
+`combine(lyrics, currentPosition, lyricsInMediaSession)` 从 2Hz 位置流算当前行，一直是通的。
+华为实测 47 秒内会话 metadata 推进 **14 个不同歌词行**，而通知正文 47 秒零变化。
+
+断点在通知正文这一环：正文只在 6 个事件点重发（播放态/切歌/封面/取色/启动/预载），
+**没有一处是「跨行」**；唯一那条跨行重发被 v1.8.0 · T5 的
+`if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) return` 关掉（两台设备 31/35 ⇒ **恒为 0 次**）。
+
+**那个闸门的前提是错的**：v1.8.0 以为「API 28+ 的 SystemUI 会自己从会话 metadata 重建媒体通知」。
+实际 SystemUI **只在通知被 post 的那一刻读一次**会话 metadata，之后不轮询
+（AOSP `MediaDataManager.loadMediaDataInBg()` 就是在 `onNotificationPosted` 里 `create(token)` 再读一次）；
+media3 自己那条通知的刷新白名单也只有 playbackState / playWhenReady / metadata / timeline 四类事件，
+**歌词行变化不在其中**。⇒ **不重发通知 = 系统不重读 = 不刷新**。
+
+**修法**：
+1. 删掉版本闸门，**所有 API 版本**都在跨行时重 post（不再按版本猜 ROM 行为）；
+2. 判定收敛成纯逻辑 **[LyricNotifyGate](app/src/main/java/com/takahashirinta/ncrust/player/LyricNotifyGate.kt)**
+   + 17 个 JVM 单测：没进前台不发 / 与通知里当前那一行相同不重发 /
+   距上次 post 不足 `MIN_INTERVAL_MS=250` 时**延后重试而不是丢弃**
+   （旧实现直接丢弃 ⇒ 说唱等密集段落里通知会永远停在被丢掉的那一行）；
+3. `lastPostedLyricLine` 只在 `updateNotify()` 真的把通知发出去之后才记账；
+   哨兵用 `NEVER_POSTED` 而不是 `null` —— `null` 是有意义的行取值（当前没有歌词行），
+   混用会让第一首无歌词的歌永远不刷新。
+
+### v2.0.2 的测试与实测（2026-09-25）
+
+**JVM 单测 358 个全绿**（新增 `LyricNotifyGateTest` 17 例，含「密集段落最后一行一定会到达」的模型级验证）。
+
+| 验证项 | 华为 WGR-W09 | 荣耀 AGT-AN00 | AOSP API 34 | AOSP API 24 |
+|---|---|---|---|---|
+| 媒体通知条数 | **1** | **1** | **1** | **1** |
+| 前台通知归属 | id=1 | id=1 | `foregroundId=1` / `ncrust_playback` / `color=0xff1db954` | id=1 |
+| 歌词随行刷新 | ✅ 45s 内 3 次行级跟随 | ✅ 40s 内 4 次行级跟随 | —（无登录态，只验通知合并） | — |
+| 下拉通知栏 | **1 张卡片 + 实时歌词**（相隔 1 分钟两张截图，歌词已推进） | **1 张卡片 + 实时歌词**（修复前是 media3 会话的旧歌名 `下山`） | — | — |
+| 暂停 / 恢复 / 切歌 | ✅ 通知保留当前行 → 切歌立即换歌名 + 新歌词行 | — | — | — |
+| 拖动进度条 | ✅ 42.5s → 190s → 72.7s，歌词三次同步 | — | — | — |
+| 重 post 是否打扰 | `flags=0x6a`（含 `ONLY_ALERT_ONCE`，不响不震） | 同 | 同 | 同 |
+| 崩溃 | 无 | 无 | 无 | 无 |
+
+真机探针脚本（仓库外，`.sh` 已 gitignore）：`tools/wgr.sh`（UI dump / 按文本点击 / 切设备）、
+`tools/wgr-lyric-probe.sh <秒> <间隔>`（**同时采样通知 extras 与 MediaSession metadata**，逐秒对齐）。
+
+### v2.0.2 的未验证项（如实）
+
+1. **PCL110（ColorOS / Android 16）与 S6（Android 7 真机）本轮不在场**，回归改用
+   AOSP **API 34 + API 24** 两个模拟器（通知条数 / 前台通知归属 / 播放切歌 / API 24 无异常）；
+   **没有真人手持的 PCL110 / S6 实测**。
+2. 修复后只跑了**两台**真机（华为 WGR-W09、荣耀 AGT-AN00）；其他华为/荣耀机型与其他 OEM ROM 未验证。
+3. **`lyrics_in_media_session` 默认仍是「关」**（本版没改这个默认值）—— 不开该开关时通知两行退回
+   「歌名 / 艺人」，这是 v1.5.1 · D 的设计，不是本版退化。
+4. 锁屏歌词 / 车机（Android Auto）歌词 / 蓝牙 AVRCP 歌词本轮**未逐项复测**。
+5. **EMUI / MagicOS 的通知节流阈值未找到可靠来源**；实测每歌词行一次（约 2–4 秒一行）的重 post
+   全部生效、未被限流。**不编造数值**。
+
+### v2.0.2 的已知问题 / 系统限制（应用层无法解决）
+
+1. **华为「播控中心」不会出现本应用卡片、也不显示歌词**：它是独立的系统卡片（华为官方称
+   「系统设计的实况窗」），且有**官方支持应用清单**（音乐类只列了华为音乐/网易云/QQ/酷狗/酷我/
+   咪咕/波点/Apple Music/Spotify/TIDAL 等，不含第三方小众客户端），需要厂商白名单/商业合作，
+   **没有 API 可申请**。
+2. **无法阻止 ROM 再画一张系统卡片**（系统侧行为）。本版能做的是**不再自己多发一条**。
+3. **无 root 无法实现系统级常驻状态栏歌词**（第三方方案走 LSPosed 系统级 Hook），
+   与本项目「仅 ADB、不 root、不装系统级模块」红线冲突，**不做**。
+4. **荣耀「通知栏播放器样式」一类的系统开关**属系统设置项，应用层无法强制或改写；
+   本版**不做任何引导用户改系统设置的提示**。
+5. **本版未修但已记录的相邻缺陷**（保持改动面最小）：
+   ① 自建通知没有 `setDeleteIntent`（media3 默认 provider 有）⇒ 划掉通知后应用侧状态不同步；
+   ② 歌词只写进 `MediaSessionCompat`、media3 会话 metadata 未同步 ⇒ 车机 / Android Auto 拿到的
+   仍是 media3 会话（通知栏那条路已被「只保留一条通知」绕过，车机那条没修）；
+   ③ `default_channel_id` 渠道本版后不再使用但保留。
+
+### 与任务书的偏离（逐条）
+
+1. 任务书列了四个方向（A 调通知策略 / B 修刷新 / C 引导用户改系统设置 / D 探索鸿蒙 AVSession）。
+   实际做 **A + B**；**C 不做**（与「不要求用户改系统设置」的补充约束冲突）、
+   **D 不做**（实测设备是 HarmonyOS 4.2.0，与 5.0+ 无关，且鸿蒙原生歌词 API 属 ArkTS 侧，
+   普通 Android APK 不可用）。
+2. 任务书说「参考 v1.8.0 时期修复三星 S6 歌词不刷新的方案」—— 本版**推翻了那个方案的版本闸门部分**
+   （真机证据见上），保留其核心思路（跨行重 post + 限流 + `setOnlyAlertOnce`），
+   并把限流从「丢弃」改成「延后重试」。
+3. 任务书说 versionCode 由 `tools/next-version.sh` 决定 —— 一致，三源最大值 28 ⇒ **29**。
