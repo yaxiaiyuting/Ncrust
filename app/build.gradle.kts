@@ -46,8 +46,13 @@ android {
         // **第四次**：任务书建议「versionCode 以 next-version.sh 输出为准」—— 本版起这就是硬流程，
         // 脚本输出的 26 与上面三个来源一致（最近 5 个 tag / dist 36 个 APK / 仓库当前 build.gradle
         // 的最大值都是 25）。动版本号之前必须先跑 tools/next-version.sh，不要再靠记忆推断。
-        versionCode = 26
-        versionName = "1.9.3-gpl"
+        // v2.0.0 是 major 版：离线缓存做成可管理的完整能力（Phase 2）+ 三个用户报告的 bug 修复
+        // （大屏保持横屏 / 乱序不再静默退回顺序播放 / 歌词加载期控制栏）+ 播放时禁止熄屏 +
+        // 动态字号（实验性，默认关）。**仍然没有显式「下载」入口**（合规定位不变）。
+        // **第五次按脚本定号**：冷启动跑 tools/next-version.sh，三源（最近 5 个 tag /
+        // dist 38 个 APK 的 aapt2 badging / 仓库当前 build.gradle）最大值都是 26 ⇒ 本版取 27。
+        versionCode = 27
+        versionName = "2.0.0-gpl"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
