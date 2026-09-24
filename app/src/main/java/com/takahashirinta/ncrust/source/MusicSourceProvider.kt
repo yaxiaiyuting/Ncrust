@@ -1,0 +1,74 @@
+/*
+ * Ncrust —— 网易云音乐第三方客户端
+ * 原始代码 Copyright (c) 2026 Takahashi_Rinta，以 MIT 许可发布（全文见仓库根目录 LICENSE-MIT）。
+ *
+ * 本文件属于本 Fork（https://github.com/yaxiaiyuting/Ncrust）的修改部分，
+ * Copyright (c) 2026 yaxiaiyuting，以 GPLv3 许可分发；本 Fork 整体以 GPLv3 分发。
+ *
+ * v2.1.0 · A：多音源 Provider 抽象。
+ */
+
+package com.takahashirinta.ncrust.source
+
+import com.takahashirinta.ncrust.network.SongItem
+import com.takahashirinta.ncrust.player.SongUrlResult
+
+/**
+ * 一个音源要对外提供的能力（v2.1.0 · A）。
+ *
+ * ## 为什么是这五个
+ *
+ * 只抽「两个音源**都有、且语义一致**」的能力。网易云与本应用耦合很深（云歌单、收藏、
+ * 播放上报、艺人/专辑详情……），那些能力 QQ 音乐要么没有、要么语义不同，硬抽成接口
+ * 只会得到一个「每个方法都要 `TODO()`」的空壳。所以本接口只覆盖**让一首歌能放出来**
+ * 这条链路上必须分叉的部分：
+ *
+ * | 能力 | 不分叉会怎样 |
+ * |---|---|
+ * | [isLoggedIn] | UI 无法区分「两个账号各自登录了没」 |
+ * | [searchSongs] | 搜索只能搜到一个平台 |
+ * | [resolveUrl] | **核心**：拿错音源取链 = 404 / 放到别人的歌 |
+ * | [songDetail] | 队列里只有 id 没有元数据时无法补齐 |
+ *
+ * ## 契约（实现方必须遵守）
+ *
+ * 1. **绝不抛异常给出调用方**：网络失败一律返回 null / 空列表。取链失败是常态
+ *    （无版权、无 VIP、下架），调用方靠 null 决定「跳歌」还是「提示」。
+ * 2. **导出的 [SongItem] 必须带上 [MusicSource] 与 QQ 音乐的 sourceId**：
+ *    下游（队列持久化、离线缓存、歌词请求）全靠这两个字段路由，漏了就串台。
+ * 3. **不要把平台内部标识（如 QQ 的 songmid）当 [SongItem.id]**：id 是数字型的对外身份，
+ *    QQ 的 mid 放 [SongItem.sourceId]。
+ */
+interface MusicSourceProvider {
+
+    /** 本实现对应哪个音源。注册表以它为 key，同一个音源只允许一个实现。 */
+    val source: MusicSource
+
+    /**
+     * 该音源当前是否已登录。**只读本地状态，不发网络请求** ——
+     * 它会被 Compose 在组合期读取（音源标识、登录入口的显隐），不能有 IO。
+     */
+    val isLoggedIn: Boolean
+
+    /** 搜索歌曲。失败返回空列表；实现方负责把 [MusicSource] 标进结果。 */
+    suspend fun searchSongs(keyword: String, limit: Int): List<SongItem>
+
+    /**
+     * 取该曲在 [level] 档位下的可播放 URL 与**实际**文件参数。
+     *
+     * [level] 用本应用统一的档位名（`standard`/`higher`/`exhigh`/`lossless`/`hires`/…，
+     * 见 `QualityLadder.LEVELS`），由实现方负责映射到自己平台的音质档位并做降级协商。
+     * 同一个档位名在两个平台对应的**不是**同一个文件（码率、容器都可能不同），
+     * 但「用户选『无损』就应该尽量给无损」这条语义必须一致。
+     *
+     * 取不到任何可用档位时返回 null（调用方据此跳歌），**不要**返回一个指向
+     * HTML 错误页 / 空流的 URL。
+     */
+    suspend fun resolveUrl(song: SongItem, level: String): SongUrlResult?
+
+    /**
+     * 补齐元数据（队列里可能只有 id）。失败返回 null，调用方保留原对象即可。
+     * 实现方应当原样带回 [song] 的音源字段。
+     */
+    suspend fun songDetail(song: SongItem): SongItem?
+}
