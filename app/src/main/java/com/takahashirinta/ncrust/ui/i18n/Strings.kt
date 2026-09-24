@@ -420,8 +420,28 @@ data class Strings(
     val sourceQrFailed: String get() = source.sourceQrFailed
     val sourceQrLoadFailed: String get() = source.sourceQrLoadFailed
     val sourceQrNetworkHint: String get() = source.sourceQrNetworkHint
+    val sourceQrServiceUnavailable: String get() = source.sourceQrServiceUnavailable
+    val sourceQrSwitchingToWeb: String get() = source.sourceQrSwitchingToWeb
+    val sourceQrAvailabilityNote: String get() = source.sourceQrAvailabilityNote
     val sourceQrRefresh: String get() = source.sourceQrRefresh
     val sourceWebLogin: String get() = source.sourceWebLogin
+
+    // v2.1.1：播放页音源角标 + 手机号验证码登录（都在 `source` 分组里，理由见那边的注释）
+    val sourceNetease: String get() = source.sourceNetease
+    val sourceQqPhoneTitle: String get() = source.sourceQqPhoneTitle
+    val sourceQqPhoneLabel: String get() = source.sourceQqPhoneLabel
+    val sourceQqPhoneHint: String get() = source.sourceQqPhoneHint
+    val sourceQqSendCode: String get() = source.sourceQqSendCode
+    val sourceQqResendCode: String get() = source.sourceQqResendCode
+    val sourceQqCodeLabel: String get() = source.sourceQqCodeLabel
+    val sourceQqCodeHint: String get() = source.sourceQqCodeHint
+    val sourceQqPhoneSubmit: String get() = source.sourceQqPhoneSubmit
+    val sourceQqCodeSent: String get() = source.sourceQqCodeSent
+    val sourceQqPhoneBadNumber: String get() = source.sourceQqPhoneBadNumber
+    val sourceQqCodeWrong: String get() = source.sourceQqCodeWrong
+    val sourceQqPhoneTooFrequent: String get() = source.sourceQqPhoneTooFrequent
+    val sourceQqPhoneNeedCaptcha: String get() = source.sourceQqPhoneNeedCaptcha
+    val sourceQqPhoneNote: String get() = source.sourceQqPhoneNote
     val cacheUsageAudio: String get() = offline.cacheUsageAudio
     val cacheUsageImage: String get() = offline.cacheUsageImage
     val cacheUsageOther: String get() = offline.cacheUsageOther
@@ -506,8 +526,52 @@ data class SourceStrings(
     val sourceQrLoadFailed: String,
     /** 轮询拿不到响应时的提示（网络/风控）。 */
     val sourceQrNetworkHint: String,
+    /** v2.1.1：服务端明确回绝（403/空 body）时的提示 —— 与「网络不稳定」是两回事。 */
+    val sourceQrServiceUnavailable: String,
+    /** v2.1.1：连续被拒、准备自动切到网页登录时的提示。 */
+    val sourceQrSwitchingToWeb: String,
+    /** v2.1.1：设置页 QQ 账号卡片上的可用性说明。 */
+    val sourceQrAvailabilityNote: String,
     /** 刷新二维码。 */
     val sourceQrRefresh: String,
     /** 改用网页登录。 */
     val sourceWebLogin: String,
+
+    // ---------- v2.1.1：播放页音源角标 + QQ 音乐手机号验证码登录 ----------
+    //
+    // ⚠️ 为什么这些**必须**放在本分组里，而不是加到外层 `Strings` 的构造参数上：
+    // 外层构造函数已经有 **244 个参数 = 245 个 dex 寄存器**（含 this），上限是 255。
+    // v2.0.0 · HF1 就是因为往它上面直接加字段而崩的（见外层那段注释）。
+    // 本分组只有 15 个参数，随便加；外层一个都不加 —— 于是本版对那个上限的占用是 0。
+
+    /** 网易云（音源名，与 [sourceQqMusic] 对称）。只用在播放页的音源角标上。 */
+    val sourceNetease: String,
+    /** 手机号登录浮层标题。 */
+    val sourceQqPhoneTitle: String,
+    /** 手机号输入框标签。 */
+    val sourceQqPhoneLabel: String,
+    /** 手机号输入框占位。 */
+    val sourceQqPhoneHint: String,
+    /** 发送验证码按钮。 */
+    val sourceQqSendCode: String,
+    /** 重新发送验证码按钮（倒计时结束后）。 */
+    val sourceQqResendCode: String,
+    /** 验证码输入框标签。 */
+    val sourceQqCodeLabel: String,
+    /** 验证码输入框占位。 */
+    val sourceQqCodeHint: String,
+    /** 提交登录按钮。 */
+    val sourceQqPhoneSubmit: String,
+    /** 验证码已发送。 */
+    val sourceQqCodeSent: String,
+    /** 手机号格式不对（本地校验就拦下，不发请求）。 */
+    val sourceQqPhoneBadNumber: String,
+    /** 验证码不对或已过期。 */
+    val sourceQqCodeWrong: String,
+    /** 发得太频繁。 */
+    val sourceQqPhoneTooFrequent: String,
+    /** 服务端要图形验证码 —— 手机号这条路走不通，引导去网页登录。 */
+    val sourceQqPhoneNeedCaptcha: String,
+    /** 合规说明：验证码由腾讯下发、本应用不读短信也不存手机号。 */
+    val sourceQqPhoneNote: String,
 )
