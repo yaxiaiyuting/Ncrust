@@ -201,6 +201,17 @@ class MainActivity : ComponentActivity() {
             // 开关一变立刻作用到方向策略：用户不需要重启 App，也不用手动重进播放器。
             LaunchedEffect(autoRotate) {
                 autoRotateEnabled = autoRotate
+                // v2.0.0 · T1-A：**在大屏模式里**拨这个开关时，朝向门控必须跟着收敛，
+                // 否则两个方向都会错：
+                //  · 关 → 开：门控没在跑（进大屏时 auto-rotate 关，见 enterBigScreenMode），
+                //    relaxed 永远停在 false ⇒ 方向被钉死在 SENSOR_LANDSCAPE，
+                //    用户明明开了"跟随手机"却转不回竖屏；
+                //  · 开 → 关：门控还在跑，设备横向时它会**直接**把 requestedOrientation
+                //    写成 SENSOR（绕过 applyOrientationPolicy），正好抵消"保持横屏"。
+                if (bigScreenMode.value) {
+                    if (autoRotate && !bigScreenOrientationRelaxed) startBigScreenOrientationGate()
+                    else if (!autoRotate) stopBigScreenOrientationGate()
+                }
                 applyOrientationPolicy()
                 Log.i(TAG, "auto-rotate setting = $autoRotate")
             }
