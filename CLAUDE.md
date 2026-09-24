@@ -136,7 +136,7 @@ Under `com.takahashirinta.ncrust/`:
 | `player/` | `PlaybackService` (MediaLibraryService + ExoPlayer), `PlaybackStateManager`, `SongUrlFetcher`, `PlayReporter` |
 | `auth/` | `CookieManager` (SharedPreferences), `QrPair` / `QrPairClient` / `QrPairServer` (LAN QR handoff) |
 | `library/` | `LibraryManager` (cloud-synced liked songs + subscribed albums), `SearchHistoryManager` |
-| `cache/` | `ContentCache` — in-memory network snapshot (home + LRU detail caches + user profile) |
+| `cache/` | `ContentCache` — in-memory network snapshot (home + LRU detail caches + user profile)；**v1.6.0 · D1 / v2.0.0 · T3**：`OfflineKeys`（cache key 纯逻辑）、`OfflineUrlStore`（key→最后成功播放的 URL，≤300 LRU）、`OfflineAudioCache`（media3 `SimpleCache`，`filesDir/offline/audio`）、`OfflineLibrary`（离线曲目索引，≤300 LRU） |
 | `lyric/` | `LrcParser` (`[MM:SS.mm]` → `LrcLine.timeMs`), `YrcParser` / `YrcAligner` (word-level), `SweepTrack` (sweep cursor), `LyricsDisplayPrefs`; **v1.9.0**: `TtmlParser` / `TtmlScanner` (AMLL TTML), `AmllTtmlClient`, `LyricSourceChain`, `LyricRequestGate`; `LyricsCache` (200-entry persistent cache, LRC + TTML) |
 | `warmup/` | `AppWarmup` — cold-start preload singleton |
 | `power/` | `BackgroundActivity` — battery-optimisation whitelist intents |
@@ -378,11 +378,12 @@ SharedPreferences files:
 | File | Owner(s) | Contents |
 |---|---|---|
 | `ncrust_prefs` | `CookieManager` | `user_cookie` |
-| `ncrust_settings` | `ThemeManager`, `LanguageManager`, `PlayerViewModel`, `UserScreen`, `MainActivity` | theme index/mode, language, quality, gapless, lyrics translation, `lyrics_word_by_word`, `lyrics_word_animation` / `lyrics_font_scale` / `lyrics_sweep_quality` (v1.5.1/2), `lyrics_ttml_enabled` / `lyrics_ttml_first` (v1.9.0), `lyrics_romanization` (v1.9.3), `battery_prompt_done` |
+| `ncrust_settings` | `ThemeManager`, `LanguageManager`, `PlayerViewModel`, `UserScreen`, `MainActivity` | theme index/mode, language, quality, gapless, lyrics translation, `lyrics_word_by_word`, `lyrics_word_animation` / `lyrics_font_scale` / `lyrics_sweep_quality` (v1.5.1/2), `lyrics_ttml_enabled` / `lyrics_ttml_first` (v1.9.0), `lyrics_romanization` (v1.9.3), `battery_prompt_done`, **`offline_cache_mb`（v1.6.0 · D1 写入 / v2.0.0 · T3 起设置页可改：离线音频缓存上限 MB，合法 64..8192，默认 512，非法值回落默认）** |
 | `ncrust_library` | `LibraryManager` | `saved_songs`, `saved_albums`, `liked_ids` |
 | `ncrust_playback_state` | `PlaybackStateManager` | last song + `queue` / `queue_index` |
 | `ncrust_lyrics_cache` | `LyricsCache` | `entries` (≤ 200；LRC/译文/逐字与 TTML 共用同一张表，TTML 另有 7 天 TTL) |
 | `search_history` | `SearchHistoryManager` | `songs`, `albums`, `artists` (≤ 10 each, 14-day TTL) |
+| **`ncrust_offline`** | `OfflineUrlStore` / `OfflineLibrary` | **v1.6.0 · D1 / v2.0.0 · T3**：`urls`（key→最后一次成功播放的 URL，≤300 LRU）、`tracks`（离线曲目索引：songId/name/artist/albumPicUrl/durationMs/level/cacheKey/completedAt，≤300 LRU）。两条清单**必须一起删**（删曲目必删 URL 死条目） |
 
 #### 歌词缓存字段迁移策略（v1.9.3 固化：**加字段 = 加迁移逻辑 = 加单测**）
 
@@ -1654,3 +1655,124 @@ v1.9.2 把音译轨做进了数据层（TTML `x-roman` + 网易云 `romalrc`，�
   显示两遍是噪音）。对本轮 3 首真实样本零影响（音译都与原文不同）；
 - 任务书要求一个 `chore(tools)` commit，但 `tools/` 按仓库惯例不入 git（`.gitignore` 里有 `.sh`）⇒
   脚本留在仓库外，「动版本号前必须跑它」的规则写进 Versioning 一节，由该 commit 承载。
+
+## v2.0.0 · T3 离线缓存 Phase 2（本 fork：离线曲目管理 UI + 容量控制）
+
+> **范围声明（合规前提）**：Phase 2 **不做显式下载**。没有 media3 的 `DownloadManager` /
+> `DownloadRequest` / `DownloadService`，没有下载按钮 / 下载队列 / 进度百分比，也没有新增任何权限、
+> 依赖或 applicationId 改动。本 fork 的契约仍是 v1.6.0 · D1 那一句：**缓存的是「用户已经点播、
+> 已经播放过的音频流」**（等价于 ExoPlayer 的 CacheDataSource）。UI 文案一律用「已缓存 / 缓存」，
+> 并常驻声明「只缓存播放过的音频片段，不保证整曲完整」—— SimpleCache 本来就只保证有片段，
+> UI 不能替它承诺整曲。
+
+### 做了什么（6 个逻辑单元 7 个 commit）
+
+| 层 | 交付 |
+|---|---|
+| 数据层 | `cache/OfflineLibrary.kt`：离线曲目索引（songId / name / artist / albumPicUrl / durationMs / level / cacheKey / approxBytes / completedAt），SharedPreferences + Gson（`ncrust_offline` 的 `tracks`），有界 300 条 LRU、坏 JSON 容错；纯逻辑 `OfflineLibraryIndex` + 17 条 JVM 单测 |
+| 缓存 API | `OfflineAudioCache` 新增 `keys()` / `songKeys()` / `bytesForSong()` / `removeSong()` / `reconcileLibrary()` / `maxMb()` / `setMaxMb()`；`clear()` 连索引一起清；`OfflineUrlStore` 抽出 `mutate()` 并新增联动删除 |
+| UI | 设置页「存储与缓存」新增入口 → 全屏 Dialog：总量 / 上限 / 剩余、上限选择器（64..8192 MB）、曲目列表（封面色块 + 标题 + 歌手 + 档位 + 该曲占用）、单曲删除（二次确认；当前播放曲目禁用并说明原因） |
+| 统计口径 | 修掉图片缓存双计，拆成音频 / 图片 / 其他三项（`ui/screen/CacheUsage.kt`，纯逻辑 + 6 条 JVM 单测） |
+| 离线优先 | `PlayerViewModel.fetchUrlOfflineFirst`：明确离线时先离线兜底，`preloadSong` 同一条路径；另接上 `LyricsCache.getTtmlStale`（v1.9.0 就写好、一直没有调用者）做离线 TTML 兜底 |
+| i18n / 文档 | 17 条文案 × 8 语言；AGENTS.md / CLAUDE.md 同步（prefs 表补 `offline_cache_mb` / `ncrust_offline`） |
+
+### 写入点：索引里的歌 = 这台设备**真的播过**的歌
+
+挂在 `PlaybackService.updatePlaybackState()`（2Hz 心跳，且 `player.isPlaying` 为真）。为什么不是 `playUrl`：
+gapless 自动接续与车机点播都不经过 `playUrl`，只有心跳这一处覆盖全部起播路径；「心跳跑到了」本身也约等于
+「这歌真的开始出声了」，比在 `playUrl` 里乐观写入更贴近「已缓存」的语义。只认带 `ncrustkey` 的 URL
+（那是唯一会走 `OfflineAudioCache` 的路径）。每首歌只在首次起播与时长首次可知时各落一次盘（内存去重），
+连播十遍也只有一条、`completedAt` 仍是第一次那个值。
+
+### 口径（统计 == 可清理，这一版把它修对了）
+
+「缓存占用」旧口径 = Coil 磁盘缓存 size + `folderSize(cacheDir)` + 离线音频 size，而 Coil 的磁盘缓存目录
+就是 **`cacheDir/image_cache`**（`NcrustApplication.newImageLoader`），`folderSize(cacheDir)` 已经**递归**含它
+⇒ **图片缓存被算了两遍**（20MB 图片缓存让设置页多报 20MB，且清完还在 —— 那是 journal 残留）。
+修法是换口径而不是减一项：**先量三项、再相加**，目录树只走一遍，图片从里面**切出来**
+（`other = folderSize(cacheDir) − imageBytes`），三个来源互不重叠：
+
+| 项 | 目录 | 谁清 |
+|---|---|---|
+| 音频 | `filesDir/offline/audio`（不在 cacheDir，系统清缓存不会误删） | `OfflineAudioCache.clear()`（v2.0.0 起连 URL 清单 + 曲目索引一起清） |
+| 图片 | `cacheDir/image_cache` | Coil 的 `diskCache.clear()`（要走它的 API：绕过 journal 直接删目录会让内存状态与磁盘不一致） |
+| 其他 | cacheDir 其余子项（WebView / http / …） | 逐项 `deleteRecursively()`（旧实现只删 WebView 与 http，别的子目录算了占用却清不掉） |
+
+管理页里每一行都必须**真的能离线播**：打开时 `reconcileLibrary()` 用 `SimpleCache` 的真相（`keys()`）对账索引，
+丢掉「缓存里已经没有任何片段」的条目（典型成因是音频 LRU 淘汰了 span）。宁可少列也不谎报 ——
+这是 Phase 1「离线兜底必须 `contains()` 才起播」那条契约在 UI 侧的延续。
+
+### 上限为什么是「下次启动生效」
+
+media3 的淘汰器 `LeastRecentlyUsedCacheEvictor` 在 `SimpleCache` **构造时固化**
+（`OfflineAudioCache.get` 是进程内单例），改上限只能重建实例；而播放中的 ExoPlayer 正握着这个 cache，
+重建 = 中断播放。所以设置页只写 `ncrust_settings:offline_cache_mb` 并**如实提示「下次启动生效」**，
+不为了「看起来即时」去动正在播的缓存。上限调小后本次进程内仍是旧上限 ⇒ 管理页的「剩余」按 0 兜底，
+不显示负数。
+
+### 相对 Phase 1 的偏离（逐条）
+
+1. **同一个 prefs 文件里多一个 key**：Phase 1 只有 `urls`（URL 清单）；本版在 `ncrust_offline` 里加了
+   `tracks`（曲目索引）。**没有新 prefs 文件**，`clear` 仍是清同一个文件的几个 key。
+2. **`clear()` 的语义扩大了**：Phase 1 只清音频 span + URL 清单；现在连曲目索引一起清 ——
+   这是「统计口径 == 可清理范围」不变量的直接后果，不是顺手改的。
+3. **缓存的清理范围内多了一类**：`cacheDir` 下的**全部**子目录（image_cache 交给 Coil）。
+   Phase 1 只删 WebView / http，但统计一直把整个 cacheDir 算进占用 ⇒ 显示 300MB 只能清掉一部分。
+4. **索引的 `approxBytes` 字段留空（null）**：不存快照，UI 每次从 `SimpleCache` 现场量
+   （`bytesForSong` 按 CacheSpan 求和）—— 存下来的数字会在用户删片段 / LRU 淘汰之后变成谎话。
+   量不到就显示「已缓存片段」（i18n 的 `offlineCachePartial`）。
+5. **离线兜底的触发时机前移**：Phase 1 是「取链失败后回落缓存」；本版在**明确离线**时先走缓存。
+   注意 `NetworkAvailability` 判断失败按「在线」处理，且离线 + 缓存未命中时**仍然照旧试网络** ——
+   不因为一次网络判断把歌静默跳过（在线路径逐字未变）。
+6. **URL 清单的写入时机未变**（仍在 `PlaybackService.playUrl`），但曲目索引的写入点另挂在心跳上，
+   两者都只在真正播过之后才有内容。
+
+### v2.0.0 · T3 的测试（JVM 单测 330 个全绿）
+
+| 项 | 结果 |
+|---|---|
+| JVM 单测 | **330 个全绿**（本 session 基线 307；本任务 +23：`OfflineLibraryIndexTest` 17 + `CacheUsageTest` 6） |
+| 新增覆盖 | 有界 LRU / 重播不刷新 completedAt / upsert 幂等 / 坏 JSON / 字段缺失迁移 / 删除后 URL 清单同步（含孤儿条目）/ list 稳定排序 / retainSongIds / JSON 往返；图片缓存双计回归（临时目录复现旧口径的差值）/ cacheDir 缺失与负值边界 |
+| 编译 | `./gradlew :app:testDebugUnitTest` 全绿；`compileDebugKotlin` 无新增 warning |
+
+### v2.0.0 · T3 的未验证项（如实）
+
+- **整个过程没有真机验证**：本任务只跑 JVM 单测与编译，**没有装到 S6 / PCL110 上跑过**。未实测：
+  - 全屏 Dialog 的视觉效果、返回键 / 返回手势（依赖 Dialog 默认的 dismissOnBackPress）；
+  - 曲目列表的封面加载与色块观感、删除按钮的 48dp 命中盒与 TalkBack 语义（只做了静态声明）；
+  - 上限选择器写盘后「下次启动生效」的真实表现（淘汰器确实在重启后才换上限）；
+  - 心跳写入索引的真实落盘（`ncrust_offline.xml` 的 `tracks`）与 `durationMs` 的补写时机；
+  - 离线优先短路的真实收益（断网首播是否真的不再等降级链）—— 需要真的断网环境；
+  - 过期 TTML 兜底的真实效果（要构造「TTML 已过期 + 断网」）；
+  - `bytesForSong` 的数值与 `sizeBytes` 的量级是否一致（按 span 求和的假设未经真机核对）；
+  - `cacheDir` 全清是否影响某些 ROM 上正在使用的缓存目录。
+- **`reconcileLibrary` 只在打开管理页时跑**：不做后台周期清理（有意的，不新增后台任务），
+  代价是索引在别处（如日志）可能偏旧，直到用户打开管理页。
+- 大屏 / 横屏未验证（管理页是全屏 Dialog，理论上自适应，但没有截图）。
+
+### v2.0.0 · T3 的已知问题
+
+- **在线但镜像全挂时不会用过期 TTML**：本版只在「明确离线」时接 `getTtmlStale`，
+  在线失败仍走 `AmllTtmlClient.load` 的既有契约（「要不要用过期数据是歌词源链的策略」），没有改它。
+- **跨档位的 URL 清单命中仍可能落空**：`OfflineUrlStore.recall` 退化成「这首歌的任意档位」后，
+  可能返回一个**没有缓存**的档位条目（同曲另一档有缓存），随后 `contains()` 失败 ⇒ 这次离线兜底放弃。
+  Phase 1 的既有行为，本版未改。
+- **删除与正在写入的 span 并发**：`removeSong` 之后 CacheDataSink 可能又写回一段，极端情况下删除不彻底。
+  未实测。
+- **`durationMs` 依赖播放心跳**：歌没播到 `player.duration` 可知就切走时为 null（当前 UI 不显示时长）。
+
+### 与任务书的偏离（逐条）
+
+1. **i18n 单独成一个 commit**（任务书把它与文档合在最后一个 commit）：Strings.kt 是单 data class、
+   除一个字段外都无默认值，加文案就必须同时改 8 个语言文件；文案与 UI 是两次独立可回滚的改动，
+   拆开更符合「一个逻辑单元一个 commit」，且两次提交都能单独编译。文档 commit 因此只含 AGENTS.md / CLAUDE.md。
+2. **离线短路与过期 TTML 兜底拆成两个 commit**（`perf(player):` 与 `fix(lyrics):`）：同一文件、同一主题
+   （离线优先），但一个是性能、一个是数据可用性，可以独立回滚。
+3. **管理页用全屏 Dialog，没有接导航图**（任务书给了二选一）—— 理由见 `OfflineCacheOverlay.kt` 的 KDoc：
+   Dialog 是独立窗口，天然在播放器卡片之上（不会踩触摸陷阱第 2 条的命中区问题），返回键交给系统。
+4. **「该曲缓存占用」用 CacheSpan 求和**，而不是 `Cache.getCachedBytes(key, 0, MAX)`：后者要求从 position 起
+   连续缓存，而缓存里只有播过的片段（seek 后留洞），从 0 起经常不连续、会量成 0。
+5. **删除入口用「行尾按钮 + 二次确认」，当前播放曲目禁用并显示原因**（任务书允许在「提示」与「禁用」中二选一）。
+6. **统计分项直接显示在设置页**（总量行下面三行小字），管理页顶部只显示音频缓存自己的总量 / 上限 / 剩余 ——
+   两处数字都来自 `CacheUsage` / `OfflineAudioCache`，不是各算一份。
+
