@@ -72,6 +72,7 @@ import com.takahashirinta.ncrust.network.model.AlbumItem
 import com.takahashirinta.ncrust.network.model.ArtistItem
 import com.takahashirinta.ncrust.reco.ArtistReco
 import com.takahashirinta.ncrust.player.PlaybackStateManager
+import com.takahashirinta.ncrust.player.ShuffleRound
 import com.takahashirinta.ncrust.power.BackgroundActivity
 import com.takahashirinta.ncrust.ui.components.BackgroundActivityDialog
 import io.github.takahashirinta.kanesumi.structure.bottomnav.MetroBottomNav
@@ -796,9 +797,17 @@ fun MainScreen(
             artistRecoArtistId = if (ArtistReco.shouldShow(context)) ArtistReco.targetId(context) else null
         }
     }
-    var playMode by remember { mutableIntStateOf(0) }
+    // v2.0.0 · T1-C：播放模式必须跨 Activity 重建存活。原先只放在 remember 里，
+    // 低内存回收 / "不保留活动" / 主题或语言切换都会让它静默回到 CYCLE（顺序循环），
+    // 队列于是按原始顺序播 —— 网易歌单的原始顺序常按语种/地区成块，
+    // 用户看到的就是"随机播放却十首日语连播"。
+    var playMode by remember { mutableIntStateOf(PlaybackStateManager.getPlayMode(context)) }
     var shuffledIndices by remember { mutableStateOf<List<Int>>(emptyList()) }
     var shuffledPosition by remember { mutableIntStateOf(0) }
+    // v2.0.0 · T1-C：轮末预排好的下一轮（见 needsPreload 的 SHUFFLE 分支）。
+    // 之所以要"预排"，是因为无缝隙路径在轮末必须**预载**下一首，而下一首属于新一轮的随机结果：
+    // 预载与过渡必须读同一份序列，否则要么重播刚播完的那首（旧行为），要么与预载的歌不一致。
+    var pendingRound by remember { mutableStateOf<List<Int>?>(null) }
 
     fun songParams(s: SongItem) = Triple(
         s.name,
@@ -806,12 +815,38 @@ fun MainScreen(
         s.album?.picUrl ?: ""
     )
 
+    /** v2.0.0 · T1-C：防扎堆用的分散键 —— 主艺人 id。缺艺人信息返回 null（不参与约束）。 */
+    fun artistKeyOf(index: Int): Long? =
+        playbackQueue.getOrNull(index)?.artists?.firstOrNull()?.id
+
     fun generateShuffledIndices() {
-        if (playbackQueue.isEmpty()) return
-        val current = currentQueueIndex.coerceIn(0, playbackQueue.size - 1)
-        val allIndices = playbackQueue.indices.filter { it != current }.shuffled()
-        shuffledIndices = listOf(current) + allIndices
+        if (playbackQueue.isEmpty()) {
+            shuffledIndices = emptyList()
+            shuffledPosition = 0
+            pendingRound = null
+            return
+        }
+        shuffledIndices = ShuffleRound.newRound(
+            size = playbackQueue.size,
+            currentIndex = currentQueueIndex,
+            keyOf = ::artistKeyOf,
+        )
         shuffledPosition = 0
+        // 新的一轮作废掉已预排的下一轮（它属于旧队列/旧位置）。
+        pendingRound = null
+    }
+
+    /** 切换播放模式：写盘 + 维护乱序序列（唯一入口，避免漏掉落盘）。 */
+    fun applyPlayMode(mode: Int) {
+        playMode = mode
+        PlaybackStateManager.savePlayMode(context, mode)
+        if (mode == QueueModes.SHUFFLE) {
+            generateShuffledIndices()
+        } else {
+            shuffledIndices = emptyList()
+            shuffledPosition = 0
+            pendingRound = null
+        }
     }
 
     // 恢复播放队列。
@@ -863,6 +898,12 @@ fun MainScreen(
     fun playFromQueue(index: Int) {
         if (index in playbackQueue.indices) {
             currentQueueIndex = index
+            // v2.0.0 · T1-C：乱序游标必须跟着走。从队列面板手动点歌原先只改 currentQueueIndex，
+            // 之后的"下一首"仍按旧游标推进 ⇒ 已经播过的歌会再播一遍（"随机还会重复"的来源之一）。
+            if (playMode == QueueModes.SHUFFLE) {
+                val pos = shuffledIndices.indexOf(index)
+                if (pos >= 0) shuffledPosition = pos else generateShuffledIndices()
+            }
             val song = playbackQueue[index]
             val (title, artist, artwork) = songParams(song)
             playerViewModel.playSong(song.id, title = title, artist = artist, artworkUrl = artwork)
@@ -947,13 +988,18 @@ fun MainScreen(
             QueueModes.SINGLE -> playerViewModel.seekTo(0)
             QueueModes.SHUFFLE -> {
                 if (shuffledIndices.isEmpty() || shuffledPosition >= shuffledIndices.size - 1) {
-                    // 乱序一轮播完后按"下一首": 生成**全新**乱序并播新序列首曲。
-                    // 旧实现把当前曲固定为下一项(shuffledIndices[0]=current),
-                    // 队列尾按下一首=重播当前曲, 观感就是"单曲循环/进度跳回开头"。
-                    val fresh = playbackQueue.indices.shuffled()
+                    // v2.0.0 · T1-C：一轮播完 ⇒ 开新一轮，**跳过下标 0**（那是刚播完的这首）。
+                    // 旧实现在这里重洗整池后播 fresh[0]，可能立刻重播刚播完的歌；
+                    // 无缝路径更糟：把当前曲钉在 0 位再播下标 0 = 直接重播。
+                    val fresh = ShuffleRound.newRound(
+                        size = playbackQueue.size,
+                        currentIndex = currentQueueIndex,
+                        keyOf = ::artistKeyOf,
+                    )
                     shuffledIndices = fresh
-                    shuffledPosition = 0
-                    playFromQueue(fresh.getOrElse(0) { 0 })
+                    shuffledPosition = if (fresh.size > 1) 1 else 0
+                    pendingRound = null
+                    playFromQueue(fresh.getOrElse(shuffledPosition) { 0 })
                 } else {
                     shuffledPosition++
                     playFromQueue(shuffledIndices[shuffledPosition])
@@ -1026,9 +1072,19 @@ fun MainScreen(
                 playbackQueue.isEmpty() -> null
                 playMode == QueueModes.SINGLE -> playbackQueue.getOrNull(currentQueueIndex)
                 playMode == QueueModes.SHUFFLE -> {
-                    val nextPos = if (shuffledPosition < shuffledIndices.size - 1)
-                        shuffledPosition + 1 else 0
-                    playbackQueue.getOrNull(shuffledIndices.getOrNull(nextPos) ?: 0)
+                    if (shuffledPosition < shuffledIndices.size - 1) {
+                        playbackQueue.getOrNull(shuffledIndices.getOrNull(shuffledPosition + 1) ?: 0)
+                    } else {
+                        // v2.0.0 · T1-C：轮末。旧实现回绕到 shuffledIndices[0] = 正在播的那一首
+                        // ⇒ ExoPlayer 无缝重播当前曲。改成**先把下一轮排好**（当前曲钉 0 位），
+                        // 预载它的下标 1；过渡路径读同一份 pendingRound，两边绝不会走岔。
+                        val round = pendingRound ?: ShuffleRound.newRound(
+                            size = playbackQueue.size,
+                            currentIndex = currentQueueIndex,
+                            keyOf = ::artistKeyOf,
+                        ).also { pendingRound = it }
+                        playbackQueue.getOrNull(round.getOrNull(1) ?: currentQueueIndex)
+                    }
                 }
                 playMode == QueueModes.LINE ->
                     // 顺序线性: 队尾之后没有下一首, 不预载(否则队尾歌会 gapless 回绕队首,
@@ -1079,9 +1135,17 @@ fun MainScreen(
                     shuffledPosition++
                     shuffledIndices.getOrElse(shuffledPosition) { 0 }
                 } else {
-                    generateShuffledIndices()
-                    shuffledPosition = 0
-                    shuffledIndices.getOrElse(0) { 0 }
+                    // v2.0.0 · T1-C：必须与预载读**同一份**序列，否则过渡会走到一首没被预载的歌。
+                    // 跳过下标 0（刚播完的这首）—— 旧实现正好把下标 0 当下一首 = 重播。
+                    val round = pendingRound ?: ShuffleRound.newRound(
+                        size = playbackQueue.size,
+                        currentIndex = currentQueueIndex,
+                        keyOf = ::artistKeyOf,
+                    )
+                    pendingRound = null
+                    shuffledIndices = round
+                    shuffledPosition = if (round.size > 1) 1 else 0
+                    round.getOrElse(shuffledPosition) { 0 }
                 }
             }
             // 顺序线性: 队尾没有预载(见 needsPreload 分支), 正常不会走到这里;
@@ -1237,7 +1301,7 @@ fun MainScreen(
      * 保证入口点下去一定有歌。之后靠 INFINITY 的队尾续播机制继续拉 FM 流无限延伸。
      */
     fun startFm() {
-        playMode = QueueModes.INFINITY
+        applyPlayMode(QueueModes.INFINITY)
         coroutineScope.launch(Dispatchers.IO) {
             val fm = runCatching { PlaylistApi.getPersonalFm() }.getOrDefault(emptyList())
             val songs = if (fm.isNotEmpty()) fm
@@ -1339,12 +1403,7 @@ fun MainScreen(
     // 切换播放模式：顺序循环 → 单曲 → 乱序 → 顺序线性 → 相似无限(FM)，循环。
     val onTogglePlayMode: () -> Unit = {
         fmMode = false
-        playMode = (playMode + 1) % 5
-        if (playMode == QueueModes.SHUFFLE) generateShuffledIndices()
-        else {
-            shuffledIndices = emptyList()
-            shuffledPosition = 0
-        }
+        applyPlayMode((playMode + 1) % 5)
     }
 
     // ============ 导航控制器 ============

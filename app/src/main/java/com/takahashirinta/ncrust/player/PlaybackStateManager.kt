@@ -38,6 +38,10 @@ object PlaybackStateManager {
     private const val KEY_QUEUE = "queue"
     private const val KEY_QUEUE_INDEX = "queue_index"
 
+    // 播放模式 key（v2.0.0 · T1-C）。合法区间 0..4 = QueueModes.CYCLE..INFINITY，
+    // 非法值一律回落 CYCLE —— prefs 是跨版本存活的，别让它变成一个能越界的脏值。
+    private const val KEY_PLAY_MODE = "play_mode"
+
     // 每首歌曲进度记忆 key（B4）
     private const val KEY_SONG_POSITIONS = "song_positions"
     // 上限：超出后按保存时间淘汰最旧的，避免 SharedPreferences 无限膨胀。
@@ -254,6 +258,23 @@ object PlaybackStateManager {
             clearQueue(context)
             null
         }
+    }
+
+    /**
+     * v2.0.0 · T1-C：读取上次使用的播放模式（0 = CYCLE，见 `QueueModes`）。
+     *
+     * 为什么必须落盘：`playMode` 原先只存在 MainScreen 的 `remember` 里，任何 Activity 重建
+     * （低内存回收、"不保留活动"、主题/语言切换）都会把它静默重置成"顺序循环"，
+     * 队列于是按**原始顺序**播 —— 网易歌单/每日推荐的原始顺序本来就常按语种/地区/专辑成块，
+     * 用户看到的就是"随机播放却十首日语连播"。这是播放模式，不是队列内容，
+     * 所以 `clearQueue` **不**清它（换队列不该改用户的模式选择）。
+     */
+    fun getPlayMode(context: Context): Int =
+        getPrefs(context).getInt(KEY_PLAY_MODE, 0).let { if (it in 0..4) it else 0 }
+
+    fun savePlayMode(context: Context, mode: Int) {
+        if (mode !in 0..4) return
+        getPrefs(context).edit().putInt(KEY_PLAY_MODE, mode).apply()
     }
 
     fun clearQueue(context: Context) {
