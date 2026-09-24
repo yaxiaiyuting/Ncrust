@@ -106,6 +106,15 @@ object QqClient {
     /** 当前是否已登录（只读本地 cookie，不发请求）。 */
     fun isLoggedIn(): Boolean = appContext?.let { QqAuthStore.isLoggedIn(it) } ?: false
 
+    /**
+     * 诊断用（v2.1.4）：当前落盘的完整 cookie，**只读、只给不落任何持久化的诊断日志用**。
+     *
+     * 单独开这个口是因为取链诊断必须知道「票丢没丢 / uin 在不在」，
+     * 而那两件事只能从原始 cookie 判断。调用方（[QqApi.logVkeyDiagnostics]）
+     * 只取 [QqCookie.fieldNamesOf] 与 [QqCookie.uinOf]，不打任何值。
+     */
+    fun cookieForDiagnostics(): String? = appContext?.let { QqAuthStore.getCookie(it) }
+
     /** `param.uin`：未登录时用 `"0"`（实测匿名可用）。 */
     fun uinForRequest(): String = appContext?.let { uinOf(it) } ?: "0"
 
@@ -220,6 +229,17 @@ object QqClient {
                     } else {
                         ""
                     }
+                    // v2.1.4：只记**字段名**与长度，绝不记值 —— 这些是账号凭证。
+                    if (BuildConfig.DEBUG) {
+                        Log.d(
+                            TAG,
+                            "musicu cookie fields=" + QqCookie.fieldNamesOf(cookie) +
+                                " loggedIn=" + QqCookie.isLoggedIn(cookie) +
+                                " uin=" + (QqCookie.uinOf(cookie)?.toString()?.let { maskDigits(it) } ?: "null") +
+                                " identityInjected=" + (QqCookie.uinOf(cookie) != null &&
+                                    QqCookie.musicKeyOf(cookie) != null),
+                        )
+                    }
                     if (cookie.isNotEmpty()) header("Cookie", cookie)
                 }
                 .post(body.toString().toRequestBody(JSON))
@@ -298,23 +318,45 @@ object QqClient {
 
     /**
      * 客户端身份：取链与歌词用。设备指纹来自 [QqIdentity]（本机自生成，不是抄来的）。
+     *
+     * ## v2.1.4：这里必须注入 `comm.authst`
+     *
+     * 注入走 [QqCookie.applyIdentity]，它同时给 `uin`（musicid 字符串）与 `authst`（musickey）。
+     * 依据是 PHASE0 报告 §2.3「**已登录时追加**：`comm.uin = <musicid 字符串>`，
+     * `comm.authst = <musickey>`（同时也要带 Cookie）」与 §7.2 的登录态示例。
+     *
+     * v2.1.0 只注入了 `uin` —— 缺口能活到现在的原因是：§2.3 的 `comm` 实测表全部在
+     * **匿名态**跑出来（`uin=0`），匿名态本来就没有 `authst` 可发，所以「登录态少发什么」
+     * 从来没进过验证范围。表现就是用户报的「超级会员取链被当成免费用户」。
      */
-    private fun appComm(context: Context): JSONObject = JSONObject()
-        .put("ct", 11)
-        .put("cv", 14090008)
-        .put("v", 14090008)
-        .put("chid", "10003505")
-        .put("tmeAppID", "qqmusic")
-        .put("QIMEI36", QqIdentity.qimei36(context))
-        .put("OpenUDID", QqIdentity.deviceId(context))
-        .put("udid", QqIdentity.deviceId(context))
-        .put("aid", QqIdentity.deviceId(context))
-        .put("os_ver", "10")
-        .put("phonetype", "MI 10")
-        .put("uin", uinOf(context))
-        .put("format", "json")
+    private fun appComm(context: Context): JSONObject {
+        val base = JSONObject()
+            .put("ct", 11)
+            .put("cv", 14090008)
+            .put("v", 14090008)
+            .put("chid", "10003505")
+            .put("tmeAppID", "qqmusic")
+            .put("QIMEI36", QqIdentity.qimei36(context))
+            .put("OpenUDID", QqIdentity.deviceId(context))
+            .put("udid", QqIdentity.deviceId(context))
+            .put("aid", QqIdentity.deviceId(context))
+            .put("os_ver", "10")
+            .put("phonetype", "MI 10")
+            .put("uin", "0")
+            .put("format", "json")
+        return QqCookie.applyIdentity(base, QqAuthStore.getCookie(context))
+    }
 
     /** 未登录时 `comm.uin` 用 `"0"`（实测匿名可用）。 */
     private fun uinOf(context: Context): String =
         QqAuthStore.uin(context)?.toString() ?: "0"
+
+    /**
+     * 诊断日志用：把 uin 打码成 `12****89`。
+     *
+     * uin 是账号标识的一部分，日志里留前 2 后 2 足够回答「有没有登录态、是不是同一个账号」，
+     * 又不至于把完整账号写进 logcat（截图/贴日志时都是泄露面）。
+     */
+    private fun maskDigits(value: String): String =
+        if (value.length <= 4) "****" else value.take(2) + "****" + value.takeLast(2)
 }

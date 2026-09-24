@@ -10,6 +10,8 @@
 
 package com.takahashirinta.ncrust.qq
 
+import org.json.JSONObject
+
 /**
  * QQ 音乐 cookie 的纯字符串处理（v2.1.0 · C）。**无 Android 依赖，JVM 可单测。**
  *
@@ -98,6 +100,47 @@ object QqCookie {
         return map[KEY_MUSIC_KEY]?.takeIf { it.isNotEmpty() }
             ?: map[KEY_MUSIC_KEY_ALT]?.takeIf { it.isNotEmpty() }
     }
+
+    /**
+     * 注入 `comm.uin` / `comm.authst`（v2.1.4）。
+     *
+     * ## 为什么必须有这个函数
+     *
+     * PHASE0 报告 §2.3 写的是「**已登录时追加**：`comm.uin = <musicid 字符串>`，
+     * `comm.authst = <musickey>`（同时也要带 Cookie）」，§7.2 的登录态示例也长这样：
+     *
+     * ```json
+     * {"comm":{"ct":11,"cv":14090008,…,"uin":"<uin>","authst":"<key>"},
+     *  "req":{"module":"music.vkey.GetVkey",…}}
+     * ```
+     *
+     * 但 v2.1.0 只注入了 `uin`，`authst` **一个字节都没发过**。这个缺口之所以一直没被发现，
+     * 是因为报告 §2.3 的 `comm` 实测表**全部是匿名态**（`uin=0`、无票据）跑出来的 ——
+     * 匿名态本来就没有 `authst` 可发，于是「登录态下少了 authst 会怎样」根本没进过验证范围。
+     *
+     * 表现就是本次用户报的问题：**带 Cookie 与不带 Cookie 拿到的东西一样**
+     * （付费档位全 `104003`），因为服务端在 `comm` 里没有看到任何登录身份，
+     * 只把这次请求当成一个「碰巧带了票的匿名客户端」。
+     *
+     * @param cookie 原始 cookie（登录态的唯一来源）
+     * @return 同一个 builder，按需追加 `uin` / `authst`；**未登录或票据缺失时原样返回**
+     *   （绝不发半份身份 —— 那正是「看起来登录了但取链失权」这类问题最难查的形态）。
+     */
+    fun applyIdentity(builder: JSONObject, cookie: String?): JSONObject {
+        val uin = uinOf(cookie) ?: return builder
+        val key = musicKeyOf(cookie) ?: return builder
+        return builder.put("uin", uin.toString()).put("authst", key)
+    }
+
+    /**
+     * 诊断用：列出这份 cookie 里**有哪些字段**（v2.1.4）。
+     *
+     * 只给字段名，**绝不给值** —— 票据是账号凭证，任何一行日志都不该把它带出去。
+     * 存在的意义是把「取链失权」分成几类：票丢了、票在但 uin 丢了、
+     * 还是票和 uin 都在（那就不是登录态的问题，要往服务端权限方向查）。
+     */
+    fun fieldNamesOf(cookie: String?): String =
+        parse(cookie).keys.joinToString(",").ifEmpty { "(none)" }
 
     /**
      * 是否已登录：**必须同时有 uin 与票据**。

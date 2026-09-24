@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import io.github.takahashirinta.kanesumi.anim.sokuou.rememberMetroFlingBehavior
 import io.github.takahashirinta.kanesumi.controls.MetroSelectorFlyout
+import com.takahashirinta.ncrust.BuildConfig
 import com.takahashirinta.ncrust.KeepScreenOnSetting
 import com.takahashirinta.ncrust.RotationSetting
 import com.takahashirinta.ncrust.cache.OfflineAudioCache
@@ -337,6 +338,33 @@ fun UserScreen(
                 phoneLoginText = strings.sourceQqPhoneTitle,
                 onLogin = onShowQqLogin,
                 onPhoneLogin = onShowQqPhoneLogin,
+                // v2.1.4：release 包里为 null ⇒ 这一行不挂载，用户看不到、也点不到。
+                onDiagnose = if (BuildConfig.DEBUG) {
+                    {
+                        val song = playerViewModel.currentSongForDiagnostics()
+                        coroutineScope.launch {
+                            if (song == null) {
+                                android.util.Log.w("QqDiag", "vkey.diag 没有正在播放的曲目")
+                            } else {
+                                android.util.Log.i(
+                                    "QqDiag",
+                                    "vkey.diag 曲目=${song.name} source=${song.source} " +
+                                        "sourceId=${song.sourceId} mediaId=${song.mediaId}",
+                                )
+                                // 先报「播放器认为当前是什么档位」，再问服务端 —— 两行对不上就是显示在撒谎。
+                                android.util.Log.i(
+                                    "QqDiag",
+                                    "vkey.diag 档位快照 requested=" + playerViewModel.lastVerdictRequestedForDiagnostics() +
+                                        " granted=" + playerViewModel.lastPlayedLevelForDiagnostics() +
+                                        " br=" + playerViewModel.lastVerdictResultForDiagnostics()?.br +
+                                        " type=" + playerViewModel.lastVerdictResultForDiagnostics()?.type +
+                                        " songMax=" + playerViewModel.lastVerdictResultForDiagnostics()?.songMaxLevel,
+                                )
+                                com.takahashirinta.ncrust.qq.QqApi.diagnoseQuality(song)
+                            }
+                        }
+                    }
+                } else null,
             )
             Spacer(Modifier.height(24.dp))
         }
@@ -1349,6 +1377,15 @@ private fun QqAccountBlock(
     phoneLoginText: String,
     onLogin: () -> Unit,
     onPhoneLogin: () -> Unit,
+    /**
+     * v2.1.4：**仅 debug 包**显示的取链诊断入口 —— 对当前播放的 QQ 曲目一次性问全档位。
+     *
+     * 为什么需要它：开发侧没有 QQ 音乐账号，而「超清母带只出极高」这件事**只有登录态才有区分度**
+     * （匿名态所有档位都是 `104003`，见 PHASE0 报告 §7.2/§8）。没有这个入口，
+     * 用户要复现就只能靠「碰巧在播放 QQ 曲目时抓 logcat」，日志里还未必有高档位的结果。
+     * release 包里它整行不挂载（不是 `alpha=0`，见 AGENTS.md「Compose 触摸陷阱」第 1 条）。
+     */
+    onDiagnose: (() -> Unit)? = null,
 ) {
     val context = LocalContext.current
     var loggedIn by remember { mutableStateOf(QqAuthStore.isLoggedIn(context)) }
@@ -1408,6 +1445,9 @@ private fun QqAccountBlock(
     // v2.1.1：把「扫码登录依赖腾讯服务」这件事写在用户能看见的地方。
     // 起因是真机上扫码轮询被恒定拒绝时，界面只说「网络不稳定」，用户既不知道
     // 是服务端的问题，也不知道还有网页登录这条路。只在未登录时显示。
+    //
+    // v2.1.4：下面还挂了一个**仅 debug 包**的取链诊断入口（release 里 onDiagnose 为 null，
+    // 整行不挂载 —— 不是 alpha=0，见 AGENTS.md「Compose 触摸陷阱」第 1 条）。
     if (!loggedIn) {
         // 手机号登录单独给一个入口：它解决的是「微信用户没有 QQ 号、也没法同机扫码」
         // 这个场景，藏在二维码浮层里等于让最需要它的人找不到。
@@ -1424,6 +1464,16 @@ private fun QqAccountBlock(
             style = LocalMetroTypography.current.bodySmall,
             color = LocalMetroColors.current.onSurfaceVariant,
             modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 12.dp),
+        )
+    }
+    if (loggedIn && onDiagnose != null) {
+        MetroText(
+            text = "取链诊断（debug）：对当前播放的 QQ 曲目问全档位，见 logcat 的 vkey.diag",
+            style = LocalMetroTypography.current.bodySmall,
+            color = LocalMetroColors.current.primary,
+            modifier = Modifier
+                .clickable(onClick = onDiagnose)
+                .padding(start = 16.dp, end = 16.dp, bottom = 12.dp),
         )
     }
 }

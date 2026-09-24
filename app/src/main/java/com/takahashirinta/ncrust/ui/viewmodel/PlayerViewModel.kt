@@ -670,6 +670,16 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         )
         currentQualityIndex.value = verdict.displayIndex
         qualityStatus.value = verdict.status
+        // v2.1.4 · 诊断：把「这一次到底拿到了什么」打成一行。
+        // 起因是用户报「选了超清母带却只出极高」—— 而档位标签显示的是**请求档位**，
+        // 没有这一行就分不清「真的只拿到 320k」还是「拿到了高档位、只是界面没体现」。
+        // Log.i（不是 Log.d）是有意的：release 包里也能读到，用户不必装 debug 包。
+        Log.i(
+            "PlayerViewModel",
+            "quality verdict requested=$requested granted=${result.actualLevel}" +
+                " br=${result.br} type=${result.type} songMax=${result.songMaxLevel}" +
+                " -> displayIdx=${verdict.displayIndex} status=${verdict.status}",
+        )
     }
 
     /** 偏好档位变化后重算状态（不重新取链，避免每次改设置都重播当前歌）。 */
@@ -733,6 +743,39 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         preferredQualityIndex.value = index
         return index
     }
+
+    /**
+     * v2.1.4：当前正在播放的曲目，**只给 debug 取链诊断用**。
+     *
+     * 存在的理由：诊断必须拿到 `sourceId`（songmid）与 `mediaId`（media_mid），
+     * 而这两个字段是 private 的 —— 它们只在开播与取链之间传递，没有任何 UI 订阅。
+     * 与其让诊断再搜一次歌（那会引入「诊断的曲目与正在播的不是同一首」这个新变量），
+     * 不如把 ref 原样交出去。release 包里没有调用方（入口整行不挂载）。
+     */
+    fun currentSongForDiagnostics(): SongItem? {
+        val id = currentSongId.value ?: return null
+        return songRefOf(
+            MusicSource.fromKey(currentSongSourceKey),
+            id,
+            currentSongSourceId,
+            currentSongMediaId,
+        ).copy(
+            name = currentSongName.value.orEmpty(),
+        )
+    }
+
+    /**
+     * v2.1.4：最近一次取链判定的输入与结果，**只给 debug 取链诊断用**。
+     *
+     * 分开报 requested / granted 是刻意的：这两行对不上，就说明「界面显示的档位」
+     * 与「真正拿到的文件」不是一回事 —— 那正是用户报「选了母带却只能出极高」时
+     * 最需要先排除的一种可能。
+     */
+    fun lastVerdictRequestedForDiagnostics(): String = lastVerdictRequested
+
+    fun lastPlayedLevelForDiagnostics(): String = lastPlayedLevel
+
+    fun lastVerdictResultForDiagnostics(): SongUrlResult? = lastVerdictResult
 
     fun setQualityPreference(index: Int) {
         if (index !in qualityApiLevels.indices) return
