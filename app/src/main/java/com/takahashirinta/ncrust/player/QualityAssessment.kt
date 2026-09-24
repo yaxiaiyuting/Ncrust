@@ -146,16 +146,38 @@ object QualityAssessment {
             levels.indexOf(songMaxLevel) < 0 && capIdx != null
         val measuredIdx = measuredLevel(br, type)?.let { levels.indexOf(it) } ?: -1
 
-        // 展示档位取「标签」与「实际文件」中更高者：标签写低了不该跟着写低。
-        // 未知标签（如 sky）不参与 maxOf，而是退回**请求档位**——它本身就是服务端
-        // 对该强度的等价回复；上限用请求档位封顶，避免未知标签把展示推到杜比/母带。
+        // 展示档位：**实测到的实际文件说了算**（v2.1.4）。
+        //
+        // 历史（v1.2.0–v2.1.3）取的是 `maxOf(标签, 实测)`，理由是「标签写低了不该跟着写低」。
+        // 那条理由本身没错，但只覆盖了一半：**标签写高**时它也照样信，于是会出现
+        // 「文件是 320k mp3，界面写着超清母带」。
+        //
+        // 这不是理论风险，是 2026-09 真机实测到的用户报障形态：账号权益只到 HQ
+        // （服务端 `music_lev_sq=0`，见 vip_login_base），选了「超清母带」被如实降级到 320k，
+        // 而界面一直挂着「超清母带」—— 用户看到的名字与实际听到的东西不符，
+        // 只能得出「开了母带却和免费用户没区别」这个结论，无从判断是没权限还是坏了。
+        //
+        // 规则改成两条，两个方向都诚实（v2.1.4）：
+        //   ① **拿得到实测参数就以实测为准**：标签写低（label=lossless / 文件 Hi-Res）与
+        //      标签写高（label=jymaster / 文件 320k）都按文件显示，且**不受请求档位封顶** ——
+        //      「请求母带、实际 320k」的唯一诚实写法是极高，不是母带；
+        //   ② 拿不到实测参数（br=0 且容器未知）时才退回标签，并用请求档位封顶 ——
+        //      那时没有任何文件证据可以反驳标签，只能信它。
+        //
+        // 为什么不再用 v1.2.0–v2.1.3 的 `maxOf(标签, 实测)`：那条规则对「标签写低」是对的，
+        // 对「标签写高」是错的，而**错的这一半恰好就是用户能看见的那一半** ——
+        // 界面把母带挂在脸上、耳朵听到 320k，用户只能得出「开了母带和免费用户没区别」。
         val floorIdx = if (grantedIdx >= 0) grantedIdx else requestedIdx
-        val displayIdx = maxOf(floorIdx, measuredIdx).coerceIn(0, maxOf(requestedIdx, 0))
+        val displayIdx = if (measuredIdx >= 0) {
+            measuredIdx.coerceIn(0, levels.lastIndex)
+        } else {
+            floorIdx.coerceIn(0, maxOf(requestedIdx, 0))
+        }
 
         val status = when {
             // 拿不到实际文件参数：不妄下结论，保持安静
             measuredIdx < 0 -> QualityStatus.NORMAL
-            // 实际文件不低于请求档位（含"标签写低了"与"尊享母带"两种）
+            // 实际文件不低于请求档位（含"标签写低了、文件其实是高解析"）
             measuredIdx >= requestedIdx -> QualityStatus.NORMAL
             // 沉浸声换格式：请求杜比/环绕，实际拿到 >= 无损的沉浸声文件，不算降级
             requested in IMMERSIVE_TIERS && measuredIdx >= levels.indexOf("lossless") -> QualityStatus.NORMAL

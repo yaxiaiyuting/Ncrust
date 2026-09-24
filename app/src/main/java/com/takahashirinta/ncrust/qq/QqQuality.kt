@@ -160,4 +160,25 @@ object QqQuality {
     /** 从文件名前缀反查档位（诊断与降级判定用）。找不到返回 null，不猜。 */
     fun fileTypeOfFileName(fileName: String): QqFileType? =
         QqFileType.values().firstOrNull { fileName.startsWith(it.prefix) }
+
+    /**
+     * 该档位的**确定码率**（bps）；FLAC 档位按前缀推不出码率，返回 0 = 未知。
+     *
+     * 为什么需要它：QQ 的 vkey 响应没有 br 字段，而「界面显示的档位」是按实际文件参数算的
+     * （见 [com.takahashirinta.ncrust.player.QualityAssessment]）。不知道实际码率时，
+     * 界面只能信服务端标签 —— 而「请求超清母带、被降级到 320k」时标签正是**请求档位**，
+     * 于是界面会把 320k 的 mp3 写成「超清母带」，用户看到的名字与听到的东西不符。
+     *
+     * 这几个数字不是猜的：128k/320k mp3 与 96k AAC 就是档位定义本身
+     * （`M500`/`M800`/`C400` 的名字即来自码率），与 PHASE0 报告 §7.1 的档位表一致。
+     * FLAC 档位（`F000`/`RS01`/`AI00`/`Q000`/`Q001`）**不填**：
+     * 无损及以上同一档位在不同曲目上码率差异很大（实测无损 0.87–0.92 Mbps、
+     * 母带 4.7–5.8 Mbps），编一个数字会直接污染 `measuredLevel` 的判定。
+     */
+    fun knownBitrateOf(fileType: QqFileType): Long = when (fileType) {
+        QqFileType.M500 -> 128_000L
+        QqFileType.M800 -> 320_000L
+        QqFileType.C400 -> 96_000L
+        else -> 0L
+    }
 }

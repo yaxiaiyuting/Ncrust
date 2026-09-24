@@ -107,4 +107,39 @@ class QqQualityTest {
             )
         }
     }
+
+    // ===== v2.1.4：已知档位的确定码率 =====
+    // 界面靠它把「请求超清母带、实际退回 320k mp3」如实显示成「更好」而不是继续挂着母带。
+
+    @Test
+    fun `已知压缩档位的码率是档位定义本身`() {
+        assertEquals(128_000L, QqQuality.knownBitrateOf(QqFileType.M500))
+        assertEquals(320_000L, QqQuality.knownBitrateOf(QqFileType.M800))
+        assertEquals(96_000L, QqQuality.knownBitrateOf(QqFileType.C400))
+    }
+
+    @Test
+    fun `FLAC 档位不编码率——同一档位在不同曲目上差异太大，编了会污染实测判定`() {
+        for (t in listOf(
+            QqFileType.F000, QqFileType.RS01, QqFileType.AI00,
+            QqFileType.Q000, QqFileType.Q001,
+        )) {
+            assertEquals("${t.prefix} 必须是 0（未知）", 0L, QqQuality.knownBitrateOf(t))
+        }
+    }
+
+    /** 320k mp3 的已知码率必须刚好落在 QualityAssessment 的 exhigh 量级里，否则降级仍会显示错。 */
+    @Test
+    fun `320k 的已知码率在实测判定里落在极高档`() {
+        assertEquals(
+            "exhigh",
+            com.takahashirinta.ncrust.player.QualityAssessment
+                .measuredLevel(QqQuality.knownBitrateOf(QqFileType.M800), QqFileType.M800.ext),
+        )
+        assertEquals(
+            "standard",
+            com.takahashirinta.ncrust.player.QualityAssessment
+                .measuredLevel(QqQuality.knownBitrateOf(QqFileType.M500), QqFileType.M500.ext),
+        )
+    }
 }

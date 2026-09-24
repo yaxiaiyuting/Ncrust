@@ -60,7 +60,16 @@ class QualityAssessmentTest {
         assertEquals(QualityStatus.SONG_LACKS_TIER, v.status)
     }
 
-    /** 场景 5：请求杜比、实际给 jyeffect 的 2.8 Mbps FLAC —— 换格式不是降级。 */
+    /**
+     * 场景 5：请求杜比、实际给 jyeffect 的 2.8 Mbps FLAC —— 换格式不是降级。
+     *
+     * v2.1.4 的**关键取舍**在这里可见：展示档位按实测 br 算，
+     * 而 2.8 Mbps 落在 `hires` 的量级锚点里（母带阈值 4 Mbps 是给 4.7–5.8 Mbps 的母带留的），
+     * 所以同一个「jyeffect 文件」在不同曲目上会显示成 jyeffect 或 hires。
+     * 状态判据（NORMAL）不受影响 —— 展示名字的精度上限就是 br 锚点，
+     * 我们选择**宁可少写一档沉浸声的名字，也不把 2.8 Mbps 的文件说成母带**。
+     * 那些确实 >= 4 Mbps 的沉浸声文件会走同一条规则显示成 jymaster，同样成立。
+     */
     @Test
     fun `dolby request answered with immersive flac is normal`() {
         val v = QualityAssessment.assess(
@@ -68,7 +77,18 @@ class QualityAssessmentTest {
             br = 2_798_469, type = "flac", songMaxLevel = "jymaster",
         )
         assertEquals(QualityStatus.NORMAL, v.status)
-        assertEquals(idx("jyeffect"), v.displayIndex)
+        assertEquals(idx("hires"), v.displayIndex)
+    }
+
+    /** 高码率的沉浸声文件按 br 锚点落在母带量级 —— 同样是 NORMAL，展示 jymaster。 */
+    @Test
+    fun `dolby request answered with 5Mbps immersive flac shows jymaster`() {
+        val v = QualityAssessment.assess(
+            requested = "dolby", granted = "jyeffect",
+            br = 5_100_000, type = "flac", songMaxLevel = "jymaster",
+        )
+        assertEquals(QualityStatus.NORMAL, v.status)
+        assertEquals(idx("jymaster"), v.displayIndex)
     }
 
     /** 回归：未知档位标签（如未来的 sky）不得退化成索引 0（旧逻辑会显示成「压缩」）。 */
@@ -202,5 +222,41 @@ class QualityAssessmentTest {
             br = 320_000, type = "mp3", songMaxLevel = "jymaster",
         )
         assertEquals(QualityStatus.NO_ENTITLEMENT, v.status)
+    }
+
+    // ===== v2.1.4：展示档位必须以**实测文件**为准，标签不许把它抬上去 =====
+    // 起因是真机实测到的用户报障形态：账号权益只到 HQ（服务端 music_lev_sq=0），
+    // 选「超清母带」被如实降级到 320k，而界面仍然挂着「超清母带」——
+    // 用户看到的名字与实际听到的东西不符，只能得出「开了母带和免费用户没区别」。
+
+    /** 标签谎报母带、文件是 320k mp3：展示必须是极高，且要报「无权限」。 */
+    @Test
+    fun `lying jymaster label with 320k mp3 shows exhigh not jymaster`() {
+        val v = QualityAssessment.assess(
+            requested = "jymaster", granted = "jymaster",
+            br = 320_000, type = "mp3", songMaxLevel = "jymaster",
+        )
+        assertEquals(idx("exhigh"), v.displayIndex)
+        assertEquals(QualityStatus.NO_ENTITLEMENT, v.status)
+    }
+
+    /** 标签谎报母带、文件是无损 flac：展示无损，不能报母带。 */
+    @Test
+    fun `lying jymaster label with lossless flac shows lossless`() {
+        val v = QualityAssessment.assess(
+            requested = "jymaster", granted = "jymaster",
+            br = 900_000, type = "flac", songMaxLevel = "jymaster",
+        )
+        assertEquals(idx("lossless"), v.displayIndex)
+    }
+
+    /** 反向仍成立：标签写 lossless、文件其实是 Hi-Res ⇒ 按实测显示 Hi-Res（不许写低）。 */
+    @Test
+    fun `understated lossless label with hires flac still shows hires`() {
+        val v = QualityAssessment.assess(
+            requested = "hires", granted = "lossless",
+            br = 1_685_762, type = "flac", songMaxLevel = "hires",
+        )
+        assertEquals(idx("hires"), v.displayIndex)
     }
 }

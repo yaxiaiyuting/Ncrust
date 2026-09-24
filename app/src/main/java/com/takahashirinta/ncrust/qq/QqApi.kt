@@ -136,7 +136,7 @@ object QqApi {
         val mediaMid = song.mediaId?.takeIf { it.isNotEmpty() } ?: songMid
 
         val types = QqQuality.attemptsFor(level)
-        val info = requestVkeyBatch(songMid, mediaMid, types) ?: return null
+        val info = requestVkeyBatch(songMid, mediaMid, types, requestedLevel = level) ?: return null
 
         // 按**请求时的优先级**挑，而不是按响应顺序 —— 响应顺序是服务端的实现细节，
         // 依赖它等于把「用户选无损却拿到 128k」变成一个随机事件。
@@ -156,14 +156,56 @@ object QqApi {
             return SongUrlResult(
                 url = OfflineKeys.withKey(url, song.id, actualLevel),
                 actualLevel = actualLevel,
-                // QQ 不返回码率字段；留 0 表示「未知」，比编一个数字诚实。
-                br = 0L,
+                // QQ 的 vkey 响应**没有码率字段**（实测：`midurlinfo[]` 里没有 br），
+                // 但档位前缀本身就决定了码率 —— M500 恒为 128k mp3、M800 恒为 320k mp3、
+                // C400 是 96k AAC。填这些**由档位确定的已知值**，界面才能把
+                // 「请求超清母带、实际退回 320k」如实显示成「更好」而不是继续挂着母带。
+                // FLAC 档位（F000/RS01/AI00/Q000/Q001）无法从前缀得知码率，留 0 = 未知：
+                // 那种情况下界面会按服务端标签显示，而标签在这些档位上就是权威的。
+                br = QqQuality.knownBitrateOf(fileType),
                 type = fileType.ext,
                 songMaxLevel = null,
             )
         }
         Log.w(TAG, "no playable url for ${SourceIds.trackKey(MusicSource.QQMUSIC, song.id)} at level=$level")
         return null
+    }
+
+    /**
+     * v2.1.4：**一次问全档位的诊断探针**（只有 DEBUG 包会调它）。
+     *
+     * 与 [fetchPlayUrl] 的区别是它不挑、不降级、不返回任何东西 —— 它只把
+     * 「服务端对**每一个**档位分别怎么答」打全。用户报「超清母带只能出极高」时，
+     * 这一条日志就能把三种可能切开：
+     *
+     * - 所有档位都 `104003` ⇒ 登录态/权限问题（这个账号或这条通道没被放行）；
+     * - 免费与无损档 `0`、只有 `AI00`/`Q000`/`Q001` `104003` ⇒ 档位前缀或会员档没放行；
+     * - `101404` ⇒ `comm.cv` 不对（客户端版本被判非法）。
+     *
+     * 为什么不能靠 [fetchPlayUrl] 的日志代替：那条路一旦在低档位拿到 purl 就返回了，
+     * 高档位的结果不会被记录 —— 而「为什么没拿到高档位」恰恰是要看的东西。
+     */
+    suspend fun diagnoseQuality(song: SongItem): Boolean {
+        val songMid = song.sourceId ?: return false
+        val mediaMid = song.mediaId?.takeIf { it.isNotEmpty() } ?: songMid
+        // 按「高 → 低」问：第一条拿到 purl 的档位就是该曲的真实上限（null 会被 composeUrl 兜底）。
+        val probe = (QqQuality.ladderFor("dolby") + QqFileType.values().toList()).distinct()
+        Log.i(
+            TAG,
+            "vkey.diag ===== 探针开始 songMid=$songMid mediaMid=$mediaMid probe=" +
+                probe.joinToString(",") { it.prefix },
+        )
+        val info = requestVkeyBatch(songMid, mediaMid, probe, requestedLevel = "diagnose")
+        if (info == null) {
+            Log.w(TAG, "vkey.diag ===== 探针结束：请求本身失败（登录态/网络/模块错误）")
+            return false
+        }
+        val best = probe.firstOrNull { info[it]?.optString("purl")?.isNotEmpty() == true }
+        Log.i(
+            TAG,
+            "vkey.diag ===== 探针结束 最高可用档位=" + (best?.let { it.prefix + "(" + it.label + ")" } ?: "无"),
+        )
+        return true
     }
 
     /**
@@ -176,6 +218,8 @@ object QqApi {
         songMid: String,
         mediaMid: String,
         types: List<QqFileType>,
+        /** 只用于日志（v2.1.4）：诊断时打的是用户请求档位，正常路径打的是同一个值。 */
+        requestedLevel: String = "",
     ): Map<QqFileType, JSONObject>? {
         if (types.isEmpty()) return null
         val request = QqRequests.vkey(
@@ -185,6 +229,15 @@ object QqApi {
             uin = QqClient.uinForRequest(),
             guid = QqClient.guidForRequest(),
         )
+        if (BuildConfig.DEBUG) {
+            Log.d(
+                TAG,
+                "vkey.diag request requested=$requestedLevel uin=" + QqClient.uinForRequest() +
+                    " guid=" + QqClient.guidForRequest() +
+                    " authstInjected=" + (QqCookie.musicKeyOf(QqClient.cookieForDiagnostics()) != null) +
+                    " filenames=" + types.joinToString(",") { QqQuality.fileNameFor(it, mediaMid) },
+            )
+        }
         val response = QqClient.musicu(request, appIdentity = true) ?: return null
         val data = response.optJSONObject("data") ?: return null
 
@@ -199,6 +252,20 @@ object QqApi {
             val entry = list.optJSONObject(i) ?: continue
             val type = QqQuality.fileTypeOfFileName(entry.optString("filename")) ?: continue
             out[type] = entry
+        }
+        // 选择结果由调用方决定，这里先按请求顺序记录全部逐档结果（v2.1.4 诊断）。
+        if (BuildConfig.DEBUG) {
+            logVkeyDiagnostics(
+                requested = requestedLevel,
+                songMid = songMid,
+                mediaMid = mediaMid,
+                types = types,
+                data = data,
+                selected = out.entries.firstOrNull { (t, e) ->
+                    e.optInt("result", -1) == 0 && e.optString("purl").isNotEmpty()
+                }?.key,
+                cookie = QqClient.cookieForDiagnostics(),
+            )
         }
         return out
     }
@@ -230,6 +297,60 @@ object QqApi {
 
     @Volatile
     private var lastSip: String? = null
+
+    /**
+     * v2.1.4：把**一次真实播放取链**的请求与响应完整打出来（仅 DEBUG）。
+     *
+     * 为什么必须打完整：匿名态实测「所有档位都 104003」是**预期**行为
+     * （见仓库外 `PHASE0-QQMUSIC-API.md` §7.2/§8），所以「取不到母带」这件事只有在
+     * **登录态**下才有区分度。而登录态只有用户有 —— 开发侧没有 QQ 音乐账号。
+     * 把逐档位的 `result` 与 `tips` 打全，用户贴一次日志就能定位是
+     * 「所有付费档都被拒（登录态/权限）」还是「只有母带档被拒（档位前缀）」。
+     *
+     * 安全：不打 `purl` / `vkey`（它们是 2 小时内有效的资源令牌，贴日志即泄露）。
+     * 只打 `sip` 主机名、`filename`、`result`、`tips`、`mid`。
+     */
+    private fun logVkeyDiagnostics(
+        requested: String,
+        songMid: String,
+        mediaMid: String,
+        types: List<QqFileType>,
+        data: JSONObject,
+        selected: QqFileType?,
+        cookie: String?,
+    ) {
+        val sipHost = data.optJSONArray("sip")
+            ?.let { a -> (0 until a.length()).map { a.optString(it) }.firstOrNull { it.isNotEmpty() } }
+            .orEmpty()
+        Log.d(
+            TAG,
+            "vkey.diag requested=$requested songMid=$songMid mediaMid=$mediaMid" +
+                " cookieFields=" + QqCookie.fieldNamesOf(cookie) +
+                " uin=" + (QqCookie.uinOf(cookie)?.toString() ?: "null") +
+                " sip=" + sipHost +
+                " retcode=" + data.optInt("retcode", -1) +
+                " chosen=" + (selected?.prefix ?: "none"),
+        )
+        val list = data.optJSONArray("midurlinfo")
+        for (t in types) {
+            val entry = (0 until (list?.length() ?: 0))
+                .mapNotNull { list!!.optJSONObject(it) }
+                .firstOrNull { QqQuality.fileTypeOfFileName(it.optString("filename")) == t }
+            if (entry == null) {
+                Log.d(TAG, "vkey.diag   ${t.prefix}(${t.label}) 条目缺失")
+                continue
+            }
+            val purl = entry.optString("purl")
+            Log.d(
+                TAG,
+                "vkey.diag   ${t.prefix}(${t.label}) result=" + entry.optInt("result", -1) +
+                    " purl=" + (if (purl.isEmpty()) "空" else "有(len=${purl.length})") +
+                    " tips=" + entry.optString("tips") +
+                    " echo=" + entry.optString("filename") +
+                    " mid=" + entry.optString("mid"),
+            )
+        }
+    }
 
     // ---------------- 歌词 ----------------
 
