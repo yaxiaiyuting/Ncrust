@@ -63,6 +63,8 @@ import com.takahashirinta.ncrust.player.SongUrlFetcher
 import com.takahashirinta.ncrust.network.SongItem
 import com.takahashirinta.ncrust.network.CoverUrls
 import com.takahashirinta.ncrust.QueueModes
+import com.takahashirinta.ncrust.source.MusicSource
+import com.takahashirinta.ncrust.source.musicSource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import com.takahashirinta.ncrust.ui.i18n.LocalStrings
@@ -973,12 +975,12 @@ fun PlayerCard(
                                             maxLines = 1,
                                             overflow = TextOverflow.Ellipsis
                                         )
-                                        MetroText(
-                                            s.artists?.joinToString("/") { it.name } ?: "",
+                                        // v2.1.0 · F：音源角标（大屏左栏，两个音源都标）。
+                                        ArtistLineWithSource(
+                                            song = s,
                                             color = LocalMetroColors.current.primary,
                                             style = LocalMetroTypography.current.bodyMedium,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis
+                                            badgeStyle = LocalMetroTypography.current.bodySmall
                                         )
                                     }
                                     Spacer(Modifier.width(10.dp))
@@ -1077,12 +1079,12 @@ fun PlayerCard(
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis
                                     )
-                                    MetroText(
-                                        s.artists?.joinToString("/") { it.name } ?: "",
+                                    // v2.1.0 · F：音源角标（宽屏左栏，两个音源都标）。
+                                    ArtistLineWithSource(
+                                        song = s,
                                         color = LocalMetroColors.current.primary,
                                         style = LocalMetroTypography.current.bodyLarge,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
+                                        badgeStyle = LocalMetroTypography.current.bodySmall
                                     )
                                 }
                             }
@@ -1145,12 +1147,13 @@ fun PlayerCard(
                                     velocity = 48.dp
                                 )
                             )
-                            MetroText(
-                                s.artists?.joinToString("/") { it.name } ?: "",
+                            // v2.1.0 · F：音源角标（窄屏顶栏，两个音源都标）。同一行的另一段
+                            // 是 basicMarquee 的歌名，这里不参与跑马灯。
+                            ArtistLineWithSource(
+                                song = s,
                                 color = LocalMetroColors.current.onSurfaceVariant,
                                 style = LocalMetroTypography.current.bodyMedium,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
+                                badgeStyle = LocalMetroTypography.current.bodySmall
                             )
                         }
                     }
@@ -1209,12 +1212,12 @@ fun PlayerCard(
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )
-                            MetroText(
-                                s.artists?.joinToString("/") { it.name } ?: "",
+                            // v2.1.0 · F：音源角标（窄屏大封面 overlay，两个音源都标）。
+                            ArtistLineWithSource(
+                                song = s,
                                 color = LocalMetroColors.current.primary,
                                 style = LocalMetroTypography.current.bodyLarge,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
+                                badgeStyle = LocalMetroTypography.current.bodySmall
                             )
                         }
                     }
@@ -1352,12 +1355,13 @@ fun PlayerCard(
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
-                        MetroText(
-                            s.artists?.joinToString("/") { it.name } ?: "",
+                        // v2.1.0 · F：音源角标（折叠态 mini bar，两个音源都标）。同字号
+                        // （bodySmall）+ 次要色，与列表行逐像素同款；角标定宽、歌手让位省略。
+                        ArtistLineWithSource(
+                            song = s,
                             color = LocalMetroColors.current.onSurfaceVariant,
                             style = LocalMetroTypography.current.bodySmall,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
+                            badgeStyle = LocalMetroTypography.current.bodySmall
                         )
                     }
                     if (miniBarEnabled) {
@@ -1552,6 +1556,67 @@ private fun StableCover(
             contentDescription = contentDescription,
             modifier = Modifier.matchParentSize(),
             contentScale = contentScale,
+        )
+    }
+}
+
+/**
+ * v2.1.0 · F：「歌手名 · 音源」一行。播放页的四个歌曲信息区（窄屏顶栏 / 窄屏大封面
+ * overlay / 宽屏左栏 / 大屏左栏）与折叠态 mini bar 共用这一份实现。
+ *
+ * **两个音源都标**（与列表行 `SongCard.sourceBadge` 只标非网易云不同）：播放页是用户
+ * 唯一能确认「现在放的是哪一家」的地方 —— 队列里 QQ 音乐与网易云混在一起，只标一边
+ * 等于让另一边变成"看不出是什么"。列表页不标网易云是为了给长列表降噪，这个理由在
+ * 播放页不成立。
+ *
+ * 视觉语言与列表行保持一致：小一号字（bodySmall）、次要色、`·` 分隔、**无边框无底色**
+ * （Kanesumi：直角、不用色块堆信息）。
+ *
+ * 角标与歌手**同一行**而不是新起一行：窄屏顶栏是固定 56dp 高的 Box、窄屏大封面信息区
+ * 是压在封面上的 overlay，多起一行会挤到既有版式（前者会被裁，后者会多盖住封面）。
+ *
+ * [Modifier.weight] 只给歌手（`fill = false`，按内容收窄）：歌手过长时由它自己省略，
+ * 角标永远完整可见 —— 反过来（角标被挤掉）就正好丢掉了这个角标存在的意义。
+ * 基线对齐（[alignByBaseline]）而不是垂直居中：两段字号不同，居中会让角标浮起来。
+ */
+@Composable
+private fun ArtistLineWithSource(
+    song: SongItem,
+    color: Color,
+    style: TextStyle,
+    badgeStyle: TextStyle,
+    modifier: Modifier = Modifier,
+) {
+    val strings = LocalStrings.current
+    // 走 song.musicSource（枚举）而不是原始 source 字符串：null / 未知 key 的旧数据在
+    // 这里也落到「网易云」，与列表行同一条判定（SongSourceExt.musicSource）。
+    val sourceLabel = when (song.musicSource) {
+        MusicSource.NETEASE -> strings.sourceNetease
+        MusicSource.QQMUSIC -> strings.sourceQqMusic
+    }
+    val artistStr = song.artists?.joinToString("/") { it.name }.orEmpty()
+    Row(modifier = modifier) {
+        if (artistStr.isNotEmpty()) {
+            MetroText(
+                artistStr,
+                color = color,
+                style = style,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .weight(1f, fill = false)
+                    .alignByBaseline()
+            )
+            Spacer(Modifier.width(6.dp))
+        }
+        MetroText(
+            if (artistStr.isNotEmpty()) "· $sourceLabel" else sourceLabel,
+            color = LocalMetroColors.current.onSurfaceVariant,
+            style = badgeStyle,
+            maxLines = 1,
+            softWrap = false,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.alignByBaseline()
         )
     }
 }
