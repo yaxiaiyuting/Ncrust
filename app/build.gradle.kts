@@ -70,10 +70,18 @@ android {
         // 关键设计：QQ 音乐的数字 id 用 `1L shl 62` 标志位与网易云的 id 空间**结构性隔离**，
         // 因此离线缓存 key / 歌词缓存 key / 续播进度表 / 队列判重这些既有结构一个都没改，
         // 也没有任何数据迁移（对照方案是在 5 个文件里各做一次 key 带音源 + 老 key 兼容读）。
-        // **第八次按脚本定号**：冷启动跑 tools/next-version.sh，三源（最近 5 个 tag /
-        // dist 44 个 APK 的 aapt2 badging / 仓库当前 build.gradle）最大值都是 29 ⇒ 本版取 30。
-        versionCode = 30
-        versionName = "2.1.0-gpl"
+        // **第九次按脚本定号**：冷启动跑 tools/next-version.sh，三源（最近 5 个 tag /
+        // dist 46 个 APK 的 aapt2 badging / 仓库当前 build.gradle）最大值都是 30 ⇒ 本版取 31。
+        // v2.1.1 是 patch 版，但修的是一个**让功能整体不可用**的根因，外加两个新能力：
+        // ① QQ 扫码登录一直报「网络不稳定」的真根因是 `ptqrtoken` 的 hash33 初值抄错了
+        //    （用了 g_tk 的 5381，官方是 0）—— 每一次轮询都被 WAF 判成畸形请求 403；
+        //    同时 65/67 状态码映射也是反的（一扫就报「二维码已过期」并停止轮询）。
+        //    v2.1.0 把 403 归因成「IP 级风控」，是错的。
+        // ② 新增手机号验证码登录（微信用户没有 QQ 号、也没法同机扫码时的可用路径）。
+        // ③ 播放界面显示音源来源。
+        // `applicationId`、签名、权限全部未动（权限仍是 11 条，逐条与 v2.1.0 一致）。
+        versionCode = 31
+        versionName = "2.1.1-gpl"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
