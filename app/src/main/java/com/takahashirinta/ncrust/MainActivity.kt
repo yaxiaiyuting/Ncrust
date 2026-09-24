@@ -460,6 +460,11 @@ class MainActivity : ComponentActivity() {
      *     （按钮在竖屏播放器里），只有强制横屏能让窗口马上转过去；
      *  ② 设备一旦物理横过来就放宽成 `SCREEN_ORIENTATION_SENSOR`，此后方向完全交给用户，
      *     **绝不长期强制锁横屏**；转回竖屏即退出大屏模式。
+     *
+     * ⚠️ v2.0.0 · T1-A 分叉：**auto-rotate 关**时不走② —— 那种情况下用户是显式按 ⤢ 进来的，
+     * 意图是"我要横屏播放器"，方向策略由 `orientationFor` 的第 1 档固定在
+     * `SENSOR_LANDSCAPE`（保持横屏），放宽门控**不启动**（它一旦把 requestedOrientation
+     * 改成 SENSOR，手机一歪就翻竖屏 ⇒ 退出大屏 ⇒ 又被锁回竖屏，用户再也回不到横屏）。
      */
     private fun enterBigScreenMode(auto: Boolean = false) {
         if (bigScreenMode.value) return
@@ -471,9 +476,17 @@ class MainActivity : ComponentActivity() {
             bigScreenOrientationRelaxed = true
             stopBigScreenOrientationGate()
             Log.i(TAG, "big screen: auto-entered (auto-rotate on, player expanded, window landscape)")
-        } else {
+        } else if (autoRotateEnabled) {
+            // auto-rotate 开：用户的意图是"跟随手机方向"，所以需要②那道放宽门控。
             bigScreenOrientationRelaxed = false
             startBigScreenOrientationGate()
+        } else {
+            // v2.0.0 · T1-A：auto-rotate 关 ⇒ 保持横屏。**不启动**放宽门控：
+            // 它会在设备物理横向时直接把 requestedOrientation 改成 SENSOR，
+            // 而 SENSOR 会在手机一歪时翻回竖屏（用户报告的 bug 正是这个）。
+            bigScreenOrientationRelaxed = false
+            stopBigScreenOrientationGate()
+            Log.i(TAG, "big screen: manual enter, holding landscape (auto-rotate off)")
         }
         applyOrientationPolicy()
     }

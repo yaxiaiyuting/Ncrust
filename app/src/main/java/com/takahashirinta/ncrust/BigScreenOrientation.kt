@@ -61,19 +61,34 @@ object BigScreenOrientation {
     }
 
     /**
-     * v1.8.0 · T4：方向策略的**唯一判定**。优先级从高到低：
+     * v1.8.0 · T4 / v2.0.0 · T1-A：方向策略的**唯一判定**。优先级从高到低：
      *
-     *  1. **大屏模式未放宽** → [DesiredOrientation.SENSOR_LANDSCAPE]：立刻转过去；
-     *  2. **大屏模式已放宽** → [DesiredOrientation.SENSOR]：交给传感器，转回竖屏即退出
-     *     （"绝不长期锁横屏"这条 P1 契约在 T4 里对 auto-rotate 关的用户同样成立 ——
-     *     否则用户在大屏里想退出就只剩按钮和返回键两条路）；
-     *  3. **auto-rotate 开** → [DesiredOrientation.SENSOR]；
-     *  4. auto-rotate 关 → 大屏设备 UNSPECIFIED、手机 PORTRAIT（= v1.7.0 行为）。
+     *  1. **auto-rotate 关 + 大屏** → [DesiredOrientation.SENSOR_LANDSCAPE]：**保持横屏**
+     *     （v2.0.0 · T1-A 新增，见下面「保持横屏」小节）；
+     *  2. **大屏模式未放宽** → [DesiredOrientation.SENSOR_LANDSCAPE]：立刻转过去；
+     *  3. **大屏模式已放宽** → [DesiredOrientation.SENSOR]：交给传感器，转回竖屏即退出；
+     *  4. **auto-rotate 开** → [DesiredOrientation.SENSOR]；
+     *  5. auto-rotate 关 → 大屏设备 UNSPECIFIED、手机 PORTRAIT（= v1.7.0 行为）。
      *
-     * ⚠️ **应用内开关 ≠ 系统开关**：这里用 `SENSOR` 而不是 `USER`，即应用自己决定要不要
-     * 跟随传感器，**既不改写、也不读取** `Settings.System.ACCELEROMETER_ROTATION`。
-     * 选 `USER` 的话，系统自动旋转锁一开就"应用内开关看着是开的、实际不转"，
-     * 用户无从判断；现在应用内开关是唯一事实源，行为可预期、也能被真机测试稳定复现。
+     * ### 「保持横屏」（v2.0.0 · T1-A，**偏离 v1.8.0 的 P1 契约**）
+     *
+     * v1.8.0 的契约是「绝不长期锁横屏」：大屏放宽成 SENSOR 后手机转回竖屏就退出大屏
+     * （理由写的是"否则用户想退出就只剩按钮和返回键两条路"）。PCL110 真机反馈证明
+     * 这条对 **auto-rotate 关的用户**是错的 —— 他是**显式**按 ⤢ 进来的，意图就是
+     * "我要横屏的播放器"；而 SENSOR 会在手机稍微一歪（躺床上、放支架、手腕转动）时
+     * 立刻翻回竖屏：配置变竖屏 ⇒ 退出大屏 ⇒ auto-rotate 关又把它锁成 PORTRAIT，
+     * **即使把手机转回横向也回不来了**。用户原话：「我希望保持横屏的时候它自动切换竖屏模式了」。
+     *
+     * 所以判据按**用户意图的来源**分流：
+     *  - auto-rotate **开** ⇒ 用户是"跟随手机方向"派：转横进大屏、转竖出大屏（双向，行为不变）；
+     *  - auto-rotate **关** ⇒ 用户是"我要横屏"派：⤢ 进大屏后**保持横屏**（SENSOR_LANDSCAPE
+     *    只让传感器决定左横还是右横，不会因手机一歪就翻竖屏），退出只有 ⤢ / 返回键两条路 ——
+     *    与 v1.8.0 担心的"只剩两条路"一致，但那本来就是关掉这个开关时用户自己的选择。
+     *
+     * ⚠️ **应用内开关 ≠ 系统开关**：这里用 `SENSOR` / `SENSOR_LANDSCAPE` 而不是 `USER`，
+     * 即应用自己决定要不要跟随传感器，**既不改写、也不读取**
+     * `Settings.System.ACCELEROMETER_ROTATION`（PCL110 实测该系统锁就是"锁竖屏"；
+     * 若改成读它，应用内开关会退化成"看着是开的、实际不转"）。
      */
     fun orientationFor(
         autoRotate: Boolean,
@@ -81,6 +96,7 @@ object BigScreenOrientation {
         bigScreenRelaxed: Boolean,
         isLargeScreen: Boolean,
     ): DesiredOrientation = when {
+        bigScreen && !autoRotate -> DesiredOrientation.SENSOR_LANDSCAPE
         bigScreen && !bigScreenRelaxed -> DesiredOrientation.SENSOR_LANDSCAPE
         bigScreen -> DesiredOrientation.SENSOR
         autoRotate -> DesiredOrientation.SENSOR

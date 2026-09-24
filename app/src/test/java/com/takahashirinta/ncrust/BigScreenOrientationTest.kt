@@ -117,12 +117,58 @@ class BigScreenOrientationTest {
                 autoRotate = false, bigScreen = true, bigScreenRelaxed = false, isLargeScreen = false
             )
         )
-        // 已放宽 → SENSOR。"绝不长期锁横屏"对 auto-rotate 关的用户同样成立：
-        // 否则他在大屏里想退出就只剩按钮/返回键两条路。
+        // 已放宽 **且 auto-rotate 开** → SENSOR（v1.8.0 的双向语义不变）。
         assertEquals(
             BigScreenOrientation.DesiredOrientation.SENSOR,
             BigScreenOrientation.orientationFor(
+                autoRotate = true, bigScreen = true, bigScreenRelaxed = true, isLargeScreen = false
+            )
+        )
+    }
+
+    // ---------- v2.0.0 · T1-A：auto-rotate 关时"保持横屏" ----------
+
+    @Test
+    fun `auto rotate off holds landscape in big screen even after relax`() {
+        // 用户报告：「我希望保持横屏的时候它自动切换竖屏模式了」。
+        // auto-rotate 关 = 用户是显式按 ⤢ 进来的 ⇒ 保持横屏，放宽与否都一样，
+        // 绝不返回 SENSOR（那会在手机一歪时翻竖屏 → 退出大屏 → 又被锁回竖屏）。
+        assertEquals(
+            BigScreenOrientation.DesiredOrientation.SENSOR_LANDSCAPE,
+            BigScreenOrientation.orientationFor(
+                autoRotate = false, bigScreen = true, bigScreenRelaxed = false, isLargeScreen = false
+            )
+        )
+        assertEquals(
+            BigScreenOrientation.DesiredOrientation.SENSOR_LANDSCAPE,
+            BigScreenOrientation.orientationFor(
                 autoRotate = false, bigScreen = true, bigScreenRelaxed = true, isLargeScreen = false
+            )
+        )
+        // 大屏设备（平板/折叠展开）同样按"保持横屏"处理：UNSPECIFIED 会让横屏平板
+        // 因为系统锁而翻竖屏，与用户意图相反。
+        assertEquals(
+            BigScreenOrientation.DesiredOrientation.SENSOR_LANDSCAPE,
+            BigScreenOrientation.orientationFor(
+                autoRotate = false, bigScreen = true, bigScreenRelaxed = true, isLargeScreen = true
+            )
+        )
+    }
+
+    @Test
+    fun `auto rotate off outside big screen still locks portrait`() {
+        // T1-A 只改"大屏里面"的那一档，退出大屏后必须回到 v1.7.0 的锁竖屏。
+        assertEquals(
+            BigScreenOrientation.DesiredOrientation.PORTRAIT,
+            BigScreenOrientation.orientationFor(
+                autoRotate = false, bigScreen = false, bigScreenRelaxed = false, isLargeScreen = false
+            )
+        )
+        // 放宽标记在大屏外是脏值，也不能影响判定（exitBigScreenMode 会清它，这里额外钉死）。
+        assertEquals(
+            BigScreenOrientation.DesiredOrientation.PORTRAIT,
+            BigScreenOrientation.orientationFor(
+                autoRotate = false, bigScreen = false, bigScreenRelaxed = true, isLargeScreen = false
             )
         )
         // autoRotate 开着但还没放宽：仍然是"先转过去"，不能被 SENSOR 分支抢先。
