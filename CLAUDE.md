@@ -55,7 +55,9 @@ Single source of truth: `app/build.gradle.kts` → `defaultConfig.versionName` /
 
 - `AboutScreen.kt` reads `BuildConfig.VERSION_NAME` — **never hardcode a version constant**. This needs `buildFeatures.buildConfig = true`.
 - Release flow: bump `versionCode` + `versionName` → commit `build: 升级至 vX.Y.Z ...` → `./gradlew assembleRelease` → `gh release create vX.Y.Z --draft <apk>` → user smoke-tests and publishes manually.
-- Current: `versionName = "2.1.1-gpl"`, `versionCode = 31`. Latest release: `v2.1.1-gpl`.
+- Current: `versionName = "2.1.2-gpl"`, `versionCode = 32`. Latest release: `v2.1.2-gpl`.
+  （`v2.1.1-gpl` 的 tag 存在但**从未发布**（只有 draft），内容全部包含在 v2.1.2 里 ——
+  它的 tag 已经推上去了，按本项目纪律**不移动已发布的 tag**，所以另起一版而不是改它。）
   （**注意 versionCode 必须递增**：v1.6.1 = 19，所以 v1.7.0 是 20 —— 任务书里写「v1.7.0 = 19」是错的，
   19 已经被 v1.6.1 占用，照抄会导致无法覆盖安装。同理本版 **23**：任务书说「v1.8.0 = 21、本版 22」，
   但 `aapt2 dump badging` 实测 v1.8.1 已经是 **22**，照抄 22 会与线上包撞号、无法覆盖安装。
@@ -2484,6 +2486,40 @@ v2.1.0 把 HTTP 403、空 body、解析失败、`IOException` **四类失败归�
 
 > **规则**：加文案前先数一下外层构造参数。用这个片段数：
 > 解析 `data class Strings(` 后深度为 1 的 `val x:` 行。接近 255 就往分组里塞。
+
+### 9. 图形验证码（`20276`）：风控该过就过，但不能把用户关进循环（v2.1.2）
+
+真机反馈：手机号登录点「发送验证码」直接回 `20276`，而 v2.1.1 的界面只说「这条路走不通」。
+**`20276` 不是错误，是风控在正常工作** —— 官方客户端遇到它也是弹 WebView 让用户滑一下。
+
+**做法（不依赖验证页的 DOM）**：
+
+| 步 | 做什么 |
+|---|---|
+| 1 | `data.securityURL` 取验证页地址（**这个 key 在实测的 `104400` 响应里就在，只是空串** —— 字段位置是钉死的，不是猜的） |
+| 2 | 开在 WebView 里 |
+| 3 | 完成时**把 WebView 的 cookie 读出来回传** |
+| 4 | 重发时用 `QqClient.musicuLogin(extraCookie = …)` 带上 |
+
+**第 3/4 步是命门**：验证是**会话级**的、结果落在 cookie 上，而 OkHttp 与 WebView
+有各自独立的 cookie store。少了这两步，用户看到的是「验证完了还要再验证」——
+**那是我们自己没接上，不是腾讯刁难**。凡是「WebView 里做了一件事、结果要给 HTTP 客户端用」
+的流程都是这个形状。
+
+**两个坑（都写进代码注释了）**：
+
+1. **cookie 基线必须在首次 `onPageFinished` 之后才取**。验证页一进来就会写自己的会话 cookie；
+   拿进入时的空快照当基线，第一次加载完就会被误判成「验证完成」，于是拿一份没验证过的
+   cookie 去重试 → 被再次要求验证 → **死循环**。
+2. **要有轮次上限**（现在是 2 次）。若「结果落在 cookie 上」这个前提不成立，
+   继续弹验证页只是把用户关进循环，应当在阈值处停下来引导他去网页登录。
+
+**明确不做**：不伪造/不获取 QIMEI 去降低风控等级。`QqIdentity.qimei36` 是**合成**的
+（随机 hex + 补零），它很可能就是触发验证的诱因之一 —— 但「不模拟设备指纹、不绕过风控」
+是本项目的红线。风控要验证就验证。
+
+**日志纪律**：`20276` 的现场只记验证 URL 的**主机与长度**。URL 可能带一次性 token，
+不把整条写进 logcat —— 与「不把凭证写进日志」同一条。
 
 ### 8. 播放页音源角标（v2.1.1）
 
