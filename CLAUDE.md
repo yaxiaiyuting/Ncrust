@@ -55,8 +55,8 @@ Single source of truth: `app/build.gradle.kts` → `defaultConfig.versionName` /
 
 - `AboutScreen.kt` reads `BuildConfig.VERSION_NAME` — **never hardcode a version constant**. This needs `buildFeatures.buildConfig = true`.
 - Release flow: bump `versionCode` + `versionName` → commit `build: 升级至 vX.Y.Z ...` → `./gradlew assembleRelease` → `gh release create vX.Y.Z --draft <apk>` → user smoke-tests and publishes manually.
-- Current: `versionName = "2.1.2-gpl"`, `versionCode = 32`. Latest release: `v2.1.2-gpl`.
-  （`v2.1.1-gpl` 的 tag 存在但**从未发布**（只有 draft），内容全部包含在 v2.1.2 里 ——
+- Current: `versionName = "2.1.3-gpl"`, `versionCode = 33`. Latest release: `v2.1.3-gpl`.
+  （`v2.1.1-gpl` / `v2.1.2-gpl` 的 tag 存在但**均未发布**（只有 draft，已删），内容全部包含在 v2.1.3 里 ——
   它的 tag 已经推上去了，按本项目纪律**不移动已发布的 tag**，所以另起一版而不是改它。）
   （**注意 versionCode 必须递增**：v1.6.1 = 19，所以 v1.7.0 是 20 —— 任务书里写「v1.7.0 = 19」是错的，
   19 已经被 v1.6.1 占用，照抄会导致无法覆盖安装。同理本版 **23**：任务书说「v1.8.0 = 21、本版 22」，
@@ -2486,6 +2486,20 @@ v2.1.0 把 HTTP 403、空 body、解析失败、`IOException` **四类失败归�
 
 > **规则**：加文案前先数一下外层构造参数。用这个片段数：
 > 解析 `data class Strings(` 后深度为 1 的 `val x:` 行。接近 255 就往分组里塞。
+
+### 10. 跨功能的文案不要复用（v2.1.3，用户当场报出来的）
+
+手机号登录失败的三个分支都抓了扫码那条链路的 `sourceQrFailed`（「扫码登录失败」），
+于是短信登录失败时界面显示「**扫码登录失败**」。用户的原话是
+「我短信验证码登陆为什么会显示扫码登录失败?」—— 这句话在任何情况下都是错的。
+
+**规则**：
+1. **兜底分支（`else -> …`）最容易随手抓一个现成的字符串** —— 那正是最不该复用的地方，
+   因为兜底意味着「我们不知道具体原因」，此时说任何**带前提**的话都是猜。
+   兜底文案要**中性**（「登录失败，请稍后重试」），不要借别的功能的说法。
+2. 一个功能有自己的失败文案。字面上都是「登录失败」，但扫码失败与短信登录失败是两回事。
+3. 顺带一条同源的教训：`classify*` 不要「一律 else」。能按码表分桶就分（哪怕码表来自参考实现、
+   未复现 —— 注释里如实标注即可），但**认不出来时必须中性作答**。
 
 ### 9. 图形验证码（`20276`）：风控该过就过，但不能把用户关进循环（v2.1.2）
 
