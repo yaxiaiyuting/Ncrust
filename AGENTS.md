@@ -54,7 +54,14 @@ Ncrust/
 Single source of truth: `app/build.gradle.kts` → `defaultConfig.versionName` / `versionCode`.
 
 - `AboutScreen.kt` reads `BuildConfig.VERSION_NAME` — **never hardcode a version constant**. This needs `buildFeatures.buildConfig = true`.
-- Release flow: bump `versionCode` + `versionName` → commit `build: 升级至 vX.Y.Z ...` → `./gradlew assembleRelease` → `gh release create vX.Y.Z --draft <apk>` → user smoke-tests and publishes manually.
+- Release flow: bump `versionCode` + `versionName` → commit `build: 升级至 vX.Y.Z ...` → `./gradlew assembleRelease` → **校验工作区干净 && `HEAD` 的 `app/` 源码 == 产物源码** → **最后**才 `git tag` + push → `gh release create vX.Y.Z --draft <apk>` → user smoke-tests and publishes manually.
+  ⚠️ **v2.1.3 在这一步踩过一次**：把 `git tag` 和修复提交写在同一条命令里，于是 tag 落在
+  **版本号提交之前**，`git show vX.Y.Z:app/build.gradle.kts` 里的 `versionCode` 还是上一版的。
+  因为那个 release 还是 draft（从未发布），纠正方式是**删掉 tag 重建到正确的提交**
+  （`git push origin :refs/tags/…` 再推一次）—— 注意这**只对从未发布的 tag 成立**；
+  一旦 release 发布过，就只能另起新版本，绝不移动 tag。
+  **教训：tag 必须打在「产出这批 APK 的那个提交」上，而那个提交一定在 `git log` 里位于
+  `build: 升级至 …` 之后。打 tag 前先 `git show vX.Y.Z:app/build.gradle.kts | grep version` 自证一次。**
 - Current: `versionName = "2.1.3-gpl"`, `versionCode = 33`. Latest release: `v2.1.3-gpl`.
   （`v2.1.1-gpl` / `v2.1.2-gpl` 的 tag 存在但**均未发布**（只有 draft，已删），内容全部包含在 v2.1.3 里 ——
   它的 tag 已经推上去了，按本项目纪律**不移动已发布的 tag**，所以另起一版而不是改它。）
