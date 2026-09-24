@@ -98,6 +98,8 @@ fun UserScreen(
     onShowWebLogin: () -> Unit = {},
     /** v2.1.0 · C：打开 QQ 音乐的登录 WebView（点击卡片时调用）。 */
     onShowQqLogin: () -> Unit = {},
+    /** v2.1.1：打开 QQ 音乐的手机号验证码登录（微信用户走不了 QQ 扫码时用）。 */
+    onShowQqPhoneLogin: () -> Unit = {},
     refreshTrigger: Int = 0,
     onLanguageChange: (String) -> Unit = {}
 ) {
@@ -331,7 +333,10 @@ fun UserScreen(
                 notLoggedInText = strings.notLoggedIn,
                 loginActionText = strings.sourceQqLoginAction,
                 logoutText = strings.logoutButton,
+                availabilityNote = strings.sourceQrAvailabilityNote,
+                phoneLoginText = strings.sourceQqPhoneTitle,
                 onLogin = onShowQqLogin,
+                onPhoneLogin = onShowQqPhoneLogin,
             )
             Spacer(Modifier.height(24.dp))
         }
@@ -1338,7 +1343,12 @@ private fun QqAccountBlock(
     notLoggedInText: String,
     loginActionText: String,
     logoutText: String,
+    /** v2.1.1：扫码登录的可用性说明。只在未登录时显示 —— 已登录的人不需要看它。 */
+    availabilityNote: String,
+    /** v2.1.1：手机号验证码登录的入口文案。 */
+    phoneLoginText: String,
     onLogin: () -> Unit,
+    onPhoneLogin: () -> Unit,
 ) {
     val context = LocalContext.current
     var loggedIn by remember { mutableStateOf(QqAuthStore.isLoggedIn(context)) }
@@ -1394,5 +1404,26 @@ private fun QqAccountBlock(
                     .padding(8.dp),
             )
         }
+    }
+    // v2.1.1：把「扫码登录依赖腾讯服务」这件事写在用户能看见的地方。
+    // 起因是真机上扫码轮询被恒定拒绝时，界面只说「网络不稳定」，用户既不知道
+    // 是服务端的问题，也不知道还有网页登录这条路。只在未登录时显示。
+    if (!loggedIn) {
+        // 手机号登录单独给一个入口：它解决的是「微信用户没有 QQ 号、也没法同机扫码」
+        // 这个场景，藏在二维码浮层里等于让最需要它的人找不到。
+        MetroText(
+            text = phoneLoginText,
+            style = LocalMetroTypography.current.bodyLarge,
+            color = LocalMetroColors.current.primary,
+            modifier = Modifier
+                .clickable(onClick = onPhoneLogin)
+                .padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 4.dp),
+        )
+        MetroText(
+            text = availabilityNote,
+            style = LocalMetroTypography.current.bodySmall,
+            color = LocalMetroColors.current.onSurfaceVariant,
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 12.dp),
+        )
     }
 }

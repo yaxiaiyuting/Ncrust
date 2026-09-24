@@ -61,9 +61,14 @@ import kotlinx.coroutines.delay
  *
  * ## 失败时的降级
  *
- * 轮询可能因为网络/风控拿不到结果（`ptqrlogin` 在部分出口 IP 上会被 WAF 拦）。
- * 界面因此常驻一个「改用网页登录」按钮，直接切到已经验证可用的 WebView 登录。
- * 二维码区域也不会一直转——失败会明确显示原因。
+ * 轮询的两种失败**分开处理**（v2.1.1）：
+ * - **服务端拒绝**（403 / 空 body / 不是 `ptuiCB` 的 200）→ 重试没有意义。累计到
+ *   [DEGRADE_AFTER_UNAVAILABLE] 次就停止轮询、说明原因，然后**自动切到已经验证可用的
+ *   网页登录**（不让用户自己去找那个按钮）。
+ * - **真的网络异常**（超时、连接被断）→ 这是抖动，继续重试，只把提示写清楚。
+ *
+ * v2.1.0 把两者都写成「网络不稳定，仍在重试…」，于是一个恒定的 403 被显示成网络问题、
+ * 还每 2 秒重试一次连试 14 分钟 —— 这正是用户报告的现象。
  */
 @Composable
 fun QqQrLoginDialog(
@@ -82,8 +87,11 @@ fun QqQrLoginDialog(
     var loadFailed by remember { mutableStateOf(false) }
     // 换一张二维码时 +1，用来重启下面的轮询协程。
     var generation by remember { mutableStateOf(0) }
-    // 轮询拿不到响应（网络抖动/被拦）的连续次数：只用于把提示写清楚，不终止流程。
-    var misses by remember { mutableStateOf(0) }
+    // 连续「服务端拒绝」次数（403/空 body/解析不出 ptuiCB）与连续「网络异常」次数。
+    // 两者分开计数：前者重试无意义、到阈值就降级；后者是抖动、继续重试。
+    var unavailableStreak by remember { mutableStateOf(0) }
+    var networkStreak by remember { mutableStateOf(0) }
+    val degraded = unavailableStreak >= DEGRADE_AFTER_UNAVAILABLE
 
     // 取二维码
     LaunchedEffect(generation) {
@@ -91,7 +99,8 @@ fun QqQrLoginDialog(
         bitmap = null
         loadFailed = false
         status = QqQrLogin.QrStatus.WAITING
-        misses = 0
+        unavailableStreak = 0
+        networkStreak = 0
         val code = QqQrClient.requestQr()
         if (code == null) {
             loadFailed = true
@@ -108,30 +117,48 @@ fun QqQrLoginDialog(
         val deadline = System.currentTimeMillis() + QqQrLogin.QR_TTL_SECONDS * 1000L
         while (System.currentTimeMillis() < deadline) {
             delay(POLL_INTERVAL_MS)
-            val cb = QqQrClient.poll(code.qrsig)
-            if (cb == null) {
-                misses++
-                continue
-            }
-            misses = 0
-            status = cb.status
-            when (cb.status) {
-                QqQrLogin.QrStatus.CONFIRMED -> {
-                    val url = cb.url
-                    if (url.isNullOrEmpty()) {
-                        // 确认成功却没给跳转地址：这在协议里不该发生，按失败处理而不是静默卡住
-                        status = QqQrLogin.QrStatus.FAILED
-                    } else {
-                        onConfirmed(url, QqQrClient.cookies())
+            when (val result = QqQrClient.poll(code.qrsig)) {
+                is QqQrLogin.PollResult.Status -> {
+                    unavailableStreak = 0
+                    networkStreak = 0
+                    val cb = result.cb
+                    status = cb.status
+                    when (cb.status) {
+                        QqQrLogin.QrStatus.CONFIRMED -> {
+                            val url = cb.url
+                            if (url.isNullOrEmpty()) {
+                                // 确认成功却没给跳转地址：这在协议里不该发生，按失败处理而不是静默卡住
+                                status = QqQrLogin.QrStatus.FAILED
+                            } else {
+                                onConfirmed(url, QqQrClient.cookies())
+                            }
+                            return@LaunchedEffect
+                        }
+                        QqQrLogin.QrStatus.EXPIRED, QqQrLogin.QrStatus.FAILED -> return@LaunchedEffect
+                        else -> Unit // WAITING / SCANNED 继续轮询
                     }
-                    return@LaunchedEffect
                 }
-                QqQrLogin.QrStatus.EXPIRED, QqQrLogin.QrStatus.FAILED -> return@LaunchedEffect
-                else -> Unit // WAITING / SCANNED 继续轮询
+                is QqQrLogin.PollResult.Unavailable -> {
+                    // 服务端明确回绝：再轮询也是同一个结果，累计到阈值就交给降级逻辑
+                    unavailableStreak++
+                    networkStreak = 0
+                    if (unavailableStreak >= DEGRADE_AFTER_UNAVAILABLE) return@LaunchedEffect
+                }
+                QqQrLogin.PollResult.NetworkError -> {
+                    networkStreak++
+                }
             }
         }
         // 超时：让用户能刷新，而不是永远停在「等待扫码」
         status = QqQrLogin.QrStatus.EXPIRED
+    }
+
+    // 自动降级：连续被拒到阈值 → 先让用户看清原因，再切到已实测可用的网页登录
+    LaunchedEffect(degraded) {
+        if (degraded) {
+            delay(DEGRADE_NOTICE_MS)
+            onUseWebLogin()
+        }
     }
 
     Box(
@@ -182,10 +209,13 @@ fun QqQrLoginDialog(
             MetroText(
                 text = when {
                     loadFailed -> strings.sourceQrLoadFailed
-                    status == QqQrLogin.QrStatus.SCANNED -> strings.sourceQrScanned
+                    // 降级中的提示优先于状态：「服务不可用」比「等待扫码」更该被看见
+                    degraded -> strings.sourceQrSwitchingToWeb
+                    unavailableStreak > 0 -> strings.sourceQrServiceUnavailable
                     status == QqQrLogin.QrStatus.EXPIRED -> strings.sourceQrExpired
                     status == QqQrLogin.QrStatus.FAILED -> strings.sourceQrFailed
-                    misses >= 3 -> strings.sourceQrNetworkHint
+                    status == QqQrLogin.QrStatus.SCANNED -> strings.sourceQrScanned
+                    networkStreak >= NETWORK_HINT_AFTER -> strings.sourceQrNetworkHint
                     else -> strings.sourceQrWaiting
                 },
                 style = androidx.compose.ui.text.TextStyle(fontSize = 13.sp),
@@ -206,3 +236,16 @@ fun QqQrLoginDialog(
 
 /** 轮询间隔。2 秒：与人扫码确认的节奏相称，又不会把服务端打得太勤。 */
 private const val POLL_INTERVAL_MS = 2_000L
+
+/**
+ * 连续被服务端回绝多少次就自动降级到网页登录。
+ *
+ * 3 次 ≈ 6 秒：单次 403 可能只是风控的一个嗝，连着三次就不是了，再轮询下去只是让用户干等。
+ */
+private const val DEGRADE_AFTER_UNAVAILABLE = 3
+
+/** 降级提示至少显示这么久，再切页面 —— 否则用户只看到界面闪一下，不知道发生了什么。 */
+private const val DEGRADE_NOTICE_MS = 2_000L
+
+/** 连续多少次「真的网络异常」才提示「网络不稳定」（单次抖动不值得吓用户）。 */
+private const val NETWORK_HINT_AFTER = 3

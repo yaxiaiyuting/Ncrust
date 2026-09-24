@@ -6,6 +6,7 @@
  * Copyright (c) 2026 yaxiaiyuting，以 GPLv3 许可分发；本 Fork 整体以 GPLv3 分发。
  *
  * v2.1.0 · C（hotfix 4）：QQ 互联扫码登录的 HTTP 部分。
+ * v2.1.1：轮询结果改成三态（[QqQrLogin.PollResult]），不再把 403 与网络异常混成 null。
  */
 
 package com.takahashirinta.ncrust.qq
@@ -103,12 +104,16 @@ object QqQrClient {
     /**
      * 轮询一次。
      *
-     * 返回 null = 这次没拿到可解析的响应（网络抖动、被 WAF 拦、空 body）。
-     * **不要把 null 当失败终止**：下一轮继续；真正的终止条件是超时或用户取消。
-     * 这一点很重要 —— 真机网络下偶尔一次请求失败是常态，把它当失败会让用户
-     * 「扫了码却什么都没发生」。
+     * 三种结局分得很清楚（见 [QqQrLogin.PollResult]）：
+     * - [QqQrLogin.PollResult.Status]：拿到可解析的 `ptuiCB`；
+     * - [QqQrLogin.PollResult.Unavailable]：服务端拒绝（403/空 body/不是 ptuiCB 的 200）——
+     *   **重试没有意义**，调用方应当累计到阈值后引导用户改用网页登录；
+     * - [QqQrLogin.PollResult.NetworkError]：请求本身失败 —— 下一轮继续。
+     *
+     * v2.1.0 这三种都返回 `null`，界面因此把恒定的 403 显示成「网络不稳定，仍在重试…」。
+     * 归类逻辑抽在 [QqQrLogin.classifyPollResponse]（纯函数、有单测），这里只负责 IO。
      */
-    suspend fun poll(qrsig: String): QqQrLogin.PtuiCb? = withContext(Dispatchers.IO) {
+    suspend fun poll(qrsig: String): QqQrLogin.PollResult = withContext(Dispatchers.IO) {
         val token = QqQrLogin.ptqrToken(qrsig)
         val url = QqQrLogin.qrLoginUrl(token, System.currentTimeMillis())
         try {
@@ -122,16 +127,15 @@ object QqQrClient {
                 if (BuildConfig.DEBUG) {
                     Log.d(TAG, "ptqrlogin http=${response.code} body=${text?.take(80)}")
                 }
-                // 403/其它非 200：把 body 也打出来（有些环境会返回一段说明），但按「这次没结果」处理
+                // 403/其它非 200：把 body 也打出来（有些环境会返回一段说明）
                 if (!response.isSuccessful) {
                     Log.w(TAG, "ptqrlogin http=${response.code} body=${text?.take(160)}")
-                    return@use null
                 }
-                QqQrLogin.parsePtuiCb(text)
+                QqQrLogin.classifyPollResponse(response.code, text)
             }
         } catch (e: Exception) {
             Log.w(TAG, "ptqrlogin failed", e)
-            null
+            QqQrLogin.PollResult.NetworkError
         }
     }
 
