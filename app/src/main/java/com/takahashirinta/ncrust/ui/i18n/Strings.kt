@@ -413,7 +413,7 @@ data class Strings(
     val sourceQqMusic: String get() = source.sourceQqMusic
     val sourceQqAccount: String get() = source.sourceQqAccount
     val sourceQqLoginAction: String get() = source.sourceQqLoginAction
-    val sourceQqLoginHint: String get() = source.sourceQqLoginHint
+    val sourceSummary: (Int, Int) -> String get() = source.sourceSummary
     val cacheUsageAudio: String get() = offline.cacheUsageAudio
     val cacheUsageImage: String get() = offline.cacheUsageImage
     val cacheUsageOther: String get() = offline.cacheUsageOther
@@ -480,10 +480,10 @@ data class SourceStrings(
     /** 登录动作，例如「登录 QQ 音乐」。 */
     val sourceQqLoginAction: String,
     /**
-     * 登录浮层顶部那一行提示（可点，直达 QQ 互联登录页）。
+     * 搜索结果顶部那行小字：`(网易云条数, QQ 音乐条数) -> 文案`。
      *
-     * 存在的理由：桌面版首页的「登录」按钮位置会随腾讯改版变化，
-     * 用户找不到入口时得有第二条不依赖找按钮的路。
+     * 为什么需要它：`SongCard` 只在**非网易云**的行上标音源，于是纯网易云的结果
+     * 在界面上看不出「来自哪里」——真机反馈正是「现在有了稻香，似乎是网易云的搜索结果？」。
      */
-    val sourceQqLoginHint: String,
+    val sourceSummary: (Int, Int) -> String,
 )

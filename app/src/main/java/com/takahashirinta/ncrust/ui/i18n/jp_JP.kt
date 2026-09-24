@@ -103,7 +103,7 @@ val jpJP = Strings(
     source = SourceStrings(
         sourceQqMusic = "QQ Music",
         sourceQqAccount = "QQ Music アカウント",
-        sourceQqLoginHint = "ログイン入口が見つからない場合はここをタップ（QQ ログインページ）",
+        sourceSummary = { a, b -> "NetEase $a 曲 · QQ Music $b 曲" },
         sourceQqLoginAction = "QQ Music にログイン",
     ),
     clearCache = "キャッシュを消去",

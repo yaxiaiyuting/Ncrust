@@ -70,6 +70,23 @@ object QqClient {
 
     private var appContext: Context? = null
 
+    /**
+     * 搜索专用通道（v2.1.0 · hotfix 3）：**超时收紧到秒级**。
+     *
+     * 原因：搜索是交互式的，而取链/歌词不是。共用那条 15/20 秒的客户端时，
+     * 一旦 QQ 侧慢或不可达，搜索界面就要陪着等十几秒（真机反馈「一直转圈」）。
+     * 另外 `withTimeoutOrNull` **取消不了** 阻塞中的 `execute()` ——
+     * 协程层面的超时只能让 UI 不再等，真正的连接要靠 OkHttp 自己的超时收掉。
+     */
+    private val searchHttp: OkHttpClient by lazy {
+        OkHttpClient.Builder()
+            .connectTimeout(4, TimeUnit.SECONDS)
+            .readTimeout(6, TimeUnit.SECONDS)
+            .writeTimeout(6, TimeUnit.SECONDS)
+            .callTimeout(8, TimeUnit.SECONDS)
+            .build()
+    }
+
     private val http: OkHttpClient by lazy {
         OkHttpClient.Builder()
             .connectTimeout(15, TimeUnit.SECONDS)
@@ -193,7 +210,7 @@ object QqClient {
                 }
                 .get()
                 .build()
-            http.newCall(request).execute().use { response ->
+            searchHttp.newCall(request).execute().use { response ->
                 val text = response.body?.string()
                 if (BuildConfig.DEBUG) Log.d(TAG, "legacyGet http=${response.code} len=${text?.length ?: 0}")
                 if (!response.isSuccessful || text.isNullOrEmpty()) return@use null

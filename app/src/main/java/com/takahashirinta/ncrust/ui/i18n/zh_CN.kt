@@ -103,7 +103,7 @@ val zhCN = Strings(
     source = SourceStrings(
         sourceQqMusic = "QQ 音乐",
         sourceQqAccount = "QQ 音乐账号",
-        sourceQqLoginHint = "找不到登录入口？点这里直接打开 QQ 登录页",
+        sourceSummary = { a, b -> "网易云 $a 首 · QQ 音乐 $b 首" },
         sourceQqLoginAction = "登录 QQ 音乐",
     ),
     clearCache = "清除缓存",

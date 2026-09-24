@@ -103,7 +103,7 @@ val deDE = Strings(
     source = SourceStrings(
         sourceQqMusic = "QQ Music",
         sourceQqAccount = "QQ-Music-Konto",
-        sourceQqLoginHint = "Kein Anmelde-Eingang? Hier tippen, um die QQ-Anmeldeseite zu öffnen",
+        sourceSummary = { a, b -> "NetEase $a · QQ Music $b" },
         sourceQqLoginAction = "Bei QQ Music anmelden",
     ),
     clearCache = "Cache leeren",

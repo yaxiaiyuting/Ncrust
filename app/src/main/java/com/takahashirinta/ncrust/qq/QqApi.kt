@@ -147,7 +147,7 @@ object QqApi {
                 lastUrlFailure = UrlFailure(entry.optInt("result", 0), entry.optString("tips"), fileType)
                 continue
             }
-            val url = buildUrl(purl) ?: continue
+            val url = buildUrl(purl)
             val actualLevel = QqQuality.ncrustLevelOf(fileType)
             Log.i(TAG, "vkey ok: requested=$level actual=$actualLevel prefix=${fileType.prefix} mid=$mediaMid")
             lastUrlFailure = null
@@ -206,15 +206,27 @@ object QqApi {
     /**
      * 把 `purl` 拼成完整 URL：`<sip[0]><purl>`。
      *
-     * 实测 `sip` 是一组 CDN 前缀（如 `http://aqqmusic.tc.qq.com/`），`purl` 是路径 + 签名。
-     * 全部为空时返回 null —— 拼不出 URL 的时候，硬拼一个域名的结果就是「无限缓冲」。
+     * ## `sip` 可能是空的（真机实测踩到，v2.1.0 hotfix 3）
+     *
+     * 实测三首免费曲目（《千与千寻》《城南花已开》《宫崎骏的夏天》）的 vkey 响应里
+     * **`sip` 数组是空的**，但 `purl` 有值且 `result=0` —— 也就是「链是好的，只是没告诉你 CDN 域名」。
+     * 早先的实现在这里直接返回 null，于是**本来能播的免费曲目被整个丢掉**
+     * （表现是「点了没反应/跳歌」，而且因为它看起来像「无权限」，几乎无法排查）。
+     *
+     * 现在回落到固定的 CDN 域名。实测四个候选域名（http/https 各两个）都能返回
+     * HTTP 200 + `audio/mpeg` + 真实 ID3 字节，所以统一用 `https`（不引 cleartext 问题）。
      */
-    private fun buildUrl(purl: String): String? {
+    internal fun composeUrl(purl: String, sip: String?): String {
         if (purl.startsWith("http://") || purl.startsWith("https://")) return purl
-        val sip = lastSip ?: return null
-        val prefix = if (sip.endsWith("/")) sip else "$sip/"
+        val host = sip?.takeIf { it.isNotEmpty() } ?: FALLBACK_CDN
+        val prefix = if (host.endsWith("/")) host else "$host/"
         return prefix + purl.removePrefix("/")
     }
+
+    private fun buildUrl(purl: String): String = composeUrl(purl, lastSip)
+
+    /** `sip` 缺失时的兜底 CDN。实测 `http`/`https`、`ws`/`ws6`/`aqqmusic.tc` 四个域名都可用。 */
+    private const val FALLBACK_CDN = "https://ws.stream.qqmusic.qq.com/"
 
     @Volatile
     private var lastSip: String? = null

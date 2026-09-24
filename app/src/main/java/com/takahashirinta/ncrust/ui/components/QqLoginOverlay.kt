@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -32,6 +33,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.ui.unit.dp
@@ -41,6 +44,7 @@ import com.takahashirinta.ncrust.qq.QqCookie
 import com.takahashirinta.ncrust.ui.i18n.LocalStrings
 import io.github.takahashirinta.kanesumi.core.theme.LocalMetroColors
 import io.github.takahashirinta.kanesumi.core.theme.LocalMetroTypography
+import io.github.takahashirinta.kanesumi.core.theme.MetroIcon
 import io.github.takahashirinta.kanesumi.core.theme.MetroText
 import kotlinx.coroutines.delay
 
@@ -68,6 +72,20 @@ import kotlinx.coroutines.delay
  * 弹窗还可能被我们接管到同一个 WebView 里（见 [WebChromeClient.onCreateWindow]），
  * 于是「最后一个加载完成的页面是哪个」并不确定。**登录成功的唯一权威事实是 cookie**，
  * 所以这里按固定间隔直接读 cookie，不依赖任何页面回调。
+ *
+ * ## 真机反馈第二轮（hotfix 2）：删掉「兜底入口」、让开状态栏
+ *
+ * 第一版加了两个东西，真机实测**都是负收益**：
+ *
+ * 1. **底部那条可点的蓝字「找不到登录入口？点这里直接打开 QQ 登录页」**——
+ *    点它会触发腾讯风控（用户原话「你给的蓝字点击没法登陆会登陆异常」），
+ *    而**从站点右上角自带的「登录」按钮进去是可以正常登录的**。
+ *    一个「兜底」比正路更糟，所以整条删掉（连同它的 URL 常量与 8 语言文案）。
+ * 2. **右上角的 ✕** —— 它和站点自己的「登录」按钮**正好重叠**，
+ *    用户是靠右上角原网页的登录进的，那个位置必须让给站点。现在 ✕ 在右下角。
+ * 3. 另外补 `statusBarsPadding()`：不加的话 WebView 画到状态栏底下，
+ *    站点 header（登录按钮就在里面）被挡住 —— 用户因此**只能横屏**才能登录。
+ *    这不是体验问题，是「入口是否可达」的问题。
  *
  * 另外补一步自愈：QQ 互联登录完成后先拿到的是 `p_skey`/`uin`（`.qq.com` 域），
  * 音乐侧的 `qqmusic_key` 要由 `y.qq.com` 自己的脚本去换。所以一旦检测到「互联已登录
@@ -109,7 +127,15 @@ fun QqLoginOverlay(
         }
     }
 
-    Box(modifier = Modifier.fillMaxSize().background(Color.White)) {
+    // ⚠️ statusBarsPadding 是**必须**的（真机反馈修复）：不加的话 WebView 会画到状态栏底下，
+    // 而桌面版站点的 header（「登录」按钮就在右上角）正好在那里 —— 竖屏时用户根本点不到，
+    // 只能横屏绕开。这不是「体验优化」，是「入口是否可达」。
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+            .statusBarsPadding()
+    ) {
         AndroidView(
             factory = { ctx ->
                 WebView(ctx).apply {
@@ -164,30 +190,24 @@ fun QqLoginOverlay(
             modifier = Modifier.fillMaxSize(),
         )
 
-        // 直达登录页的入口条。**放在底部而不是顶部**：真机截图复核发现，
-        // 顶部条会正好盖住桌面版站点的 header（而「登录」按钮就在那里）——
-        // 一个为了「找不到入口时兜底」而加的提示，反而把入口挡住了，这是第一次改版踩到的。
+        // 关闭按钮**放在右下角**（原实现在右上角，与站点自己的「登录」按钮正好重叠 ——
+        // 真机反馈里用户是靠「右上角原网页的登录」进的，那个位置必须让给站点）。
+        // 自己画而不是复用 TopScrimIconButton：后者画的是顶部渐隐 scrim，放底部会很怪。
         Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.BottomStart)
+                .align(Alignment.BottomEnd)
+                .padding(end = 16.dp, bottom = 32.dp)
                 .background(LocalMetroColors.current.surface)
-                .padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 32.dp)
-                .clickable { webView?.loadUrl(QQ_CONNECT_LOGIN_URL) },
+                .clickable(onClick = onDismiss)
+                .padding(10.dp)
+                .semantics { contentDescription = strings.close },
         ) {
-            MetroText(
-                text = strings.sourceQqLoginHint,
-                style = LocalMetroTypography.current.bodySmall,
-                color = LocalMetroColors.current.primary,
+            MetroIcon(
+                imageVector = Icons.Default.Close,
+                contentDescription = null,
+                tint = LocalMetroColors.current.onSurface,
             )
         }
-
-        TopScrimIconButton(
-            icon = Icons.Default.Close,
-            contentDescription = strings.close,
-            onClick = onDismiss,
-            alignment = Alignment.TopEnd,
-        )
     }
 }
 
@@ -201,20 +221,14 @@ private const val HOME_URL = "https://y.qq.com/"
  */
 private const val COOKIE_PROBE_URL = "https://y.qq.com/"
 
-/** 桌面 Chrome UA。桌面版首页才有登录入口（移动版会引导去装 App）。 */
+/**
+ * 桌面 Chrome UA。桌面版首页才有登录入口（移动版会引导去装 App）——
+ * 真机反馈「网页版会自动从 pc 跳到手机，没有对应登录方式」就是缺了它。
+ */
 private const val DESKTOP_UA =
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) " +
         "Chrome/120.0.0.0 Safari/537.36"
 
-/**
- * QQ 互联标准登录页（`appid`/`daid`/`pt_3rd_aid` 是 QQ 音乐 Web 端的固定值，
- * 与扫码轮询链路上用的是同一组）。默认展示二维码，可切账号密码 / 手机号。
- */
-private const val QQ_CONNECT_LOGIN_URL =
-    "https://xui.ptlogin2.qq.com/cgi-bin/xlogin" +
-        "?appid=716027609&daid=383&style=33&theme=2" +
-        "&s_url=https%3A%2F%2Fy.qq.com%2Fportal%2Fprofile.html" +
-        "&pt_3rd_aid=100497308"
-
 /** cookie 轮询间隔。1.5 s：比人手动完成一次登录的粒度细得多，又不至于空转。 */
 private const val COOKIE_POLL_MS = 1500L
+

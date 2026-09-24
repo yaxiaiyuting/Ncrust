@@ -92,6 +92,8 @@ fun SearchScreen(
     val albums by viewModel.albums.collectAsState()
     val artists by viewModel.artists.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+    // v2.1.0 · E：结果来自哪些音源（(网易云条数, QQ 音乐条数)；null = 还没搜过）。
+    val sourceCounts by viewModel.sourceCounts.collectAsState()
     val error by viewModel.error.collectAsState()
     val currentType by viewModel.currentType.collectAsState()
     val context = LocalContext.current
@@ -391,6 +393,21 @@ fun SearchScreen(
                                 contentPadding = PaddingValues(bottom = BottomOverlayInsetDp),
                                 flingBehavior = rememberMetroFlingBehavior()
                             ) {
+                                // 音源来源小字（真机反馈：纯网易云的结果在界面上看不出「来自哪里」）。
+                                // 放在列表**第一项**而不是外面套一层 Column —— 后者要动布局结构，
+                                // 而这里只需要一行字。
+                                sourceCounts?.let { counts ->
+                                    item(key = "source-summary") {
+                                        MetroText(
+                                            text = strings.sourceSummary(counts.first, counts.second),
+                                            color = LocalMetroColors.current.onSurfaceVariant,
+                                            style = TextStyle(fontSize = 12.sp),
+                                            modifier = Modifier.padding(
+                                                start = 16.dp, end = 16.dp, top = 8.dp, bottom = 4.dp,
+                                            ),
+                                        )
+                                    }
+                                }
                                 items(songs, key = { it.id }) { item ->
                                     SongCard(
                                         song = item,

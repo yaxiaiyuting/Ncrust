@@ -105,6 +105,35 @@ class QqRequestsTest {
     }
 
     @Test
+    fun `URL 拼接——sip 为空时回落到兜底 CDN 而不是丢掉这条链`() {
+        // 真机实测：三首免费曲目的 vkey 响应里 sip 是空的，但 purl 有值且 result=0。
+        // 早先实现在这里返回 null ⇒ 本来能播的免费曲目被整个丢掉。
+        val purl = "M5000041N3Zg2DKHOh.mp3?vkey=ABC&guid=g&uin=&redirect=1"
+        assertEquals(
+            "https://ws.stream.qqmusic.qq.com/M5000041N3Zg2DKHOh.mp3?vkey=ABC&guid=g&uin=&redirect=1",
+            QqApi.composeUrl(purl, null),
+        )
+        assertEquals(
+            "https://ws.stream.qqmusic.qq.com/M5000041N3Zg2DKHOh.mp3?vkey=ABC&guid=g&uin=&redirect=1",
+            QqApi.composeUrl(purl, ""),
+        )
+    }
+
+    @Test
+    fun `URL 拼接——有 sip 时用它，并处理好斜杠`() {
+        assertEquals("http://aqqmusic.tc.qq.com/a.mp3", QqApi.composeUrl("a.mp3", "http://aqqmusic.tc.qq.com/"))
+        assertEquals("http://aqqmusic.tc.qq.com/a.mp3", QqApi.composeUrl("/a.mp3", "http://aqqmusic.tc.qq.com"))
+        assertEquals("http://aqqmusic.tc.qq.com/a.mp3", QqApi.composeUrl("a.mp3", "http://aqqmusic.tc.qq.com"))
+    }
+
+    @Test
+    fun `URL 拼接——已经是完整 URL 的 purl 原样返回`() {
+        val full = "https://ws.stream.qqmusic.qq.com/x.mp3?vkey=1"
+        assertEquals(full, QqApi.composeUrl(full, null))
+        assertEquals(full, QqApi.composeUrl(full, "http://other/"))
+    }
+
+    @Test
     fun `取链请求可被序列化成合法 JSON（信封拼装不会崩）`() {
         val req = QqRequests.vkey("m", "mm", types, "0", "g")
         val envelope = JSONObject().put("comm", JSONObject()).put("req", req)

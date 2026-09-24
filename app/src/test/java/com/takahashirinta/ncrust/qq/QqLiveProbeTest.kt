@@ -151,6 +151,80 @@ class QqLiveProbeTest {
         assertTrue("匿名态不应全部拿到 purl（那意味着服务端把付费曲给了游客）", emptyPurl > 0)
     }
 
+    /**
+     * **免费曲目的完整链路**：搜索 → 取链 → 拼 URL → CDN 真的返回音频字节。
+     *
+     * 这是本文件里最重要的一条：它证明「逆向出来的 API **确实能拿到歌曲资源**」，
+     * 而不只是「请求形状被接受」。同时也钉住了 hotfix 3 修掉的那个 bug ——
+     * 实测这些响应的 `sip` 是**空的**，早先的实现会在这里返回 null、把免费曲目丢掉。
+     *
+     * 只测免费曲目（`pay.pay_play == 0`）：VIP 曲目匿名必然被服务端拒绝（`104003` 空 purl），
+     * 那是**权限**问题不是**接口**问题，拿它当失败会掩盖真正的回归。
+     */
+    @Test
+    fun `免费曲目匿名能取到可播放 URL，且 CDN 真的返回音频字节`() {
+        assumeTrue("无网络，跳过", networkAvailable())
+
+        // 找一首**免费**曲目：必须按 `pay.pay_play == 0` 筛。
+        // 不筛的话会挑到 VIP 曲，匿名必然拿不到 purl，用例就永远走「跳过」——
+        // 那样等于没有这条测试（第一版就是这么写的，被跳过过一次才发现）。
+        var mid: String? = null
+        var mediaMid: String? = null
+        outer@ for (kw in listOf("纯音乐", "轻音乐", "古典", "白噪音")) {
+            val json = get(QqRequests.legacySearchUrl(kw, 30, 1))
+            val list = json.optJSONObject("data")?.optJSONObject("song")?.optJSONArray("list") ?: continue
+            for (i in 0 until list.length()) {
+                val it = list.optJSONObject(i) ?: continue
+                val pay = it.optJSONObject("pay")?.optInt("pay_play", 1) ?: 1
+                if (pay != 0) continue
+                val m = it.optString("mid").takeIf { v -> v.isNotEmpty() } ?: continue
+                mid = m
+                mediaMid = it.optJSONObject("file")?.optString("media_mid")?.takeIf { v -> v.isNotEmpty() } ?: m
+                break@outer
+            }
+        }
+        assumeTrue("这次没搜到免费曲目（服务端曲库会变），跳过", mid != null)
+
+        // 用生产代码同样的顺序逐档试，直到拿到 purl
+        var playable: Pair<String, Int>? = null
+        for (t in QqQuality.attemptsFor("standard")) {
+            val body = JSONObject()
+                .put("comm", appComm())
+                .put("req", QqRequests.vkey(mid!!, mediaMid!!, listOf(t), "0", "0123456789abcdef"))
+            val req = post("https://u.y.qq.com/cgi-bin/musicu.fcg", body, appUa).optJSONObject("req") ?: continue
+            val info = req.optJSONObject("data")?.optJSONArray("midurlinfo")?.optJSONObject(0) ?: continue
+            val purl = info.optString("purl")
+            if (purl.isNotEmpty() && info.optInt("result", -1) == 0) {
+                val sip = req.optJSONObject("data")?.optJSONArray("sip")
+                    ?.let { a -> (0 until a.length()).map { a.optString(it) }.firstOrNull { it.isNotEmpty() } }
+                playable = QqApi.composeUrl(purl, sip) to t.prefix.length
+                break
+            }
+        }
+        assumeTrue("这次没找到可匿名播放的免费曲目（服务端曲库会变），跳过", playable != null)
+
+        // 关键断言：CDN 真的把音频给我们
+        val result = try {
+            http.newCall(
+                Request.Builder().url(playable!!.first)
+                    .header("User-Agent", appUa).header("Referer", "https://y.qq.com/").build()
+            ).execute()
+        } catch (e: Exception) {
+            throw AssertionError("CDN 请求失败：${playable!!.first.take(120)}", e)
+        }
+        result.use { resp ->
+            assertEquals("CDN 应返回 200", 200, resp.code)
+            val body = resp.body!!
+            val head = body.source().readByteArray(8)
+            val len = body.contentLength()
+            assertTrue("应拿到实际音频字节（实测 2~4 MB），实际 $len", len > 200_000)
+            // ID3（mp3）或 ftyp（m4a）——两者都是「这是真音频」的硬证据
+            val isId3 = head.size >= 3 && head[0] == 'I'.code.toByte() && head[1] == 'D'.code.toByte() && head[2] == '3'.code.toByte()
+            val isFtyp = head.size >= 8 && String(head, 4, 4, Charsets.US_ASCII) == "ftyp"
+            assertTrue("首字节应是 ID3 或 ftyp，实际 " + head.joinToString("") { "%02X".format(it) }, isId3 || isFtyp)
+        }
+    }
+
     // ---------- 歌词（匿名可用） ----------
 
     @Test
