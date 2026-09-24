@@ -92,12 +92,70 @@ fun QqPhoneLoginDialog(
     var codeSent by remember { mutableStateOf(false) }
     // 重发倒计时（秒）。0 = 可以发。
     var countdown by remember { mutableIntStateOf(0) }
+    // 风控要求的图形验证码：非空时整个浮层让位给验证页（见 QqCaptchaOverlay）。
+    var captchaUrl by remember { mutableStateOf<String?>(null) }
+    // 验证通过后从 WebView 拿回来的会话 cookie。**必须留着**：验证结果是会话级的，
+    // 之后每次发码/登录请求都要带上，否则会被重新要求验证（用户看到的就是死循环）。
+    var captchaCookie by remember { mutableStateOf<String?>(null) }
+    // 被要求验证的次数，用于兜住「验证过了还要验证」的循环。
+    var captchaRounds by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(countdown) {
         if (countdown > 0) {
             delay(1_000L)
             countdown -= 1
         }
+    }
+
+    /**
+     * 发验证码。首次发送与「验证通过后重发」共用这一条路径 ——
+     * 拆成两段写的话，很容易出现「验证完了却忘了把 cookie 带上」这种死循环。
+     */
+    fun sendCode(phoneNo: String, captcha: String?) {
+        busy = true
+        scope.launch {
+            val attempt = QqApi.sendPhoneAuthCode(phoneNo, captcha)
+            busy = false
+            when (attempt.outcome) {
+                QqPhoneLogin.SendOutcome.SENT -> {
+                    codeSent = true
+                    countdown = RESEND_SECONDS
+                    message = strings.sourceQqCodeSent
+                }
+                QqPhoneLogin.SendOutcome.BAD_NUMBER -> message = strings.sourceQqPhoneBadNumber
+                QqPhoneLogin.SendOutcome.TOO_FREQUENT -> message = strings.sourceQqPhoneTooFrequent
+                QqPhoneLogin.SendOutcome.NEED_CAPTCHA -> {
+                    val url = attempt.securityUrl
+                    // 轮次上限：验证明明过了却还一直被要求验证时，说明 cookie 那条假设不成立
+                    // （见 QqCaptchaOverlay 的注释）。与其把用户关进「验证 → 再验证」的循环，
+                    // 不如停下来把网页登录这条路明确摆出来。
+                    captchaRounds += 1
+                    if (url.isNullOrEmpty() || captchaRounds > MAX_CAPTCHA_ROUNDS) {
+                        message = strings.sourceQqPhoneNeedCaptcha
+                    } else {
+                        captchaUrl = url
+                        message = ""
+                    }
+                }
+                QqPhoneLogin.SendOutcome.FAILED -> message = strings.sourceQrFailed
+            }
+        }
+    }
+
+    // 图形验证码：整屏让位给验证页。验证完成 → 自动重发（用户点「发送验证码」的意图
+    // 就是「把短信发出去」，让他再点一次是多余的）。
+    val pendingCaptcha = captchaUrl
+    if (pendingCaptcha != null) {
+        QqCaptchaOverlay(
+            url = pendingCaptcha,
+            onVerified = { cookie ->
+                if (!cookie.isNullOrEmpty()) captchaCookie = cookie
+                captchaUrl = null
+                QqPhoneLogin.normalizePhone(phone)?.let { sendCode(it, cookie) }
+            },
+            onDismiss = { captchaUrl = null },
+        )
+        return
     }
 
     Box(
@@ -147,22 +205,8 @@ fun QqPhoneLoginDialog(
                         return@MetroButton
                     }
                     phone = normalized
-                    busy = true
-                    scope.launch {
-                        val outcome = QqApi.sendPhoneAuthCode(normalized)
-                        busy = false
-                        message = when (outcome) {
-                            QqPhoneLogin.SendOutcome.SENT -> {
-                                codeSent = true
-                                countdown = RESEND_SECONDS
-                                strings.sourceQqCodeSent
-                            }
-                            QqPhoneLogin.SendOutcome.BAD_NUMBER -> strings.sourceQqPhoneBadNumber
-                            QqPhoneLogin.SendOutcome.TOO_FREQUENT -> strings.sourceQqPhoneTooFrequent
-                            QqPhoneLogin.SendOutcome.NEED_CAPTCHA -> strings.sourceQqPhoneNeedCaptcha
-                            QqPhoneLogin.SendOutcome.FAILED -> strings.sourceQrFailed
-                        }
-                    }
+                    // 带上已经拿到的验证 cookie（若有）：否则每次重发都会被再要求验证一次。
+                    sendCode(normalized, captchaCookie)
                 },
             )
 
@@ -193,7 +237,9 @@ fun QqPhoneLoginDialog(
                     }
                     busy = true
                     scope.launch {
-                        val attempt = QqApi.loginWithPhoneCode(normalized, cleanCode)
+                        // 登录同样带上验证 cookie：风控的验证结果是会话级的，
+                        // 只给发码请求带、不给登录请求带，会在最后一步被拦下来。
+                        val attempt = QqApi.loginWithPhoneCode(normalized, cleanCode, captchaCookie)
                         busy = false
                         when (attempt.outcome) {
                             QqPhoneLogin.LoginOutcome.OK -> {
@@ -301,3 +347,12 @@ private fun PhoneField(
 
 /** 重发倒计时。60 秒是腾讯侧短信下发的最小间隔量级，太短只会撞「操作过于频繁」。 */
 private const val RESEND_SECONDS = 60
+
+/**
+ * 最多让用户过几次图形验证。
+ *
+ * 正常情况下 1 次就够（验证结果落在 cookie 上，之后带着它就不再被要求验证）。
+ * 若连续两次仍然被要求验证，说明「验证结果写 cookie」这个前提不成立 ——
+ * 那时继续弹验证页只是把用户关进循环，应当停下来引导他去网页登录。
+ */
+private const val MAX_CAPTCHA_ROUNDS = 2

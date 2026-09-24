@@ -173,6 +173,19 @@ object QqPhoneLogin {
     }
 
     /**
+     * 从 `SendPhoneAuthCode` 的 `req` 对象里取图形验证码地址（`20276` 的 `data.securityURL`）。
+     *
+     * 字段名与位置不是猜的：实测的**失败**响应里 `data` 就是
+     * `{"errMsg":"…","securityURL":"","errTip":""}` —— 也就是说这个字段一直在，
+     * 只是成功/普通失败时是空串，只有要求验证码时才填上。
+     *
+     * 抽成纯函数是为了让它可被单测钉住：这个字段读错的表现是「服务端要求验证，
+     * 界面却说验证走不通、只让你去网页登录」，而开发环境复现不出 `20276`（需要真实号码）。
+     */
+    fun securityUrlOf(req: JSONObject?): String? =
+        req?.optJSONObject("data")?.optString("securityURL")?.takeIf { it.isNotEmpty() }
+
+    /**
      * 把 `Login` 返回的凭证 JSON 拼成 cookie 串。**缺关键字段返回 null**。
      *
      * 三个必需字段（缺任何一个都不该落盘）：

@@ -384,17 +384,44 @@ object QqApi {
     )
 
     /**
+     * 一次「发短信验证码」尝试的结果。
+     *
+     * @property securityUrl `20276`（腾讯要求图形验证码）时**非空** —— 调用方要把它开在
+     *   WebView 里让用户过验证。字段名 `securityURL` 来自实测响应骨架（[SendPhoneAuthCode]
+     *   失败时它也在，只是空串），不是猜的。
+     * @property errMsg 服务端的 `data.errMsg`，只用于诊断（界面不显示它，它是英文内部错误）。
+     */
+    data class SendCodeAttempt(
+        val outcome: QqPhoneLogin.SendOutcome,
+        val securityUrl: String? = null,
+        val errMsg: String? = null,
+    )
+
+    /**
      * 发短信验证码。返回归类后的结局（见 [QqPhoneLogin.SendOutcome]）。
      *
      * 号码的**本地校验不在这里** —— 调用方应当先过 [QqPhoneLogin.normalizePhone]，
      * 格式不对就别发请求（省一次注定 `104400` 的往返）。
+     *
+     * @param captchaCookie 图形验证（`20276`）完成后从 WebView 拿回来的 cookie。
+     *   风控的验证结果落在 cookie 上，不回传就等于没验证过 —— 下一次请求会**再次**被要求验证。
      */
-    suspend fun sendPhoneAuthCode(phone: String): QqPhoneLogin.SendOutcome {
-        val response = QqClient.musicuLogin(QqRequests.sendPhoneAuthCode(phone))
-            ?: return QqPhoneLogin.SendOutcome.FAILED
+    suspend fun sendPhoneAuthCode(phone: String, captchaCookie: String? = null): SendCodeAttempt {
+        val response = QqClient.musicuLogin(QqRequests.sendPhoneAuthCode(phone), captchaCookie)
+            ?: return SendCodeAttempt(QqPhoneLogin.SendOutcome.FAILED)
         val code = response.optInt("code", -1)
-        Log.i(TAG, "SendPhoneAuthCode -> req.code=$code")
-        return QqPhoneLogin.classifySend(code)
+        val data = response.optJSONObject("data")
+        val securityUrl = QqPhoneLogin.securityUrlOf(response)
+        val errMsg = data?.optString("errMsg")?.takeIf { it.isNotEmpty() }
+        // 20276 的现场只留**可诊断但不敏感**的部分：验证 URL 里可能带一次性 token，
+        // 所以只记主机与长度，不把整条 URL 写进 logcat（与「不把凭证写进日志」同一条纪律）。
+        val host = securityUrl?.let { runCatching { java.net.URL(it).host }.getOrNull() }
+        Log.i(
+            TAG,
+            "SendPhoneAuthCode -> req.code=$code captchaHost=$host " +
+                "captchaUrlLen=${securityUrl?.length ?: 0} errMsg=$errMsg",
+        )
+        return SendCodeAttempt(QqPhoneLogin.classifySend(code), securityUrl, errMsg)
     }
 
     /**
@@ -404,8 +431,12 @@ object QqApi {
      * （见 [QqPhoneLogin.cookieFromCredential] 的注释：缺票据的 cookie 会让界面显示
      * 「已登录」而一取链就说没权限，比直接失败难排查得多）。
      */
-    suspend fun loginWithPhoneCode(phone: String, code: String): PhoneLoginAttempt {
-        val response = QqClient.musicuLogin(QqRequests.phoneLogin(phone, code))
+    suspend fun loginWithPhoneCode(
+        phone: String,
+        code: String,
+        captchaCookie: String? = null,
+    ): PhoneLoginAttempt {
+        val response = QqClient.musicuLogin(QqRequests.phoneLogin(phone, code), captchaCookie)
             ?: return PhoneLoginAttempt(QqPhoneLogin.LoginOutcome.FAILED)
         val reqCode = response.optInt("code", -1)
         val outcome = QqPhoneLogin.classifyLogin(reqCode)

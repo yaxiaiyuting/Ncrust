@@ -160,22 +160,34 @@ object QqClient {
      *    `req.code=1000`（走到业务层），去掉它直接回 `104400`（请求被拒）。
      * 2. `comm.tmeLoginType = 0`（手机号）。实测带不带都不影响 `Login` 的失败码，
      *    但它是官方信封的一部分，照带。
-     * 3. **不发 Cookie**。登录是在「还没有身份」的前提下发生的，把一个可能已经过期的旧
-     *    cookie 一起发过去，只会给服务端一个把这次登录绑到旧身份上的机会 ——
-     *    而我们没有任何账号可以验证那种情况下的行为。裸请求是实测过的形状。
+     * 3. **不发 Cookie**（除非显式传 [extraCookie]）。登录是在「还没有身份」的前提下发生的，
+     *    把一个可能已经过期的旧 cookie 一起发过去，只会给服务端一个把这次登录绑到旧身份上的机会。
+     *
+     * @param extraCookie v2.1.1：图形验证码（`20276`）在 WebView 里完成后拿到的 cookie。
+     *   风控要求的验证是**会话级**的，验证结果落在 cookie 上；不带回来等于白验证一次，
+     *   下一次 `SendPhoneAuthCode` 会再次被要求验证 —— 用户看到的就是「验证完了还是要验证」。
      */
-    suspend fun musicuLogin(request: JSONObject): JSONObject? = withContext(Dispatchers.IO) {
-        val ctx = appContext ?: return@withContext null
-        val body = JSONObject()
-            .put(
-                "comm",
-                appComm(ctx)
-                    .put("tmeLoginMethod", LOGIN_METHOD_PHONE_CODE)
-                    .put("tmeLoginType", LOGIN_TYPE_PHONE),
+    suspend fun musicuLogin(request: JSONObject, extraCookie: String? = null): JSONObject? =
+        withContext(Dispatchers.IO) {
+            val ctx = appContext ?: return@withContext null
+            val body = JSONObject()
+                .put(
+                    "comm",
+                    appComm(ctx)
+                        .put("tmeLoginMethod", LOGIN_METHOD_PHONE_CODE)
+                        .put("tmeLoginType", LOGIN_TYPE_PHONE),
+                )
+                .put("req", request)
+            execute(
+                ctx,
+                body,
+                request.optString("module"),
+                appIdentity = true,
+                // 有验证 cookie 就带上；没有就发裸请求（实测过的形状）。
+                sendCookie = !extraCookie.isNullOrEmpty(),
+                overrideCookie = extraCookie,
             )
-            .put("req", request)
-        execute(ctx, body, request.optString("module"), appIdentity = true, sendCookie = false)
-    }
+        }
 
     /** `comm.tmeLoginMethod`：3 = 手机短信验证码（实测 `Login` 必须要它）。 */
     private const val LOGIN_METHOD_PHONE_CODE = 3
@@ -189,6 +201,8 @@ object QqClient {
         module: String,
         appIdentity: Boolean,
         sendCookie: Boolean = true,
+        /** 非空时**只用它**作 Cookie（图形验证后回传的会话 cookie）。 */
+        overrideCookie: String? = null,
     ): JSONObject? {
         return try {
             val httpRequest = Request.Builder()
@@ -199,7 +213,13 @@ object QqClient {
                 .apply {
                     // 只带认识的身份字段（见 QqCookie.requestCookie 的注释）。
                     // 登录请求例外：那时还没有身份，见 musicuLogin。
-                    val cookie = if (sendCookie) QqCookie.requestCookie(QqAuthStore.getCookie(ctx)) else ""
+                    val cookie = if (!overrideCookie.isNullOrEmpty()) {
+                        overrideCookie
+                    } else if (sendCookie) {
+                        QqCookie.requestCookie(QqAuthStore.getCookie(ctx))
+                    } else {
+                        ""
+                    }
                     if (cookie.isNotEmpty()) header("Cookie", cookie)
                 }
                 .post(body.toString().toRequestBody(JSON))

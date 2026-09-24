@@ -442,6 +442,8 @@ data class Strings(
     val sourceQqPhoneTooFrequent: String get() = source.sourceQqPhoneTooFrequent
     val sourceQqPhoneNeedCaptcha: String get() = source.sourceQqPhoneNeedCaptcha
     val sourceQqPhoneNote: String get() = source.sourceQqPhoneNote
+    val sourceQqCaptchaHint: String get() = source.sourceQqCaptchaHint
+    val sourceQqCaptchaRetry: String get() = source.sourceQqCaptchaRetry
     val cacheUsageAudio: String get() = offline.cacheUsageAudio
     val cacheUsageImage: String get() = offline.cacheUsageImage
     val cacheUsageOther: String get() = offline.cacheUsageOther
@@ -574,4 +576,8 @@ data class SourceStrings(
     val sourceQqPhoneNeedCaptcha: String,
     /** 合规说明：验证码由腾讯下发、本应用不读短信也不存手机号。 */
     val sourceQqPhoneNote: String,
+    /** v2.1.1：风控要求图形验证码时，验证页顶部的说明。 */
+    val sourceQqCaptchaHint: String,
+    /** v2.1.1：验证页的手动兜底按钮（cookie 变化检测没触发时用）。 */
+    val sourceQqCaptchaRetry: String,
 )

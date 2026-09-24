@@ -167,6 +167,38 @@ class QqPhoneLoginTest {
         assertTrue("0 是「未知」，不是「1970 年签发」", !cookie.contains("musickey_createtime"))
     }
 
+    // ---------- 图形验证码（20276） ----------
+
+    /**
+     * 实测的失败响应里 `data` 就有 `securityURL` 这个 key（只是空串）——
+     * 所以它在 `req.data` 下、名字全大写 URL，是钉死的事实而不是猜的。
+     */
+    @Test
+    fun `从 req_data 里取图形验证码地址`() {
+        val req = JSONObject(
+            """{"code":20276,"data":{"errMsg":"need captcha",
+               "securityURL":"https://y.qq.com/xyz/verify?token=abc","errTip":""}}""",
+        )
+        assertEquals("https://y.qq.com/xyz/verify?token=abc", QqPhoneLogin.securityUrlOf(req))
+    }
+
+    @Test
+    fun `普通失败时 securityURL 是空串——必须当成没有而不是空地址`() {
+        // 逐字来自探针实测的 104400 响应：
+        // {"code":104400,"data":{"errMsg":"…phoneNo is invalid","securityURL":"","errTip":""}}
+        val req = JSONObject(
+            """{"code":104400,"data":{"errMsg":"failed to SendSMSAuthCode: ec=104400",
+               "securityURL":"","errTip":""}}""",
+        )
+        assertNull(QqPhoneLogin.securityUrlOf(req))
+    }
+
+    @Test
+    fun `没有 data 时取不到验证地址而不是抛异常`() {
+        assertNull(QqPhoneLogin.securityUrlOf(null))
+        assertNull(QqPhoneLogin.securityUrlOf(JSONObject("""{"code":10006}""")))
+    }
+
     // ---------- 请求体形状（这些字段写错了服务端不报错，只会静默拒绝） ----------
 
     @Test
