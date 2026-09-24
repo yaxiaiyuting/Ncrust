@@ -127,6 +127,32 @@ data class Strings(
     val clearCache: String,
     val clearCacheConfirm: String,
     val cacheCleared: String,
+    // v2.0.0 · T3：离线缓存管理（「已播放音频流的本地缓存」，不是「下载」—— 见 AGENTS.md
+    // 的合规契约）。文案一律用「已缓存 / 缓存」，不承诺「整曲完整」：SimpleCache 只保证
+    // 有播放过的片段。
+    val offlineCacheManageLabel: String,
+    val offlineCacheTitle: String,
+    /** (已用, 上限, 剩余)，三个都已由 formatCacheBytes 格式化。 */
+    val offlineCacheUsage: (String, String, String) -> String,
+    val offlineCacheLimitLabel: String,
+    /** 上限「下次启动生效」的如实说明（淘汰器在启动时固化）。 */
+    val offlineCacheLimitHint: String,
+    /** 已缓存曲目列表标题。 */
+    val offlineCacheListTitle: (Int) -> String,
+    val offlineCacheEmpty: String,
+    /** 量不到该曲占用时的占位文案（「已缓存片段」）。 */
+    val offlineCachePartial: String,
+    val offlineCacheDeleteTrack: String,
+    val offlineCacheDeleteTitle: String,
+    val offlineCacheDeleteConfirm: (String) -> String,
+    val offlineCacheDeleted: String,
+    /** 当前播放曲目禁用删除时的说明。 */
+    val offlineCachePlayingLocked: String,
+    /** 「不保证整曲完整」的常驻提示。 */
+    val offlineCacheFragmentNotice: String,
+    val cacheUsageAudio: String,
+    val cacheUsageImage: String,
+    val cacheUsageOther: String,
 
     // v1.5.1 · C：无网络时的首页降级空态（标题 / 提示）。有缓存时会直接显示缓存，
     // 只有"一条都没有"时才轮到它。
