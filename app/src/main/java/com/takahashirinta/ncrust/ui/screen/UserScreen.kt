@@ -53,7 +53,6 @@ import coil.compose.AsyncImage
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.takahashirinta.ncrust.auth.CookieManager
 import com.takahashirinta.ncrust.cache.ContentCache
-import android.content.Context
 import android.widget.Toast
 import com.takahashirinta.ncrust.network.PlaylistApi
 import com.takahashirinta.ncrust.network.RetrofitClient
@@ -68,6 +67,7 @@ import com.takahashirinta.ncrust.ui.theme.BackgroundImageManager
 import com.takahashirinta.ncrust.lyric.LyricsDisplayPrefs
 import com.takahashirinta.ncrust.lyric.LyricsSweepQuality
 import com.takahashirinta.ncrust.ui.i18n.LocalStrings
+import com.takahashirinta.ncrust.ui.i18n.formatCacheBytes
 import com.takahashirinta.ncrust.ui.i18n.LanguagePreset
 import com.takahashirinta.ncrust.ui.i18n.getSavedLanguageCode
 import com.takahashirinta.ncrust.ui.i18n.languagePresets
@@ -106,10 +106,13 @@ fun UserScreen(
     var showClearCacheConfirm by remember { mutableStateOf(false) }
     // v2.0.0 · T3：离线缓存管理（全屏 Dialog，见 OfflineCacheOverlay.kt 的 KDoc 说明为什么不是导航页）。
     var showOfflineCacheManager by remember { mutableStateOf(false) }
-    var cacheSize by remember { mutableStateOf(0L) }
+    // v2.0.0 · T3：缓存占用改成三项分账（音频 / 图片 / 其他 cacheDir）。
+    // 旧口径把图片缓存算了两遍（Coil 的磁盘缓存目录就是 cacheDir/image_cache，
+    // 而 folderSize(cacheDir) 已经递归含它）—— 详见 CacheUsage 的 KDoc。
+    var cacheUsage by remember { mutableStateOf(CacheUsage.ZERO) }
     // 缓存占用要递归遍历 cacheDir，放 IO 线程算，避免组合期主线程卡顿。
     LaunchedEffect(Unit) {
-        cacheSize = withContext(Dispatchers.IO) { currentCacheSize(context) }
+        cacheUsage = withContext(Dispatchers.IO) { measureCacheUsage(context) }
     }
     var hasCookie by remember { mutableStateOf(CookieManager.hasCookie(context)) }
     // 扫码登录为平板 / 大屏独占：手机端未登录点头像仍直接进 WebView 官方登录页。
@@ -242,23 +245,30 @@ fun UserScreen(
         onConfirm = {
             showClearCacheConfirm = false
             coroutineScope.launch {
-                val size = withContext(Dispatchers.IO) {
+                val usage = withContext(Dispatchers.IO) {
                     ContentCache.clearAll()
                     runCatching { coil.Coil.imageLoader(context).memoryCache?.clear() }
+                    // 图片缓存走 Coil 自己的 API（它要维护 journal，绕过它直接删目录会让
+                    // DiskCache 的状态与磁盘不一致）。这一份对应 CacheUsage.imageBytes。
                     runCatching { coil.Coil.imageLoader(context).diskCache?.clear() }
+                    // 其余 cacheDir 子项全清 —— 口径与 CacheUsage.otherCacheBytes 一一对应：
+                    // 「显示多少就能清掉多少」是 v1.6.0 起的不变量。cacheDir 里的东西按
+                    // Android 的契约本来就可以被系统随时回收，全清是安全的。
+                    // image_cache 跳过：交给上面的 Coil API，避免两边同时对同一个目录动手。
                     runCatching {
                         context.cacheDir?.let { dir ->
                             dir.listFiles()
-                                ?.filter { it.name == "WebView" || it.name == "http" }
+                                ?.filter { it.name != CacheUsage.IMAGE_CACHE_DIR }
                                 ?.forEach { it.deleteRecursively() }
                         }
                     }
                     // v1.6.0 · D1：离线音频缓存在 filesDir/offline/audio（不随系统清缓存消失），
-                    // 用户点「清除缓存」时一并清掉，并作废离线 URL 清单，避免留下死条目。
+                    // 用户点「清除缓存」时一并清掉，并作废离线 URL 清单与离线曲目索引，
+                    // 避免留下死条目（v2.0.0 · T3 起索引也在清理范围内）。
                     runCatching { OfflineAudioCache.clear(context) }
-                    currentCacheSize(context)
+                    measureCacheUsage(context)
                 }
-                cacheSize = size
+                cacheUsage = usage
                 Toast.makeText(context, strings.cacheCleared, Toast.LENGTH_SHORT).show()
             }
         },
@@ -674,7 +684,7 @@ fun UserScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 MetroText(
-                    strings.cacheSizeLabel(cacheSize),
+                    strings.cacheSizeLabel(cacheUsage.totalBytes),
                     color = LocalMetroColors.current.onBackground,
                     style = TextStyle(fontSize = 15.sp),
                     modifier = Modifier.weight(1f)
@@ -685,6 +695,12 @@ fun UserScreen(
                     style = TextStyle(fontSize = 15.sp)
                 )
             }
+            // v2.0.0 · T3：占用拆成三项。数字与「清除缓存」能清掉的范围一一对应
+            // （音频 = filesDir/offline/audio；图片 = cacheDir/image_cache；其他 = cacheDir 其余子项），
+            // 任何一项都不与另一项重叠 —— 旧口径的图片缓存双计就是在这里被拆掉的。
+            CacheUsageLine(strings.cacheUsageAudio, formatCacheBytes(cacheUsage.audioBytes))
+            CacheUsageLine(strings.cacheUsageImage, formatCacheBytes(cacheUsage.imageBytes))
+            CacheUsageLine(strings.cacheUsageOther, formatCacheBytes(cacheUsage.otherCacheBytes))
             // v2.0.0 · T3：离线缓存的单曲管理与容量上限。这一行只是入口，
             // 「清除缓存」那一行的行为一个字都没改。
             Row(
@@ -942,6 +958,29 @@ private fun ThemeModeSelector(
                 )
             }
         }
+    }
+}
+
+/** 缓存占用的分项行（v2.0.0 · T3）：左侧名称、右侧数字，缩进一级、弱化显示。 */
+@Composable
+private fun CacheUsageLine(label: String, value: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 32.dp, end = 16.dp, top = 2.dp, bottom = 2.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        MetroText(
+            label,
+            color = LocalMetroColors.current.onSurfaceVariant,
+            style = TextStyle(fontSize = 12.sp),
+            modifier = Modifier.weight(1f)
+        )
+        MetroText(
+            value,
+            color = LocalMetroColors.current.onSurfaceVariant,
+            style = TextStyle(fontSize = 12.sp)
+        )
     }
 }
 
@@ -1256,25 +1295,7 @@ fun MetroLanguageDropdown(
 }
 
 
-/**
- * 统计应用缓存占用：图片磁盘缓存 + 缓存目录（含 WebView 缓存）+ 离线音频缓存。
- *
- * v1.6.0 · D1：离线音频放在 filesDir/offline/audio（不随系统清 cacheDir 消失），但它同样由
- * 用户可见的「清除缓存」清掉，所以计入同一个数字 —— 统计口径与可清理范围必须一致，
- * 否则用户会看到「占用 300MB、清完还剩 300MB」。
- */
-private fun currentCacheSize(context: Context): Long {
-    var total = 0L
-    runCatching { coil.Coil.imageLoader(context).diskCache?.size?.let { total += it } }
-    runCatching { context.cacheDir?.let { total += folderSize(it) } }
-    runCatching { total += OfflineAudioCache.sizeBytes(context) }
-    return total
-}
-
-private fun folderSize(dir: java.io.File): Long {
-    var size = 0L
-    dir.listFiles()?.forEach { f ->
-        size += if (f.isDirectory) folderSize(f) else f.length()
-    }
-    return size
-}
+// v2.0.0 · T3：统计逻辑搬到 CacheUsage.kt（纯逻辑 + JVM 单测），这里不再自己算。
+// 旧实现 = Coil diskCache.size + folderSize(cacheDir) + 离线音频 size，其中
+// folderSize(cacheDir) 已经递归包含 cacheDir/image_cache ⇒ 图片缓存被算了两遍。
+// 现在统一走 CacheUsage.measure：三项互不重叠，且与「清除缓存」能清掉的范围一一对应。
