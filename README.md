@@ -2,15 +2,15 @@
 
 # Ncrust
 
-### 把网易云的曲库，装进一块直角玻璃
+### 网易云 + QQ 音乐，两块曲库装进同一块直角玻璃
 
-**Kanesumi Design · GPU 零重组动画 · 逐字歌词 · 无缝播放 · 8 级音质 · 大屏模式 · 车机适配 · 8 语言**
+**双音源各自独立登录 · Kanesumi Design · GPU 零重组动画 · 逐字歌词（yrc / QRC）· 无缝播放 · 8 级音质 · 大屏模式 · 车机适配 · 8 语言**
 
-纯 Kotlin / Jetpack Compose · Media3 播放引擎 · eapi 加密直连 · 无中间服务器
+纯 Kotlin / Jetpack Compose · Media3 播放引擎 · 双音源直连（eapi 加密 / QQ 客户端协议）· **无中间服务器、无账号代管**
 
 **This is a GPLv3 fork of [GuitaristRin/Ncrust](https://github.com/GuitaristRin/Ncrust), maintained by [yaxiaiyuting](https://github.com/yaxiaiyuting).**
 
-[![Version](https://img.shields.io/badge/version-1.9.0--gpl-brightgreen?style=flat-square)](https://github.com/yaxiaiyuting/Ncrust/releases)
+[![Version](https://img.shields.io/badge/version-2.1.0--gpl-brightgreen?style=flat-square)](https://github.com/yaxiaiyuting/Ncrust/releases)
 [![APK](https://img.shields.io/badge/APK-9.8%20MB-blue?style=flat-square)](https://github.com/yaxiaiyuting/Ncrust/releases)
 [![API](https://img.shields.io/badge/API-24%2B-green?style=flat-square&logo=android)](https://developer.android.com)
 [![Kotlin](https://img.shields.io/badge/Kotlin-1.9.24-purple?style=flat-square&logo=kotlin)](https://kotlinlang.org)
@@ -34,20 +34,49 @@
 
 ## 为什么是 Ncrust
 
-> 网易云官方客户端很全，但它不是为「直角、克制、信息优先」设计的。
-> Ncrust 是一次从零开始的重写：**没有圆角，没有弹簧回弹，没有多余装饰。**
+> 官方客户端很全，但它不是为「直角、克制、信息优先」设计的；
+> 而同时用两家曲库的人，长期被迫在两个 App 之间来回切。
+> Ncrust 是一次从零开始的重写：**没有圆角，没有弹簧回弹，没有多余装饰**，
+> 并且**把两个平台的歌放进同一个队列**。
 
 | | |
 |---|---|
 | 🟩 **直角美学** | 全应用遵循 Kanesumi Design：直角切割、纯色细线、封面贴屏边、浮层返回箭头 |
 | ⚡ **GPU 零重组** | 播放器动画由单个 `progress` 经 `graphicsLayer` 驱动，展开 / 收起时**不重组** |
-| 🎧 **真·无损** | eapi 直连拉取 FLAC / Hi-Res / 杜比全景声，逐级降级兜底，弱机自动跳过无解档位 |
-| 🎤 **逐字歌词** | 网易云 yrc + AMLL TTML 双源，TTML → YRC → LRC 三级回退，逐字渐变三档质量 |
+| 🎵 **双音源并存** | 网易云 + QQ 音乐。**各自独立登录、独立会员状态、互不影响**；队列里的歌按所属音源自动路由取链与歌词，搜索结果聚合两个平台并标注来源 |
+| 🔐 **登录无忧** | 网易云：浏览器 / 二维码 / 手机扫码授权平板；QQ 音乐：**自绘二维码**（手机 QQ 扫）或网页登录。全程不采集密码、cookie 只存本机、不上传任何服务器 |
+| 🎧 **真·无损** | 两套音质档位映射到统一的 8 级阶梯，逐级降级兜底；弱机自动跳过无解档位（FLAC 解码门控） |
+| 🎤 **逐字歌词** | 网易云 `yrc` + AMLL TTML + **QQ 音乐 QRC** 三源，TTML → YRC → LRC 三级回退，逐字渐变三档质量。QRC 那套是 QQ 自研的非标准 3DES，本仓库自实现并与独立实现逐字节比对验证 |
 | 🔀 **5 种播放模式** | 顺序循环 / 单曲循环 / 乱序 / 顺序线性 / 相似无限（私人 FM 电台） |
 | 🚗 **车机就绪** | Android Auto / Automotive 媒体源与浏览树，车机系统栏 inset 专项适配 |
-| 🪶 **9.76 MB** | R8 全量混淆 + 资源 shrink；体积主要来自 FFmpeg 解码扩展的 4 个 ABI（换来 API 24–26 的真无损）。冷启动预热，进程被杀也能恢复队列 |
+| 🪶 **9.4 MB** | R8 全量混淆 + 资源 shrink；体积主要来自 FFmpeg 解码扩展的 4 个 ABI（换来 API 24–26 的真无损）。冷启动预热，进程被杀也能恢复队列 |
 | 🌐 **8 语言** | 运行时切换，不依赖系统 locale |
-| 🔐 **登录无忧** | 浏览器登录 + 二维码登录 + 手机扫码授权平板，全程无需手动粘贴 Cookie |
+
+> **合规边界**：本项目**不破解 DRM、不做「解灰」、不绕过平台鉴权**。
+> 能否播放某首歌完全取决于你自己账号的权限 —— 服务端说不行就是不行，播放器跳歌。
+> 已知的一处权限异常（VIP 专享的 AI 伴奏轨匿名可取）被**明确排除在降级链之外**，并有单测钉住。
+
+---
+
+## 🎵 两个音源，一个队列
+
+| | 网易云音乐 | QQ 音乐 |
+|---|---|---|
+| 登录 | 浏览器 / 二维码 / 手机扫码授权平板 | **自绘二维码**（手机 QQ 扫）或网页登录 |
+| cookie 存储 | `ncrust_prefs` | `ncrust_qq_prefs`（**两份完全独立**，登出一家不影响另一家） |
+| 取链 | eapi 加密直连，8 档降级阶梯 | 客户端协议（**免签**），一次请求批量问所有档位后按优先级挑 |
+| 逐字歌词 | `yrc` + AMLL TTML | `QRC`（自研非标准 3DES 解密，已与独立实现逐字节比对） |
+| 免费曲目 | 需登录才能取链 | **不需要登录**即可完整播放（实测下载真实音频验证） |
+| 搜索 | 主源 | 聚合追加，列表顶部标注「网易云 N 首 · QQ 音乐 M 首」 |
+| 会员 | 独立显示 | 独立显示（**只用于展示，不参与播放决策**） |
+
+**队列怎么混**：队列里每首歌都带 `source` 字段，播放时按它路由到对应音源取链与歌词。
+两个平台的数字 id 用**高位标志位隔离**（QQ 的 id 抬到 `1 shl 62` 以上），
+所以离线缓存、歌词缓存、续播进度、队列判重这些既有结构一个都没改，也没有任何数据迁移 ——
+「撞号串歌」在结构上不可能发生。
+
+**未做的三件事**（写清楚，免得误解）：QQ 曲目**不进网易云歌单/收藏**（需要「本地歌单」这个尚不存在的概念）；
+QQ 曲目的歌词**不落盘缓存**（断网时没有歌词）；QQ 曲目**不参与播放上报**（QQ 侧没有等价机制，也不该伪造）。
 
 ---
 
@@ -114,17 +143,23 @@
 
 ## 🎼 支持音质
 
-| API 参数 | 说明 | 要求 |
-|---|---|:--:|
-| `standard` | 压缩（128 kbps） | 普通账号 |
-| `higher` | 较好 | 普通账号 |
-| `exhigh` | 更好（320 kbps） | 普通账号 |
-| `lossless` | 无损（FLAC） | 黑胶 VIP |
-| `hires` | 高解析 | 黑胶 VIP |
-| `jyeffect` | 高清环绕声 | 黑胶 VIP |
-| `jymaster` | 超清母带（FLAC，实测 5.8 Mbps） | 黑胶 SVIP |
-| `dolby` | 杜比全景声 | 黑胶 VIP |
+UI 上是一套 8 级档位，两个音源各自映射到自己平台的文件档位：
 
+| 档位（UI） | 网易云 `level` | QQ 音乐文件前缀 | 容器 | 要求 |
+|---|---|---|---|:--:|
+| 压缩 | `standard` | `M500` | mp3 128k | 普通账号 |
+| 较好 | `higher` | `M800` | mp3 320k | 普通账号 |
+| 更好 | `exhigh` | `C400` → `M800` | m4a AAC | 普通账号 |
+| 无损 | `lossless` | `F000` | flac | 网易云黑胶 / QQ 绿钻 |
+| 高解析 | `hires` | `RS01` → `F000` | flac | 会员 |
+| 高清环绕声 | `jyeffect` | `Q000` → `RS01` → `F000` | flac | 会员 |
+| 超清母带 | `jymaster` | `AI00` → `RS01` → `F000` | flac | SVIP / 臻品 |
+| 杜比全景声 | `dolby` | `Q001` → `Q000` → `AI00` | flac | 会员 |
+
+> **每一条 QQ 链的最后都收敛到 `M500`**：QQ 服务端**不会**自动降级（请求 320k 无权限就返回空链接，
+> 不会顺手给你 128k），所以降级由客户端做，且**一次请求把所有档位放进同一个 `filename[]`** 后按优先级挑 ——
+> 逐个档位发请求的话，一首会员曲最坏要 8 次往返才轮到能放的那一档。
+>
 > 设备没有 MediaCodec FLAC 解码器（API < 27 或精简 ROM）时会自动跳过无损档位，避免无声；本 fork 已集成 FFmpeg 解码扩展，API 24–26 也能真无损。
 
 ---

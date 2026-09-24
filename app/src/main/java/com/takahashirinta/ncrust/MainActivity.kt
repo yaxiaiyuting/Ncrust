@@ -1652,6 +1652,11 @@ fun MainScreen(
     var showWebLogin by remember { mutableStateOf(false) }
     // v2.1.0 · C：QQ 音乐登录浮层（与网易云那个**完全独立**：两份 cookie、两条登录路径）。
     var showQqLogin by remember { mutableStateOf(false) }
+    // v2.1.0 · C（hotfix 4）：QQ 登录改为「自绘二维码为主、网页登录兜底」。
+    var showQqQr by remember { mutableStateOf(false) }
+    // 扫码确认后交给 WebView 的起始地址与 cookie（见 QqLoginOverlay 的参数说明）。
+    var qqLoginStartUrl by remember { mutableStateOf<String?>(null) }
+    var qqLoginCookies by remember { mutableStateOf<String?>(null) }
     var qqLoginTrigger by remember { mutableIntStateOf(0) }
     var cookieRefreshTrigger by remember { mutableIntStateOf(0) }
 
@@ -1676,13 +1681,42 @@ fun MainScreen(
             }
         }
     }
+    if (showQqQr) {
+        com.takahashirinta.ncrust.ui.components.QqQrLoginDialog(
+            onConfirmed = { url, cookies ->
+                // 扫码已确认：把跳转地址与 cookie 交给 WebView 完成最后一步换票
+                // （换音乐票据那一步没有账号无法实测，而复用站点自己的脚本已被真机验证可登录）。
+                qqLoginStartUrl = url
+                qqLoginCookies = cookies
+                showQqQr = false
+                showQqLogin = true
+            },
+            onUseWebLogin = {
+                // 轮询在部分出口 IP 上会被 WAF 拦；这条兜底路已实测可登。
+                qqLoginStartUrl = null
+                qqLoginCookies = null
+                showQqQr = false
+                showQqLogin = true
+            },
+            onDismiss = { showQqQr = false },
+        )
+        return
+    }
     if (showQqLogin) {
         com.takahashirinta.ncrust.ui.components.QqLoginOverlay(
             onLoggedIn = {
                 showQqLogin = false
+                qqLoginStartUrl = null
+                qqLoginCookies = null
                 qqLoginTrigger++
             },
-            onDismiss = { showQqLogin = false },
+            onDismiss = {
+                showQqLogin = false
+                qqLoginStartUrl = null
+                qqLoginCookies = null
+            },
+            startUrl = qqLoginStartUrl,
+            injectCookies = qqLoginCookies,
         )
         return
     }
@@ -2005,7 +2039,8 @@ fun MainScreen(
                             onAccentSourceChange = onAccentSourceChange,
                             onRefreshSystemAccent = onRefreshSystemAccent,
                             onShowWebLogin = { showWebLogin = true },
-                                onShowQqLogin = { showQqLogin = true },
+                                // 二维码为主入口；网页登录是它内部的兜底按钮。
+                                onShowQqLogin = { showQqQr = true },
                             refreshTrigger = cookieRefreshTrigger,
                             onLanguageChange = onLanguageChange
                         )

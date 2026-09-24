@@ -414,6 +414,14 @@ data class Strings(
     val sourceQqAccount: String get() = source.sourceQqAccount
     val sourceQqLoginAction: String get() = source.sourceQqLoginAction
     val sourceSummary: (Int, Int) -> String get() = source.sourceSummary
+    val sourceQrWaiting: String get() = source.sourceQrWaiting
+    val sourceQrScanned: String get() = source.sourceQrScanned
+    val sourceQrExpired: String get() = source.sourceQrExpired
+    val sourceQrFailed: String get() = source.sourceQrFailed
+    val sourceQrLoadFailed: String get() = source.sourceQrLoadFailed
+    val sourceQrNetworkHint: String get() = source.sourceQrNetworkHint
+    val sourceQrRefresh: String get() = source.sourceQrRefresh
+    val sourceWebLogin: String get() = source.sourceWebLogin
     val cacheUsageAudio: String get() = offline.cacheUsageAudio
     val cacheUsageImage: String get() = offline.cacheUsageImage
     val cacheUsageOther: String get() = offline.cacheUsageOther
@@ -486,4 +494,20 @@ data class SourceStrings(
      * 在界面上看不出「来自哪里」——真机反馈正是「现在有了稻香，似乎是网易云的搜索结果？」。
      */
     val sourceSummary: (Int, Int) -> String,
+    /** 二维码等待扫码。 */
+    val sourceQrWaiting: String,
+    /** 已扫码、等手机端确认。 */
+    val sourceQrScanned: String,
+    /** 二维码已过期。 */
+    val sourceQrExpired: String,
+    /** 扫码登录失败。 */
+    val sourceQrFailed: String,
+    /** 二维码获取失败。 */
+    val sourceQrLoadFailed: String,
+    /** 轮询拿不到响应时的提示（网络/风控）。 */
+    val sourceQrNetworkHint: String,
+    /** 刷新二维码。 */
+    val sourceQrRefresh: String,
+    /** 改用网页登录。 */
+    val sourceWebLogin: String,
 )

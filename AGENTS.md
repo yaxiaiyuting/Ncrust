@@ -94,7 +94,8 @@ Conventional Commits, lowercase type prefix, Chinese subject:
 
 ## What This App Is
 
-Ncrust is a third-party NetEase Cloud Music (网易云音乐) Android client built around three design priorities:
+Ncrust is a third-party Android client for **two** music sources — NetEase Cloud Music (网易云音乐) and
+QQ Music (QQ 音乐) — each with its own independent login. It is built around three design priorities:
 
 1. **Kanesumi Design** — right-angle cuts, no curves, no rounded corners, information-first.
 2. **GPU zero-recomposition** — animations driven by a single `progress: Float` through `graphicsLayer`, not state-driven recomposition.
@@ -2246,7 +2247,31 @@ QRC（9808 hex）与**另一份独立实现**解出的黄金 XML（9821 字节�
   塞 QQ 数据要么加字段 + 迁移逻辑、要么污染字段语义。取舍是每次播放现取一次，
   **代价是断网时 QQ 曲目没有歌词** —— 已进 release notes 的已知问题。
 
-### 决策 7（hotfix 1 修订）：QQ 登录浮层的三条硬要求
+### 决策 7 续（hotfix 4）：自绘二维码，以及为什么最后一步仍走 WebView
+
+任务要求「换成自绘二维码」。调研把两条 QR 路线都探明了，结论决定了实现形态：
+
+| 路线 | 最后一跳 | 采纳 |
+|---|---|---|
+| QQ 音乐客户端扫码（`CreateQRCode` + `GetQRCodeStatus`） | **只能是 MQTT**（扫码方确认后由服务端推送；HTTP 侧穷举 48 个候选方法后确认没有「把登录态交给发起方」的接口） | ❌ 要自己实现 MQTT 5.0 over WSS，成本远超范围 |
+| **QQ 互联扫码**（`ptqrshow` + `ptqrlogin`） | 纯 HTTP 长轮询，官方 Web 端现役；**手机 QQ** 扫 | ✅ 本版实现 |
+
+**实现**：`QqQrLogin`（纯逻辑：`hash33` token、`ptuiCB` 解析、状态映射）+ `QqQrClient`（HTTP：
+独立 OkHttp + 内存 CookieJar，`qrsig` 必须与当前这张二维码配对）+ `QqQrLoginDialog`（自绘）。
+
+**最后一步刻意不自己用 HTTP 做完**：换音乐票据（`QQConnectLogin.LoginServer.QQLogin{code}`）
+需要扫码方的 OAuth code，本仓库**没有账号可实测**，参数形状属于「有依据的推测」。
+而 `check_sig` 那个跳转地址交给 WebView 打开后，**站点自己的脚本**就能完成换票 ——
+这条路**已被真机验证可登录**。与其赌一个没验证过的请求形状，不如把最后一步交给已经证明能用的机制：
+用户体验一样（扫完自动完成），但不引入未验证的假设。扫码后我们还会把 OkHttp jar 里的 cookie
+注入 WebView 的 cookie store（两边是独立的存储，不注入的话 WebView 是匿名状态）。
+
+**验证边界（如实）**：`ptqrshow` 实测可用（HTTP 200 + 真实 PNG + `qrsig`）；
+**`ptqrlogin` 在本机出口 IP 被 WAF 恒定 403，因此轮询这一步没有实测过**；
+`hash33` 是官方 JS 的标准算法，但调研期抓到的那对 `qrsig`/`ptqrtoken` 经核验**不是同一次请求**，
+所以没有真实向量可钉。界面上因此**常驻「改用网页登录」按钮** —— 这条路不通时用户不会卡死。
+
+### 决策 7 前情（hotfix 1）：QQ 登录浮层的三条硬要求
 
 第一版按「WebView 打开 `y.qq.com`」实现，**真机反馈直接失败**：
 「网页版会自动从 pc 跳到手机，没有对应登录方式」。根因与修法：

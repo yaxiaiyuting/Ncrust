@@ -96,6 +96,20 @@ import kotlinx.coroutines.delay
 fun QqLoginOverlay(
     onLoggedIn: () -> Unit,
     onDismiss: () -> Unit,
+    /**
+     * 起始 URL。扫码确认成功后传的是 `ptuiCB` 给出的跳转地址（`check_sig`）——
+     * 那一步会下发 `.qq.com` 的登录 cookie，随后 `y.qq.com` 的脚本换到音乐票据。
+     * 为空时打开桌面版首页（用户自己点「登录」的常规路径）。
+     */
+    startUrl: String? = null,
+    /**
+     * 需要预先注入 WebView cookie store 的 cookie（扫码流程从 OkHttp 那条通道拿到的）。
+     *
+     * 为什么要注入：ptlogin 的 cookie 在**我们的 OkHttp jar** 里，而 WebView 有自己独立的
+     * cookie store。不注入的话，扫码后打开 `check_sig` 时 WebView 是「匿名」状态，
+     * 有可能被判成另一次登录尝试。
+     */
+    injectCookies: String? = null,
 ) {
     val context = LocalContext.current
     val strings = LocalStrings.current
@@ -183,7 +197,17 @@ fun QqLoginOverlay(
                         }
                     }
                     CookieManager.getInstance().removeAllCookies(null)
-                    loadUrl(HOME_URL)
+                    // 扫码流程带过来的 cookie 先注入（见参数说明）。
+                    if (!injectCookies.isNullOrEmpty()) {
+                        val cm = CookieManager.getInstance()
+                        for (host in INJECT_HOSTS) {
+                            for (pair in injectCookies.split("; ")) {
+                                if (pair.contains('=')) cm.setCookie(host, pair)
+                            }
+                        }
+                        cm.flush()
+                    }
+                    loadUrl(startUrl?.takeIf { it.isNotEmpty() } ?: HOME_URL)
                     webView = this
                 }
             },
@@ -212,6 +236,9 @@ fun QqLoginOverlay(
 }
 
 private const val HOME_URL = "https://y.qq.com/"
+
+/** 注入 cookie 时覆盖的域：ptlogin 的票据挂在 `.qq.com`，音乐侧的票据挂在 `y.qq.com`。 */
+private val INJECT_HOSTS = listOf("https://qq.com", "https://y.qq.com")
 
 /**
  * 探测 cookie 用的固定 URL。
