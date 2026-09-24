@@ -124,6 +124,10 @@ object QqSongMapper {
             source = MusicSource.QQMUSIC.key,
             sourceId = mid,
             mediaId = mediaMidOf(item, mid),
+            // v2.1.4：会员专享判定。`pay.pay_play == 1` 表示「播放需要付费」，
+            // 官方搜索响应里 VIP 专享曲就是它。与 [isPaywalled] 共用同一个出口，
+            // 避免同一个字段在两处各写一遍（那正是会漂移的地方）。
+            memberOnly = isPaywalled(item),
         )
     }
 

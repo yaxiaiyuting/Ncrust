@@ -180,6 +180,8 @@ fun UserScreen(
                 if (profile.userId == 0L) {
                     CookieManager.clearCookie(context)
                     RetrofitClient.updateCookie(null)
+                    // v2.1.4：cookie 判定过期时会员缓存同样失效（理由见 onLogout 处）。
+                    com.takahashirinta.ncrust.auth.NeteaseVipStore.clear(context)
                     hasCookie = false
                     userProfile = null
                 } else {
@@ -201,6 +203,13 @@ fun UserScreen(
             loadProfile()
         }
     }
+    // v2.1.4：登录态变化后重查一次会员状态（它决定聚合搜索的排序）。
+    // 判据用 needsRefresh：未登录时恒为 false，不会发注定 401 的请求。
+    LaunchedEffect(hasCookie) {
+        if (com.takahashirinta.ncrust.auth.NeteaseVipStore.needsRefresh(context)) {
+            com.takahashirinta.ncrust.auth.NeteaseVipStore.refresh(context)
+        }
+    }
 
     if (showAccountDialog) AccountDialog(
         userProfile = userProfile,
@@ -212,6 +221,9 @@ fun UserScreen(
         onLogout = {
             CookieManager.clearCookie(context)
             RetrofitClient.updateCookie(null)
+            // v2.1.4：会员缓存也必须一起清 —— 它决定搜索排序，
+            // 留着会让下一个登录的账号按**上一个账号**的会员状态排序。
+            com.takahashirinta.ncrust.auth.NeteaseVipStore.clear(context)
             hasCookie = false
             userProfile = null
             showAccountDialog = false

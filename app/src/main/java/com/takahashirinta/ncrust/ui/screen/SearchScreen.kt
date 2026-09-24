@@ -98,6 +98,20 @@ fun SearchScreen(
     val currentType by viewModel.currentType.collectAsState()
     val context = LocalContext.current
     val strings = LocalStrings.current
+    // v2.1.4：聚合搜索的排序要知道「用户有哪些平台的会员」（见 SearchRanking）。
+    // 这里**现读、不缓存**：登录/登出后下一次搜索立刻按新的会员状态排，
+    // 不需要任何失效逻辑。两个判据都来自服务端，取不到一律按非会员处理（保守那一侧）。
+    viewModel.vipFlagsProvider = {
+        com.takahashirinta.ncrust.auth.NeteaseVipStore.isVip(context) to
+            com.takahashirinta.ncrust.qq.QqAuthStore.profile(context).isVip()
+    }
+    // 会员状态是低频数据（TTL 30 分钟），顺手在这里刷新一次：搜索页是用户主动进来的地方，
+    // 在这里刷新比在每次搜索里同步等待一次网络请求划算得多（后者会把搜索拖慢一个 RTT）。
+    LaunchedEffect(Unit) {
+        if (com.takahashirinta.ncrust.auth.NeteaseVipStore.needsRefresh(context)) {
+            com.takahashirinta.ncrust.auth.NeteaseVipStore.refresh(context)
+        }
+    }
     val categories = listOf(strings.searchCategoryTracks, strings.searchCategoryAlbums, strings.searchCategoryArtists)
 
     val currentThemeColor = themeColorForIndex(themeIndex)

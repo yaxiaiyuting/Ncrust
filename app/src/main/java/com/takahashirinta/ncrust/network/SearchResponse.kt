@@ -52,6 +52,28 @@ data class SongItem(
      * 网易云一侧恒为 null。可空 + 默认值，理由同 [source]。
      */
     @SerializedName("media_id") val mediaId: String? = null,
+    /**
+     * 网易云的付费类型原始值（v2.1.4）。**只用于派生「播放是否需要会员」，不参与取链。**
+     *
+     * 实测语义（2026-09，登录态，cloudsearch/pc）：
+     * - `0` = 免费；`8` = 免费播放但**高音质**需会员（播放本身不受限）；
+     * - `1` = VIP 专享；`4` = 数字专辑（买了才能听）。
+     *
+     * 与 [memberOnly] 一样可空 + 有默认值：它会跟着 Gson 进队列持久化，
+     * 而 Gson 走 Unsafe 反序列化、不调用构造函数，老队列 JSON 里没有这个 key。
+     * 判定本身在 [com.takahashirinta.ncrust.search.TrackAccess] 一处收敛，这里只存原始值。
+     */
+    @SerializedName("fee") val fee: Int? = null,
+    /**
+     * **播放是否需要会员**（v2.1.4）。`true` = 会员专享，`false` = 免费可播，
+     * `null` = 服务端没给判据或读不懂（见 [com.takahashirinta.ncrust.search.TrackAccess]）。
+     *
+     * 与 [fee] 的分工：QQ 音乐的判据是布尔（`pay.pay_play == 1`），映射时就能确定，
+     * 直接写在这里；网易云的判据是 [fee] 那个整数，由搜索聚合层派生。
+     * **null 的语义是「不知道」**，不是「免费」—— 排序把「不知道」与「免费」同组靠后，
+     * 绝不把它当会员专享往前推。
+     */
+    @SerializedName("member_only") val memberOnly: Boolean? = null,
 )
 
 @Immutable

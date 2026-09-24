@@ -2,9 +2,14 @@ package com.takahashirinta.ncrust.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.takahashirinta.ncrust.auth.NeteaseVipStore
 import com.takahashirinta.ncrust.network.*
 import com.takahashirinta.ncrust.qq.QqAccountAvailability
+import com.takahashirinta.ncrust.qq.QqAuthStore
 import com.takahashirinta.ncrust.qq.QqClient
+import com.takahashirinta.ncrust.search.RankedSong
+import com.takahashirinta.ncrust.search.SearchRanking
+import com.takahashirinta.ncrust.search.TrackAccess
 import com.takahashirinta.ncrust.source.MusicSource
 import com.takahashirinta.ncrust.source.SourceRouter
 import com.takahashirinta.ncrust.source.trackKey
@@ -18,6 +23,22 @@ import kotlinx.coroutines.withTimeoutOrNull
 class SearchViewModel : ViewModel() {
     private val _query = MutableStateFlow("")
     val query: StateFlow<String> = _query
+
+    /**
+     * 两个平台的会员状态（v2.1.4），决定聚合结果怎么排（见 [SearchRanking]）。
+     *
+     * ## 为什么做成「注入的 lambda」而不是在这里读 SharedPreferences
+     *
+     * 这个 ViewModel 是纯 `ViewModel()`（没有 Application），而会员状态存在
+     * SharedPreferences 里、需要 Context。为它换 `AndroidViewModel` 会牵动
+     * `viewModel()` 的构造方式与既有的调用点；直接把 `Context` 传进来又会把
+     * 一个 Application 级引用长期挂在这个 ViewModel 上。
+     *
+     * 做成 lambda 之后：① 每次搜索**现读**，登录/登出后立刻生效，不需要缓存失效逻辑；
+     * ② 单测里可以直接换成一个返回固定值的 lambda，不必碰 Android。
+     * 默认值 (`false to false`) 是保守的那一侧 —— 排序退化成 v2.1.3 的行为。
+     */
+    var vipFlagsProvider: () -> Pair<Boolean, Boolean> = { false to false }
 
     private val _songs = MutableStateFlow<List<SongItem>>(emptyList())
     val songs: StateFlow<List<SongItem>> = _songs
@@ -114,7 +135,25 @@ class SearchViewModel : ViewModel() {
                     }.getOrNull().orEmpty()
 
                     // ① 主源到手即发布 —— 转圈到此结束，后面的 QQ 只是锦上添花。
-                    _songs.value = netease.distinctBy { it.trackKey }
+                    //
+                    // v2.1.4：发布前先按「用户有哪些平台的会员」排一次。此时 QQ 还没到，
+                    // 但网易云自己的会员专享已经可以先排上去；等 QQ 到手会再排一次。
+                    // 排序是纯函数且幂等，排两次不会抖。
+                    fun publish(neteaseList: List<SongItem>, qqList: List<SongItem>) {
+                        val (neteaseVip, qqVip) = vipFlagsProvider()
+                        _songs.value = SearchRanking.rank(
+                            netease = neteaseList.map {
+                                RankedSong(it, TrackAccess.ofNeteaseFee(it.fee))
+                            },
+                            qq = qqList.map {
+                                RankedSong(it, TrackAccess.ofQqMemberOnly(it.memberOnly))
+                            },
+                            neteaseVip = neteaseVip,
+                            qqVip = qqVip,
+                        ).map { it.value }.distinctBy { it.trackKey }
+                    }
+
+                    publish(netease, emptyList())
                     _albums.value = emptyList()
                     _artists.value = emptyList()
                     _sourceCounts.value = netease.size to 0
@@ -140,7 +179,7 @@ class SearchViewModel : ViewModel() {
                     // 只在「查询没变」时追加：用户已经改了关键词的话，这批结果已经过期，
                     // 写回去就是「搜 A 显示 B」。
                     if (qq.isNotEmpty() && _query.value == keyword) {
-                        _songs.value = (netease + qq).distinctBy { it.trackKey }
+                        publish(netease, qq)
                     }
                     _sourceCounts.value = netease.size to qq.size
                     // ③ 两个源都没结果，且主源确实报过错 ⇒ 让界面能显示错误/重试，
@@ -148,9 +187,11 @@ class SearchViewModel : ViewModel() {
                     if (netease.isEmpty() && qq.isEmpty() && neteaseError != null) {
                         _error.value = neteaseError?.message
                     }
+                    val (nVip, qVip) = vipFlagsProvider()
                     android.util.Log.i(
                         "SearchViewModel",
                         "aggregate query='$keyword' netease=${netease.size} qq=${qq.size} " +
+                            "vip(netease=$nVip qq=$qVip) " +
                             "elapsed=${System.currentTimeMillis() - startedAt}ms",
                     )
                 }
