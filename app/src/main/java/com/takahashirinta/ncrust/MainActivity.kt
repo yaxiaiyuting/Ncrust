@@ -179,6 +179,11 @@ class MainActivity : ComponentActivity() {
         // v1.8.0：设置项的进程内镜像要在任何 UI 读它之前就位（同步读 SharedPreferences，
         // 之后只走内存）。缺了这一步，播放器里的旋转图标/可视化会先按默认值渲染一帧。
         VisualizerSetting.read(this)
+        // v2.0.0 · T2（HF2）：禁止熄屏开关同理 —— KeepScreenOnSetting.state 是进程内镜像，
+        // 只在**设置页**里读过盘。用户改完关掉之后如果不再进设置页（或进程重启后直接开播），
+        // 播放器读到的还是默认值 true，开关等于失效。真机（S6）实测确认过这个 bug：
+        // prefs 里 keep_screen_on=false，但播放时 flag 照样被挂上。
+        KeepScreenOnSetting.read(this)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1001)
         }
