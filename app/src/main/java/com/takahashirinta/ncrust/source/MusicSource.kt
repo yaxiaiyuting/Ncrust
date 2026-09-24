@@ -124,21 +124,69 @@ object SourceIds {
     }
 
     /**
-     * QQ 音乐歌曲的**兜底数字 id**：当某个接口只给了 songmid、没给数字 songid 时用。
+     * QQ 音乐曲目的**数字 id**（v2.1.0 · A）。
      *
-     * 返回 **负数**，这样它与服务端下发的真实 songid（恒为正）永远不会撞号；
-     * 同一个 mid 必须每次得到同一个值（队列持久化、离线缓存、进度记忆都拿它当 key），
-     * 所以用确定性的 FNV-1a 64 位散列，而不是 `hashCode()`（JVM 实现虽稳定但只有 32 位，
-     * 而且字符串 hashCode 的碰撞在这里没有任何兜底手段）。
+     * ## 为什么必须把它和网易云的 id 隔离开
+     *
+     * 本应用有 10+ 处**以裸 `Long` 歌曲 id 作唯一键**的结构，且它们全都跨版本持久化：
+     * 队列去重与持久化（`ncrust_playback_state`）、续播进度表、离线曲目索引、
+     * **离线音频缓存 key**（`song:<id>:<level>`）、歌词缓存 key、收藏 id 列表、ExoPlayer 的 mediaId。
+     * 网易云的 songId 与 QQ 音乐的 songid 各自独立编号，撞号是迟早的事 ——
+     * 一旦撞上，后果按严重度排：**播出另一首歌的音频字节** > 串歌词 > 串续播进度 > 收藏错乱。
+     *
+     * ## 做法：把 QQ 的 id 抬到一个网易云永远到不了的正数区间
+     *
+     * `qqId = (1L shl 62) or rawId`。网易云的 id 是十进制百万~十亿量级（远小于 2^40），
+     * 永远不可能触到 2^62。于是：
+     *
+     * - **所有既有结构一个字节都不用改**，也不需要给它们做数据迁移
+     *   （对照方案是在 OfflineKeys / LyricsCache / PlaybackStateManager / OfflineLibrary /
+     *   LibraryManager 五个文件里各做一次「key 带音源 + 老 key 兼容读」，迁移面大得多，
+     *   而本仓库 v1.9.3 的教训正是「加字段 = 加迁移逻辑 = 加单测」）；
+     * - 撞号从「需要每个调用点都记得带音源」变成**结构上不可能**；
+     * - id 仍是 `Long`，不引入新的类型与装箱。
+     *
+     * ## 反解必须无损
+     *
+     * [qqRawId] 用掩码取回真实 songid。真实 songid 是 9~10 位十进制数，
+     * 不可能占到位 62（真占了就退回散列兜底，见下），所以掩码是无损的。
      */
-    fun fallbackIdFromSourceId(sourceId: String): Long {
+    const val QQ_ID_FLAG: Long = 1L shl 62
+
+    /** 是否为 [qqId] 造出来的 QQ 音乐 id。 */
+    fun isQqId(id: Long): Boolean = (id and QQ_ID_FLAG) != 0L
+
+    /**
+     * 造一个 QQ 音乐的数字 id。
+     *
+     * @param rawSongId 服务端给的 songid。**<= 0 或已经占到标志位时**改用 [sourceId] 的散列兜底
+     *   （某些接口只给 songmid 不给 songid；兜底必须是确定性的，因为队列持久化、
+     *   离线缓存、续播进度都拿它当 key）。
+     */
+    fun qqId(rawSongId: Long, sourceId: String): Long {
+        val raw = if (rawSongId > 0L && rawSongId < QQ_ID_FLAG) rawSongId else hashSourceId(sourceId)
+        return QQ_ID_FLAG or raw
+    }
+
+    /**
+     * 反解 [qqId]；传入的不是 QQ 音乐 id 时返回 null。
+     *
+     * 返回 null 而不是「原样返回」是**有意的**：调用方拿到 null 说明「这不是一个 QQ 音乐的 id」，
+     * 此时把 id 当 QQ 的 songid 用一定是个 bug，静默通过只会让它跑到取链那一步才炸。
+     */
+    fun qqRawId(id: Long): Long? = if (isQqId(id)) id and (QQ_ID_FLAG - 1L) else null
+
+    /**
+     * songmid 的确定性散列（FNV-1a 64 位），只取低 62 位以免撞上标志位。
+     *
+     * 不用 `String.hashCode()`：它只有 32 位，且碰撞在这里没有任何兜底手段。
+     */
+    private fun hashSourceId(sourceId: String): Long {
         var hash = -0x340d631b7bdddcdbL // FNV-1a 64 offset basis
         for (ch in sourceId) {
             hash = hash xor (ch.code.toLong() and 0xffL)
             hash *= 0x100000001b3L // FNV prime
         }
-        // 取 62 位再取负，保证结果恒为负、非 0，且不会溢出 Long。
-        val magnitude = (hash and 0x3fffffffffffffffL).let { if (it == 0L) 1L else it }
-        return -magnitude
+        return (hash and (QQ_ID_FLAG - 1L)).let { if (it == 0L) 1L else it }
     }
 }

@@ -123,44 +123,67 @@ class MusicSourceTest {
         assertNull(SourceIds.parseMediaId("song:qqmusic:xyz"))
     }
 
-    // ---------- QQ 兜底 id ----------
+    // ---------- QQ 音乐的数字 id（id 命名空间隔离） ----------
 
     @Test
-    fun `兜底 id 恒为负且非零`() {
-        for (mid in listOf("0039MnYb0qxYhV", "a", "0039MnYb0qxYhW", "")) {
-            val id = SourceIds.fallbackIdFromSourceId(mid)
-            assertTrue("mid=$mid id=$id 应为负", id < 0L)
+    fun `QQ id 落在网易云永远到不了的区间`() {
+        val id = SourceIds.qqId(102065756L, "0039MnYb0qxYhV")
+        assertTrue(SourceIds.isQqId(id))
+        assertTrue("QQ id 必须大于任何可能的网易云 id", id > 1_000_000_000_000_000L)
+        assertTrue("必须是正数，避免与「非正 id 视为无效」的既有守卫冲突", id > 0L)
+    }
+
+    @Test
+    fun `QQ id 可无损反解回真实 songid`() {
+        for (raw in listOf(1L, 97773L, 102065756L, 3_000_000_000L)) {
+            val id = SourceIds.qqId(raw, "mid")
+            assertEquals(raw, SourceIds.qqRawId(id))
         }
     }
 
     @Test
-    fun `兜底 id 是确定性的——队列持久化与离线缓存都拿它当 key`() {
-        val mid = "0039MnYb0qxYhV"
-        assertEquals(SourceIds.fallbackIdFromSourceId(mid), SourceIds.fallbackIdFromSourceId(mid))
+    fun `网易云 id 不会被误判成 QQ id`() {
+        for (raw in listOf(1L, 247936L, 3_399_937_943L, 1L shl 40)) {
+            assertFalse(SourceIds.isQqId(raw))
+            assertNull(SourceIds.qqRawId(raw))
+        }
     }
 
     @Test
-    fun `相邻 mid 不产生相邻 id`() {
-        assertNotEquals(
-            SourceIds.fallbackIdFromSourceId("0039MnYb0qxYhV"),
-            SourceIds.fallbackIdFromSourceId("0039MnYb0qxYhW"),
-        )
+    fun `两组 id 空间不相交——这正是离线缓存与歌词缓存不必改 key 的原因`() {
+        val neteaseIds = listOf(1L, 97773L, 102065756L, 3_399_937_943L).toSet()
+        val qqIds = listOf("0039MnYb0qxYhV", "0039MnYb0qxYhW", "abc").map {
+            SourceIds.qqId(0L, it) // 只给 mid、不给 songid 的最坏情况
+        }.toSet()
+        assertTrue("两组 id 不得有交集", (neteaseIds intersect qqIds).isEmpty())
+        assertEquals(3, qqIds.size)
     }
 
     @Test
-    fun `兜底 id 不会与真实 songid 撞号`() {
-        // 服务端 songid 恒为正；兜底 id 恒为负 —— 这是两侧唯一的隔离保证。
-        val realSongId = 102065756L
-        assertNotEquals(realSongId, SourceIds.fallbackIdFromSourceId("0039MnYb0qxYhV"))
+    fun `缺 songid 时用 mid 散列兜底且是确定性的`() {
+        val a = SourceIds.qqId(0L, "0039MnYb0qxYhV")
+        assertEquals(a, SourceIds.qqId(0L, "0039MnYb0qxYhV"))
+        assertNotEquals(a, SourceIds.qqId(0L, "0039MnYb0qxYhW"))
+        assertTrue(SourceIds.isQqId(a))
+        assertTrue(SourceIds.qqRawId(a)!! > 0L)
     }
 
     @Test
-    fun `兜底 id 在改写后依然是负数而不溢出`() {
-        // 覆盖散列高位为 1 的输入：如果忘了屏蔽符号位，取负会溢出成 Long.MIN_VALUE 附近的正数。
-        val ids = listOf("zzzz", "0039MnYb0qxYhV", "\u00ff\u00ff\u00ff", "9".repeat(64))
-            .map { SourceIds.fallbackIdFromSourceId(it) }
-        for (id in ids) {
-            assertTrue("id=$id 必须为负且在 Long 范围内", id < 0L && id != Long.MIN_VALUE)
+    fun `非法 rawSongId 一律走散列兜底而不是造出坏 id`() {
+        for (bad in listOf(0L, -1L, Long.MIN_VALUE, SourceIds.QQ_ID_FLAG, Long.MAX_VALUE)) {
+            val id = SourceIds.qqId(bad, "mid-x")
+            assertTrue("rawSongId=$bad 必须仍然得到合法 QQ id", SourceIds.isQqId(id))
+            val raw = SourceIds.qqRawId(id)!!
+            assertTrue("反解出的 raw 必须落在低 62 位内", raw in 1L until SourceIds.QQ_ID_FLAG)
+        }
+    }
+
+    @Test
+    fun `散列兜底不会溢出标志位`() {
+        // 覆盖各种长度的 mid，确认结果永远落在低 62 位（否则或上标志位会互相污染）。
+        for (mid in listOf("", "a", "0039MnYb0qxYhV", "z".repeat(200), "\u00ff".repeat(8))) {
+            val raw = SourceIds.qqRawId(SourceIds.qqId(0L, mid))!!
+            assertTrue("mid 长度 ${mid.length} 越界", raw in 1L until SourceIds.QQ_ID_FLAG)
         }
     }
 }

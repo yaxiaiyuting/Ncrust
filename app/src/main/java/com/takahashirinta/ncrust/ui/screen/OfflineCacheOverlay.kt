@@ -455,7 +455,10 @@ private fun qualityLabel(strings: Strings, level: String?): String? {
 
 /** 缺封面时的稳定色块：按歌曲 id 派生色相，同一首歌每次都是同一个颜色。 */
 private fun coverPlaceholder(songId: Long): Color {
-    val hue = ((songId * 47L) % 360L).toFloat()
+    // v2.1.0 · A：QQ 音乐的 id 带 2^62 标志位（见 SourceIds.QQ_ID_FLAG），
+    // `songId * 47L` 在长整型下会**溢出**成负数，取模后色相为负 —— Color.hsv 收到负色相
+    // 会得到意料之外的颜色。用 Math.floorMod 保证结果恒在 [0,360)。
+    val hue = Math.floorMod(songId * 47L, 360L).toFloat()
     return Color.hsv(hue, 0.35f, 0.55f)
 }
 
