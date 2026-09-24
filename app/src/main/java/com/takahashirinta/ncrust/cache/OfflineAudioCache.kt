@@ -106,12 +106,94 @@ object OfflineAudioCache {
         runCatching { get(context).cacheSpace }.getOrDefault(0L)
 
     /**
+     * 缓存里现有的全部 cacheKey（v2.0.0 · T3）。统计与对账用。
+     *
+     * 取不到一律回落空集 —— 这个方法只被 UI / 对账路径调用，绝不能因为缓存目录异常
+     * 把设置页搞崩。
+     */
+    fun keys(context: Context): Set<String> =
+        runCatching { get(context).keys.toSet() }.getOrDefault(emptySet())
+
+    /** 这首歌在缓存里的所有档位 key（按 SimpleCache 的枚举顺序）。 */
+    fun songKeys(context: Context, songId: Long): List<String> =
+        runCatching { get(context).keys.filter { OfflineKeys.songIdOf(it) == songId } }
+            .getOrDefault(emptyList())
+
+    /**
+     * 这首歌的缓存占用（字节）。**量不到返回 null** —— 调用方据此显示「已缓存片段」，
+     * 而不是编一个数字出来。
+     *
+     * 不用 `Cache.getCachedBytes(key, 0, MAX)`：那个 API 要求「从 position 起连续缓存」，
+     * 而我们缓存的只是**播过的那几段**（seek 之后会留洞），从 0 起经常不连续、会量成 0。
+     * 按 span 求和才是真实占用。
+     */
+    fun bytesForSong(context: Context, songId: Long): Long? = runCatching {
+        val c = get(context)
+        var total = 0L
+        var measuredAny = false
+        songKeys(context, songId).forEach { key ->
+            runCatching { c.getCachedSpans(key) }.getOrNull()?.forEach { span ->
+                if (span.isCached) {
+                    total += span.length
+                    measuredAny = true
+                }
+            }
+        }
+        if (measuredAny) total else null
+    }.getOrNull()
+
+    /**
+     * 删掉这首歌**所有档位**的缓存片段，并同步删离线 URL 清单与离线曲目索引条目
+     * （v2.0.0 · T3；三条清单必须一起动，否则留下指向空缓存的死条目）。
+     *
+     * ⚠️ 删**正在播放**的那首会触发回源网络：正在读的 span 没了，CacheDataSource 会转去
+     * 请求上游 —— 断网时就是一次播放错误。因此 UI 对当前播放曲目禁用删除（见设置页的
+     * 离线缓存管理）；这里不做拦截，是因为调用方才知道「哪首在播」。
+     *
+     * @return true = 至少删掉了一个缓存片段（清单同步删除与它无关，永远都做）。
+     */
+    fun removeSong(context: Context, songId: Long): Boolean {
+        if (songId <= 0L) return false
+        val app = context.applicationContext
+        val removedSpans = runCatching {
+            val c = get(app)
+            var removed = false
+            songKeys(app, songId).forEach { key ->
+                c.removeResource(key)
+                removed = true
+            }
+            removed
+        }.getOrDefault(false)
+        // 缓存里没有片段也要清两条清单：用户点了「删除」，列表里就不能再留着它。
+        OfflineLibrary.remove(app, songId)
+        return removedSpans
+    }
+
+    /**
+     * 对账（v2.0.0 · T3）：离线曲目索引里那些「缓存已经没有任何片段」的歌是**谎报**
+     * （典型成因是 LRU 淘汰了音频 span，而索引还留着条目），打开管理页时清掉。
+     *
+     * 只做单向对账（索引 → 缓存真相），不动 URL 清单：URL 清单的条目是否还有用，
+     * 由 [OfflineAudioCache.contains] 在离线兜底时判定，多清一份反而会误伤
+     * 「同曲另一档位还有缓存」的情况。
+     *
+     * @return 被丢掉的条目数。
+     */
+    fun reconcileLibrary(context: Context): Int {
+        val app = context.applicationContext
+        val liveSongIds = keys(app).mapNotNull { OfflineKeys.songIdOf(it) }.toSet()
+        return OfflineLibrary.retain(app, liveSongIds)
+    }
+
+    /**
      * 清空音频缓存。播放中的歌曲正在读的片段被删掉不会崩 —— CacheDataSource 会回源网络。
-     * 同时清掉离线 URL 清单，否则会留下指向已删缓存的死条目。
+     * 同时清掉离线 URL 清单与离线曲目索引，否则会留下指向已删缓存的死条目、
+     * 并且「缓存占用」与「可清理范围」的口径就对不上了（v1.6.0 起的不变量）。
      */
     fun clear(context: Context) {
         val app = context.applicationContext
         runCatching { get(app).keys.toList().forEach { get(app).removeResource(it) } }
         OfflineUrlStore.clear(app)
+        OfflineLibrary.clear(app)
     }
 }

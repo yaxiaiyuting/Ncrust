@@ -261,6 +261,17 @@ object OfflineLibrary {
         return removed != null
     }
 
+    /**
+     * 对账：丢掉 [keepSongIds] 之外的条目（v2.0.0 · T3，由
+     * [OfflineAudioCache.reconcileLibrary] 调用）。返回丢掉的条数；没变化就不写盘。
+     */
+    internal fun retain(context: Context, keepSongIds: Set<Long>): Int = synchronized(this) {
+        val idx = index(context)
+        val dropped = idx.retainSongIds(keepSongIds)
+        if (dropped > 0) persist(context, idx)
+        dropped
+    }
+
     fun clear(context: Context) {
         synchronized(this) {
             index = OfflineLibraryIndex()
