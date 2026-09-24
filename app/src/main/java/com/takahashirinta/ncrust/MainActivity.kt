@@ -449,8 +449,13 @@ class MainActivity : ComponentActivity() {
      * 幂等：重复 add/clear 同一个 flag 无副作用，所以调用方不必去重。
      */
     private fun applyKeepScreenOn(on: Boolean) {
-        if (on) window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        else window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        if (on) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+            Log.i(TAG, "keep-screen-on: flag added (playing on player screen)")
+        } else {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+            Log.i(TAG, "keep-screen-on: flag cleared")
+        }
     }
 
     /**
