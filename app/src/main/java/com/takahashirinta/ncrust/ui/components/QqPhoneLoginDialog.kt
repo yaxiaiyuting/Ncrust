@@ -137,7 +137,7 @@ fun QqPhoneLoginDialog(
                         message = ""
                     }
                 }
-                QqPhoneLogin.SendOutcome.FAILED -> message = strings.sourceQrFailed
+                QqPhoneLogin.SendOutcome.FAILED -> message = strings.sourceQqCodeSendFailed
             }
         }
     }
@@ -246,15 +246,22 @@ fun QqPhoneLoginDialog(
                                 val cookie = attempt.cookie
                                 if (cookie == null) {
                                     // 协议上不该发生（API 层已经拦过一次），兜底不静默
-                                    message = strings.sourceQrFailed
+                                    message = strings.sourceQqLoginFailed
                                 } else {
                                     onLoggedIn(cookie)
                                 }
                             }
                             QqPhoneLogin.LoginOutcome.CODE_WRONG -> message = strings.sourceQqCodeWrong
-                            QqPhoneLogin.LoginOutcome.TOO_FREQUENT -> message = strings.sourceQqPhoneTooFrequent
-                            QqPhoneLogin.LoginOutcome.NEED_CAPTCHA -> message = strings.sourceQqPhoneNeedCaptcha
-                            QqPhoneLogin.LoginOutcome.FAILED -> message = strings.sourceQrFailed
+                            QqPhoneLogin.LoginOutcome.TOO_FREQUENT ->
+                                message = strings.sourceQqLoginRateLimited
+                            QqPhoneLogin.LoginOutcome.NEED_CAPTCHA ->
+                                message = strings.sourceQqPhoneNeedCaptcha
+                            QqPhoneLogin.LoginOutcome.ACCOUNT_RESTRICTED ->
+                                message = strings.sourceQqAccountRestricted
+                            QqPhoneLogin.LoginOutcome.DEVICE_LIMIT ->
+                                message = strings.sourceQqDeviceLimit
+                            QqPhoneLogin.LoginOutcome.FAILED ->
+                                message = strings.sourceQqLoginFailed
                         }
                     }
                 },

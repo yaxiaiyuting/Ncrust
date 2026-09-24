@@ -444,6 +444,11 @@ data class Strings(
     val sourceQqPhoneNote: String get() = source.sourceQqPhoneNote
     val sourceQqCaptchaHint: String get() = source.sourceQqCaptchaHint
     val sourceQqCaptchaRetry: String get() = source.sourceQqCaptchaRetry
+    val sourceQqCodeSendFailed: String get() = source.sourceQqCodeSendFailed
+    val sourceQqLoginFailed: String get() = source.sourceQqLoginFailed
+    val sourceQqAccountRestricted: String get() = source.sourceQqAccountRestricted
+    val sourceQqDeviceLimit: String get() = source.sourceQqDeviceLimit
+    val sourceQqLoginRateLimited: String get() = source.sourceQqLoginRateLimited
     val cacheUsageAudio: String get() = offline.cacheUsageAudio
     val cacheUsageImage: String get() = offline.cacheUsageImage
     val cacheUsageOther: String get() = offline.cacheUsageOther
@@ -580,4 +585,23 @@ data class SourceStrings(
     val sourceQqCaptchaHint: String,
     /** v2.1.1：验证页的手动兜底按钮（cookie 变化检测没触发时用）。 */
     val sourceQqCaptchaRetry: String,
+
+    // ---------- v2.1.3：手机号登录自己的失败文案 ----------
+    //
+    // ⚠️ 这一组是**用户报出来的 bug 的直接修复**：v2.1.2 的手机号登录在失败分支里
+    // 复用了 `sourceQrFailed`（「扫码登录失败」），于是短信登录失败时界面显示
+    // 「扫码登录失败」—— 用户原话「我短信验证码登陆为什么会显示扫码登录失败」。
+    // 那句话在任何情况下都是错的：短信登录与扫码登录是两条完全不同的链路。
+    // **教训：跨功能的文案不要复用**，哪怕字面上只是「登录失败」四个字。
+
+    /** 验证码发送失败（认不出的服务端码）。 */
+    val sourceQqCodeSendFailed: String,
+    /** 登录失败（认不出的服务端码）。 */
+    val sourceQqLoginFailed: String,
+    /** 账号受限/封禁（20277/20278/20450）。 */
+    val sourceQqAccountRestricted: String,
+    /** 登录设备数超限（20279）。 */
+    val sourceQqDeviceLimit: String,
+    /** 登录过于频繁（104604）。 */
+    val sourceQqLoginRateLimited: String,
 )

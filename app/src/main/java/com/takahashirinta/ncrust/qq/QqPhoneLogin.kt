@@ -139,18 +139,25 @@ object QqPhoneLogin {
         OK,
 
         /**
-         * `1000`：**失败**。实测假验证码就是这个码，`data` 里字段齐全但值全空。
+         * `1000` 或 `20261`/`20271`：**失败**。实测假验证码回的就是 `1000`，
+         * `data` 里字段齐全但值全空；`20261`/`20271` 是参考实现记录的「登录参数错 / 验证码错」。
          *
          * ⚠️ 它不区分「验证码错」与「号码没注册」这类细分原因（实测 `errMsg` 是空串），
          * 所以界面文案只能取最常见的那一种，不能声称「一定是验证码错了」。
          */
         CODE_WRONG,
 
-        /** `100001`：过于频繁。 */
+        /** `100001`/`104604`：过于频繁。 */
         TOO_FREQUENT,
 
         /** `20276`：要图形验证码。 */
         NEED_CAPTCHA,
+
+        /** `20277`/`20278`/`20450`：账号受限或封禁。 */
+        ACCOUNT_RESTRICTED,
+
+        /** `20279`：登录设备数超限。 */
+        DEVICE_LIMIT,
 
         /** `104400` 及其它：请求被拒。 */
         FAILED,
@@ -159,16 +166,28 @@ object QqPhoneLogin {
     fun classifySend(reqCode: Int): SendOutcome = when (reqCode) {
         0 -> SendOutcome.SENT
         20276 -> SendOutcome.NEED_CAPTCHA
-        100001 -> SendOutcome.TOO_FREQUENT
+        100001, 104604 -> SendOutcome.TOO_FREQUENT
         104400 -> SendOutcome.BAD_NUMBER
         else -> SendOutcome.FAILED
     }
 
+    /**
+     * `Login` 的响应码归类。
+     *
+     * ⚠️ 除 `0` / `1000` / `20276` 之外的码来自参考实现的记录（`PHASE0-QQMUSIC-API.md` §8 错误码表），
+     * **本仓库没有复现过**（复现它们需要真实账号走到那些状态）。所以：
+     * - 归到「账号受限 / 设备超限」这类**明确但不常见**的桶里，是照表办事；
+     * - 认不出来的码一律 [LoginOutcome.FAILED]，界面文案是**中性**的「登录失败，请稍后重试」——
+     *   绝不再复用扫码那条「扫码登录失败」（v2.1.2 就是那么写的，用户看到后直接问
+     *   「我短信登录为什么说扫码登录失败」，那句话在任何情况下都是错的）。
+     */
     fun classifyLogin(reqCode: Int): LoginOutcome = when (reqCode) {
         0 -> LoginOutcome.OK
-        1000 -> LoginOutcome.CODE_WRONG
-        100001 -> LoginOutcome.TOO_FREQUENT
+        1000, 20261, 20271 -> LoginOutcome.CODE_WRONG
+        100001, 104604 -> LoginOutcome.TOO_FREQUENT
         20276 -> LoginOutcome.NEED_CAPTCHA
+        20277, 20278, 20450 -> LoginOutcome.ACCOUNT_RESTRICTED
+        20279 -> LoginOutcome.DEVICE_LIMIT
         else -> LoginOutcome.FAILED
     }
 

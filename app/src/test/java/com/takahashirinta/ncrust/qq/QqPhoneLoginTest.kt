@@ -102,6 +102,31 @@ class QqPhoneLoginTest {
         assertEquals(QqPhoneLogin.LoginOutcome.FAILED, QqPhoneLogin.classifyLogin(104400))
     }
 
+    /**
+     * 用户报出来的 bug：v2.1.2 的手机号登录在失败分支复用了**扫码**那条文案
+     * （`sourceQrFailed` = 「扫码登录失败」），于是短信登录失败时界面显示「扫码登录失败」。
+     * 这条用例钉住的是「认不出的码要落到**中性**的 FAILED 桶」——
+     * 界面据此显示「登录失败，请稍后重试」，而不是任何带前提的文案。
+     */
+    @Test
+    fun `认不出的登录码落到中性失败桶而不是被猜成别的原因`() {
+        for (code in listOf(1, 2, 7, 999, 104400, -1)) {
+            assertEquals("code=$code", QqPhoneLogin.LoginOutcome.FAILED, QqPhoneLogin.classifyLogin(code))
+        }
+    }
+
+    @Test
+    fun `账号受限与设备超限有各自的桶`() {
+        for (code in listOf(20277, 20278, 20450)) {
+            assertEquals("code=$code", QqPhoneLogin.LoginOutcome.ACCOUNT_RESTRICTED, QqPhoneLogin.classifyLogin(code))
+        }
+        assertEquals(QqPhoneLogin.LoginOutcome.DEVICE_LIMIT, QqPhoneLogin.classifyLogin(20279))
+        // 104604 = 登录频率限制，与 100001 同义
+        assertEquals(QqPhoneLogin.LoginOutcome.TOO_FREQUENT, QqPhoneLogin.classifyLogin(104604))
+        // ⚠️ 两个枚举同名不同型（SendOutcome / LoginOutcome），别拿一个去比另一个
+        assertEquals(QqPhoneLogin.SendOutcome.TOO_FREQUENT, QqPhoneLogin.classifySend(104604))
+    }
+
     // ---------- 凭证 → cookie ----------
 
     @Test
