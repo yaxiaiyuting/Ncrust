@@ -57,8 +57,15 @@ android {
         // PHASE0-REPORT-v2.0.1.md）。**SweepTrack.kt 核心算法一个字节未改**（v1.5.2 冻结）。
         // **第六次按脚本定号**：冷启动跑 tools/next-version.sh，三源（最近 5 个 tag /
         // dist 40 个 APK 的 aapt2 badging / 仓库当前 build.gradle）最大值都是 27 ⇒ 本版取 28。
-        versionCode = 28
-        versionName = "2.0.1-gpl"
+        // v2.0.2 是媒体通知专项 hotfix：修「华为/荣耀双通知栏」+「通知栏歌词只有暂停/播放才
+        // 刷新」。两条都是应用层 bug，已在华为平板 WGR-W09（HarmonyOS 4.2 / EMUI 14.2.0 /
+        // Android 12 / API 31）与荣耀 AGT-AN00（MagicOS_9.0.0 / Android 15 / API 35）上真机
+        // 复现并取证；根因、证据与未验证项见 AGENTS.md 的 v2.0.2 节、dist 下的
+        // RELEASE-NOTES-v2.0.2-gpl.md 与仓库外的 PHASE0-REPORT-v2.0.2.md。
+        // **第七次按脚本定号**：冷启动跑 tools/next-version.sh，三源（最近 5 个 tag /
+        // dist 42 个 APK 的 aapt2 badging / 仓库当前 build.gradle）最大值都是 28 ⇒ 本版取 29。
+        versionCode = 29
+        versionName = "2.0.2-gpl"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
