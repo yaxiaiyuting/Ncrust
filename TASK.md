@@ -949,3 +949,42 @@ prefs 读 + Gson 反序列化，200 条规模）导致的"点击已注册但状�
 
 **「关掉 = 与 v1.9.3 逐字节一致」如何保证**：`NcrustLyricLine.fontScale` 为 1f 时，
 面板里的表达式**原样使用** `fontSize`/`lineHeight`（刻意不写成 `fontSize * 1f`），所以 diff 可逐行审计。
+
+## T3 离线缓存 Phase 2（离线曲目管理 UI + 容量控制，**不做显式下载**）
+
+合规定位：不引 media3 `DownloadManager`/`DownloadRequest`/`DownloadService`，不做下载队列/百分比；
+UI 文案一律「已缓存 / 缓存」，**不承诺整曲完整**（SimpleCache 只保证"播放过的片段在本地"）。
+
+| 项 | 实现 |
+|---|---|
+| 离线曲目索引 | 新增 `cache/OfflineLibrary.kt`（≤300 LRU，prefs `ncrust_offline/tracks`），写入点挂 `PlaybackService.updatePlaybackState`（2Hz 心跳 + isPlaying 为真，覆盖手动点播 / gapless / 车机三条起播路径；只认带 `ncrustkey` 的 URL；每曲只写 1~2 次盘） |
+| 缓存 API | `OfflineAudioCache` 增枚举 key / 单曲删除（删该曲所有档位）/ 对账；`clear()` 联动清 URL 清单与索引（守住「统计口径 = 可清理范围」） |
+| 管理页 | 全屏 Dialog `ui/screen/OfflineCacheOverlay.kt`（独立窗口天然在播放器卡片之上，不踩死带/命中区；返回键交系统）：总量/上限/剩余 + 容量选择器 + 曲目列表（封面/标题/歌手·档位·占用）+ 单曲删除（二次确认、48dp 命中盒、semantics）；**当前播放曲禁用删除并显示原因** |
+| 容量控制 | `ncrust_settings:offline_cache_mb`（64..8192），**如实提示「下次启动生效」**（淘汰器在 SimpleCache 构造时固化） |
+| 占用统计 | 修掉**图片缓存双计**（Coil 磁盘缓存目录 = `cacheDir/image_cache`，而 `folderSize(cacheDir)` 已含它）+ 拆成音频/图片/其他三项 |
+| 离线优先取链 | 明确离线先走离线兜底（命中则零网络）；在线/判断失败行为与 v1.9.3 逐字一致；离线未命中仍照旧试网络 |
+| 歌词离线兜底 | 接上一直无调用者的 `LyricsCache.getTtmlStale`，**只在明确离线时**生效 |
+
+新增单测 23 例。**真机实测（S6）**：管理页 40 首、逐曲占用真实；单曲删除闭环 40 → 39、总量
+505.7 → 501.4 MB（正好等于该曲显示的 4.3 MB）；设置页三项 502.8 + 41.3 + 5.6 = 549.7 MB 精确相加。
+
+## ⚠️ 本版两次「真机才暴露」的 hotfix（都必须记住）
+
+| # | 症状 | 根因 | 修法 |
+|---|---|---|---|
+| HF1 | **两台设备都启动即崩**：`VerifyError: Verifier rejected class …Zh_CNKt: <clinit>() …` | dex 的 `invoke-*` 寄存器数是 8 位 ⇒ 单方法最多 255 个参数寄存器；`Strings` 构造参数从 v1.9.3 的 **240** 涨到 **261**（本版 +21）⇒ `val zhCN = Strings(...)` 的 `<clinit>` 那条 invoke 越界，ART 拒绝整个类 | 把「离线/缓存」19 条收进嵌套 `data class OfflineStrings`，构造参数回到 **243**；类体内保留 19 个**成员转发属性** ⇒ UI 调用点零改动 |
+| HF2 | 设置里关掉「禁止熄屏」后，播放中 flag **照样挂上**（开关失效） | `KeepScreenOnSetting.state` 是进程内镜像，`read(context)` 只在设置页里调用；冷启直接开播时读到的永远是默认值 true（`VisualizerSetting`/`RotationSetting` 都在 onCreate 里先 read，本开关漏了） | `MainActivity.onCreate` 里补 `KeepScreenOnSetting.read(this)` |
+
+**两条教训**：① JVM 单测 330 例全绿 + 编译 + lint 全过，**都发现不了**这两类问题；
+② 后续版本**必须在真机上先验证「能启动」与「开关真的生效」**，再谈别的。
+
+## v2.0.0 验证与未验证（详见 `dist/RELEASE-NOTES-v2.0.0-gpl.md`）
+
+**已验证**：单测 330 全绿；双机覆盖升级 26 → 27 Success；HF1 后双机启动无崩溃；权限 11 → 11 diff 为空；
+T2 五项（播放挂旗 / 暂停摘旗 / 回桌面摘旗 / 回前台重挂 / 收起播放器摘旗，`logcat` + `mHoldScreenWindow` 双证据）
++ 开关关闭时不挂旗；T1-C 连按 20 次 next：0 次重播、20/20 不重复；T3 管理页与统计分项。
+
+**未验证（如实）**：T4 动态字号**没有真机 A/B**（PCL110 的 uiautomator 本轮不可用，没能定位设置开关）——
+这是本版最大缺口；T1-A 修复后的「保持横屏」**需要真人手持旋转确认**（本轮只有用户澄清 + S6 历史日志）；
+T1-B 未复现未能定位；大屏/横屏下的 T2/T3/T4 未单独验证；T3 的容量上限「下次启动生效」、飞行模式离线首播、
+过期 TTML 兜底未实测；T1-C 的「相邻不同主艺人」未按艺人统计；S6 帧率未跑 gfxinfo；既有功能未逐项复测。
