@@ -19,6 +19,7 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -212,12 +213,34 @@ fun NcrustLyricsPanel(
     var programmaticScrolling by remember { mutableStateOf(false) }
     var lastAutoScrolledIndex by remember { mutableIntStateOf(-1) }
 
-    // 换歌:回顶 + 清状态 + 连续索引复位。（渐入由上面的 fadeIn 自动派生）
+    // 换歌 / 换歌词表：清状态 + 把当前行重新定位。
+    //
+    // v2.0.1：这里原来是**无条件** `scrollToItem(0)`（回顶）。在大屏模式下（右栏歌词面板
+    // 只有约 260dp 高、而顶部留白 200dp 占掉 77%）「回顶」直接等于「第一句被推到面板底边
+    // 之外」，而前奏期间（第一句还没到，currentIndex == -1）下面三条自动路径**全部**提前返回，
+    // 于是这个错误位置会一直保持到第一句开唱为止 —— 用户报告的「歌词被自动拉到最顶端、
+    // 看不见第一句」。
+    //
+    // 改成复用同一条定位规则（当前行落在视口 36% 处，-1 视为第 0 行）之后：
+    //  - 切歌时位置本来就是 0（PlayerViewModel.resetLyricsForNewSong 显式归零）⇒ 与"回顶"等价；
+    //  - 「进大屏 / 点 A± 导致歌词表重建」时不再丢掉当前行（旧实现会把列表甩回顶端，
+    //    再等下一次跨行才纠正）。
+    // 配合 LyricsPanelScroll 的顶部留白夹取，"回顶"与"首句落在 36%"在数学上已经是同一个位置。
     LaunchedEffect(lines) {
         userScrolling = false
-        lastAutoScrolledIndex = -1
-        smoothCurrentIndex.snapTo(0f)
-        listState.scrollToItem(0)
+        val idx = currentIndex.coerceAtLeast(0)
+        smoothCurrentIndex.snapTo(idx.toFloat())
+        lastAutoScrolledIndex = currentIndex
+        val vh = listState.layoutInfo.viewportSize.height
+        if (vh > 0) {
+            listState.scrollToItem(
+                LyricsPanelScroll.targetItemIndex(currentIndex, lines.size),
+                LyricsPanelScroll.leadOffsetPx(vh),
+            )
+        } else {
+            // 还没排版（首帧）：先回顶。顶部留白一旦按视口夹取，"回顶"就是"首句落在 36%"。
+            listState.scrollToItem(0)
+        }
     }
 
     // 面板显现瞬间直接跳到当前行,不等自动滚动逐行滚过去。
@@ -229,9 +252,11 @@ fun NcrustLyricsPanel(
             vh = listState.layoutInfo.viewportSize.height
         }
         val idx = currentIndex.coerceAtLeast(0)
-        val offset = if (vh > 0) -(vh * 0.36f).toInt() else 0
         smoothCurrentIndex.snapTo(idx.toFloat())
-        listState.scrollToItem((idx + 1).coerceIn(1, lines.size), offset)
+        listState.scrollToItem(
+            LyricsPanelScroll.targetItemIndex(currentIndex, lines.size),
+            LyricsPanelScroll.leadOffsetPx(vh),
+        )
         lastAutoScrolledIndex = idx
     }
 
@@ -247,21 +272,30 @@ fun NcrustLyricsPanel(
             vh = listState.layoutInfo.viewportSize.height
         }
         val idx = currentIndex.coerceAtLeast(0)
-        val offset = if (vh > 0) -(vh * 0.36f).toInt() else 0
         smoothCurrentIndex.snapTo(idx.toFloat())
-        listState.scrollToItem((idx + 1).coerceIn(1, lines.size), offset)
+        listState.scrollToItem(
+            LyricsPanelScroll.targetItemIndex(currentIndex, lines.size),
+            LyricsPanelScroll.leadOffsetPx(vh),
+        )
         lastAutoScrolledIndex = idx
     }
 
     // 跨行自动滚动:当前行滚到视口 36% 高处(有动画)。
+    //
+    // v2.0.1：`currentIndex == -1`（前奏 / 拖回开头 —— 还没到第一句）**也要定位**，目标按第 0 行算。
+    // 旧实现在这里 `currentIndex < 0` 直接 return，于是"歌首期间没有任何一条路径把歌词摆正"：
+    // 大屏下就表现为列表停在原地（或贴在最顶端），第一句看不见。
+    // lastAutoScrolledIndex 记的仍是**原始** currentIndex，所以启动时（-1 == -1）不会多滚一次。
     LaunchedEffect(currentIndex) {
-        if (userScrolling || currentIndex < 0 || currentIndex == lastAutoScrolledIndex) return@LaunchedEffect
+        if (userScrolling || currentIndex == lastAutoScrolledIndex) return@LaunchedEffect
         lastAutoScrolledIndex = currentIndex
         val vh = listState.layoutInfo.viewportSize.height
-        val offset = if (vh > 0) -(vh * 0.36f).toInt() else 0
         programmaticScrolling = true
         try {
-            listState.animateScrollToItem((currentIndex + 1).coerceIn(1, lines.size), offset)
+            listState.animateScrollToItem(
+                LyricsPanelScroll.targetItemIndex(currentIndex, lines.size),
+                LyricsPanelScroll.leadOffsetPx(vh),
+            )
         } finally {
             programmaticScrolling = false
         }
@@ -281,7 +315,12 @@ fun NcrustLyricsPanel(
         }
     }
 
-    Box(
+    // v2.0.1：面板根节点改用 BoxWithConstraints —— 顶部留白要按**视口高度**夹取
+    // （`min(200dp, 36% × 视口)`，见 LyricsPanelScroll）。用它而不是 `listState.layoutInfo`：
+    // 后者要等第一次排版之后才有值，进大屏那一帧会先按 200dp 排一遍、下一帧才跳回来
+    // （正好就是本 bug 的表象）；`maxHeight` 是**约束**，同一帧就是对的。
+    // 约束无界（父级可滚动 / 未指定高度）时回落基准值，行为与 v2.0.0 一致。
+    BoxWithConstraints(
         modifier = modifier
             .fillMaxSize()
             .graphicsLayer { alpha = fadeIn }
@@ -290,12 +329,20 @@ fun NcrustLyricsPanel(
                 liveRegion = LiveRegionMode.Polite
             },
     ) {
+        val topSpacerHeight = with(LocalDensity.current) {
+            LyricsPanelScroll.topSpacerHeightPx(
+                viewportHeightPx = if (maxHeight.value.isFinite()) maxHeight.roundToPx() else 0,
+                baseSpacerPx = LyricsPanelScroll.BASE_SPACER_DP.dp.toPx(),
+            ).toDp()
+        }
         LazyColumn(
             state = listState,
             userScrollEnabled = enabled,
             modifier = Modifier.fillMaxSize(),
         ) {
-            item(key = "top_spacer") { Spacer(Modifier.height(200.dp)) }
+            // v2.0.1：顶部留白 = min(200dp, 36% × 视口)。它同时是"列表顶端"与"第一句的定位槽"，
+            // 所以"回顶"在大屏短面板下也不会把第一句推出可视区（详见 LyricsPanelScroll）。
+            item(key = "top_spacer") { Spacer(Modifier.height(topSpacerHeight)) }
 
             itemsIndexed(lines, key = { index, _ -> index }) { index, line ->
                 // 颜色离散:基于整数 currentIndex,跨行时翻转;连续 scale 会盖住这一瞬。
