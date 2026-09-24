@@ -1299,7 +1299,16 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         if (sourcePrefs.ttmlEnabled && currentSongId.value == songId) {
             // AmllTtmlClient 自己吞掉网络异常并返回 null；这里的 runCatching 只是兜底
             // 「绝不让补充源把播放路径搞崩」—— 失败静默，走上面那一相的结果。
-            val raw = runCatching { AmllTtmlClient.load(getApplication(), songId) }.getOrNull()
+            val fresh = runCatching { AmllTtmlClient.load(getApplication(), songId) }.getOrNull()
+            // v2.0.0 · T3：离线时用**过期** TTML 兜底。LyricsCache.getTtmlStale 在 v1.9.0 就
+            // 写好了（KDoc 明说「给离线兜底用」）却一直没有调用者，后果是：离线时过期的 AMLL
+            // TTML 直接消失，逐字退到网易云那份。这里补上，并且**只在明确离线时**兜底 ——
+            // 在线时一个字节的行为都不变（在线拿不到就走 phase=1 的结果，与 v1.9.3 一致）。
+            val raw = fresh ?: if (NetworkAvailability.isOnline(getApplication())) {
+                null
+            } else {
+                runCatching { LyricsCache.getTtmlStale(getApplication(), songId) }.getOrNull()
+            }
             if (!lyricReqGate.isCurrent(seq)) return
             val doc = if (raw.isNullOrBlank()) {
                 null
