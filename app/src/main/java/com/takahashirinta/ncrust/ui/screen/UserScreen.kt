@@ -104,6 +104,8 @@ fun UserScreen(
     var showQrLogin by remember { mutableStateOf(false) }
     var showScanner by remember { mutableStateOf(false) }
     var showClearCacheConfirm by remember { mutableStateOf(false) }
+    // v2.0.0 · T3：离线缓存管理（全屏 Dialog，见 OfflineCacheOverlay.kt 的 KDoc 说明为什么不是导航页）。
+    var showOfflineCacheManager by remember { mutableStateOf(false) }
     var cacheSize by remember { mutableStateOf(0L) }
     // 缓存占用要递归遍历 cacheDir，放 IO 线程算，避免组合期主线程卡顿。
     LaunchedEffect(Unit) {
@@ -227,6 +229,14 @@ fun UserScreen(
         },
         onDismiss = { showQrLogin = false }
     )
+
+    if (showOfflineCacheManager) {
+        val playingSongId by playerViewModel.currentSongId.collectAsState()
+        OfflineCacheManagerDialog(
+            onDismiss = { showOfflineCacheManager = false },
+            currentSongId = playingSongId ?: -1L,
+        )
+    }
 
     if (showClearCacheConfirm) ClearCacheConfirmDialog(
         onConfirm = {
@@ -673,6 +683,28 @@ fun UserScreen(
                     strings.clearCache,
                     color = LocalMetroColors.current.primary,
                     style = TextStyle(fontSize = 15.sp)
+                )
+            }
+            // v2.0.0 · T3：离线缓存的单曲管理与容量上限。这一行只是入口，
+            // 「清除缓存」那一行的行为一个字都没改。
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { showOfflineCacheManager = true }
+                    .padding(horizontal = 16.dp, vertical = 14.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                MetroText(
+                    strings.offlineCacheManageLabel,
+                    color = LocalMetroColors.current.onBackground,
+                    style = TextStyle(fontSize = 15.sp),
+                    modifier = Modifier.weight(1f)
+                )
+                MetroIcon(
+                    Icons.Default.ChevronRight,
+                    contentDescription = null,
+                    tint = LocalMetroColors.current.onSurfaceVariant,
+                    sizeDp = 20.dp,
                 )
             }
             Spacer(Modifier.height(32.dp))

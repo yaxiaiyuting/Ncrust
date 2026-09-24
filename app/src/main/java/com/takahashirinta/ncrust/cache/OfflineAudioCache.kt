@@ -50,6 +50,12 @@ object OfflineAudioCache {
     /** 默认上限：512 MiB。 */
     const val DEFAULT_MAX_BYTES = 512L * 1024 * 1024
 
+    /** 上限的合法区间（MB）。设置页的选择器与 [maxBytes] 的夹取共用这一处定义。 */
+    const val MIN_MB = 64
+    const val MAX_MB = 8192
+
+    private const val MB = 1024L * 1024L
+
     private const val PREFS = "ncrust_settings"
     private const val KEY_MAX_MB = "offline_cache_mb"
 
@@ -63,7 +69,25 @@ object OfflineAudioCache {
                 .getSharedPreferences(PREFS, Context.MODE_PRIVATE)
                 .getInt(KEY_MAX_MB, (DEFAULT_MAX_BYTES / 1024 / 1024).toInt())
         }.getOrDefault((DEFAULT_MAX_BYTES / 1024 / 1024).toInt())
-        return if (mb in 64..8192) mb.toLong() * 1024 * 1024 else DEFAULT_MAX_BYTES
+        return if (mb in MIN_MB..MAX_MB) mb.toLong() * MB else DEFAULT_MAX_BYTES
+    }
+
+    /** 当前生效的上限（MB）。设置页回显用；合法值恒在 [MIN_MB]..[MAX_MB]。 */
+    fun maxMb(context: Context): Int = (maxBytes(context) / MB).toInt()
+
+    /**
+     * 写上限（MB），v2.0.0 · T3 设置页用。
+     *
+     * ⚠️ **只写 prefs**：SimpleCache 的淘汰器在构造时固化（见 [get]），本次进程内改不动 ——
+     * 重建实例会打断正在播放的 ExoPlayer。所以 UI 必须如实提示「下次启动生效」。
+     * 非法值直接忽略（不写坏 prefs）。
+     */
+    fun setMaxMb(context: Context, mb: Int) {
+        if (mb !in MIN_MB..MAX_MB) return
+        runCatching {
+            context.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+                .edit().putInt(KEY_MAX_MB, mb).apply()
+        }
     }
 
     /** 进程内单例。SimpleCache 独占目录，必须只建一份。 */
