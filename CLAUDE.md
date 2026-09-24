@@ -55,7 +55,7 @@ Single source of truth: `app/build.gradle.kts` → `defaultConfig.versionName` /
 
 - `AboutScreen.kt` reads `BuildConfig.VERSION_NAME` — **never hardcode a version constant**. This needs `buildFeatures.buildConfig = true`.
 - Release flow: bump `versionCode` + `versionName` → commit `build: 升级至 vX.Y.Z ...` → `./gradlew assembleRelease` → `gh release create vX.Y.Z --draft <apk>` → user smoke-tests and publishes manually.
-- Current: `versionName = "1.9.3-gpl"`, `versionCode = 26`. Latest release: `v1.9.3-gpl`.
+- Current: `versionName = "2.0.1-gpl"`, `versionCode = 28`. Latest release: `v2.0.1-gpl`.
   （**注意 versionCode 必须递增**：v1.6.1 = 19，所以 v1.7.0 是 20 —— 任务书里写「v1.7.0 = 19」是错的，
   19 已经被 v1.6.1 占用，照抄会导致无法覆盖安装。同理本版 **23**：任务书说「v1.8.0 = 21、本版 22」，
   但 `aapt2 dump badging` 实测 v1.8.1 已经是 **22**，照抄 22 会与线上包撞号、无法覆盖安装。
@@ -1892,4 +1892,131 @@ media3 的淘汰器 `LeastRecentlyUsedCacheEvictor` 在 `SimpleCache` **构造�
 5. **删除入口用「行尾按钮 + 二次确认」，当前播放曲目禁用并显示原因**（任务书允许在「提示」与「禁用」中二选一）。
 6. **统计分项直接显示在设置页**（总量行下面三行小字），管理页顶部只显示音频缓存自己的总量 / 上限 / 剩余 ——
    两处数字都来自 `CacheUsage` / `OfflineAudioCache`，不是各算一份。
+
+---
+
+## v2.0.1 hotfix（本 fork · 大屏歌首「歌词被拉到最顶端、第一句看不见」）
+
+**版本**：`2.0.1-gpl` / versionCode **28**（冷启动跑 `tools/next-version.sh`，三源一致 = 27 ⇒ 28）。
+**范围**：只修这一个 bug —— 不动 `SweepTrack.kt`（v1.5.2 冻结，本次一个字节未改）、不动数据层、
+不动 P1 大屏布局、不动渐隐高度公式。
+
+### 用户原话与关键确认
+
+> 有些逐字歌词在没有进入第一句话的时候，大屏模式下会把歌词自动拉到最顶端导致看不见第一句歌词
+
+| 问题 | 探针结论（PCL110 真机） |
+|---|---|
+| 只有大屏出现？ | **是**。同一状态、同一首歌，只差窗口方向：竖屏第一句完整可见，大屏第一句被压到面板底边 |
+| 只有逐字歌词出现？ | **不是**。判据是「第一句时间戳 > 0」，与 yrc 无关。缓存 73 首里 8 首命中（yrc 4 / 纯 LRC 4） |
+| 只有歌首出现？ | **是**（前奏期间一直保持）；歌中会在下一次跨行时被自动纠正 |
+| 第一句是「看不见但可滚动到」还是「真没了」？ | **可滚动到** —— 数据/行/时间戳都在，纯粹是定位错 |
+
+### 根因（三条叠加，缺一不成 bug）
+
+`ui/player/NcrustLyricsPanel.kt` 的 LazyColumn 结构是 `top_spacer(固定 200dp)` + 歌词行 + `bottom_spacer(200dp)`：
+
+1. **前奏期间「没有当前行」，所有纠正路径集体失效**。`currentLineIndex()` 在
+   `position < timestamps[0]` 时返回 **-1**，于是：`LaunchedEffect(isVisible)`（只在 `isVisible` 翻转时跑）、
+   `LaunchedEffect(forcedScrollTrigger)`（只在播放器展开进度跨 0.9 时跑）**都不跑** ——
+   而进大屏（窗口旋转）既不改 `isVisible` 也不改 `progress`；跨行自动滚动那条又写着
+   `if (currentIndex < 0) return`。**唯一还在跑的是换歌词表时的 `LaunchedEffect(lines)`，
+   而它做的是 `listState.scrollToItem(0)`（回顶）。**
+2. **「回顶」在大屏下 == 「第一句被推出可视区」**。顶部留白是**固定 200dp**（v1.5.0 从 Kanesumi 面板
+   搬入时按"竖屏面板约 700dp 高"定的），而大屏右栏歌词面板**实测只有 259dp 高**
+   （PCL110：面板视口 908px ÷ 3.5）。200dp 占 72% ⇒ 列表在位置 0 时第一句从 200dp 才开始画，
+   只剩 ~59dp 露在面板内，且整条落在底部渐隐带（`min(100dp, 30%×视口)` = 77.7dp）里 ⇒ **不可读**。
+   竖屏面板视口实测 315dp（1105px），同样 200dp 只占 63%，定位后又会被"当前行落在 36%"的
+   `scrollToItem(1, -397)` 拉回 113dp ⇒ 第一句完整可见 ⇒ **竖屏看不出问题**。
+3. **谁触发 `LaunchedEffect(lines)`（回顶）**：它的 key 是**歌词表身份**（`LyricsView` 的 `panelLines`），
+   不是歌曲 id。切歌、歌词源 phase1(YRC)→phase2(TTML) 升级、翻译/音译开关、
+   **动态字号开着时面板宽度变化导致 `lineScales` 重算**（进大屏 = 面板宽度从 363dp 变 448dp）都会触发。
+
+### 探针证据（PCL110 / v2.0.0-gpl 原样复现）
+
+复现歌 `27198266`《Go West》——**首句 `[00:33.66]`，前奏 33.7 秒**，这是"有些"的来源：
+首行是 0 秒信息行（`[00:00.000] 作词 : …`）的歌 `currentIndex` 一上来就是 0，永远不进入 -1 窗口。
+
+| 场景 | 证据 | 结果 |
+|---|---|---|
+| 竖屏 + 位置 0 | `tools/evidence/v2.0.1/01-portrait-OK-first-line-visible.png` | 第一句完整可见 |
+| 大屏 + 同一状态 | `02-bigscreen-BUG-first-line-clipped.png` | 面板上方整块空白，第一句被裁在底边、糊在渐隐带里 |
+| 大屏里手动上滑一次 | `03-bigscreen-after-manual-scroll-reachable.png` | 第一句立刻完整可见 ⇒ 定位错，不是数据丢 |
+
+日志打点（临时探针构建，发布前已删除）拿到确定性复现路径 —— **大屏里点 A± / 换歌词表**：
+
+```
+I/LyricsScroll: ev=lines-reset IN  lines=66 currentIndex=-1 vh=908
+I/LyricsScroll: ev=lines-reset OUT first=0 off=0      ← 回到最顶端，此后没有任何路径纠正
+```
+
+同一份探针还测到：竖屏面板视口 **1105px（315dp）**、大屏 **908px（259dp）**，
+以及进大屏时面板被**重新挂载**（`isVisible` 会先 false 再 true）——
+于是"`lines` 重置回顶"与"`isVisible` 定位"之间存在**竞态**：谁最后跑决定结果，
+这解释了为什么进大屏时这个 bug 时灵时不灵，而"切歌 / 点 A±"是 100% 必现。
+
+### 修法（两条，加一个纯函数 + 单测）
+
+1. **顶部留白按视口夹取**：`topSpacer = min(200dp, 36% × 视口)`（`LyricsPanelScroll.topSpacerHeightPx`）。
+   面板根节点因此从 `Box` 换成 `BoxWithConstraints` —— 用 `maxHeight`（约束）而不是
+   `listState.layoutInfo`（要等第一次排版）才能保证进大屏那一帧就是对的。
+   - 竖屏 315dp：留白 200dp → 113dp，**定位后的位置不变**（`scrollToItem(1, -36%)` 仍然把第一句放在 113dp）；
+   - 大屏 259dp：留白 200dp → 93dp，第一句落在 36% 处、且恒定在顶部渐隐带下方（`0.30 < 0.36`）；
+   - **不变量**：留白 ≤ 36% 视口 ⇒ 「回顶」与「首句落在 36%」在数学上是同一个位置，
+     两条路径不再互相打架，第一句开唱时也不会再跳一下。
+2. **「没有当前行」也要定位**：`-1`（前奏 / 拖回开头）按**第 0 行**处理
+   （`LyricsPanelScroll.targetItemIndex`），跨行自动滚动那条不再 `currentIndex < 0` 直接 return；
+   换歌词表时也从"无条件回顶"改成同一条定位规则（切歌时位置本来就是 0，行为等价；
+   而"进大屏 / 点 A± / phase1→phase2"不再丢掉当前行）。
+   `lastAutoScrolledIndex` 仍记**原始** `currentIndex`，所以启动时（-1 == -1）不会多滚一次。
+
+**可以复用的判据**（下次遇到「歌词定位不对」先看这条）：
+`LazyColumn` 的 `top_spacer` 高度与「当前行定位槽」必须成对定义 —— 只要留白能大于定位槽，
+就必然存在一条路径（回顶）把内容推出短视口；**顶部留白 ≤ 定位槽**是这个组件的不变量，
+不是可有可无的样式参数。同理，凡「前置内容不是固定高度」的 `LazyColumn`，
+它的"回顶/复位"路径都要按**视口**核对一次，不能只在设计稿的那块尺寸里看。
+
+### v2.0.1 的测试与实测
+
+| 项 | 结果 |
+|---|---|
+| JVM 单测 | `LyricsPanelScrollTest` 11 个用例（含「留白 ≤ 36% 视口」「回顶 == 首句落在 36%」两条不变量、竖屏 555/556dp 边界、-1 → 第 0 行、越界钳制）；全仓库 **30 类 / 341 用例全绿** |
+| 大屏 + 逐字 + 歌首（前奏期间） | ✅ 真实播放到 0:31（首句 33.66s 未到），第一句 + 译文完整可见 |
+| 大屏 + 逐字 + 首句开唱 | ✅ 0:47 当前句落在 36%，前句/后句分别弱化，无跳变 |
+| 大屏 + 逐字 + 歌中 | ✅ 拖到 2:02，当前句 = `index 19`（`t=119.11s`）落在 36% |
+| 大屏 + 逐字 + 拖回开头 | ✅ 拖回 0:16（< 首句）后面板自动回到第一句并置于 36% |
+| 大屏 + 歌词表重建（预修时的**确定性复现步骤**：点 A+ 两次） | ✅ 第一句仍在 36%，不再回顶 |
+| 竖屏对照 | ✅ 同一状态第一句可见；播放中进出大屏不中断 |
+| 整行 LRC 对照（`27946894`，`picked=YRC lines=1 words=false`） | ✅ 大屏下唯一一行（t=5s）在位置 0 时可见 |
+| 逐字渐变 | ✅ 帧间差分：同一条正在唱的歌词行两次截图差 7568 像素（>18 灰度）⇒ 光标在推进 |
+| 音译 / TTML | ✅ `1959528822`：phase2 `roman=MIXED/29`，罗马音渲染在原文下方 |
+| 动态字号（实验性，PCL110 开着） | ✅ A+ 0.85→1.2 触发重算，布局重排正常、不再丢当前行 |
+| 控制栏 / 音质切换 / 大屏进出 | ✅ 就地切到「更好」（exhigh）后按新档续播；⤢ 进出多次无异常 |
+| 离线缓存 | ✅ 设置 → 存储与缓存（636.2 MB，音频 529.5 / 图片 100.1 / 其他 6.6）→ 离线缓存管理（5 首、上限 4096 MB、正在播放的行禁用删除） |
+| 覆盖安装 / 签名 | ✅ PCL110 release 27→28、S6 debug 27→28 均覆盖成功；证书 `e75af3ff…5511` 未变 |
+| API 24（S6 / Android 7.0） | ✅ 启动、歌词面板与定位正常（`BoxWithConstraints` 路径在 API 24 上无异常） |
+| 崩溃 | ✅ 全程 `FATAL|AndroidRuntime` 零命中 |
+
+### v2.0.1 的未验证项（如实）
+
+1. **歌词网络重取在本轮测试网络下不可用**：`POST /api/song/lyric` 在 PCL110 上 60s+ 不返回
+   （老缓存缺 `romalrc` 字段触发的重取路径）。探针因此改用**缓存直命中**：把目标歌条目的
+   `romalrc` 补成空串（等价于 app 自己重取成功后的产物），测试后已还原。
+   ⇒ **"新歌首次联网取词"这条路径本轮没有覆盖**，但本 bug 与取词无关（面板只消费已经到手的行）。
+2. **真人手持旋转没有重做**：本轮用 `auto_rotate=false` + 播放器 ⤢ 按钮控制进出大屏
+   （设备平放，传感器姿态不可控），验证的是「窗口变横屏 ⇒ 大屏布局」这条路径。
+3. **`SweepTrack` 逐字渐变的"视觉验收"仍以帧间差分为准**（7568 像素在变），没有逐帧人工核对软边形状 ——
+   本版没有动过渲染层，这是回归确认而非新功能验收。
+4. 面板高度实测值（竖屏 315dp / 大屏 259dp）来自探针日志，与 `LyricsView` 里旧注释写的
+   「竖屏约 700dp」不符 —— **那行注释是错的**（修复时未改动它，避免把无关内容混进 hotfix diff）。
+
+### 与任务书的偏离（逐条）
+
+1. **任务书说"只有逐字歌词出现"，实测与逐字无关**（纯 LRC 同样命中，判据是第一句时间戳 > 0）。
+   修法因此放在面板的滚动定位上，而不是逐字渲染路径上。
+2. **额外收了两个同源表现**：进大屏 / 点 A± 导致歌词表重建时"丢掉当前行、甩回顶端"
+   （与报告同一条机制、同一个 `scrollToItem(0)`），一并按同一条定位规则修掉；
+   除此之外没有做任何无关改动（`SweepTrack.kt`、数据层、大屏布局、渐隐公式全部未动）。
+3. **探针用了日志打点构建**，证据采集后已把探针代码从最终 diff 中移除（最终 diff 只有
+   `NcrustLyricsPanel.kt` 的定位/留白改动 + 新增 `LyricsPanelScroll.kt` 与它的单测）。
 
