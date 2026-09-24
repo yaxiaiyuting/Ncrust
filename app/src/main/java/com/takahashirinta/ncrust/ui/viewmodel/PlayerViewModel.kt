@@ -27,6 +27,7 @@ import androidx.lifecycle.viewModelScope
 import com.takahashirinta.ncrust.cache.OfflineAudioCache
 import com.takahashirinta.ncrust.cache.OfflineKeys
 import com.takahashirinta.ncrust.cache.OfflineUrlStore
+import com.takahashirinta.ncrust.network.NetworkAvailability
 import com.takahashirinta.ncrust.player.QualityAssessment
 import com.takahashirinta.ncrust.player.QualityLadder
 import com.takahashirinta.ncrust.player.QualityStatus
@@ -804,13 +805,10 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         playJob?.cancel()
         playJob = viewModelScope.launch(Dispatchers.IO) {
             try {
-                var result = SongUrlFetcher.fetch(songId, selectedQuality)
-                if (result == null) {
-                    // v1.6.0 · D1：取链失败（典型是断网）时先看离线缓存 —— 只要这台设备**真的
-                    // 播过**这首歌，就用「最后一次成功播放的 URL + 本地音频片段」起播，
-                    // 全程不需要网络。缓存里没有就什么都不做，绝不用旧 URL 去赌。
-                    result = recallOfflineCache(songId, selectedQuality)
-                }
+                // v2.0.0 · T3：离线优先取链（见 fetchUrlOfflineFirst）。
+                // 旧顺序是「先把 5~6 档 eapi 全试一遍（每档都要等 connectTimeout）才回落缓存」，
+                // 断网首播要干等数秒；现在明确离线时先离线兜底，命中就一个字节都不发。
+                var result = fetchUrlOfflineFirst(songId, selectedQuality)
                 if (result == null) {
                     // 该歌在所有音质档位都取不到可播放的 URL（无版权 / 需会员且当前无订阅）。
                     // 前一个版本会兜底喂给 ExoPlayer 一个 404 的 HTML 链接导致无限缓冲"卡住"，
@@ -873,6 +871,27 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         if (!OfflineAudioCache.contains(app, hit.first)) return null
         Log.i("PlayerViewModel", "offline cache hit songId=$songId key=" + hit.first)
         return SongUrlResult(hit.second, OfflineKeys.levelOf(hit.first) ?: level, 0L, "", null)
+    }
+
+    /**
+     * v2.0.0 · T3：离线优先取链。**在线路径与 v1.9.3 逐字一致**，只在「明确离线」时换个顺序：
+     *
+     * | 网络 | 顺序 | 结果 |
+     * |---|---|---|
+     * | 明确离线（[NetworkAvailability.isOnline] == false） | 先 [recallOfflineCache] | 命中 ⇒ 一个字节都不发，立刻起播 |
+     * | 明确离线但缓存没命中 | 照旧走 [SongUrlFetcher.fetch] | 与旧版完全一样（慢，但不会因为一次网络判断把歌静默跳过） |
+     * | 在线 / 判断失败（保守按在线） | 照旧 [SongUrlFetcher.fetch] → 失败再回落缓存 | 与 v1.9.3 逐字一致 |
+     *
+     * 只读一次系统网络状态、不开线程也不注册监听器；[NetworkAvailability] 的异常一律返回
+     * true（按在线处理），与本仓库其它调用方（HomeScreen / AppWarmup）同一个判据。
+     */
+    private suspend fun fetchUrlOfflineFirst(songId: Long, level: String): SongUrlResult? {
+        val app = getApplication<Application>()
+        if (!NetworkAvailability.isOnline(app)) {
+            recallOfflineCache(songId, level)?.let { return it }
+        }
+        // 在线取链失败（典型是取链途中断网）时仍回落离线缓存 —— v1.6.0 · D1 的兜底路径。
+        return SongUrlFetcher.fetch(songId, level) ?: recallOfflineCache(songId, level)
     }
 
     /**
@@ -978,7 +997,7 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                 }
                 val result = cacheHit?.let {
                     SongUrlResult(it.url, it.actualLevel, it.br, it.type, it.songMaxLevel)
-                } ?: SongUrlFetcher.fetch(songId, quality)
+                } ?: fetchUrlOfflineFirst(songId, quality)
                 if (result == null) {
                     // 预加载失败：可能无版权/无订阅，忽略即可，等当前歌结束时由 songEnded 跳歌。
                     currentlyPreloadingSongId = -1L
