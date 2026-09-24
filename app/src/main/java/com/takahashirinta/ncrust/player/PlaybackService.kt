@@ -55,6 +55,8 @@ import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import com.takahashirinta.ncrust.BuildConfig
 import com.takahashirinta.ncrust.cache.OfflineAudioCache
+import com.takahashirinta.ncrust.cache.OfflineKeys
+import com.takahashirinta.ncrust.cache.OfflineLibrary
 import com.takahashirinta.ncrust.cache.OfflineUrlStore
 import androidx.media3.extractor.DefaultExtractorsFactory
 import androidx.media3.extractor.flac.FlacExtractor
@@ -893,6 +895,52 @@ class PlaybackService : MediaLibraryService() {
     private var lastPlaybackStateSentAt: Long = 0L
     private val STATE_MIN_INTERVAL_MS = 900L
 
+    // v2.0.0 · T3：离线曲目索引的写入去重（每首歌只在首次起播 / 时长首次可知时落一次盘）。
+    private var offlineRecordedSongId = -1L
+    private var offlineRecordedKey: String? = null
+    private var offlineRecordedDurationMs = -1L
+
+    /**
+     * v2.0.0 · T3：把「真的播起来了」的歌写进 [OfflineLibrary]（离线缓存管理页的清单来源）。
+     *
+     * 挂在 [updatePlaybackState] 而不是 `playUrl` 的原因是**覆盖面**：gapless 自动接续与
+     * 车机点播都不经过 `playUrl`，而 2Hz 心跳只在 `player.isPlaying` 时跑 ——
+     * 「心跳跑到了」本身就等于「这歌真的开始出声了」，比在 `playUrl` 里乐观写入更贴近
+     * [OfflineLibrary] 的语义（列表 = 这台设备真的播过的歌）。
+     *
+     * 只认带 [OfflineKeys.QUERY_KEY] 的 URL：那是唯一会走 [OfflineAudioCache] 的路径，
+     * 别的 URL 没有可命中的缓存条目，写进索引只会让 UI 说谎。
+     */
+    private fun maybeRecordOfflineLibrary(durationMs: Long) {
+        // 只在真的在播时写：updatePlaybackState 还会被 BUFFERING / 封面加载等路径调用，
+        // 那些时刻缓存里一个字节都还没有，写进去就是「列表说有、离线放不出来」。
+        if (!player.isPlaying) return
+        val songId = mediaSongId ?: return
+        if (songId <= 0L) return
+        val uri = player.currentMediaItem?.localConfiguration?.uri?.toString() ?: return
+        val key = OfflineKeys.keyOf(uri) ?: return
+        if (songId == offlineRecordedSongId && key == offlineRecordedKey &&
+            (durationMs <= 0L || durationMs == offlineRecordedDurationMs)
+        ) {
+            return
+        }
+        offlineRecordedSongId = songId
+        offlineRecordedKey = key
+        offlineRecordedDurationMs = durationMs
+        runCatching {
+            OfflineLibrary.record(
+                context = this,
+                songId = songId,
+                name = mediaTitle,
+                artist = mediaArtist,
+                albumPicUrl = currentArtworkUrl,
+                durationMs = durationMs,
+                cacheKey = key,
+                level = OfflineKeys.levelOf(key),
+            )
+        }
+    }
+
     private fun updatePlaybackState() {
         val state = if (player.isPlaying) {
             PlaybackStateCompat.STATE_PLAYING
@@ -902,6 +950,8 @@ class PlaybackService : MediaLibraryService() {
 
         val position = player.currentPosition
         val dur = if (player.duration > 0) player.duration else 0L
+        // v2.0.0 · T3：起播后 500ms 内的第一次心跳就把这首歌写进离线曲目索引（幂等，见该函数）。
+        runCatching { maybeRecordOfflineLibrary(dur) }
 
         val now = System.currentTimeMillis()
         val stateChanged = state != lastPlaybackStateInt

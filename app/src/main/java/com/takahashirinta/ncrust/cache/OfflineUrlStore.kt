@@ -41,6 +41,30 @@ internal class OfflineUrlIndex(private val maxEntries: Int = MAX_ENTRIES) {
     fun get(key: String): String? = map[key]
 
     /**
+     * 删掉这首曲子在清单里的**所有档位**条目（v2.0.0 · T3 联动删除）。返回删掉的条数。
+     *
+     * 与 [OfflineLibrary.removeWithUrls] 成对使用：曲目表删了而这里留着，
+     * 离线兜底就会拿一个指向空缓存的死条目去起播。
+     */
+    fun removeSong(songId: Long): Int {
+        if (songId <= 0L) return 0
+        var removed = 0
+        val it = map.keys.iterator()
+        while (it.hasNext()) {
+            if (OfflineKeys.songIdOf(it.next()) == songId) {
+                it.remove()
+                removed++
+            }
+        }
+        return removed
+    }
+
+    /** 排序后的 key 快照（对账用，不暴露内部 map）。 */
+    fun keys(): List<String> = map.keys.toList()
+
+    fun clear() = map.clear()
+
+    /**
      * 离线兜底用：先按 [preferredKeys] 的顺序找，再退化成「这首歌的**任意**档位」。
      * 离线时能放出来比「档位严格一致」重要得多（缓存里是什么档就放什么档）。
      */
@@ -104,19 +128,34 @@ object OfflineUrlStore {
         }
     }
 
+    /**
+     * 在锁内改索引并**落盘**（v2.0.0 · T3 抽出）。所有写路径都必须走它，
+     * 保证「内存里那份」与「磁盘上那份」永远是同一个状态 —— 之前每个写方法各写一遍
+     * `synchronized + persist`，加一个写方法就多一次漏落盘的机会。
+     */
+    internal fun <T> mutate(context: Context, block: (OfflineUrlIndex) -> T): T = synchronized(this) {
+        val idx = index(context)
+        val result = block(idx)
+        persist(context, idx)
+        result
+    }
+
     /** 记下「这个 key 最后一次成功播放的 URL」。 */
     fun remember(context: Context, key: String, url: String) {
-        synchronized(this) {
-            val idx = index(context)
-            idx.put(key, url)
-            persist(context, idx)
-        }
+        mutate(context) { it.put(key, url) }
     }
 
     /** 从播放 URL 上取下 key 并记录（服务端收到 URL 时调用，URL 上已带 key）。 */
     fun rememberFromUrl(context: Context, url: String) {
         OfflineKeys.keyOf(url)?.let { remember(context, it, url) }
     }
+
+    /**
+     * 联动删除（v2.0.0 · T3）：删掉这首歌在 URL 清单里的所有档位条目。返回删掉的条数。
+     * 只有 [OfflineLibrary.remove] 会用 —— 曲目表与 URL 清单必须一起删。
+     */
+    internal fun forgetSong(context: Context, songId: Long): Int =
+        mutate(context) { it.removeSong(songId) }
 
     /** 离线兜底：找回这首歌可用的 (key, url)。 */
     fun recall(context: Context, songId: Long, preferredLevels: List<String>): Pair<String, String>? =
@@ -125,9 +164,6 @@ object OfflineUrlStore {
         }
 
     fun clear(context: Context) {
-        synchronized(this) {
-            index = OfflineUrlIndex()
-            persist(context, index(context))
-        }
+        mutate(context) { it.clear() }
     }
 }
