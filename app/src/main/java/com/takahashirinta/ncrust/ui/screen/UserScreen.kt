@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import io.github.takahashirinta.kanesumi.anim.sokuou.rememberMetroFlingBehavior
 import io.github.takahashirinta.kanesumi.controls.MetroSelectorFlyout
+import com.takahashirinta.ncrust.KeepScreenOnSetting
 import com.takahashirinta.ncrust.RotationSetting
 import com.takahashirinta.ncrust.cache.OfflineAudioCache
 import com.takahashirinta.ncrust.reco.ArtistReco
@@ -125,6 +126,8 @@ fun UserScreen(
     var autoRotateEnabled by remember { mutableStateOf(RotationSetting.read(context)) }
     // v1.8.0 · T3：大屏模式音频可视化（默认开；关掉后可视化整块不挂载，零开销）。
     var audioVisualizerEnabled by remember { mutableStateOf(VisualizerSetting.read(context)) }
+    // v2.0.0 · T2：播放时禁止熄屏（默认开）。走 KeepScreenOnSetting（唯一读写入口）。
+    var keepScreenOnEnabled by remember { mutableStateOf(KeepScreenOnSetting.read(context)) }
     var lyricsTranslation by remember { mutableStateOf(prefs.getBoolean("lyrics_translation", true)) }
     // v1.4.0 · 音乐人推荐开关
     var artistRecoEnabled by remember { mutableStateOf(ArtistReco.isEnabled(context)) }
@@ -345,6 +348,17 @@ fun UserScreen(
                     // 即时生效: VM 缓存的 gaplessEnabled 不刷新的话,
                     // 本首歌的预载状态与开关不一致, 要等下一首歌才对上
                     playerViewModel.refreshGaplessSetting()
+                }
+            )
+            // v2.0.0 · T2：播放时禁止熄屏。只在 **isPlaying** 且**在播放器界面**时生效；
+            // 进后台由 KeepScreenOnEffect 的 ON_PAUSE 摘掉窗口 flag（不后台常亮）。
+            SettingSwitchRow(
+                title = strings.keepScreenOnLabel,
+                description = strings.keepScreenOnHint,
+                checked = keepScreenOnEnabled,
+                onCheckedChange = {
+                    keepScreenOnEnabled = it
+                    KeepScreenOnSetting.write(context, it)
                 }
             )
             // v1.8.0 · T4：自动旋转（双向）。

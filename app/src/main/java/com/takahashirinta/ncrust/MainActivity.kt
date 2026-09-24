@@ -23,6 +23,7 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.OrientationEventListener
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
@@ -55,7 +56,10 @@ import androidx.compose.ui.zIndex
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalViewConfiguration
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -299,7 +303,9 @@ class MainActivity : ComponentActivity() {
                             autoRotate = autoRotate,
                             onToggleAutoRotate = { RotationSetting.write(this@MainActivity, !autoRotate) },
                             // T4：播放器展开态回传 —— 自动进大屏必须限定在播放器界面。
-                            onPlayerExpandedChange = { playerExpanded.value = it }
+                            onPlayerExpandedChange = { playerExpanded.value = it },
+                            // v2.0.0 · T2：播放中禁止熄屏（窗口 flag 只能由 Activity 持有）。
+                            onKeepScreenOnChange = { applyKeepScreenOn(it) }
                         )
                         if (showSplash) {
                             SplashScreen(onFinished = { showSplash = false })
@@ -418,6 +424,22 @@ class MainActivity : ComponentActivity() {
             controller.show(WindowInsetsCompat.Type.statusBars())
             Log.i(TAG, "immersive: status bar shown")
         }
+    }
+
+    /**
+     * v2.0.0 · T2：窗口级「禁止熄屏」flag。
+     *
+     * 用 \`FLAG_KEEP_SCREEN_ON\` 而不是 \`PowerManager.WakeLock\`：
+     *  - **零权限**（WakeLock 要 \`WAKE_LOCK\`，本 fork 的红线是不新增敏感权限）；
+     *  - flag 挂在 Activity 窗口上，窗口不可见时系统自然不会保持常亮，
+     *    **没有"忘记释放就持续耗电"这条路**；
+     *  - API 24 完全支持（该 flag 自 API 1 就有）。
+     *
+     * 幂等：重复 add/clear 同一个 flag 无副作用，所以调用方不必去重。
+     */
+    private fun applyKeepScreenOn(on: Boolean) {
+        if (on) window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        else window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
     }
 
     /**
@@ -622,6 +644,45 @@ private fun AutoRotateWatcher(
  * 少了后半句，会在"按钮刚点、窗口还没转"的那一两百毫秒里把状态栏先藏掉，
  * 视觉上是"整个屏幕抖一下"。
  */
+/**
+ * v2.0.0 · T2：把"是否禁止熄屏"落到窗口 flag 上，并**跟随 Activity 生命周期**。
+ *
+ * 三条不变量（每一条都有对应的实测项）：
+ *  1. \`active\` 变化立即生效 —— 播放/暂停、进出播放器界面、设置开关都走这一条；
+ *  2. **ON_PAUSE 必须立刻摘 flag**：窗口 flag 在 Activity 不可见时仍然挂着，
+ *     只是"暂时不生效"；一旦用户回到前台（或系统把窗口重新可见化）就会立刻恢复常亮。
+ *     显式清掉才是"后台绝不禁止熄屏"的保证，也是本任务书里点名的耗电风险点；
+ *  3. ON_RESUME 幂等重放：部分 ROM 从最近任务回来会重置窗口标志（与 v1.8.0 沉浸式
+ *     的处理一致，见 [applyImmersive]）。
+ *
+ * \`onDispose\` 也清一次：Activity 销毁 / 组合退出时绝不留残留。
+ */
+@Composable
+private fun KeepScreenOnEffect(
+    active: Boolean,
+    onApply: (Boolean) -> Unit,
+) {
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val currentApply = rememberUpdatedState(onApply)
+    DisposableEffect(lifecycleOwner, active) {
+        fun apply(on: Boolean) = currentApply.value(on)
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_RESUME -> apply(active)
+                Lifecycle.Event.ON_PAUSE -> apply(false)
+                else -> Unit
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        // 首次进入：只有 Activity 真的可见（RESUMED）时才允许禁止熄屏。
+        apply(active && lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED))
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+            apply(false)
+        }
+    }
+}
+
 @Composable
 private fun ImmersiveEffect(
     bigScreen: Boolean,
@@ -664,7 +725,9 @@ fun MainScreen(
      * 而这个判断只有 MainScreen 知道（progress 是它持有的）。回传的是**布尔**而不是
      * progress 本身：布尔只在阈值穿越时翻转一次，不会让 Activity 跟着动画帧重组。
      */
-    onPlayerExpandedChange: (Boolean) -> Unit = {}
+    onPlayerExpandedChange: (Boolean) -> Unit = {},
+    // v2.0.0 · T2：把"是否应该禁止熄屏"的最终判定结果交给 Activity 去改窗口 flag。
+    onKeepScreenOnChange: (Boolean) -> Unit = {}
 ) {
     var selectedTab by remember { mutableIntStateOf(1) }
     // 根布局实测高度(px)：车机会把窗口内容区 inset 到系统栏之间，但 WindowInsets
@@ -742,11 +805,27 @@ fun MainScreen(
     // 走 snapshotFlow 而不是在组合期读 progress —— 后者会让整个 MainScreen 跟着
     // 展开/收起动画逐帧重组（v1.7.0 在 BackHandler 那里已经踩过一次，见下方注释）。
     // 阈值 0.99f = 与 PlayerCard 的 cardExpandedForInput 同一口径（"真的全展开了"）。
+    // v2.0.0 · T2：同一份展开态另存一份**给禁止熄屏用**。刻意不新增第二个 snapshotFlow ——
+    // 两次订阅会在同一次展开/收起里各跑一遍比较；这里只在"真的跨过阈值"时写一次。
+    // 写的是 State 而不是组合期读 progress，所以不会让 MainScreen 跟着动画逐帧重组。
+    val playerOnScreen = remember { mutableStateOf(false) }
     LaunchedEffect(onPlayerExpandedChange) {
         snapshotFlow { progress.value > 0.99f }
             .distinctUntilChanged()
-            .collect(onPlayerExpandedChange)
+            .collect {
+                playerOnScreen.value = it
+                onPlayerExpandedChange(it)
+            }
     }
+
+    // v2.0.0 · T2：播放中禁止熄屏。三个条件缺一不可 ——
+    //  ① 设置开关开着（默认开）；② **正在播放**（暂停/缓冲一律恢复系统策略）；
+    //  ③ 在**播放器界面**（竖屏全屏播放器与大屏模式共用同一个展开进度；mini bar 不算）。
+    // 进后台由 KeepScreenOnEffect 里的 ON_PAUSE 摘掉 flag，绝不后台常亮。
+    KeepScreenOnEffect(
+        active = KeepScreenOnSetting.state.value && isPlaying && playerOnScreen.value,
+        onApply = onKeepScreenOnChange,
+    )
 
     var menuSong by remember { mutableStateOf<SongItem?>(null) }
     var menuSongActions by remember { mutableStateOf<List<SongMenuAction>>(emptyList()) }
