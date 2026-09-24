@@ -103,6 +103,7 @@ val ruRU = Strings(
     source = SourceStrings(
         sourceQqMusic = "QQ Music",
         sourceQqAccount = "Аккаунт QQ Music",
+        sourceQqLoginHint = "Нет входа в аккаунт? Нажмите здесь, чтобы открыть страницу входа QQ",
         sourceQqLoginAction = "Войти в QQ Music",
     ),
     clearCache = "Очистить кэш",

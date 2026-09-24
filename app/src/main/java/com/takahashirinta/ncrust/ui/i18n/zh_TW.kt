@@ -103,6 +103,7 @@ val zhTW = Strings(
     source = SourceStrings(
         sourceQqMusic = "QQ 音樂",
         sourceQqAccount = "QQ 音樂帳號",
+        sourceQqLoginHint = "找不到登入入口？點這裡直接開啟 QQ 登入頁",
         sourceQqLoginAction = "登入 QQ 音樂",
     ),
     clearCache = "清除快取",

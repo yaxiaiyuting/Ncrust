@@ -103,6 +103,7 @@ val koNK = Strings(
     source = SourceStrings(
         sourceQqMusic = "QQ Music",
         sourceQqAccount = "QQ Music 계정",
+        sourceQqLoginHint = "로그인 입구가 없나요? 여기를 눌러 QQ 로그인 페이지를 여세요",
         sourceQqLoginAction = "QQ Music 로그인",
     ),
     clearCache = "캐시 지우기",

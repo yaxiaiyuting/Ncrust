@@ -1663,11 +1663,9 @@ fun MainScreen(
     }
     // v2.1.0 · C：QQ 音乐登录。
     //
-    // 为什么用 WebView 而不是自绘二维码：QQ 互联的扫码轮询端点在本机出口 IP 上被 WAF
-    // 恒定 403（调研实测 8+ 种参数/Header/TLS 变体全部失败），而 QQ 音乐客户端自己的
-    // 扫码链路要走 MQTT over WSS（协议栈成本远超本版范围）。WebView 里用户可以自己选
-    // QQ / 微信 / 手机号登录 —— 与网易云那条已经用了很久的路径**同一套机制**，
-    // 且全程不采集密码（用户在腾讯自己的页面上输入）。
+    // 登录浮层本体在 ui/components/QqLoginOverlay.kt —— 那里记录了「必须用桌面 UA」
+    // 与「必须接管 window.open 弹窗」两条真机踩出来的结论（v2.1.0 hotfix 1：
+    // 移动版 H5 页没有登录入口，用户报告「网页版会自动从 pc 跳到手机」）。
     LaunchedEffect(qqLoginTrigger) {
         if (qqLoginTrigger > 0) {
             // 登录成功后拉一次会员状态（失败不影响登录态本身：cookie 已经在本地了）。
@@ -1679,42 +1677,13 @@ fun MainScreen(
         }
     }
     if (showQqLogin) {
-        Box(modifier = Modifier.fillMaxSize().background(Color.White)) {
-            AndroidView(
-                factory = { ctx ->
-                    android.webkit.WebView(ctx).apply {
-                        settings.javaScriptEnabled = true
-                        settings.domStorageEnabled = true
-                        settings.useWideViewPort = true
-                        settings.loadWithOverviewMode = true
-                        android.webkit.CookieManager.getInstance()
-                            .setAcceptThirdPartyCookies(this, true)
-                        webViewClient = object : android.webkit.WebViewClient() {
-                            override fun onPageFinished(view: android.webkit.WebView, url: String) {
-                                // 固定查 y.qq.com 的 cookie（登录会在 qq.com 各子域间跳转，
-                                // 传当前 url 有时查不到音乐侧的票据）。
-                                val cookie = android.webkit.CookieManager.getInstance()
-                                    .getCookie("https://y.qq.com/") ?: return
-                                if (com.takahashirinta.ncrust.qq.QqCookie.isLoggedIn(cookie)) {
-                                    com.takahashirinta.ncrust.qq.QqAuthStore.saveCookie(ctx, cookie)
-                                    showQqLogin = false
-                                    qqLoginTrigger++
-                                }
-                            }
-                        }
-                        android.webkit.CookieManager.getInstance().removeAllCookies(null)
-                        loadUrl("https://y.qq.com/")
-                    }
-                },
-                modifier = Modifier.fillMaxSize()
-            )
-            TopScrimIconButton(
-                icon = Icons.Default.Close,
-                contentDescription = LocalStrings.current.close,
-                onClick = { showQqLogin = false },
-                alignment = Alignment.TopEnd
-            )
-        }
+        com.takahashirinta.ncrust.ui.components.QqLoginOverlay(
+            onLoggedIn = {
+                showQqLogin = false
+                qqLoginTrigger++
+            },
+            onDismiss = { showQqLogin = false },
+        )
         return
     }
 
