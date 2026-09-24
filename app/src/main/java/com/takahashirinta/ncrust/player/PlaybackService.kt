@@ -447,7 +447,29 @@ class PlaybackService : MediaLibraryService() {
             }
         })
         createNotificationChannel()
+        cancelStaleMedia3Notification()
         startProgressUpdates()
+    }
+
+    /**
+     * v2.0.2：清掉旧版 media3 自动 post 的那条媒体通知（id = 1001 / channel = `default_channel_id`）。
+     *
+     * 通知**不随进程死亡自动回收**：从 v2.0.1 升到本版时，用户会看到「新版已经不发第二条了，
+     * 但旧的那条还挂在通知栏里」，直到它被别的路径覆盖或用户手动划掉。这里在服务创建时
+     * 显式撤一次，升级后立刻收敛成一条。
+     *
+     * 只撤**本应用自己**的通知（`NotificationManager.cancel(id)` 的作用域就是本包），
+     * 而且是幂等的：本版之后 media3 不会再发这个 id，`cancel` 一个不存在的 id 是空操作。
+     *
+     * 顺带说明为什么**不**删 `default_channel_id` 渠道：那个渠道是 media3 建的、本版起不再
+     * 使用，但删渠道会让任何仍在往该渠道 post 的路径静默丢通知（API 26+ 往已删除渠道发通知
+     * 不显示）。留一个空的渠道只是设置页里多一行，不会造成功能问题。
+     */
+    private fun cancelStaleMedia3Notification() {
+        runCatching {
+            getSystemService(NotificationManager::class.java)
+                ?.cancel(androidx.media3.session.DefaultMediaNotificationProvider.DEFAULT_NOTIFICATION_ID)
+        }.onFailure { Log.w("PlaybackService", "cancel stale media3 notification failed", it) }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -1177,6 +1199,69 @@ class PlaybackService : MediaLibraryService() {
         val i = Intent(this, PlaybackService::class.java).apply { putExtra("action", action) }
         return PendingIntent.getService(this, action.hashCode(), i,
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+    }
+
+    /**
+     * v2.0.2：**不再让 media3 自己发第二条媒体通知。**
+     *
+     * ## 为什么会有两条（真机取证）
+     *
+     * `PlaybackService` 是 media3 的 `MediaLibraryService`，`onCreate` 里建了一个
+     * `MediaLibrarySession`。而 media3 `MediaSessionService` 的默认实现会在播放进行时
+     * **自己 post 一条媒体通知**：`onUpdateNotification(session, startInForegroundRequired)`
+     * → `MediaNotificationManager.updateNotification(...)`，用的是
+     * `DefaultMediaNotificationProvider` 的
+     * **id = 1001 / channel = `default_channel_id`（渠道名 "Now playing"）/ groupKey = `media3_group_key`**。
+     * 本类同时又在 [updateNotify] 里发自己的 **id = 1 / channel = `ncrust_playback`**。
+     * 两个 id 不同，谁也覆盖不了谁 ⇒ **同一个包在通知栏里挂两条媒体通知**。
+     *
+     * 实测（v2.0.1-gpl 原样，未改一行代码）：
+     *  - 华为平板 WGR-W09（HarmonyOS 4.2 / EMUI 14.2.0 / API 31）`dumpsys notification --noredact`
+     *    两条都在；下拉通知栏是**两张一模一样的媒体卡片**（用户报的「双通知栏」）；
+     *  - 荣耀 AGT-AN00（MagicOS_9.0.0 / API 35）同样两条，且系统播控卡片挑中的是
+     *    media3 那条 —— 它的正文是 `title=null / text=null`（见下），于是**歌词条根本不出现**。
+     *
+     * ## 为什么 media3 那条注定没有歌词（顺带修掉的第二个坑）
+     *
+     * media3 的通知正文取自 media3 会话的 metadata，而 media3 会话的 metadata 来自
+     * **当前 `MediaItem` 自带的 `MediaMetadata`**：
+     *  - 手动起播走的 [playUrl] 建的是裸 `MediaItem.fromUri(url)` —— **一个字段都没有**，
+     *    于是那条通知 `android.title=null / android.text=null`；
+     *  - 无缝预载走的 `buildPreloadMediaItem` 有 title/artist，AUTO 接续后那条通知能显示
+     *    歌名/艺人，但**永远不会有歌词** —— 歌词只写进 `MediaSessionCompat`
+     *    （见 [updatePlaybackState]），从来没进过 media3 会话。
+     *
+     * 换句话说：媒体通知这一份产物，多出来的那条要么是空的、要么是无歌词的重复项，
+     * 没有任何场景是用户想要的。
+     *
+     * ## 修法：覆盖成空实现，通知由 [updateNotify] 单点管理
+     *
+     * media3 的判定链是（`media3-session-1.5.0` 字节码核实）：
+     * ```
+     * onUpdateNotification(session, startInForegroundRequired)   // 本方法
+     *   ├─ onUpdateNotification(session)          // 单参版，只把 defaultMethodCalled 置 true
+     *   └─ if (defaultMethodCalled) getMediaNotificationManager().updateNotification(...)
+     * ```
+     * 只要**不调用 super**，`defaultMethodCalled` 保持 false ⇒ media3 完全不再 post id=1001。
+     * 这正是 media3 官方给「我要自己发通知」留的口子。
+     *
+     * 代价与对策（都已落地，不是待办）：
+     *  - media3 不再替我们 `startForeground` —— [updateNotify] 本来就在自己
+     *    `startForeground(1, n)` / `notify(1, n)`；
+     *  - media3 不再管「播放结束后撤通知」—— 本类有自己的 `"stop"` 分支
+     *    （`stopForeground(STOP_FOREGROUND_REMOVE)` + `stopSelf`）与 [onTaskRemoved]；
+     *  - 生命周期其余部分不受影响：`MediaSessionService.onTaskRemoved` / `onDestroy` /
+     *    `pauseAllPlayersAndStopSelf` 的字节码里都不碰通知管理器（已逐个核实）。
+     *
+     * ⚠️ 升级到本版时，旧版 media3 留下的那条 id=1001 通知**不会自己消失**
+     * （通知不随进程死亡回收），所以 [onCreate] 里显式 `cancel` 一次。
+     */
+    override fun onUpdateNotification(
+        session: androidx.media3.session.MediaSession,
+        startInForegroundRequired: Boolean,
+    ) {
+        // 刻意留空：不调用 super，media3 就不再 post 它自己那条通知。
+        // 必须覆盖**双参**版本（单参版只置位 defaultMethodCalled，覆盖它挡不住）。
     }
 
     override fun onBind(intent: Intent?): IBinder? {
