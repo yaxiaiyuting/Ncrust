@@ -66,11 +66,7 @@ object QqApi {
         val p = page.coerceAtLeast(1)
 
         val legacy = runCatching {
-            val url = "https://c.y.qq.com/soso/fcgi-bin/client_search_cp" +
-                "?p=" + p + "&n=" + n +
-                "&w=" + java.net.URLEncoder.encode(keyword, "UTF-8") +
-                "&format=json&cr=1&new_json=1"
-            QqClient.legacyGet(url)
+            QqClient.legacyGet(QqRequests.legacySearchUrl(keyword, n, p))
         }.getOrNull()
         legacy?.let { json ->
             val songs = QqSongMapper.songsFromLegacySearch(json)
@@ -93,23 +89,8 @@ object QqApi {
      * 这与本文件其它接口（vkey/歌词）必须带 comm 正好相反，别顺手统一。
      */
     private suspend fun searchViaMusicu(keyword: String, n: Int, p: Int): List<SongItem> {
-        val param = JSONObject()
-            .put("searchid", newSearchId())
-            .put("query", keyword)
-            .put("search_type", 0)
-            .put("num_per_page", n)
-            .put("page_num", p)
-            .put("highlight", true)
-            .put("grp", true)
-            .put("selectors", JSONObject())
-            .put("vec_selectors", JSONArray())
-        // 键名 = module 名（不是 "req"），且不带 comm
-        val request = JSONObject()
-            .put("module", SEARCH_MODULE)
-            .put("method", "DoSearchForQQMusicMobile")
-            .put("param", param)
-        val envelope = JSONObject().put(SEARCH_MODULE, request)
-        val response = QqClient.musicuEnvelope(envelope, appIdentity = true) ?: return emptyList()
+        val envelope = QqRequests.searchEnvelope(keyword, n, p, newSearchId())
+        val response = QqClient.musicuEnvelope(envelope, appIdentity = false) ?: return emptyList()
         return QqSongMapper.songsFromSearchResponse(JSONObject().put("req", response))
     }
 
@@ -197,25 +178,13 @@ object QqApi {
         types: List<QqFileType>,
     ): Map<QqFileType, JSONObject>? {
         if (types.isEmpty()) return null
-        val filenames = JSONArray()
-        val songmids = JSONArray()
-        val songtypes = JSONArray()
-        for (t in types) {
-            filenames.put(QqQuality.fileNameFor(t, mediaMid))
-            songmids.put(songMid)
-            songtypes.put(0)
-        }
-        val param = JSONObject()
-            .put("uin", QqClient.uinForRequest())
-            .put("filename", filenames)
-            .put("guid", QqClient.guidForRequest())
-            .put("songmid", songmids)
-            .put("songtype", songtypes)
-            .put("ctx", 0)
-        val request = JSONObject()
-            .put("module", "music.vkey.GetVkey")
-            .put("method", "UrlGetVkey")
-            .put("param", param)
+        val request = QqRequests.vkey(
+            songMid = songMid,
+            mediaMid = mediaMid,
+            types = types,
+            uin = QqClient.uinForRequest(),
+            guid = QqClient.guidForRequest(),
+        )
         val response = QqClient.musicu(request, appIdentity = true) ?: return null
         val data = response.optJSONObject("data") ?: return null
 
@@ -273,23 +242,7 @@ object QqApi {
     suspend fun fetchLyric(song: SongItem): LyricPack? {
         val songMid = song.sourceId ?: return null
         val rawId = SourceIds.qqRawId(song.id) ?: 0L
-        val param = JSONObject()
-            .put("crypt", 1)
-            .put("lrc_t", 0)
-            .put("qrc", 1)
-            .put("qrc_t", 0)
-            .put("roma", 1)
-            .put("roma_t", 0)
-            .put("trans", 1)
-            .put("trans_t", 0)
-            .put("needSingingAnnotations", false)
-            .put("type", 1)
-            .put("songMid", songMid)
-            .put("songId", rawId)
-        val request = JSONObject()
-            .put("module", "music.musichallSong.PlayLyricInfo")
-            .put("method", "GetPlayLyricInfo")
-            .put("param", param)
+        val request = QqRequests.lyric(songMid, rawId)
         val response = QqClient.musicu(request, appIdentity = true) ?: return null
         if (response.optInt("code", -1) != 0) {
             Log.w(TAG, "lyric code=${response.optInt("code", -1)} for mid=$songMid")
@@ -341,10 +294,7 @@ object QqApi {
      * （见 [fetchPlayUrl]）。判断错了最坏是界面上的一个角标不对，不会凭空给或夺走播放权限。
      */
     suspend fun fetchProfile(): QqProfile? {
-        val request = JSONObject()
-            .put("module", "VipLogin.VipLoginInter")
-            .put("method", "vip_login_base")
-            .put("param", JSONObject())
+        val request = QqRequests.vip()
         val response = QqClient.musicu(request, appIdentity = true) ?: return null
         if (response.optInt("code", -1) != 0) return null
         val identity = response.optJSONObject("data")?.optJSONObject("identity") ?: return null

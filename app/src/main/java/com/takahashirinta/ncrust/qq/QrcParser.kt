@@ -164,7 +164,13 @@ object QrcParser {
                 LrcWord(
                     startMs = raw.start,
                     durationMs = raw.dur,
-                    text = raw.text,
+                    // ⚠️ 用**裁剪后坐标系里的实际切片**，不是原始词文本。
+                    // 行首行尾的空白被裁掉时，边界上的那个词会只留下一部分
+                    // （真实样本里 `La ` 这种带尾空格的词就踩到了），
+                    // 此时若还挂原始文本，`text.substring(charStart, charEndExclusive) != word.text`
+                    // —— 渲染层按区间取版面路径，两者不一致就是「唱到别字」或串位。
+                    // 这条不变量由 QrcParserTest 与真实响应探针共同守着。
+                    text = text.substring(start, end),
                     charStart = start,
                     charEndExclusive = end,
                 )
