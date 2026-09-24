@@ -369,4 +369,55 @@ object QqApi {
 
     private fun SongItem.trackKeyOrEmpty(): String =
         SourceIds.trackKey(MusicSource.QQMUSIC, id)
+
+    // ---------------- 手机号验证码登录（v2.1.1） ----------------
+
+    /**
+     * 一次手机号登录尝试的结果。
+     *
+     * [cookie] 只在**成功且凭证完整**时非空；调用方负责落盘（[QqAuthStore.saveCookie]）——
+     * 这一层刻意不碰存储，好让「登录协议」与「账号存储」各自可测、可替换。
+     */
+    data class PhoneLoginAttempt(
+        val outcome: QqPhoneLogin.LoginOutcome,
+        val cookie: String? = null,
+    )
+
+    /**
+     * 发短信验证码。返回归类后的结局（见 [QqPhoneLogin.SendOutcome]）。
+     *
+     * 号码的**本地校验不在这里** —— 调用方应当先过 [QqPhoneLogin.normalizePhone]，
+     * 格式不对就别发请求（省一次注定 `104400` 的往返）。
+     */
+    suspend fun sendPhoneAuthCode(phone: String): QqPhoneLogin.SendOutcome {
+        val response = QqClient.musicuLogin(QqRequests.sendPhoneAuthCode(phone))
+            ?: return QqPhoneLogin.SendOutcome.FAILED
+        val code = response.optInt("code", -1)
+        Log.i(TAG, "SendPhoneAuthCode -> req.code=$code")
+        return QqPhoneLogin.classifySend(code)
+    }
+
+    /**
+     * 用验证码换凭证。
+     *
+     * 成功（`req.code == 0`）时把 `req.data` 转成 cookie 串返回；**凭证不完整时按失败处理**
+     * （见 [QqPhoneLogin.cookieFromCredential] 的注释：缺票据的 cookie 会让界面显示
+     * 「已登录」而一取链就说没权限，比直接失败难排查得多）。
+     */
+    suspend fun loginWithPhoneCode(phone: String, code: String): PhoneLoginAttempt {
+        val response = QqClient.musicuLogin(QqRequests.phoneLogin(phone, code))
+            ?: return PhoneLoginAttempt(QqPhoneLogin.LoginOutcome.FAILED)
+        val reqCode = response.optInt("code", -1)
+        val outcome = QqPhoneLogin.classifyLogin(reqCode)
+        Log.i(TAG, "Login(phone) -> req.code=$reqCode outcome=$outcome")
+        if (outcome != QqPhoneLogin.LoginOutcome.OK) return PhoneLoginAttempt(outcome)
+        val cookie = QqPhoneLogin.cookieFromCredential(response.optJSONObject("data"))
+        return if (cookie == null) {
+            // 服务端说成功、凭证却不成形：不落盘，按失败报给用户（宁可不登，也不要半份登录态）
+            Log.w(TAG, "Login(phone) 成功但凭证不完整，拒绝落盘")
+            PhoneLoginAttempt(QqPhoneLogin.LoginOutcome.FAILED)
+        } else {
+            PhoneLoginAttempt(QqPhoneLogin.LoginOutcome.OK, cookie)
+        }
+    }
 }

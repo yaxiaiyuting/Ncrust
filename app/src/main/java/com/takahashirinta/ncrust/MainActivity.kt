@@ -1654,6 +1654,11 @@ fun MainScreen(
     var showQqLogin by remember { mutableStateOf(false) }
     // v2.1.0 · C（hotfix 4）：QQ 登录改为「自绘二维码为主、网页登录兜底」。
     var showQqQr by remember { mutableStateOf(false) }
+    // v2.1.1：手机号验证码登录。为**微信用户**而加 —— 他们多半没有 QQ 号，
+    // 而网页版的微信登录是「网站应用扫码」，只能被另一台设备的微信扫（同一台手机
+    // 扫不了自己的屏幕，微信也不认相册里的登录码）；官方那种一键微信登录要微信
+    // 开放平台的**签名**配对，fork 不可能满足。详见 QqPhoneLogin 的注释。
+    var showQqPhone by remember { mutableStateOf(false) }
     // 扫码确认后交给 WebView 的起始地址与 cookie（见 QqLoginOverlay 的参数说明）。
     var qqLoginStartUrl by remember { mutableStateOf<String?>(null) }
     var qqLoginCookies by remember { mutableStateOf<String?>(null) }
@@ -1680,6 +1685,26 @@ fun MainScreen(
                 }
             }
         }
+    }
+    if (showQqPhone) {
+        com.takahashirinta.ncrust.ui.components.QqPhoneLoginDialog(
+            onLoggedIn = { cookie ->
+                // cookie 由 QqApi 从 Login 的 data 拼好；落盘走的是与 WebView 登录
+                // 同一条路（QqAuthStore.saveCookie → merge），所以两种登录方式拿到的
+                // 登录态形状一致，业务侧不需要区分。
+                com.takahashirinta.ncrust.qq.QqAuthStore.saveCookie(context, cookie)
+                showQqPhone = false
+                qqLoginTrigger++
+            },
+            onUseWebLogin = {
+                qqLoginStartUrl = null
+                qqLoginCookies = null
+                showQqPhone = false
+                showQqLogin = true
+            },
+            onDismiss = { showQqPhone = false },
+        )
+        return
     }
     if (showQqQr) {
         com.takahashirinta.ncrust.ui.components.QqQrLoginDialog(
@@ -2041,6 +2066,8 @@ fun MainScreen(
                             onShowWebLogin = { showWebLogin = true },
                                 // 二维码为主入口；网页登录是它内部的兜底按钮。
                                 onShowQqLogin = { showQqQr = true },
+                                // v2.1.1：手机号验证码登录（微信用户的可用路径）。
+                                onShowQqPhoneLogin = { showQqPhone = true },
                             refreshTrigger = cookieRefreshTrigger,
                             onLanguageChange = onLanguageChange
                         )

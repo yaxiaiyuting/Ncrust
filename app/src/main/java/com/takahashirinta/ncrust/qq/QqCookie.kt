@@ -122,6 +122,10 @@ object QqCookie {
             KEY_UIN, KEY_WXUIN, KEY_MUSIC_KEY, KEY_MUSIC_KEY_ALT, "psrf_qqunionid",
             "psrf_qqopenid", "psrf_access_token_expiresAt", "wxrefresh_token", "refresh_token",
             "psrf_musickey_createtime", "euin", "psrf_qqrefresh_token",
+            // v2.1.1：实测的请求 Cookie 里就有它（PHASE0-QQMUSIC-API.md §4.5.1
+            // 的 `Cookie: uin=…; qqmusic_uin=…; qm_keyst=…; qqmusic_key=…`），
+            // 手机号登录拿回来的凭证里也补了它。有就带、没有不影响。
+            "qqmusic_uin",
         )
         val picked = keep.mapNotNull { k -> map[k]?.takeIf { it.isNotEmpty() }?.let { k to it } }
         return picked.joinToString("; ") { it.first + "=" + it.second }

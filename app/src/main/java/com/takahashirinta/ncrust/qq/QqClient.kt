@@ -151,11 +151,44 @@ object QqClient {
             execute(ctx, envelope, module, appIdentity = true)
         }
 
+    /**
+     * 登录专用通道（v2.1.1）：**客户端身份 + 登录方式标记 + 不带 cookie**。
+     *
+     * 三点都与上一条通道不同，每一点都有实测依据（`tools/probe-qq-phone-login.py`）：
+     *
+     * 1. `comm.tmeLoginMethod = 3`（手机验证码）。**这个是必需的**：`Login` 带着它回
+     *    `req.code=1000`（走到业务层），去掉它直接回 `104400`（请求被拒）。
+     * 2. `comm.tmeLoginType = 0`（手机号）。实测带不带都不影响 `Login` 的失败码，
+     *    但它是官方信封的一部分，照带。
+     * 3. **不发 Cookie**。登录是在「还没有身份」的前提下发生的，把一个可能已经过期的旧
+     *    cookie 一起发过去，只会给服务端一个把这次登录绑到旧身份上的机会 ——
+     *    而我们没有任何账号可以验证那种情况下的行为。裸请求是实测过的形状。
+     */
+    suspend fun musicuLogin(request: JSONObject): JSONObject? = withContext(Dispatchers.IO) {
+        val ctx = appContext ?: return@withContext null
+        val body = JSONObject()
+            .put(
+                "comm",
+                appComm(ctx)
+                    .put("tmeLoginMethod", LOGIN_METHOD_PHONE_CODE)
+                    .put("tmeLoginType", LOGIN_TYPE_PHONE),
+            )
+            .put("req", request)
+        execute(ctx, body, request.optString("module"), appIdentity = true, sendCookie = false)
+    }
+
+    /** `comm.tmeLoginMethod`：3 = 手机短信验证码（实测 `Login` 必须要它）。 */
+    private const val LOGIN_METHOD_PHONE_CODE = 3
+
+    /** `comm.tmeLoginType`：0 = 手机号（1 = 微信，2 = QQ）。 */
+    private const val LOGIN_TYPE_PHONE = 0
+
     private fun execute(
         ctx: Context,
         body: JSONObject,
         module: String,
         appIdentity: Boolean,
+        sendCookie: Boolean = true,
     ): JSONObject? {
         return try {
             val httpRequest = Request.Builder()
@@ -165,7 +198,8 @@ object QqClient {
                 .header("Content-Type", "application/json")
                 .apply {
                     // 只带认识的身份字段（见 QqCookie.requestCookie 的注释）。
-                    val cookie = QqCookie.requestCookie(QqAuthStore.getCookie(ctx))
+                    // 登录请求例外：那时还没有身份，见 musicuLogin。
+                    val cookie = if (sendCookie) QqCookie.requestCookie(QqAuthStore.getCookie(ctx)) else ""
                     if (cookie.isNotEmpty()) header("Cookie", cookie)
                 }
                 .post(body.toString().toRequestBody(JSON))

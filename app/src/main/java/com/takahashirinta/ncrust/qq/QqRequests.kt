@@ -130,4 +130,44 @@ internal object QqRequests {
         .put("module", VIP_MODULE)
         .put("method", VIP_METHOD)
         .put("param", JSONObject())
+
+    // ---------------- 手机号验证码登录（v2.1.1） ----------------
+
+    const val LOGIN_MODULE = "music.login.LoginServer"
+    const val SEND_PHONE_CODE_METHOD = "SendPhoneAuthCode"
+    const val LOGIN_METHOD = "Login"
+
+    /**
+     * 发短信验证码。实测（2026-09）：
+     * - **`areaCode` 必须是字符串**：传数字 `86` 会被判成畸形请求（`req.code=10006`），
+     *   传 `"86"` 才走到正常的参数校验路径（`104400` = 号码非法）；
+     * - `tmeAppid` 会被服务端校验（传别的值回 `bad request: unknown tmeAppID`）；
+     * - `comm` 需要 `tmeLoginMethod = 3`（见 [QqClient.musicuLogin]）。
+     */
+    fun sendPhoneAuthCode(phoneNo: String, areaCode: String = QqPhoneLogin.AREA_CODE_CN): JSONObject =
+        JSONObject()
+            .put("module", LOGIN_MODULE)
+            .put("method", SEND_PHONE_CODE_METHOD)
+            .put(
+                "param",
+                JSONObject()
+                    .put("tmeAppid", "qqmusic")
+                    .put("areaCode", areaCode)
+                    .put("phoneNo", phoneNo),
+            )
+
+    /**
+     * 用短信验证码换凭证。`loginMode = 1` 就是「手机验证码登录」这一种模式
+     * （`2` 是 refresh_token 续期，见 PHASE0-QQMUSIC-API.md §4.5.2）。
+     */
+    fun phoneLogin(phoneNo: String, code: String): JSONObject = JSONObject()
+        .put("module", LOGIN_MODULE)
+        .put("method", LOGIN_METHOD)
+        .put(
+            "param",
+            JSONObject()
+                .put("code", code)
+                .put("loginMode", 1)
+                .put("phoneNo", phoneNo),
+        )
 }
