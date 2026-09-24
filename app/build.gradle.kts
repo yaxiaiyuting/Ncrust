@@ -64,8 +64,16 @@ android {
         // RELEASE-NOTES-v2.0.2-gpl.md 与仓库外的 PHASE0-REPORT-v2.0.2.md。
         // **第七次按脚本定号**：冷启动跑 tools/next-version.sh，三源（最近 5 个 tag /
         // dist 42 个 APK 的 aapt2 badging / 仓库当前 build.gradle）最大值都是 28 ⇒ 本版取 29。
-        versionCode = 29
-        versionName = "2.0.2-gpl"
+        // v2.1.0 是 minor 版：接入 **QQ 音乐音源**（网易云 + QQ 双音源并存、各自独立登录）。
+        // 架构上引入了 MusicSourceProvider 抽象与 SourceRouter；渲染层核心
+        // （SweepTrack 的扫词算法）**一个字节未改**；`applicationId`、签名、权限全部未动。
+        // 关键设计：QQ 音乐的数字 id 用 `1L shl 62` 标志位与网易云的 id 空间**结构性隔离**，
+        // 因此离线缓存 key / 歌词缓存 key / 续播进度表 / 队列判重这些既有结构一个都没改，
+        // 也没有任何数据迁移（对照方案是在 5 个文件里各做一次 key 带音源 + 老 key 兼容读）。
+        // **第八次按脚本定号**：冷启动跑 tools/next-version.sh，三源（最近 5 个 tag /
+        // dist 44 个 APK 的 aapt2 badging / 仓库当前 build.gradle）最大值都是 29 ⇒ 本版取 30。
+        versionCode = 30
+        versionName = "2.1.0-gpl"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
