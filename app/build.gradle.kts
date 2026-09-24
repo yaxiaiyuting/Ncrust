@@ -51,8 +51,14 @@ android {
         // 动态字号（实验性，默认关）。**仍然没有显式「下载」入口**（合规定位不变）。
         // **第五次按脚本定号**：冷启动跑 tools/next-version.sh，三源（最近 5 个 tag /
         // dist 38 个 APK 的 aapt2 badging / 仓库当前 build.gradle）最大值都是 26 ⇒ 本版取 27。
-        versionCode = 27
-        versionName = "2.0.0-gpl"
+        // v2.0.1 是 v2.0.0 的 hotfix：修「大屏模式下逐字歌词在还没进入第一句时被拉到最顶端、
+        // 第一句看不见」（根因 = 歌词面板固定 200dp 的顶部留白在大屏短面板里占掉 77%，
+        // 加上前奏期间三条自动定位路径全部提前返回；详见 AGENTS.md 的 v2.0.1 节与仓库外的
+        // PHASE0-REPORT-v2.0.1.md）。**SweepTrack.kt 核心算法一个字节未改**（v1.5.2 冻结）。
+        // **第六次按脚本定号**：冷启动跑 tools/next-version.sh，三源（最近 5 个 tag /
+        // dist 40 个 APK 的 aapt2 badging / 仓库当前 build.gradle）最大值都是 27 ⇒ 本版取 28。
+        versionCode = 28
+        versionName = "2.0.1-gpl"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
