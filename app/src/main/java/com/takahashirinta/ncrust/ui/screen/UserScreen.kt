@@ -148,6 +148,8 @@ fun UserScreen(
     var lyricsTtmlFirst by remember { mutableStateOf(LyricsDisplayPrefs.readTtmlFirst(prefs)) }
     // v1.9.3：音译显示（默认关）。只影响显示，不改歌词源、不重取歌词。
     var lyricsRomanization by remember { mutableStateOf(LyricsDisplayPrefs.readRomanization(prefs)) }
+    // v2.0.0 · T4：动态字号（实验性，默认关）。
+    var dynamicFontEnabled by remember { mutableStateOf(LyricsDisplayPrefs.readDynamicFont(prefs)) }
 
     var selectedLanguageCode by remember { mutableStateOf(getSavedLanguageCode(context)) }
 
@@ -478,6 +480,18 @@ fun UserScreen(
                 onCheckedChange = {
                     lyricsRomanization = it
                     playerViewModel.setLyricsRomanization(it)
+                }
+            )
+            // v2.0.0 · T4：动态字号（**实验性，默认关**）。开启后短句字号大、长句字号小
+            // （按每句估算折行数，纯逻辑见 lyric/DynamicLyricFont.kt）。
+            // 说明文字里必须明确提示可能引起视觉抖动 —— 这是任务书要求的诚实标注。
+            SettingSwitchRow(
+                title = strings.dynamicFontLabel,
+                description = strings.dynamicFontHint,
+                checked = dynamicFontEnabled,
+                onCheckedChange = {
+                    dynamicFontEnabled = it
+                    playerViewModel.setDynamicLyricFont(it)
                 }
             )
             Spacer(Modifier.height(24.dp))

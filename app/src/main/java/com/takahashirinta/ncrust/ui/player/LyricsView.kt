@@ -31,6 +31,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.takahashirinta.ncrust.lyric.DynamicLyricFont
 import com.takahashirinta.ncrust.lyric.LrcLine
 import com.takahashirinta.ncrust.lyric.LyricSubtitleText
 import com.takahashirinta.ncrust.lyric.LyricsDisplayPrefs
@@ -88,6 +89,10 @@ fun LyricsView(
     sweepQuality: Int = LyricsSweepQuality.AUTO,
     // 点一下 A- / A+ 回调一步（±1 档），倍率换算在 ViewModel 里做。
     onFontScaleStep: (Int) -> Unit = {},
+    // v2.0.0 · T4：动态字号（实验性，默认**关**）。按每句估算折行数给这一句一个离散倍率，
+    // 纯逻辑见 [com.takahashirinta.ncrust.lyric.DynamicLyricFont]。关掉时下面所有分支都不走，
+    // 每行 fontScale = 1f ⇒ 面板里的表达式与 v1.9.3 逐字节一致。
+    dynamicFontEnabled: Boolean = false,
 ) {
     val strings = LocalStrings.current
     if (lyrics.isEmpty()) {
@@ -107,23 +112,56 @@ fun LyricsView(
     // 开关关掉时连 Map 都不建（默认路径零额外分配）。
     // "要不要显示这一行"由 LyricSubtitleText.visibleRomanization 决定：空白行、与原文逐字相同的行
     // 都被丢掉，所以「无音译的歌」打开开关也不会多出一行空行（有 JVM 单测 + 真实样本断言）。
+    // v2.0.0 · T4：动态字号需要"文本可用宽度"。面板本身是 fillMaxSize + 20dp 横向内边距
+    // （见下方 NcrustLyricsPanel 的 modifier），所以可用宽度 = 本 Box 宽 − 40dp；
+    // 首帧拿不到宽度时按 0 处理 ⇒ 倍率一律 1f（等价于功能没开），拿到宽度后重算一次。
+    var panelWidthPx by remember { mutableFloatStateOf(0f) }
+    val dynamicFontAvailablePx = with(LocalDensity.current) {
+        (panelWidthPx - 40.dp.toPx()).coerceAtLeast(0f)
+    }
+    // 基准字号（px）：判定折行数用，与面板拿到的 sp 同源（用户 A-/A+ 是"基准"，
+    // 动态倍率在它之上浮动，不替换它）。
+    val baseOriginalFontPx = with(LocalDensity.current) { (32f * fontScale).sp.toPx() }
+    // 每行的字号倍率。键里带上宽度与 fontScale：换歌/旋转/A-/A+ 才重算；面板宽度变化会
+    // 触发一次重算（首帧一次，之后稳定）。刻意**不**写进歌词缓存 —— 它是派生显示量
+    // （AGENTS.md：能不加缓存字段就不加）。
+    val lineScales = remember(
+        lyrics, dynamicFontEnabled, dynamicFontAvailablePx, fontScale,
+    ) {
+        if (!dynamicFontEnabled || dynamicFontAvailablePx <= 0f) {
+            emptyList()
+        } else {
+            lyrics.map {
+                DynamicLyricFont.clampScale(
+                    raw = DynamicLyricFont.scaleFor(
+                        text = it.text,
+                        availWidthPx = dynamicFontAvailablePx,
+                        fontSizePx = baseOriginalFontPx,
+                    ),
+                    baseFontSizeSp = 32f * fontScale,
+                )
+            }
+        }
+    }
+
     val panelLines = remember(
-        lyrics, translatedLyrics, showTranslation, romanizedLyrics, showRomanization,
+        lyrics, translatedLyrics, showTranslation, romanizedLyrics, showRomanization, lineScales,
     ) {
         val tMap = if (showTranslation) translatedLyrics.associateBy { it.timeMs } else emptyMap()
         val rMap = if (showRomanization) romanizedLyrics.associateBy { it.timeMs } else emptyMap()
-        lyrics.map {
+        lyrics.mapIndexed { index, line ->
             NcrustLyricLine(
-                timestampMillis = it.timeMs,
-                text = it.text,
-                translation = tMap[it.timeMs]?.text ?: "",
+                timestampMillis = line.timeMs,
+                text = line.text,
+                translation = tMap[line.timeMs]?.text ?: "",
                 romanization = LyricSubtitleText.visibleRomanization(
-                    main = it.text,
-                    romanization = rMap[it.timeMs]?.text ?: "",
+                    main = line.text,
+                    romanization = rMap[line.timeMs]?.text ?: "",
                     show = showRomanization,
                 ),
-                words = it.words,
-                endMs = it.endMs,
+                words = line.words,
+                endMs = line.endMs,
+                fontScale = lineScales.getOrElse(index) { 1f },
             )
         }
     }
@@ -269,7 +307,11 @@ fun LyricsView(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .onSizeChanged { panelHeightPx = it.height.toFloat() }
+            .onSizeChanged {
+                panelHeightPx = it.height.toFloat()
+                // v2.0.0 · T4：动态字号要按可用宽度估算折行数（见上）。
+                panelWidthPx = it.width.toFloat()
+            }
     ) {
         NcrustLyricsPanel(
             lines = panelLines,

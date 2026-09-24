@@ -129,6 +129,10 @@ data class NcrustLyricLine(
     val words: List<LrcWord> = emptyList(),
     // v1.5.0 · B：整行结束时刻（yrc 的行时长）。null = 未知。
     val endMs: Long? = null,
+    // v2.0.0 · T4：动态字号倍率（实验性，默认 1f = 与 v1.9.3 逐字节一致）。
+    // 它是"这一句自己的静态属性"，与"谁是当前行"无关 —— 绝不能按 currentIndex 改字号，
+    // 否则每次切句都会有两行重排 + item 高度抖动。
+    val fontScale: Float = 1f,
 )
 
 @Composable
@@ -301,6 +305,21 @@ fun NcrustLyricsPanel(
                     index == currentIndex -> currentLineColor
                     else -> futureLineColor
                 }
+                // v2.0.0 · T4：动态字号（实验性）。倍率为 1f 时**原样使用面板字号**，
+                // 刻意不写成 `fontSize * 1f`：这样"关掉开关 ⇒ 渲染表达式与 v1.9.3 一致"
+                // 是可以逐行审计的，而不是"值相等但 diff 变了"。
+                // 译文/音译同乘同一个倍率 ⇒ 三层比例恒定（与 A-/A+ 的做法一致）。
+                val lineScale = line.fontScale
+                val lineFontSize = if (lineScale == 1f) fontSize else fontSize * lineScale
+                val lineLineHeight = if (lineScale == 1f) lineHeight else lineHeight * lineScale
+                val lineTranslationFontSize =
+                    if (lineScale == 1f) translationFontSize else translationFontSize * lineScale
+                val lineTranslationLineHeight =
+                    if (lineScale == 1f) translationLineHeight else translationLineHeight * lineScale
+                val lineRomanizationFontSize =
+                    if (lineScale == 1f) romanizationFontSize else romanizationFontSize * lineScale
+                val lineRomanizationLineHeight =
+                    if (lineScale == 1f) romanizationLineHeight else romanizationLineHeight * lineScale
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -336,8 +355,8 @@ fun NcrustLyricsPanel(
                             sweepConfig = sweepConfig,
                             currentPositionMillis = currentPosition,
                             style = TextStyle(
-                                fontSize = fontSize,
-                                lineHeight = lineHeight,
+                                fontSize = lineFontSize,
+                                lineHeight = lineLineHeight,
                                 fontWeight = FontWeight.Bold,
                             ),
                         )
@@ -346,8 +365,8 @@ fun NcrustLyricsPanel(
                             MetroText(
                                 text = line.translation,
                                 style = TextStyle(
-                                    fontSize = translationFontSize,
-                                    lineHeight = translationLineHeight,
+                                    fontSize = lineTranslationFontSize,
+                                    lineHeight = lineTranslationLineHeight,
                                     fontWeight = FontWeight.Normal,
                                 ),
                                 softWrap = true,
@@ -370,8 +389,8 @@ fun NcrustLyricsPanel(
                             MetroText(
                                 text = line.romanization,
                                 style = TextStyle(
-                                    fontSize = romanizationFontSize,
-                                    lineHeight = romanizationLineHeight,
+                                    fontSize = lineRomanizationFontSize,
+                                    lineHeight = lineRomanizationLineHeight,
                                     fontWeight = FontWeight.Normal,
                                 ),
                                 softWrap = true,

@@ -91,6 +91,13 @@ object LyricsDisplayPrefs {
     const val KEY_ROMANIZATION = "lyrics_romanization"
 
     /**
+     * v2.0.0 · T4：动态字号（**实验性，默认关**）。按每句估算折行数给这一句一个倍率，
+     * 见 [DynamicLyricFont]。默认关 = 渲染路径与 v1.9.3 完全一致（逐字节），
+     * 也便于用户 A/B 对比后自己决定是否留下。
+     */
+    const val KEY_DYNAMIC_FONT = "lyrics_dynamic_font"
+
+    /**
      * v1.9.3：音译的基础字号 / 行高（sp）。
      *
      * 比译文（20 / 26）低一档，用来建立「原文 > 译文 > 音译」的层级；A- / A+ 与译文一样
@@ -181,6 +188,14 @@ object LyricsDisplayPrefs {
 
     fun writeRomanization(prefs: SharedPreferences, enabled: Boolean) {
         prefs.edit().putBoolean(KEY_ROMANIZATION, enabled).apply()
+    }
+
+    /** v2.0.0 · T4：动态字号开关（默认关）。只影响字号，不触发任何请求、不进歌词缓存。 */
+    fun readDynamicFont(prefs: SharedPreferences): Boolean =
+        readBooleanSafely(prefs, KEY_DYNAMIC_FONT, false)
+
+    fun writeDynamicFont(prefs: SharedPreferences, enabled: Boolean) {
+        prefs.edit().putBoolean(KEY_DYNAMIC_FONT, enabled).apply()
     }
 
     private fun readBooleanSafely(prefs: SharedPreferences, key: String, def: Boolean): Boolean =

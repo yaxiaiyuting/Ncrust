@@ -138,6 +138,8 @@ fun PlayerCard(
     val showLyricsTranslation by playerViewModel.showLyricsTranslation.collectAsState()
     // v1.9.3：音译显示开关（默认关）+ 音译轨（v1.9.2 的音译数据，渲染层只读不重合并）。
     val showLyricsRomanization by playerViewModel.showLyricsRomanization.collectAsState()
+    // v2.0.0 · T4：动态字号（实验性，默认关）。
+    val showDynamicLyricFont by playerViewModel.showDynamicLyricFont.collectAsState()
     val romanizedLyrics by playerViewModel.romanizedLyrics.collectAsState()
     // v1.5.1 · A：逐字动画模式（0 渐变扫过 / 1 逐字硬切 / 2 关闭逐字）。
     // 模式 2 时 karaokeEnabled=false，行内渲染退回 v1.4.1 的整行路径。
@@ -801,6 +803,8 @@ fun PlayerCard(
                                     fontScale = lyricsFontScale,
                                     sweepQuality = lyricsSweepQuality,
                                     onFontScaleStep = { delta -> playerViewModel.stepLyricsFontScale(delta) },
+                                    // v2.0.0 · T4：动态字号（实验性，默认关）。
+                                    dynamicFontEnabled = showDynamicLyricFont,
                                 )
                             }
                         }

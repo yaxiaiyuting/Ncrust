@@ -105,6 +105,12 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
      * 它只控制**显示**：与歌词源、缓存、请求全都无关，切换即时生效且不重取歌词。
      */
     val showLyricsRomanization = MutableStateFlow(false)
+
+    /**
+     * v2.0.0 · T4：动态字号（实验性，默认**关**）。只改每一句的 fontSize/lineHeight 倍率，
+     * 与歌词源、缓存、请求全都无关；关掉时渲染路径与 v1.9.3 逐字节一致。
+     */
+    val showDynamicLyricFont = MutableStateFlow(false)
     // v1.5.1 · D：上一次推给媒体面板的歌词行（去重用，避免 2Hz 采样反复写同一个值）。
     private var lastMediaLyricLine: String? = null
 
@@ -325,6 +331,8 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         lyricsTtmlFirst.value = LyricsDisplayPrefs.readTtmlFirst(lyricPrefs)
         // v1.9.3：音译显示开关（默认关）。同样是「键被写坏就回落默认」的安全读。
         showLyricsRomanization.value = LyricsDisplayPrefs.readRomanization(lyricPrefs)
+        // v2.0.0 · T4：动态字号（实验性，默认关）。
+        showDynamicLyricFont.value = LyricsDisplayPrefs.readDynamicFont(lyricPrefs)
 
         // v1.5.1 · D：把「当前行」推给 PlaybackService —— 只在**跨行**时写一次
         // （currentPosition 是 2Hz 采样，这里每次采样只做一次 O(行数) 的二分/线性比较，
@@ -566,6 +574,19 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
     fun setLyricsRomanization(enabled: Boolean) {
         showLyricsRomanization.value = enabled
         LyricsDisplayPrefs.writeRomanization(
+            getApplication<Application>()
+                .getSharedPreferences(LyricsDisplayPrefs.PREFS_NAME, android.content.Context.MODE_PRIVATE),
+            enabled
+        )
+    }
+
+    /**
+     * v2.0.0 · T4：设置页「动态字号（实验性）」开关。只改显示，不重取歌词 ——
+     * 倍率是纯函数（[com.takahashirinta.ncrust.lyric.DynamicLyricFont]），切换即时生效。
+     */
+    fun setDynamicLyricFont(enabled: Boolean) {
+        showDynamicLyricFont.value = enabled
+        LyricsDisplayPrefs.writeDynamicFont(
             getApplication<Application>()
                 .getSharedPreferences(LyricsDisplayPrefs.PREFS_NAME, android.content.Context.MODE_PRIVATE),
             enabled

@@ -84,6 +84,9 @@ data class Strings(
     // v2.0.0 · T2：播放时禁止熄屏（默认开）。
     val keepScreenOnLabel: String,
     val keepScreenOnHint: String,
+    // v2.0.0 · T4：动态字号（实验性，默认关）。
+    val dynamicFontLabel: String,
+    val dynamicFontHint: String,
     // v1.5.1 · E：歌词字号（倍率档位文案是纯数字，与语言无关，不进 i18n）。
     val lyricsFontScaleLabel: String,
     /** 歌词界面 A- / A+ 的无障碍描述。 */
