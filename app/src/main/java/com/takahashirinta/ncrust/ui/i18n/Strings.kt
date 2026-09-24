@@ -123,36 +123,31 @@ data class Strings(
     val languageSectionTitle: String,
     val aboutButton: String,
     val storageSectionTitle: String,
-    val cacheSizeLabel: (Long) -> String,
     val clearCache: String,
     val clearCacheConfirm: String,
-    val cacheCleared: String,
-    // v2.0.0 · T3：离线缓存管理（「已播放音频流的本地缓存」，不是「下载」—— 见 AGENTS.md
-    // 的合规契约）。文案一律用「已缓存 / 缓存」，不承诺「整曲完整」：SimpleCache 只保证
-    // 有播放过的片段。
-    val offlineCacheManageLabel: String,
-    val offlineCacheTitle: String,
-    /** (已用, 上限, 剩余)，三个都已由 formatCacheBytes 格式化。 */
-    val offlineCacheUsage: (String, String, String) -> String,
-    val offlineCacheLimitLabel: String,
-    /** 上限「下次启动生效」的如实说明（淘汰器在启动时固化）。 */
-    val offlineCacheLimitHint: String,
-    /** 已缓存曲目列表标题。 */
-    val offlineCacheListTitle: (Int) -> String,
-    val offlineCacheEmpty: String,
-    /** 量不到该曲占用时的占位文案（「已缓存片段」）。 */
-    val offlineCachePartial: String,
-    val offlineCacheDeleteTrack: String,
-    val offlineCacheDeleteTitle: String,
-    val offlineCacheDeleteConfirm: (String) -> String,
-    val offlineCacheDeleted: String,
-    /** 当前播放曲目禁用删除时的说明。 */
-    val offlineCachePlayingLocked: String,
-    /** 「不保证整曲完整」的常驻提示。 */
-    val offlineCacheFragmentNotice: String,
-    val cacheUsageAudio: String,
-    val cacheUsageImage: String,
-    val cacheUsageOther: String,
+    /**
+     * v2.0.0 · HF1：离线 / 缓存相关的 19 条文案**收进一个嵌套组**，不再是 [Strings] 的构造参数。
+     *
+     * 为什么必须这么做（真机启动崩溃的根因）：dex 的 `invoke-*` 指令寄存器数是 8 位 ⇒
+     * **单个方法最多 255 个参数寄存器**。本文件是「一个 data class 装全部 UI 文案」的结构，
+     * v1.9.3 时已有 **240** 个构造参数；v2.0.0 一次性加了 21 条（T2 两条、T4 两条、T3 十七条）
+     * 后变成 **261** 个 ⇒ `zh_CN.kt` 顶层 `val zhCN = Strings(...)` 的 `<clinit>` 里那条 invoke
+     * 越过上限，ART 校验**直接拒绝整个类**：PCL110（API 36 / release）与 S6（API 24 / debug）
+     * 都表现为**启动即崩**：
+     * `VerifyError: Verifier rejected class …Zh_CNKt: <clinit>() … expected 6 argument registers,
+     * method signature has 7 or more`。
+     *
+     * ⚠️ **JVM 单测与编译都发现不了它** —— 那是 dex/ART 层面的限制，只有真机（或模拟器）能暴露。
+     *
+     * 拆分口径：只挪「离线 / 缓存」这一组（同一个功能面、内聚），其余属性一个都没动；
+     * [Strings] 类体里保留 19 个**成员转发属性**（`val xxx get() = offline.xxx`），
+     * 所以全仓库 `strings.offlineCacheXxx` / `strings.cacheSizeLabel` 的调用点一个字都不用改。
+     *
+     * ⚠️ 给后来者：`Strings` 的构造参数现在是 **243** 个；dex 单个方法最多 254 个参数寄存器，
+     * 而带默认参数的类还会生成一个「参数 + 2」的合成构造函数 ⇒ **实际余量只剩 ~9 个**。
+     * 再加字段请继续拆组（嵌套 data class + 转发属性），不要硬加到构造参数上。
+     */
+    val offline: OfflineStrings,
 
     // v1.5.1 · C：无网络时的首页降级空态（标题 / 提示）。有缓存时会直接显示缓存，
     // 只有"一条都没有"时才轮到它。
@@ -383,7 +378,32 @@ data class Strings(
     /** 移除成功的提示（与 removeFromPlaylist 这个动作名分开，避免出现「从歌单移除」当反馈）。 */
     val removedFromPlaylist: String,
     val playlistDelete: String,
-)
+) {
+    // ---------- 转发属性（v2.0.0 · HF1）----------
+    // 离线 / 缓存那一组（19 条）的构造参数已经挪进 [OfflineStrings]，这里用**成员**转发属性把
+    // 调用点（strings.offlineCacheXxx / strings.cacheSizeLabel / strings.cacheCleared）原样保住。
+    // 刻意不用顶层扩展属性：扩展属性在别的包里要逐条 import，而成员属性对 `LocalStrings.current.x`
+    // 天然可见。成员属性不进构造函数，所以不会再撑大那个已经贴着 dex 255 上限的参数表。
+    val offlineCacheUsage: (String, String, String) -> String get() = offline.offlineCacheUsage
+    val offlineCacheListTitle: (Int) -> String get() = offline.offlineCacheListTitle
+    val offlineCachePartial: String get() = offline.offlineCachePartial
+    val offlineCacheLimitHint: String get() = offline.offlineCacheLimitHint
+    val offlineCachePlayingLocked: String get() = offline.offlineCachePlayingLocked
+    val offlineCacheFragmentNotice: String get() = offline.offlineCacheFragmentNotice
+    val offlineCacheDeleteConfirm: (String) -> String get() = offline.offlineCacheDeleteConfirm
+    val cacheSizeLabel: (Long) -> String get() = offline.cacheSizeLabel
+    val offlineCacheManageLabel: String get() = offline.offlineCacheManageLabel
+    val offlineCacheTitle: String get() = offline.offlineCacheTitle
+    val offlineCacheLimitLabel: String get() = offline.offlineCacheLimitLabel
+    val offlineCacheEmpty: String get() = offline.offlineCacheEmpty
+    val offlineCacheDeleteTrack: String get() = offline.offlineCacheDeleteTrack
+    val offlineCacheDeleteTitle: String get() = offline.offlineCacheDeleteTitle
+    val offlineCacheDeleted: String get() = offline.offlineCacheDeleted
+    val cacheUsageAudio: String get() = offline.cacheUsageAudio
+    val cacheUsageImage: String get() = offline.cacheUsageImage
+    val cacheUsageOther: String get() = offline.cacheUsageOther
+    val cacheCleared: String get() = offline.cacheCleared
+}
 
 /** 字节数格式化为人类可读的 B/KB/MB/GB，供 cacheSizeLabel 复用。 */
 fun formatCacheBytes(bytes: Long): String {
@@ -394,3 +414,39 @@ fun formatCacheBytes(bytes: Long): String {
     if (mb < 1024.0) return "%.1f MB".format(mb)
     return "%.2f GB".format(mb / 1024.0)
 }
+
+/**
+ * v2.0.0 · HF1：离线 / 缓存文案组。存在的唯一理由是 dex 单方法 255 参数寄存器上限，
+ * 详见 [Strings.offline] 的 KDoc —— 语义上它们本来就是同一个功能面（离线缓存 + 存储占用）。
+ *
+ * 文案契约（v2.0.0 · T3，合规相关）：一律用「已缓存 / 缓存」，**不承诺「整曲完整」** ——
+ * media3 SimpleCache 只保证「播放过的片段在本地」，不是「下载了一整首」。
+ */
+data class OfflineStrings(
+    /** (已用, 上限, 剩余)，三个都已由 formatCacheBytes 格式化。 */
+    val offlineCacheUsage: (String, String, String) -> String,
+    /** 已缓存曲目列表标题。 */
+    val offlineCacheListTitle: (Int) -> String,
+    /** 量不到该曲占用时的占位文案（「已缓存片段」）。 */
+    val offlineCachePartial: String,
+    /** 上限「下次启动生效」的如实说明（淘汰器在启动时固化）。 */
+    val offlineCacheLimitHint: String,
+    /** 当前播放曲目禁用删除时的说明。 */
+    val offlineCachePlayingLocked: String,
+    /** 「不保证整曲完整」的常驻提示。 */
+    val offlineCacheFragmentNotice: String,
+    val offlineCacheDeleteConfirm: (String) -> String,
+    val cacheSizeLabel: (Long) -> String,
+    val offlineCacheManageLabel: String,
+    val offlineCacheTitle: String,
+    val offlineCacheLimitLabel: String,
+    val offlineCacheEmpty: String,
+    val offlineCacheDeleteTrack: String,
+    val offlineCacheDeleteTitle: String,
+    val offlineCacheDeleted: String,
+    val cacheUsageAudio: String,
+    val cacheUsageImage: String,
+    val cacheUsageOther: String,
+    val cacheCleared: String,
+)
+
