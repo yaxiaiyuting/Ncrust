@@ -79,6 +79,7 @@ import com.takahashirinta.ncrust.library.LibraryManager
 import com.takahashirinta.ncrust.network.CoverUrls
 import com.takahashirinta.ncrust.network.PlaylistApi
 import com.takahashirinta.ncrust.network.SongItem
+import com.takahashirinta.ncrust.source.musicSource
 import com.takahashirinta.ncrust.ui.i18n.getSavedLanguageCode
 import com.takahashirinta.ncrust.ui.i18n.stringsForCode
 import com.takahashirinta.ncrust.ui.player.VisualizerSetting
@@ -93,6 +94,10 @@ class PlaybackService : MediaLibraryService() {
     private var progressJob: Job? = null
     private var isServiceStarted = false
     private var currentArtworkUrl: String? = null
+    /** v2.1.0 · C：当前媒体项的音源身份（车机/通知路径按它路由取链）。 */
+    private var mediaSourceKey: String? = null
+    private var mediaSourceId: String? = null
+    private var mediaMediaId: String? = null
     private var currentArtworkBitmap: Bitmap? = null
     private var currentDominantColor: Int = 0xFF1DB954.toInt()
     // 封面加载代数: 每次 loadArtwork 自增, 完成时若代数已过期(期间又切了歌)
@@ -548,12 +553,20 @@ class PlaybackService : MediaLibraryService() {
         val artist = intent?.getStringExtra("artist")
         val artwork = intent?.getStringExtra("artwork")
         val songId = intent?.getLongExtra("songId", -1L) ?: -1L
+        // v2.1.0 · C：音源身份。媒体通知与车机路径都要靠它把媒体项指回**正确的**音源 ——
+        // 少了它，QQ 音乐的曲目在通知栏/车机上会被当成网易云的同号歌曲。
+        val sourceKey = intent?.getStringExtra("sourceKey")
+        val sourceId = intent?.getStringExtra("sourceId")
+        val mediaId = intent?.getStringExtra("mediaId")
         // B4：起播位置。0 = 从 0 分 0 秒开始；> 0 = 从上次退出的时间点续播。
         val startPositionMs = intent?.getLongExtra("startPositionMs", 0L) ?: 0L
 
         if (title != null) mediaTitle = title
         if (artist != null) mediaArtist = artist
         if (songId > 0) mediaSongId = songId
+        if (sourceKey != null) mediaSourceKey = sourceKey
+        if (sourceId != null) mediaSourceId = sourceId
+        if (mediaId != null) mediaMediaId = mediaId
 
         if (artwork != null && artwork != currentArtworkUrl) {
             currentArtworkUrl = artwork
@@ -635,7 +648,9 @@ class PlaybackService : MediaLibraryService() {
         .build()
 
     private fun songItem(song: SongItem): MediaItem = MediaItem.Builder()
-        .setMediaId("song:${song.id}")
+        // 网易云仍是 `song:123`（与 v2.0.2 逐字节相同，老媒体项继续能解析）；
+        // QQ 音乐是 `song:qqmusic:456`。同号不同源在媒体层也必须分得开。
+        .setMediaId(com.takahashirinta.ncrust.source.SourceIds.mediaId(song.musicSource, song.id) ?: "song:${song.id}")
         .setMediaMetadata(
             MediaMetadata.Builder()
                 .setTitle(song.name)
@@ -665,8 +680,13 @@ class PlaybackService : MediaLibraryService() {
     /** 车机点播：把 song:<id> 解析成当前音质档的可播放 URL。 */
     private suspend fun resolveMediaItem(item: MediaItem): MediaItem {
         if (item.localConfiguration != null) return item
-        val songId = item.mediaId.removePrefix("song:").toLongOrNull() ?: return item
-        val result = SongUrlFetcher.fetch(songId, currentQualityLevel()) ?: return item
+        // v2.1.0 · C：车机路径同样按音源路由。解析不出音源的 mediaId 直接放弃
+        // （返回原 item 让上层跳歌），**不要**猜成网易云 —— 猜错就是放到别人的歌。
+        val parsed = com.takahashirinta.ncrust.source.SourceIds.parseMediaId(item.mediaId) ?: return item
+        val (source, songId) = parsed
+        val ref = com.takahashirinta.ncrust.source.songRefOf(source, songId)
+        val result = com.takahashirinta.ncrust.source.SourceRouter.resolveUrl(ref, currentQualityLevel())
+            ?: return item
         return item.buildUpon().setUri(result.url).build()
     }
 

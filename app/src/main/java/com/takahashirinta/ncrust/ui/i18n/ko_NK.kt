@@ -99,6 +99,12 @@ val koNK = Strings(
         cacheUsageImage = "이미지 캐시",
         cacheUsageOther = "기타 캐시",
     ),
+
+    source = SourceStrings(
+        sourceQqMusic = "QQ Music",
+        sourceQqAccount = "QQ Music 계정",
+        sourceQqLoginAction = "QQ Music 로그인",
+    ),
     clearCache = "캐시 지우기",
     clearCacheConfirm = "모든 캐시를 지우겠습니까?",
 

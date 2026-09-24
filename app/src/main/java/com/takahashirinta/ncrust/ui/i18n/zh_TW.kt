@@ -99,6 +99,12 @@ val zhTW = Strings(
         cacheUsageImage = "圖片快取",
         cacheUsageOther = "其他快取",
     ),
+
+    source = SourceStrings(
+        sourceQqMusic = "QQ 音樂",
+        sourceQqAccount = "QQ 音樂帳號",
+        sourceQqLoginAction = "登入 QQ 音樂",
+    ),
     clearCache = "清除快取",
     clearCacheConfirm = "確定清除全部快取？",
 

@@ -99,6 +99,12 @@ val en = Strings(
         cacheUsageImage = "Image cache",
         cacheUsageOther = "Other cache",
     ),
+
+    source = SourceStrings(
+        sourceQqMusic = "QQ Music",
+        sourceQqAccount = "QQ Music account",
+        sourceQqLoginAction = "Sign in to QQ Music",
+    ),
     clearCache = "Clear Cache",
     clearCacheConfirm = "Clear all cached data?",
 

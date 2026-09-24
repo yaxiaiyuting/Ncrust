@@ -31,6 +31,11 @@ object PlaybackStateManager {
     private const val KEY_SONG_NAME = "song_name"
     private const val KEY_SONG_ARTIST = "song_artist"
     private const val KEY_SONG_ARTWORK = "song_artwork"
+    // v2.1.0 · C：音源身份要一起落盘，否则冷启动恢复出来的 QQ 曲目会被当成网易云同号歌曲。
+    // 可空 + 默认 null：v2.1.0 之前写入的状态里没有这几个 key，读到就是 null ⇒ 网易云。
+    private const val KEY_SONG_SOURCE = "song_source"
+    private const val KEY_SONG_SOURCE_ID = "song_source_id"
+    private const val KEY_SONG_MEDIA_ID = "song_media_id"
     private const val KEY_IS_PLAYING = "is_playing"
     private const val KEY_HAS_STATE = "has_state"
 
@@ -67,7 +72,17 @@ object PlaybackStateManager {
     }
 
     // ---------- 单曲状态 ----------
-    fun saveState(context: Context, songId: Long, title: String, artist: String, artwork: String, isPlaying: Boolean) {
+    fun saveState(
+        context: Context,
+        songId: Long,
+        title: String,
+        artist: String,
+        artwork: String,
+        isPlaying: Boolean,
+        sourceKey: String? = null,
+        sourceId: String? = null,
+        mediaId: String? = null,
+    ) {
         getPrefs(context).edit()
             .putBoolean(KEY_HAS_STATE, true)
             .putLong(KEY_SONG_ID, songId)
@@ -75,8 +90,16 @@ object PlaybackStateManager {
             .putString(KEY_SONG_ARTIST, artist)
             .putString(KEY_SONG_ARTWORK, artwork)
             .putBoolean(KEY_IS_PLAYING, isPlaying)
+            .putString(KEY_SONG_SOURCE, sourceKey)
+            .putString(KEY_SONG_SOURCE_ID, sourceId)
+            .putString(KEY_SONG_MEDIA_ID, mediaId)
             .apply()
     }
+
+    /** v2.1.0 · C：上次播放曲目的音源身份（无记录时为 null ⇒ 网易云）。 */
+    fun getSourceKey(context: Context): String? = getPrefs(context).getString(KEY_SONG_SOURCE, null)
+    fun getSourceId(context: Context): String? = getPrefs(context).getString(KEY_SONG_SOURCE_ID, null)
+    fun getMediaId(context: Context): String? = getPrefs(context).getString(KEY_SONG_MEDIA_ID, null)
 
     fun updatePlayingState(context: Context, isPlaying: Boolean) {
         getPrefs(context).edit().putBoolean(KEY_IS_PLAYING, isPlaying).apply()

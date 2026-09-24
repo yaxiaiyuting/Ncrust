@@ -188,6 +188,9 @@ class MainActivity : ComponentActivity() {
             requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1001)
         }
         RetrofitClient.init(this)
+        // v2.1.0 · C：接线 QQ 音乐音源（注册 Provider + 初始化它自己的 HTTP 通道）。
+        // 与 RetrofitClient.init 并列，幂等。
+        com.takahashirinta.ncrust.qq.QqMusicSourceProvider.install(this)
         // 冷启动即刻并发启动预热：Home 三条网络 + 封面 Coil 预取。
         // splash 期间跑完，进入主页时 ContentCache 已就位，无 loader 闪烁。
         AppWarmup.start(this)
@@ -815,7 +818,11 @@ fun MainScreen(
                 name = name,
                 artists = if (artist != null) listOf(ArtistItem(name = artist)) else null,
                 album = AlbumItem(id = null, name = "", picUrl = artwork),
-                duration = null
+                duration = null,
+                // v2.1.0 · C：把音源一起恢复 —— 少了它，冷启动后播 QQ 曲目会去网易云取链。
+                source = PlaybackStateManager.getSourceKey(context),
+                sourceId = PlaybackStateManager.getSourceId(context),
+                mediaId = PlaybackStateManager.getMediaId(context),
             )
         }
     }
@@ -1006,7 +1013,15 @@ fun MainScreen(
             }
             val song = playbackQueue[index]
             val (title, artist, artwork) = songParams(song)
-            playerViewModel.playSong(song.id, title = title, artist = artist, artworkUrl = artwork)
+            playerViewModel.playSong(
+                song.id,
+                title = title,
+                artist = artist,
+                artworkUrl = artwork,
+                sourceKey = song.source,
+                sourceId = song.sourceId,
+                mediaId = song.mediaId,
+            )
             PlaybackStateManager.saveQueue(context, playbackQueue, currentQueueIndex)
 
             // Immediately preload the next song so ExoPlayer has maximum time to buffer it.
@@ -1030,7 +1045,10 @@ fun MainScreen(
                 val (nTitle, nArtist, nArtwork) = songParams(nextSong)
                 playerViewModel.preloadNextSong(
                     nextSong.id, nTitle, nArtist, nArtwork,
-                    allowCurrent = playMode == QueueModes.SINGLE
+                    allowCurrent = playMode == QueueModes.SINGLE,
+                    sourceKey = nextSong.source,
+                    sourceId = nextSong.sourceId,
+                    mediaId = nextSong.mediaId,
                 )
             }
         }
@@ -1076,7 +1094,12 @@ fun MainScreen(
                 // 为无缝衔接立即预载 infinity 首曲之后的一首
                 playbackQueue.getOrNull(startIdx + 1)?.let { next ->
                     val (t, a, w) = songParams(next)
-                    playerViewModel.preloadNextSong(next.id, t, a, w)
+                    playerViewModel.preloadNextSong(
+                        next.id, t, a, w,
+                        sourceKey = next.source,
+                        sourceId = next.sourceId,
+                        mediaId = next.mediaId,
+                    )
                 }
             }
         }
@@ -1211,7 +1234,10 @@ fun MainScreen(
                 // 单曲循环模式: 预载自身是实现无缝单曲循环的手段, 显式放行
                 playerViewModel.preloadNextSong(
                     nextSong.id, title, artist, artwork,
-                    allowCurrent = playMode == QueueModes.SINGLE
+                    allowCurrent = playMode == QueueModes.SINGLE,
+                    sourceKey = nextSong.source,
+                    sourceId = nextSong.sourceId,
+                    mediaId = nextSong.mediaId,
                 )
             } else if (playMode == QueueModes.INFINITY &&
                 currentQueueIndex >= playbackQueue.size - 1 && playbackQueue.isNotEmpty()
@@ -1285,7 +1311,10 @@ fun MainScreen(
             val (pTitle, pArtist, pArtwork) = songParams(songToPreload)
             playerViewModel.preloadNextSong(
                 songToPreload.id, pTitle, pArtist, pArtwork,
-                allowCurrent = playMode == QueueModes.SINGLE
+                allowCurrent = playMode == QueueModes.SINGLE,
+                sourceKey = songToPreload.source,
+                sourceId = songToPreload.sourceId,
+                mediaId = songToPreload.mediaId,
             )
         }
     }
@@ -1621,6 +1650,9 @@ fun MainScreen(
     }
 
     var showWebLogin by remember { mutableStateOf(false) }
+    // v2.1.0 · C：QQ 音乐登录浮层（与网易云那个**完全独立**：两份 cookie、两条登录路径）。
+    var showQqLogin by remember { mutableStateOf(false) }
+    var qqLoginTrigger by remember { mutableIntStateOf(0) }
     var cookieRefreshTrigger by remember { mutableIntStateOf(0) }
 
     // 登录成功后后台拉取一次云端收藏，供收藏页使用。
@@ -1629,6 +1661,63 @@ fun MainScreen(
             LibraryManager.refreshFromCloud(context)
         }
     }
+    // v2.1.0 · C：QQ 音乐登录。
+    //
+    // 为什么用 WebView 而不是自绘二维码：QQ 互联的扫码轮询端点在本机出口 IP 上被 WAF
+    // 恒定 403（调研实测 8+ 种参数/Header/TLS 变体全部失败），而 QQ 音乐客户端自己的
+    // 扫码链路要走 MQTT over WSS（协议栈成本远超本版范围）。WebView 里用户可以自己选
+    // QQ / 微信 / 手机号登录 —— 与网易云那条已经用了很久的路径**同一套机制**，
+    // 且全程不采集密码（用户在腾讯自己的页面上输入）。
+    LaunchedEffect(qqLoginTrigger) {
+        if (qqLoginTrigger > 0) {
+            // 登录成功后拉一次会员状态（失败不影响登录态本身：cookie 已经在本地了）。
+            runCatching {
+                com.takahashirinta.ncrust.qq.QqApi.fetchProfile()?.let {
+                    com.takahashirinta.ncrust.qq.QqAuthStore.saveProfile(context, it)
+                }
+            }
+        }
+    }
+    if (showQqLogin) {
+        Box(modifier = Modifier.fillMaxSize().background(Color.White)) {
+            AndroidView(
+                factory = { ctx ->
+                    android.webkit.WebView(ctx).apply {
+                        settings.javaScriptEnabled = true
+                        settings.domStorageEnabled = true
+                        settings.useWideViewPort = true
+                        settings.loadWithOverviewMode = true
+                        android.webkit.CookieManager.getInstance()
+                            .setAcceptThirdPartyCookies(this, true)
+                        webViewClient = object : android.webkit.WebViewClient() {
+                            override fun onPageFinished(view: android.webkit.WebView, url: String) {
+                                // 固定查 y.qq.com 的 cookie（登录会在 qq.com 各子域间跳转，
+                                // 传当前 url 有时查不到音乐侧的票据）。
+                                val cookie = android.webkit.CookieManager.getInstance()
+                                    .getCookie("https://y.qq.com/") ?: return
+                                if (com.takahashirinta.ncrust.qq.QqCookie.isLoggedIn(cookie)) {
+                                    com.takahashirinta.ncrust.qq.QqAuthStore.saveCookie(ctx, cookie)
+                                    showQqLogin = false
+                                    qqLoginTrigger++
+                                }
+                            }
+                        }
+                        android.webkit.CookieManager.getInstance().removeAllCookies(null)
+                        loadUrl("https://y.qq.com/")
+                    }
+                },
+                modifier = Modifier.fillMaxSize()
+            )
+            TopScrimIconButton(
+                icon = Icons.Default.Close,
+                contentDescription = LocalStrings.current.close,
+                onClick = { showQqLogin = false },
+                alignment = Alignment.TopEnd
+            )
+        }
+        return
+    }
+
     if (showWebLogin) {
         Box(modifier = Modifier.fillMaxSize().background(Color.White)) {
             AndroidView(
@@ -1947,6 +2036,7 @@ fun MainScreen(
                             onAccentSourceChange = onAccentSourceChange,
                             onRefreshSystemAccent = onRefreshSystemAccent,
                             onShowWebLogin = { showWebLogin = true },
+                                onShowQqLogin = { showQqLogin = true },
                             refreshTrigger = cookieRefreshTrigger,
                             onLanguageChange = onLanguageChange
                         )

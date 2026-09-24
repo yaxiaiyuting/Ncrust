@@ -27,6 +27,8 @@ import io.github.takahashirinta.kanesumi.core.theme.LocalMetroColors
 import io.github.takahashirinta.kanesumi.core.theme.LocalMetroTypography
 import io.github.takahashirinta.kanesumi.core.theme.MetroIcon
 import io.github.takahashirinta.kanesumi.core.theme.MetroText
+import com.takahashirinta.ncrust.source.MusicSource
+import com.takahashirinta.ncrust.source.musicSource
 import com.takahashirinta.ncrust.ui.i18n.LocalStrings
 import kotlinx.coroutines.launch
 
@@ -53,6 +55,13 @@ fun SongCard(
     val artistStr = song.artists?.joinToString("/") { it.name } ?: strings.unknownArtist
     val albumName = song.album?.name ?: ""
     val durationStr = song.duration?.let { formatDuration(it) } ?: ""
+    // v2.1.0 · E：音源标识。**只有非网易云才显示** —— 网易云是这个应用原本的唯一音源，
+    // 给每一行都挂一个「网易云」标签只会变成噪音。QQ 音乐必须显示，因为未登录时
+    // 它可能点不开（匿名能搜不能放），用户需要知道「为什么这首放不出来」。
+    val sourceBadge = when (song.musicSource) {
+        MusicSource.QQMUSIC -> strings.sourceQqMusic
+        else -> ""
+    }
 
     when (style) {
         SongCardStyle.LIST, SongCardStyle.COMPACT -> {
@@ -100,6 +109,7 @@ fun SongCard(
                             append(artistStr)
                             if (albumName.isNotEmpty()) append(" · $albumName")
                             if (durationStr.isNotEmpty()) append("  $durationStr")
+                            if (sourceBadge.isNotEmpty()) append("  · $sourceBadge")
                         },
                         color = LocalMetroColors.current.onSurfaceVariant,
                         style = LocalMetroTypography.current.bodySmall,
@@ -159,7 +169,7 @@ fun SongCard(
                     overflow = TextOverflow.Ellipsis
                 )
                 MetroText(
-                    "$artistStr · $albumName",
+                    if (sourceBadge.isEmpty()) "$artistStr · $albumName" else "$artistStr · $sourceBadge",
                     color = LocalMetroColors.current.onSurfaceVariant,
                     style = LocalMetroTypography.current.bodySmall,
                     maxLines = 1,

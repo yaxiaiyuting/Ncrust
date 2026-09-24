@@ -57,6 +57,8 @@ import android.widget.Toast
 import com.takahashirinta.ncrust.network.PlaylistApi
 import com.takahashirinta.ncrust.network.RetrofitClient
 import com.takahashirinta.ncrust.player.SongUrlFetcher
+import com.takahashirinta.ncrust.qq.QqAuthStore
+import com.takahashirinta.ncrust.qq.QqProfile
 import com.takahashirinta.ncrust.power.BackgroundActivity
 import com.takahashirinta.ncrust.ui.BottomOverlayInsetDp
 import com.takahashirinta.ncrust.ui.components.QrAuthorizeScreen
@@ -94,6 +96,8 @@ fun UserScreen(
     onAccentSourceChange: (AccentSource) -> Unit = {},
     onRefreshSystemAccent: () -> Unit = {},
     onShowWebLogin: () -> Unit = {},
+    /** v2.1.0 · C：打开 QQ 音乐的登录 WebView（点击卡片时调用）。 */
+    onShowQqLogin: () -> Unit = {},
     refreshTrigger: Int = 0,
     onLanguageChange: (String) -> Unit = {}
 ) {
@@ -315,6 +319,19 @@ fun UserScreen(
                         else -> onShowWebLogin()
                     }
                 }
+            )
+            Spacer(Modifier.height(24.dp))
+        }
+
+        // v2.1.0 · C：QQ 音乐账号（**独立于网易云**：各自登录、各自失效，互不影响）。
+        item {
+            QqAccountBlock(
+                accountTitle = strings.sourceQqAccount,
+                brand = strings.sourceQqMusic,
+                notLoggedInText = strings.notLoggedIn,
+                loginActionText = strings.sourceQqLoginAction,
+                logoutText = strings.logoutButton,
+                onLogin = onShowQqLogin,
             )
             Spacer(Modifier.height(24.dp))
         }
@@ -1299,3 +1316,83 @@ fun MetroLanguageDropdown(
 // 旧实现 = Coil diskCache.size + folderSize(cacheDir) + 离线音频 size，其中
 // folderSize(cacheDir) 已经递归包含 cacheDir/image_cache ⇒ 图片缓存被算了两遍。
 // 现在统一走 CacheUsage.measure：三项互不重叠，且与「清除缓存」能清掉的范围一一对应。
+
+/**
+ * v2.1.0 · C：QQ 音乐账号卡片。
+ *
+ * 只做三件事：显示登录态、显示会员角标、提供登录/登出。
+ * **刻意不做**「哪些音质可用」的细表：会员权益的权威判据在服务端
+ * （详见 QqApi.fetchProfile 的注释 —— 登录态下的 VIP 字段没有实测过），
+ * 界面上多写一行就多一行可能撒谎的文案。
+ *
+ * 登录态读的是 [QqAuthStore]（`ncrust_qq_prefs`），与网易云的 cookie 完全隔离：
+ * 在这里登出**不会**影响网易云，反之亦然。
+ *
+ * 视觉沿用 [ProfileBlock] 的既有语言（整块可点 + 一行标题 + 一行状态），
+ * 不引新组件、不加圆角（Kanesumi：直角、信息优先）。
+ */
+@Composable
+private fun QqAccountBlock(
+    accountTitle: String,
+    brand: String,
+    notLoggedInText: String,
+    loginActionText: String,
+    logoutText: String,
+    onLogin: () -> Unit,
+) {
+    val context = LocalContext.current
+    var loggedIn by remember { mutableStateOf(QqAuthStore.isLoggedIn(context)) }
+    var profile by remember { mutableStateOf(QqAuthStore.profile(context)) }
+
+    SectionTitle(accountTitle)
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { if (!loggedIn) onLogin() }
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            MetroText(text = brand, style = LocalMetroTypography.current.bodyLarge)
+            Spacer(Modifier.height(4.dp))
+            val status = when {
+                !loggedIn -> notLoggedInText
+                // 会员状态只是**显示**：判据来自服务端，取不到就不显示角标
+                // （宁可不显示，也不要写一个猜出来的「非会员」）。
+                profile.isVip() -> "VIP"
+                QqAuthStore.uin(context) != null -> "uin " + QqAuthStore.uin(context)
+                else -> ""
+            }
+            if (status.isNotEmpty()) {
+                MetroText(
+                    text = status,
+                    style = LocalMetroTypography.current.bodySmall,
+                    color = LocalMetroColors.current.onSurfaceVariant,
+                )
+            }
+        }
+        if (loggedIn) {
+            MetroText(
+                text = logoutText,
+                style = LocalMetroTypography.current.bodyLarge,
+                color = LocalMetroColors.current.primary,
+                modifier = Modifier
+                    .clickable {
+                        QqAuthStore.clear(context)
+                        loggedIn = false
+                        profile = QqProfile()
+                    }
+                    .padding(8.dp),
+            )
+        } else {
+            MetroText(
+                text = loginActionText,
+                style = LocalMetroTypography.current.bodyLarge,
+                color = LocalMetroColors.current.primary,
+                modifier = Modifier
+                    .clickable(onClick = onLogin)
+                    .padding(8.dp),
+            )
+        }
+    }
+}

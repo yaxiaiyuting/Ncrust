@@ -99,6 +99,12 @@ val zhCN = Strings(
         cacheUsageImage = "图片缓存",
         cacheUsageOther = "其他缓存",
     ),
+
+    source = SourceStrings(
+        sourceQqMusic = "QQ 音乐",
+        sourceQqAccount = "QQ 音乐账号",
+        sourceQqLoginAction = "登录 QQ 音乐",
+    ),
     clearCache = "清除缓存",
     clearCacheConfirm = "确定清除全部缓存？",
 

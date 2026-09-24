@@ -375,6 +375,36 @@ object QqApi {
         }.getOrDefault(0L)
     }
 
+    /**
+     * 把副文本轨（翻译 / 音译）**按时间就近**贴到主轨的每一行上（v2.1.0 · D）。
+     *
+     * 为什么必须重写时间戳而不是原样交出：渲染层是按 `timeMs` **精确配对**副文本的
+     * （`translatedLyrics.associateBy { timeMs }`）。QRC 主轨的时间戳与 `trans`（行级 LRC）
+     * 的时间戳来自服务端的两份资产，实测并不逐行相同，原样交出会让译文一行都配不上。
+     * 所以这里把选中的副文本行的 `timeMs` 改成**主轨那一行的时间戳**。
+     *
+     * 容差之外的副文本整行丢弃：宁可少一行译文，也不要把上一句的翻译贴到这一句上。
+     */
+    internal fun alignToMainLines(
+        main: List<LrcLine>,
+        sub: List<LrcLine>,
+        toleranceMs: Long = 1500L,
+    ): List<LrcLine> {
+        if (main.isEmpty() || sub.isEmpty()) return emptyList()
+        val sorted = sub.sortedBy { it.timeMs }
+        val out = ArrayList<LrcLine>(main.size)
+        var cursor = 0
+        for (line in main) {
+            // 单调游标：主轨与副轨都是按时间递增的，不需要每行都从头二分。
+            while (cursor < sorted.size && sorted[cursor].timeMs < line.timeMs - toleranceMs) cursor++
+            val candidate = sorted.getOrNull(cursor) ?: break
+            if (kotlin.math.abs(candidate.timeMs - line.timeMs) <= toleranceMs) {
+                out.add(candidate.copy(timeMs = line.timeMs))
+            }
+        }
+        return out
+    }
+
     private fun SongItem.trackKeyOrEmpty(): String =
         SourceIds.trackKey(MusicSource.QQMUSIC, id)
 }

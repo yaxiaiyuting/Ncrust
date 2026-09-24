@@ -99,6 +99,12 @@ val deDE = Strings(
         cacheUsageImage = "Bild-Cache",
         cacheUsageOther = "Sonstiger Cache",
     ),
+
+    source = SourceStrings(
+        sourceQqMusic = "QQ Music",
+        sourceQqAccount = "QQ-Music-Konto",
+        sourceQqLoginAction = "Bei QQ Music anmelden",
+    ),
     clearCache = "Cache leeren",
     clearCacheConfirm = "Gesamten Cache leeren?",
 

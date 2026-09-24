@@ -99,6 +99,12 @@ val ruRU = Strings(
         cacheUsageImage = "Кэш изображений",
         cacheUsageOther = "Прочий кэш",
     ),
+
+    source = SourceStrings(
+        sourceQqMusic = "QQ Music",
+        sourceQqAccount = "Аккаунт QQ Music",
+        sourceQqLoginAction = "Войти в QQ Music",
+    ),
     clearCache = "Очистить кэш",
     clearCacheConfirm = "Очистить весь кэш?",
 

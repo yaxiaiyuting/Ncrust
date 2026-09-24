@@ -51,6 +51,12 @@ import com.takahashirinta.ncrust.lyric.LyricsWordAnimationMode
 import com.takahashirinta.ncrust.lyric.TtmlDoc
 import com.takahashirinta.ncrust.lyric.TtmlParser
 import com.takahashirinta.ncrust.network.RetrofitClient
+import com.takahashirinta.ncrust.network.SongItem
+import com.takahashirinta.ncrust.qq.QqApi
+import com.takahashirinta.ncrust.source.MusicSource
+import com.takahashirinta.ncrust.source.SourceRouter
+import com.takahashirinta.ncrust.source.isResolvable
+import com.takahashirinta.ncrust.source.songRefOf
 import com.takahashirinta.ncrust.player.PlaybackService
 import com.takahashirinta.ncrust.player.PlaybackStateManager
 import com.takahashirinta.ncrust.player.PlayReporter
@@ -162,6 +168,20 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
     val currentSongName = MutableStateFlow<String?>(null)
     val currentSongArtist = MutableStateFlow<String?>(null)
     val currentSongArtwork = MutableStateFlow<String?>(null)
+
+    /**
+     * 当前歌曲的**音源身份**（v2.1.0 · C）。
+     *
+     * 有意做成普通字段而不是 StateFlow：它们只在「开播」与「取链/取歌词」之间传递，
+     * 没有任何 UI 直接订阅；做成 StateFlow 反而会多出一堆无意义的重组。
+     * UI 需要的音源标识由 `currentSongSourceKey` 的只读镜像 [currentSource] 提供。
+     */
+    private var currentSongSourceKey: String? = null
+    private var currentSongSourceId: String? = null
+    private var currentSongMediaId: String? = null
+
+    /** 当前歌曲的音源（UI 用它画音源标识）。 */
+    val currentSource = MutableStateFlow(MusicSource.NETEASE)
 
     private var onSongEndedCallback: (() -> Unit)? = null
     private var onSongPreviousCallback: (() -> Unit)? = null
@@ -679,7 +699,11 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
             title = currentSongName.value ?: "",
             artist = currentSongArtist.value ?: "",
             artworkUrl = currentSongArtwork.value ?: "",
-            quality = newLevel
+            quality = newLevel,
+            // v2.1.0 · C：换档重播必须带上**当前歌的音源** —— 不然 QQ 曲目会去网易云取链。
+            sourceKey = currentSongSourceKey,
+            sourceId = currentSongSourceId,
+            mediaId = currentSongMediaId,
         )
     }
 
@@ -731,6 +755,11 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         artist: String = "",
         artworkUrl: String = "",
         quality: String = "",
+        // v2.1.0 · C：音源三件套。默认值 = 网易云，因此所有既有调用点**零改动**且行为不变。
+        // 只有 QQ 音乐的曲目需要显式带上（它必须要 songmid 才能取链）。
+        sourceKey: String? = null,
+        sourceId: String? = null,
+        mediaId: String? = null,
         // B4 续播：-1 = 自动（读这首歌的进度记录）；>= 0 = 显式指定起播位置。
         // 显式传值的唯一场景是「播放失败降档重试」—— 那时必须沿用**当前**进度，
         // 不能退回记录里的旧位置，否则听感上会倒退一截。
@@ -739,6 +768,11 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         songPlayVersion++
         val fetchVersion = songPlayVersion
         latestPlaySongId = songId
+        // v2.1.0 · C：记住当前歌的音源身份 —— 取链、歌词、媒体通知都要用它路由。
+        val ref = songRefOf(MusicSource.fromKey(sourceKey), songId, sourceId, mediaId)
+        currentSongSourceKey = ref.source
+        currentSongSourceId = sourceId
+        currentSongMediaId = mediaId
         needsPreload.value = false
         refreshGaplessSetting()
 
@@ -791,6 +825,10 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                 putExtra("artwork", artworkUrl)
                 putExtra("songId", songId)
                 putExtra("startPositionMs", resumeMs)
+                // v2.1.0 · C：音源身份随 Intent 一起交给 PlaybackService（车机/通知要用）
+                putExtra("sourceKey", ref.source)
+                putExtra("sourceId", sourceId)
+                putExtra("mediaId", mediaId)
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                 getApplication<Application>().startForegroundService(intent)
@@ -798,7 +836,10 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                 getApplication<Application>().startService(intent)
             isPlaying.value = true
             viewModelScope.launch { fetchLyrics(songId) }
-            PlaybackStateManager.saveState(getApplication(), songId, title, artist, artworkUrl, true)
+            PlaybackStateManager.saveState(
+                getApplication(), songId, title, artist, artworkUrl, true,
+                sourceKey = ref.source, sourceId = sourceId, mediaId = mediaId,
+            )
             return
         }
 
@@ -808,7 +849,7 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                 // v2.0.0 · T3：离线优先取链（见 fetchUrlOfflineFirst）。
                 // 旧顺序是「先把 5~6 档 eapi 全试一遍（每档都要等 connectTimeout）才回落缓存」，
                 // 断网首播要干等数秒；现在明确离线时先离线兜底，命中就一个字节都不发。
-                var result = fetchUrlOfflineFirst(songId, selectedQuality)
+                var result = fetchUrlOfflineFirst(ref, selectedQuality)
                 if (result == null) {
                     // 该歌在所有音质档位都取不到可播放的 URL（无版权 / 需会员且当前无订阅）。
                     // 前一个版本会兜底喂给 ExoPlayer 一个 404 的 HTML 链接导致无限缓冲"卡住"，
@@ -842,6 +883,9 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                         putExtra("artwork", artworkUrl)
                         putExtra("songId", songId)
                         putExtra("startPositionMs", resumeMs)
+                        putExtra("sourceKey", ref.source)
+                        putExtra("sourceId", sourceId)
+                        putExtra("mediaId", mediaId)
                     }
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                         getApplication<Application>().startForegroundService(intent)
@@ -885,13 +929,17 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
      * 只读一次系统网络状态、不开线程也不注册监听器；[NetworkAvailability] 的异常一律返回
      * true（按在线处理），与本仓库其它调用方（HomeScreen / AppWarmup）同一个判据。
      */
-    private suspend fun fetchUrlOfflineFirst(songId: Long, level: String): SongUrlResult? {
+    private suspend fun fetchUrlOfflineFirst(ref: SongItem, level: String): SongUrlResult? {
         val app = getApplication<Application>()
+        val songId = ref.id
         if (!NetworkAvailability.isOnline(app)) {
             recallOfflineCache(songId, level)?.let { return it }
         }
+        // v2.1.0 · A/C：取链从「直连 SongUrlFetcher」改为按音源路由。
+        // 网易云一侧走的就是 NeteaseSourceProvider → SongUrlFetcher.fetch(id, level)，
+        // 与 v2.0.2 **逐字节同一条路径**（8 档降级阶梯、FLAC 门控、离线 key 全在里面）。
         // 在线取链失败（典型是取链途中断网）时仍回落离线缓存 —— v1.6.0 · D1 的兜底路径。
-        return SongUrlFetcher.fetch(songId, level) ?: recallOfflineCache(songId, level)
+        return SourceRouter.resolveUrl(ref, level) ?: recallOfflineCache(songId, level)
     }
 
     /**
@@ -931,7 +979,11 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
             artworkUrl = currentSongArtwork.value ?: "",
             quality = nextLevel,
             // 降档重试必须从**当前**进度接着播，不能读进度记录（那是上一次退出的位置）。
-            startPositionMs = currentPosition.value
+            startPositionMs = currentPosition.value,
+            // v2.1.0 · C：降档重试同属「重播当前歌」，音源必须原样带着。
+            sourceKey = currentSongSourceKey,
+            sourceId = currentSongSourceId,
+            mediaId = currentSongMediaId,
         )
     }
 
@@ -953,7 +1005,17 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         preloadedUrl = ""
     }
 
-    fun preloadNextSong(songId: Long, title: String, artist: String, artworkUrl: String, allowCurrent: Boolean = false) {
+    fun preloadNextSong(
+        songId: Long,
+        title: String,
+        artist: String,
+        artworkUrl: String,
+        allowCurrent: Boolean = false,
+        // v2.1.0 · C：与 playSong 同一组参数，默认值保证既有调用点零改动。
+        sourceKey: String? = null,
+        sourceId: String? = null,
+        mediaId: String? = null,
+    ) {
         // Dedup: skip only if the SAME song is already being fetched/in queue.
         // 不能因 URL 已缓存而整体跳过——缓存意味着"省的再取链", 但下一首仍需
         // addMediaItem 入 ExoPlayer 队列才能无缝切换; 否则缓存命中时直接 return,
@@ -997,7 +1059,10 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                 }
                 val result = cacheHit?.let {
                     SongUrlResult(it.url, it.actualLevel, it.br, it.type, it.songMaxLevel)
-                } ?: fetchUrlOfflineFirst(songId, quality)
+                } ?: fetchUrlOfflineFirst(
+                    songRefOf(MusicSource.fromKey(sourceKey), songId, sourceId, mediaId),
+                    quality,
+                )
                 if (result == null) {
                     // 预加载失败：可能无版权/无订阅，忽略即可，等当前歌结束时由 songEnded 跳歌。
                     currentlyPreloadingSongId = -1L
@@ -1044,7 +1109,13 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                                 getApplication<Application>().startService(intent)
                             isPlaying.value = true
                             viewModelScope.launch { fetchLyrics(songId) }
-                            PlaybackStateManager.saveState(getApplication(), songId, title, artist, artworkUrl, true)
+                            // 预载接管路径：这里没有 ref（它属于 playSong），用预载参数现构一个。
+                            PlaybackStateManager.saveState(
+                                getApplication(), songId, title, artist, artworkUrl, true,
+                                sourceKey = MusicSource.fromKey(sourceKey).key,
+                                sourceId = sourceId,
+                                mediaId = mediaId,
+                            )
                         }
                         return@withContext
                     }
@@ -1105,6 +1176,41 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         val roman: LyricTrack = LyricTrack(),
     )
 
+    /**
+     * v2.1.0 · C：QQ 音乐歌词（QRC 逐字 + 翻译 + 音译）。
+     *
+     * **不经过 `LyricsCache`**：那张表存的是网易云的字段形状（lrc/tlyric/yrc/romalrc/ttml），
+     * 往里塞 QQ 的数据要么新加字段 + 迁移逻辑（v1.9.3 的教训：加字段 = 加迁移逻辑 = 加单测），
+     * 要么污染网易云的字段语义。本版的取舍是**每次播放现取**（一次请求，实测 QRC 十几 KB），
+     * 代价是断网时 QQ 曲目没有歌词 —— 已在 release notes 的未验证/已知问题里写明。
+     *
+     * 瞬时失败（网络错误）**什么都不写**，与网易云侧同一契约：歌词按钮保持可点、
+     * 用户重试能再来一次；只有服务端明确回答（哪怕是「没有歌词」）才落状态。
+     */
+    private suspend fun loadQqLyrics(songId: Long, seq: Long) {
+        val ref = songRefOf(
+            MusicSource.fromKey(currentSongSourceKey),
+            songId,
+            currentSongSourceId,
+            currentSongMediaId,
+        )
+        if (!ref.isResolvable) return
+        val pack = runCatching { QqApi.fetchLyric(ref) }.getOrNull() ?: return
+        if (!lyricReqGate.isCurrent(seq) || currentSongId.value != songId) return
+        if (pack.isEmpty) {
+            // 服务端明确说「这首歌没有歌词」——记下来，UI 显示暂无歌词而不是一直转圈。
+            lyricsNoContentSongId.value = songId
+            return
+        }
+        val lines = pack.qrcLines
+        lyrics.value = lines
+        translatedLyrics.value = QqApi.alignToMainLines(lines, pack.transLines)
+        romanizedLyrics.value = QqApi.alignToMainLines(lines, pack.romaLines)
+        lyricsSongId.value = songId
+        lyricsNoContentSongId.value = -1L
+        Log.i("PlayerViewModel", "qq lyric songId=$songId lines=" + lines.size)
+    }
+
     /** 日志用：「来源/行数」。 */
     private fun trackText(track: LyricTrack): String =
         (track.source?.cacheTag ?: "none") + "/" + track.lines.size
@@ -1119,6 +1225,13 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         lyricsFetchingSongId = songId
         lyricsLoading.value = true
         try {
+            // v2.1.0 · C：QQ 音乐的曲目走 QRC 直取（网易云那套两相取数链对它没有意义 ——
+            // TTML DB 是按网易云 id 索引的，拿 QQ 的 id 去查只会 404，
+            // 极小概率还会命中一首**完全无关**的歌的 TTML）。
+            if (currentSongSourceKey == MusicSource.QQMUSIC.key) {
+                loadQqLyrics(songId, seq)
+                return
+            }
             val netease = loadNeteaseLyrics(songId, seq)
             if (!lyricReqGate.isCurrent(seq)) return
             // 瞬时失败（风控 / 需登录 / 断网）：保持既有行为 —— 什么都不写、按钮保持可点可重试，
@@ -1475,7 +1588,10 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                 songId,
                 title = currentSongName.value ?: "",
                 artist = currentSongArtist.value ?: "",
-                artworkUrl = currentSongArtwork.value ?: ""
+                artworkUrl = currentSongArtwork.value ?: "",
+                sourceKey = currentSongSourceKey,
+                sourceId = currentSongSourceId,
+                mediaId = currentSongMediaId,
             )
             return
         }

@@ -99,6 +99,12 @@ val jpJP = Strings(
         cacheUsageImage = "画像キャッシュ",
         cacheUsageOther = "その他キャッシュ",
     ),
+
+    source = SourceStrings(
+        sourceQqMusic = "QQ Music",
+        sourceQqAccount = "QQ Music アカウント",
+        sourceQqLoginAction = "QQ Music にログイン",
+    ),
     clearCache = "キャッシュを消去",
     clearCacheConfirm = "すべてのキャッシュを消去しますか？",
 

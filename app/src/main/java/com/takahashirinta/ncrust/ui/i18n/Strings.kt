@@ -149,6 +149,15 @@ data class Strings(
      */
     val offline: OfflineStrings,
 
+    /**
+     * v2.1.0 · C：多音源（QQ 音乐）那一组。
+     *
+     * 为什么又拆一组：上面那条注释说得清楚 —— `Strings` 的构造参数已经贴着 dex 255 上限，
+     * 再加字段**必须**继续拆组。这一组只有 3 条，但同样走分组，避免下次有人顺手往
+     * 构造参数上直接加而踩上限（v2.0.0 · HF1 就是这么崩的）。
+     */
+    val source: SourceStrings,
+
     // v1.5.1 · C：无网络时的首页降级空态（标题 / 提示）。有缓存时会直接显示缓存，
     // 只有"一条都没有"时才轮到它。
     val networkOfflineTitle: String,
@@ -399,6 +408,11 @@ data class Strings(
     val offlineCacheDeleteTrack: String get() = offline.offlineCacheDeleteTrack
     val offlineCacheDeleteTitle: String get() = offline.offlineCacheDeleteTitle
     val offlineCacheDeleted: String get() = offline.offlineCacheDeleted
+
+    // ---------- v2.1.0 · C：多音源那一组的转发属性 ----------
+    val sourceQqMusic: String get() = source.sourceQqMusic
+    val sourceQqAccount: String get() = source.sourceQqAccount
+    val sourceQqLoginAction: String get() = source.sourceQqLoginAction
     val cacheUsageAudio: String get() = offline.cacheUsageAudio
     val cacheUsageImage: String get() = offline.cacheUsageImage
     val cacheUsageOther: String get() = offline.cacheUsageOther
@@ -450,3 +464,18 @@ data class OfflineStrings(
     val cacheCleared: String,
 )
 
+/**
+ * v2.1.0 · C：多音源相关的文案。
+ *
+ * 只有品牌名与账号区块标题：其余交互（登录 / 登出 / 未登录）直接复用既有的
+ * `loginHint` / `logoutButton` / `notLoggedIn`，不重复造一遍同义文案 ——
+ * 8 种语言各多一条同义句，维护成本是实打实的。
+ */
+data class SourceStrings(
+    /** 品牌名。**各语言保持一致**（专有名词不翻译）。 */
+    val sourceQqMusic: String,
+    /** 账号区块标题，例如「QQ 音乐账号」。 */
+    val sourceQqAccount: String,
+    /** 登录动作，例如「登录 QQ 音乐」。 */
+    val sourceQqLoginAction: String,
+)
