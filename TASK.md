@@ -1395,3 +1395,86 @@ cookie store。少了这两步，用户看到的是「验证完了还要再验�
 
 `20274` 据参考实现码表是「绑定异常/绑定缺失」（即该号码可能没绑定 QQ 音乐账号），
 但**这一条没有验证过**，代码里没有据此下任何结论（只归到中性的「登录失败」）。
+
+---
+
+# v2.1.4-gpl（versionCode 34）· QQ 音质档位诊断 + 聚合搜索按会员排序
+
+## 一、任务与结论
+
+**报障**：「QQ 超级 VIP 在音质上开不了母带，只能开极高，和免费用户没区别。」
+
+任务书要求**先探针定位再改代码**，并明确「不要预设一定是映射错了」。照做了。
+最终判定落在任务书**没有列出的第五种可能**上：
+
+| 任务书列的可能 | 判定 | 决定性证据 |
+|---|---|---|
+| A 音质档位映射错 | ❌ 否定 | 服务端**逐条原样回显**我们请求的 `filename`（`AI00004MVqOO0SQXlL.flac` 等） |
+| B vkey 请求参数错（`ct/cv`） | ❌ 否定 | 同机 A/B：`ct=11/cv=14090008` 与 `ct=24/cv=4747474` 结果相同，只有 `cv=0` 触发 `101404` |
+| C 登录态未注入 | ⚠️ 部分（已修，**但不是根因**） | `comm.authst` 确实从未发送；但带/不带它、带/不带 Cookie、匿名**五行结果完全相同** |
+| D 服务端限制第三方客户端 | ❌ 否定 | 服务端是按**账号权益**如实下发（见下） |
+| **E 客户端音质角标显示错误** | ✅ **真根因** | 用户设备上正在播的曲目，界面写「超清母带」，实际文件是 320k mp3 |
+
+**服务端自己给出了答案**（`VipLogin.VipLoginInter / vip_login_base`，登录态实测）：
+
+```
+music_lev_hq = 1        music_lev_sq = 0
+music_lev_hires = 0     music_lev_dolby = 0
+identity.vip = 1        identity.HugeVip = 0
+identity.btn_msg = "续费绿钻"      identity.overdate = 2026-10-02
+```
+
+与 vkey 逐档位结果（HQ=0、SQ/Hi-Res/母带全 `104003`）**完全吻合**。
+
+### 真根因
+
+`QualityAssessment.assess` 的展示档位原先取 `maxOf(标签, 实测)`。这条规则对
+「标签写低了」（实测 `br=1,685,762` 而标签写 `lossless`）是对的，对「标签写高了」是错的 ——
+而**降级时服务端回的标签就是请求档位**，于是 320k 的 mp3 在界面上写成「超清母带」。
+
+用户看到的名字与听到的东西不符 ⇒ 只能得出「开了母带和免费用户没区别」，
+而且**无从判断是没权限还是坏了**。这才是这条报障真正可修的部分。
+
+## 二、改了什么（四个 commit）
+
+| commit | 内容 |
+|---|---|
+| `fix(player)` | 展示档位改成「拿得到实测参数就以实测为准」；QQ 侧补 `QqQuality.knownBitrateOf`（M500/M800/C400 由档位定义就确定是 128k/320k/96k，FLAC 档位刻意不填） |
+| `fix(qqmusic)` | `comm` 补发 `authst`（报告 §2.3 要求；诚实标注它不是根因）；逐档位诊断日志 + `diagnoseQuality` + debug 包入口 + `quality verdict` 日志 |
+| `feat(search)` | 聚合搜索按会员状态排序（用户要求）；新增 `SearchRanking`、`TrackAccess`、`NeteaseVipStore` |
+| `build` | v2.1.4-gpl / versionCode 34 |
+
+## 三、真机验证（本版新增的证据）
+
+| 项 | 证据 |
+|---|---|
+| 逐档位取链 | `vkey.diag`：AI00/RS01/F000 全 `104003`，M800/M500 `result=0` 有 purl |
+| 账号权益 | `music_lev_hq=1 / music_lev_sq=0 / identity.HugeVip=0` |
+| `ct/cv` 硬约束 | 同机矩阵：正确 comm 与 Web comm 结果相同；`cv=0` → `101404` |
+| 登录态是否被认 | `GetLoginUserInfo` 带 cookie `req.code=0`（昵称 `stabbi`）、无 cookie `1000` ⇒ **登录态是真的** |
+| 搜索排序 | 日志 `vip(netease=true qq=true)`；列表交错（D → D(Half Moon) → IF YOU(QQ) → L'armée rouge → Dear John(QQ)） |
+| 网易云会员接口 | `code=200` + `redVipLevel=7`；⚠️ 同路径走 `/eapi/` 返回 404（已写进注释） |
+| JVM 单测 | **550 全绿**（新增 20） |
+| 构建 / 签名 / 权限 | release + debug 均成功；签名 `e75af3ff…5511` 与 v2.1.3 **逐字节相同**；权限 11 条逐条 diff 为空 |
+
+探针脚本（仓库外 `tools/`，不入 git）：
+`probe-qq-quality.py`（匿名档位矩阵）、`probe-qq-vkey-auth.py`（登录态 A/B + 谁是我）、
+`probe-vip-status.py`（两家会员状态）、`capture-qq-quality.sh`（真机一键抓日志）。
+
+## 四、仍未验证（如实）
+
+1. **报障账号本身没有实测过**（在别人的设备上）。本机验证用的是另一台设备上的绿钻账号
+   （`music_lev_sq=0`），它**恰好能复现同一种用户可见症状**（角标撒谎），
+   但**不能证明**报障账号的失败机理与它完全相同。→ 已把 debug 探针留在用户页，
+   请报障用户升级后跑一次 `vkey.diag` 并把日志发回来（不含凭证）。
+2. `comm.authst` 的必要性**未被本机行为差异证明**，依据是报告 §2.3 的协议描述。
+3. `identity.HugeVip` / `music_lev_*` **仍未接入 UI**：用户页角标只显示「VIP」，
+   不显示超级会员，也不显示「你的账号能开到哪一档」。有意为之。
+4. **网易云侧未做回归**。`QualityAssessment` 的展示规则变化影响所有音源，
+   本版只对 QQ 与排序路径做了真机复核。
+
+## 五、发布流程（吸取 v2.1.0 / v2.1.3 教训）
+
+所有改动完成 → 工作区干净 → 构建 release + debug → `aapt2` 实测 versionCode 34 →
+`git show v2.1.4-gpl:app/build.gradle.kts | grep version` **自证** → **再**打 tag、推送 →
+创建 release。**tag 不强推、不移动已发布的 tag。**

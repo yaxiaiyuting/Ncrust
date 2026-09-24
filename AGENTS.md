@@ -62,9 +62,11 @@ Single source of truth: `app/build.gradle.kts` → `defaultConfig.versionName` /
   一旦 release 发布过，就只能另起新版本，绝不移动 tag。
   **教训：tag 必须打在「产出这批 APK 的那个提交」上，而那个提交一定在 `git log` 里位于
   `build: 升级至 …` 之后。打 tag 前先 `git show vX.Y.Z:app/build.gradle.kts | grep version` 自证一次。**
-- Current: `versionName = "2.1.3-gpl"`, `versionCode = 33`. Latest release: `v2.1.3-gpl`.
+- Current: `versionName = "2.1.4-gpl"`, `versionCode = 34`. Latest release: `v2.1.4-gpl`.
   （`v2.1.1-gpl` / `v2.1.2-gpl` 的 tag 存在但**均未发布**（只有 draft，已删），内容全部包含在 v2.1.3 里 ——
   它的 tag 已经推上去了，按本项目纪律**不移动已发布的 tag**，所以另起一版而不是改它。）
+  （v2.1.4 定号：`tools/next-version.sh` 三源交叉验证最大值 = 33 ⇒ **34**；
+  打 tag 前用 `git show v2.1.4-gpl:app/build.gradle.kts | grep version` 自证过一次。）
   （**注意 versionCode 必须递增**：v1.6.1 = 19，所以 v1.7.0 是 20 —— 任务书里写「v1.7.0 = 19」是错的，
   19 已经被 v1.6.1 占用，照抄会导致无法覆盖安装。同理本版 **23**：任务书说「v1.8.0 = 21、本版 22」，
   但 `aapt2 dump badging` 实测 v1.8.1 已经是 **22**，照抄 22 会与线上包撞号、无法覆盖安装。
@@ -2550,3 +2552,107 @@ v2.1.0 把 HTTP 403、空 body、解析失败、`IOException` **四类失败归�
 （窄屏顶栏是固定 56dp 的 Box，多一行会被裁）；`weight(1f, fill = false)` 只给歌手，
 **角标永远完整可见**；`alignByBaseline()` 让 12sp 与 14/16sp 基线对齐。
 **播放器的动画与手势代码一行未动。**
+
+## v2.1.4 新增（本 fork · QQ 音质角标不再撒谎 + 聚合搜索按会员排序）
+
+> **版本**：`2.1.4-gpl` / versionCode **34**（`tools/next-version.sh` 三源交叉验证最大值 = 33）。
+> **发布说明**：`dist/RELEASE-NOTES-v2.1.4-gpl.md`。
+> **本版是报障驱动的诊断版**，不是功能版。下面是这一轮最值得留下的三条。
+
+### 1. 「超级会员开不了母带」的真根因：**客户端角标在撒谎**
+
+报障原话：「QQ 超级 VIP 在音质上开不了母带，只能开极高，和免费用户没区别」。
+
+逐档位取链实测（PCL110 / 登录态 / 《稻香》周杰伦）：
+
+```
+AI00(臻品母带)   result=104003 purl=空
+RS01(Hi-Res)     result=104003 purl=空
+F000(FLAC 无损)  result=104003 purl=空
+M800(320k mp3)   result=0      purl=有
+M500(128k mp3)   result=0      purl=有
+```
+
+服务端 `VipLogin.VipLoginInter / vip_login_base` 的账号权益与之**完全吻合**：
+`music_lev_hq=1`、`music_lev_sq=0`、`music_lev_hires=0`、`music_lev_dolby=0`、
+`identity.vip=1`、`identity.HugeVip=0`、`identity.btn_msg="续费绿钻"`。
+
+⇒ **服务端是按账号权益如实下发**。可能性 A（档位映射错）、B（`ct/cv` 错）、D（服务端限制第三方客户端）
+**全部被实测否定**；真正的缺陷是：
+
+`QualityAssessment.assess` 原先取 `maxOf(标签, 实测)`。对「标签写低了」是对的，
+对「标签写高了」是错的 —— 而**降级时服务端回的标签就是请求档位**，
+于是 320k 的 mp3 在界面上写成「超清母带」。用户看到的名字与听到的东西不符，
+只能得出「开了母带和免费用户没区别」，也无从判断是没权限还是坏了。
+
+**修法（两条一起做才成立）**：
+① 展示档位改成「拿得到实测参数就以实测为准」，不受请求档位封顶；
+② QQ 侧补 `QqQuality.knownBitrateOf` —— vkey 响应没有 `br`，而 `M500`/`M800`/`C400`
+由档位定义就确定是 128k/320k mp3 与 96k AAC，**没有这一步，规则①在 QQ 上不会生效**。
+
+**这条最值得记的教训**：「服务端按权益如实降级」与「客户端显示错误」叠在一起时，
+用户看到的现象与「功能坏了」一模一样。**诊断的第一步应该是问「界面上的那个名字是谁给的」**，
+而不是先怀疑映射或权限。
+
+### 2. `comm.authst` 从未发送（协议缺口），但**不是**本次根因
+
+PHASE0 报告 §2.3：「**已登录时追加** `comm.uin=<musicid>`、`comm.authst=<musickey>`（同时也要带 Cookie）」，
+§7.2 的登录态示例同样带 `authst`。v2.1.0 只注入了 `uin`。
+
+缺口能活到现在的原因：**§2.3 的 `comm` 实测表全部在匿名态跑出来**（`uin=0`、无票据）——
+匿名态本来就没有 `authst` 可发，「登录态少发什么」从来没进过验证范围。
+
+**诚实标注**：本机 A/B 对照（`tools/probe-qq-vkey-auth.py`：带/不带 authst × 带/不带 Cookie × 匿名，
+**五行结果完全相同**）**没能证明这条修复是必需的** —— 因为本机账号权益本来就只到 HQ。
+它是报告明确要求的字段，且缺失时的行为无法与「服务端限制」区分，所以补上；
+但排查时不要把它当成根因。
+
+同类的「不报错的错误」在本仓库已有多次前科（数组不等长、信封带错 comm、用错 media_mid）——这是同一类。
+
+### 3. 让用户能自己取到证据（本版的可观测性）
+
+报障账号在**别人的设备**上，开发侧无法复现。所以本版把取链过程做成可观测的：
+
+- `QqApi` 逐档位诊断日志 `vkey.diag`：每个档位的 `result`/`purl` 有无/服务端回显的 filename 与 mid/
+  `sip`/`retcode`；`QqApi.diagnoseQuality(song)` 一次问全档位
+  （`fetchPlayUrl` 拿到 purl 就返回，**高档位为什么没拿到不会被记录，而那恰恰是要看的东西**）；
+- `QqClient` 记录 Cookie 的**字段名**与打码 uin；
+- 设置页「用户」页的 **仅 debug 包**入口（release 里整行不挂载，不是 `alpha=0`，见「Compose 触摸陷阱」第 1 条）；
+- `PlayerViewModel.applyQualityVerdict` 打一行 `quality verdict`，用 **`Log.i`** ——
+  release 包也能读，用户不必装 debug 包（这是有意的：报障用户多半只有 release 包）。
+
+**安全红线（写进代码注释，别改）**：日志里**不得出现 Cookie 值、`purl`、`vkey`** ——
+`purl`/`vkey` 是 2 小时内有效的资源令牌，贴到 issue 里就是泄露。只打字段名、长度、档位与 `result` 码。
+
+### 4. 聚合搜索按会员排序（用户要求）
+
+| 用户有会员的音源 | 结果顺序 |
+|---|---|
+| 只有 QQ | QQ 会员专享 → QQ 其余 → 网易云（原序） |
+| 只有网易云 | 网易云会员专享 → 网易云其余 → QQ（原序） |
+| 两家都有 | **交错**：两家会员专享轮流在前，然后两家的其余交错 |
+| 都没有 / 未登录 | **一个字节都不改**（网易云在前，与 v2.1.3 完全一致） |
+
+- 规则在 `search/SearchRanking.kt`（纯逻辑，泛型 `RankedSong<T>`，13 个单测）。
+  两条不变量：只在同一档内重排（保留服务端相关性顺序）；两家都没会员时保持历史行为。
+- 「两家都有」选**交错**而不是堆在前面：堆起来会让排最前的那一家永远占满首屏。
+- `SongItem` 新增两个**可空 + 默认值**字段：`fee`（网易云原始付费类型）与 `memberOnly`
+  （QQ 的 `pay.pay_play`）。都会跟着 Gson 进队列持久化，老队列读到 null = **「不知道」而不是「免费」**
+  （见「歌词缓存字段迁移策略」同一套规则）。
+- **`fee` 语义（实测，最容易踩）**：`0` 免费、**`8` 免费播放但高音质需会员**、`1` VIP 专享、`4` 数字专辑。
+  把 `fee == 8` 当会员专享会让排序去推一首谁都能放的歌。
+- 顺带补上了 `auth/NeteaseVipStore.kt`：此前**全仓库没有任何「网易云会员」概念**。
+  判据走 `/api/music-vip-membership/front/vip/info` 的 `redVipLevel > 0`（实测 = 7）。
+  ⚠️ **同路径走 `/eapi/` 到 `interface.music.163.com` 返回 404**，必须用明文 GET ——
+  这条差异写在 KDoc 里，换路径时会踩。
+
+### 本版的未验证项（与 release notes 保持一致）
+
+1. **报障账号本身没有实测过**（在别人的设备上）。本机验证用的是另一台设备上的绿钻账号
+   （`music_lev_sq=0`），它**恰好能复现同一种用户可见症状**（角标撒谎），
+   但**不能证明**报障账号的失败机理与它完全相同。
+2. `comm.authst` 的效果未被本机行为差异证明（见第 2 条）。
+3. `identity.HugeVip` / `music_lev_*` **仍未接入 UI** —— 用户页角标只显示「VIP」，
+   不显示超级会员，也不显示「你的账号能开到哪一档」。有意为之（宁可不显示，也不写一张可能撒谎的权益表）。
+4. 网易云侧未做回归测试。`QualityAssessment` 的展示规则变化影响所有音源，
+   本版只对 QQ 与排序路径做了真机复核。
