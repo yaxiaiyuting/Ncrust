@@ -1179,3 +1179,99 @@ media3 自己那条通知的刷新白名单也只有 playbackState / playWhenRea
    （真机证据见上），保留核心思路（跨行重 post + 限流 + `setOnlyAlertOnce`）。
 3. 任务书要求「一个修复点一个 commit」—— 两个 commit，各自独立可回滚。
 4. 任务书要求「不改动 `SweepTrack.kt` 核心算法」—— 未改动。
+
+---
+
+# v2.1.0-gpl（QQ 音乐音源 + 双账号）：本次会话的真机与探针验证记录
+
+> 本节只记录**实际执行过**的验证，并明确区分「已验证 / 未验证 / 因工具限制未覆盖」。
+> 设计决策与偏离记录见 `AGENTS.md` 的 v2.1.0 节；调研数据见仓库外
+> `../PHASE0-ARCH-v2.1.0.md` 与 `../PHASE0-QQMUSIC-API.md`。
+
+## 1. 构建与产物
+
+| 项 | 结果 |
+|---|---|
+| `./gradlew test` | **483 个 JVM 单测通过**（本版新增 81 个） |
+| `./gradlew assembleDebug assembleRelease` | BUILD SUCCESSFUL（release 走 R8 + lintVital） |
+| `dark` `dist/Ncrust-v2.1.0-gpl-release.apk` | 9,827,360 字节，versionCode **30** / versionName **2.1.0-gpl** |
+| `dist/Ncrust-v2.1.0-gpl-debug.apk` | 30,396,887 字节 |
+| 权限 | `aapt2 dump badging` 实测 11 条，与 v2.0.2 的 11 条 **逐条 diff 为空** |
+| 签名 | `apksigner verify --print-certs`：`e75af3ffbcf76a36a567188d88d132adf3c7484c53c20a3a083cb1d222025511` |
+| `applicationId` | `com.takahashirinta.ncrust`（未改动） |
+
+## 2. 打真实 QQ 音乐服务端的探针测试（`QqLiveProbeTest`，JVM）
+
+这五个用例真的发 HTTP 请求。无网络时 `assumeTrue` 跳过而不是失败。
+
+| 用例 | 结果 | 证据 |
+|---|---|---|
+| 旧版搜索通道返回结果 + 本仓库映射器解析 | ✅ | 歌名 `晴天`、合成 id 带 QQ 标志位、`songmid`/`media_mid` 均非空、时长 269000ms（秒→毫秒）、封面 `https://y.qq.com/music/photo_new/...`、歌手解析正确 |
+| 批量取链形状被受理 | ✅ | `req.code=0`；`midurlinfo` 条目数 = 请求档位数；**服务端逐条回显的 `filename` 与我们请求的完全一致**；匿名态 purl 为空（与实测 `104003` 一致） |
+| 匿名取歌词 → 本仓库 QRC 解密 + 解析端到端 | ✅ | 解密出的 XML 含 `LyricContent`、解析出 >10 行且带逐字、每行词区间与行文本严格对应 |
+| 会员接口匿名可调 | ✅ | `code=0`、`identity` 存在、`vip=0`（未登录 ⇒ 非会员） |
+| `media_mid` 与 `songmid` 分开保存 | ✅ | 前 5 首的 `mediaId` 都能拼出 `<前缀><media_mid>.mp3` |
+
+**本轮唯一一个「只有真实数据才会暴露」的缺陷就是探针抓到的**：真实歌词里有带尾空格的词
+（`La `），行首尾空白被裁掉时该词的字符区间与 `LrcWord.text` 不一致
+（`line.text.substring(range) != word.text`）—— 渲染层按区间取版面路径，不一致就是逐字串位。
+已修为「词的 text 取裁剪后坐标系里的实际切片」。
+
+## 3. 跨实现黄金样本比对
+
+`QrcDecryptorGoldenTest` 用调研期**独立抓取**的真实《晴天》QRC 密文（9808 hex 字符）与
+**另一份独立实现**（Python 参考实现 + 调研期另写的 Java 移植）解出的黄金 XML（9821 字节）比对：
+Kotlin 侧**逐字节一致**。这一条同时钉住了密钥、ECB/NoPadding、字节序、PC-2 偏移 bug 与 zlib 行为。
+另有 `QqDesTest` 断言「单 DES 输出必须等于参考实现的 `FE6782F11080C6E6` 而**不是**标准 DES 的
+`3FA40E8A984D4815`」—— 将来有人把 `-27` 改回 `-28` 时，那条用例就是解释为什么不能改的文档。
+
+## 4. 真机验证（PCL110 · Android 16 / API 36）
+
+| 项 | 结果 |
+|---|---|
+| v2.0.2 → v2.1.0 覆盖安装 | ✅ `adb install -r` Success（签名与线上包兼容） |
+| 冷启动 | ✅ 进程存活、**无 FATAL / AndroidRuntime** |
+| UI 渲染 | ✅ 首页（榜单 / 每日推荐）、搜索页（历史记录）、mini 播放器、底部导航均正常（截图复核） |
+| 网易云歌词链（回归） | ✅ logcat：`PlayerViewModel: fetchLyrics cache hit id=346075 lrc=1302` → `歌词源 songId=346075 phase=1 picked=YRC lines=59 words=true` |
+
+### 未覆盖：UI 文本注入（工具限制，非本版问题）
+
+本轮尝试用 `adb shell input text` / `input keyevent` 向 Compose 搜索框注入关键词，
+**完全不生效**（设备虽有 LatinIME，但注入的按键事件到不了 Compose 的输入节点，
+光标在框内但不产生字符）。因此「输入关键词 → 看聚合搜索结果 / 点 QQ 曲目试听」
+这条**只能等真人手测**。这与 `AGENTS.md` 早已记录的
+「v1.7.0 记录 adb 注入手势偶发不生效，优先真人手测」是同一类限制。
+`input tap` / 媒体键 / 截图是有效的（本轮的上首页、看搜索页、看 UI 都靠它们）。
+
+### S6（SM-G9209 / API 24）
+
+设备上原先装的是 **2.0.2 的 debug 签名包**，与 release 签名冲突
+（`INSTALL_FAILED_UPDATE_INCOMPATIBLE`）。已改装 **debug APK**（`install -r` Success）。
+**未做**卸载重装 —— 那会清掉设备上的登录态与偏好，属于对既有用户数据的破坏性操作，
+不在本版授权范围内。因此 **API 24 上的功能回归本轮未执行**。
+
+## 5. 本版未验证项（与 release notes 的「未验证项」一致）
+
+1. 登录态下的 QQ 取链 / 歌词 / 会员取值（本仓库没有 QQ 音乐账号）；
+2. QQ 登录链路端到端（WebView 登录本身是既有机制，但未真人验证 cookie 一定含 `qqmusic_key`）；
+3. QQ 曲目断网时无歌词（本版不做 QQ 歌词缓存）；
+4. 音质角标对 QQ 曲目不细分档位（QQ 不返回码率字段）；
+5. QQ 曲目不进网易云歌单/收藏；
+6. 会员档前缀 `AI00`/`Q000`/`Q001` 能否真的取到文件（只见于社区实现）；
+7. API 24（S6）与华为平板上的回归；
+8. v2.0.x 遗留未验证项（PCL110/S6 真机回归、动态字号视觉验收）状态不变。
+
+## 6. 合规自检
+
+| 红线 | 结论 |
+|---|---|
+| 不删 `LICENSE-MIT` | ✅ 未动 |
+| 不改 `applicationId` | ✅ `com.takahashirinta.ncrust` |
+| 不换签名 | ✅ 指纹 `e75af3ff…5511` |
+| 不新增敏感权限 | ✅ 11 条逐条 diff 为空 |
+| 不写 cookie/密码/keystore 入库 | ✅ `git status` 检查通过；`tools/` 未入 git |
+| 手机密码不入仓库 | ✅ |
+| 不做 DRM 破解 / 解灰 | ✅ 无相关代码；档位表**不含 O801**（有单测钉住） |
+| 不采集密码 | ✅ QQ 登录走腾讯自己的页面 |
+| 不上传 cookie | ✅ 只写本机 SharedPreferences |
+| 渲染层核心冻结 | ✅ `SweepTrack.kt` 一个字节未改 |
