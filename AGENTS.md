@@ -1656,6 +1656,123 @@ v1.9.2 把音译轨做进了数据层（TTML `x-roman` + 网易云 `romalrc`，�
 - 任务书要求一个 `chore(tools)` commit，但 `tools/` 按仓库惯例不入 git（`.gitignore` 里有 `.sh`）⇒
   脚本留在仓库外，「动版本号前必须跑它」的规则写进 Versioning 一节，由该 commit 承载。
 
+## v2.0.0 新增（本 fork · T1 用户报告的三个 bug / T2 播放时禁止熄屏 / T4 动态字号）
+
+**版本**：`2.0.0-gpl` / versionCode **27**（冷启动先跑 `tools/next-version.sh`，三源交叉校验的最大值都是 26）。
+分支 `feature/v2.0.0-offline-and-fixes`。四个方向：T1 用户报告的三个 bug · T2 播放时禁止熄屏 ·
+T3 离线缓存 Phase 2 · T4 动态字号（实验性）。
+
+### T1-A · 大屏模式：auto-rotate 关时**保持横屏**（偏离 v1.8.0 的 P1 契约）
+
+**用户报告与澄清**：原始描述「横屏模式锁了之后手机竖回来横屏也自动复原了」有两个相反方向，
+用户澄清为「我希望**保持横屏**的时候它**自动切换竖屏模式**了（而且**没有开自动旋转**）」。
+这条澄清直接排除了「手动退出又被自动拽回大屏」那一种：`shouldAutoEnterBigScreen` 要求
+`autoRotate == true`，关着时**不可能**自动进大屏。
+
+**真机取证（S6，未改任何系统设置）**：`ncrust_settings.xml` 里 `auto_rotate=false`，
+logcat 有 `big screen: relaxed to SENSOR (device landscape 298°)` —— 应用**确实**把方向放宽成了 SENSOR。
+
+**根因**：`SENSOR` 跟随传感器（不理会系统旋转锁），于是手机稍微一歪（躺床上 / 放支架 / 手腕转动）
+就翻回竖屏 → 配置变竖屏 → `shouldExitOnConfiguration` 退出大屏 → auto-rotate 关又把它锁成 PORTRAIT
+⇒ **把手机转回横向也回不来**。
+
+**修法（`orientationFor` 第 1 档）**：方向策略按用户意图的来源分流 ——
+
+| 自动旋转 | 语义 | 大屏里的方向 | 退出路径 |
+|---|---|---|---|
+| 开 | 「跟随手机方向」 | `SENSOR`（双向，行为不变） | 转回竖屏 / ⤢ / 返回键 |
+| 关 | 「我要横屏播放器」 | **`SENSOR_LANDSCAPE`（保持横屏）** | ⤢ / 返回键 |
+
+两处配套（缺一即失效）：
+
+1. `enterBigScreenMode` 在 auto-rotate 关时**不启动**物理朝向门控 —— 那道门控会在设备横向时
+   直接把 `requestedOrientation` 写成 `SENSOR`（绕过 `applyOrientationPolicy`），正好抵消本条修复；
+2. `LaunchedEffect(autoRotate)` 里**对称收敛**门控：大屏内「关 → 开」补启门控
+   （否则 `bigScreenOrientationRelaxed` 永远停在 false、方向被钉死在强制横屏）、
+   「开 → 关」停门控。
+
+> **偏离记录**：v1.8.0 的契约是「绝不长期锁横屏」（理由：否则退出只剩按钮和返回键）。
+> 本版按真机反馈对 auto-rotate 关的用户推翻它 —— 那个按钮的语义就是「我要横屏」，
+> 而关掉自动旋转本身就是在表达「不要跟着手机转」。两条退出路径仍然齐备。
+
+### T1-B · 歌词加载中时控制栏「有动画但无动作」：**未复现，未能定位**（如实）
+
+用户报告「歌词处于加载状态时，点上一首/播放/下一首，按钮有动画但无动作；歌词加载完成后恢复」，
+且**目前无法稳定复现**。按任务书授权，本条以代码审查为主，**不做猜测性改动**。
+
+| 候选根因 | 结论 | 证据 |
+|---|---|---|
+| 加载态挂载了 `fillMaxSize` 遮罩 / loading 层 | 不成立 | `LyricsView.kt:93-100`：`lyrics.isEmpty()` 直接返回空（`isLoading` 为真时连「暂无歌词」都不画），无 Box / 无 `pointerInput` |
+| 加载层吃掉命中区（触摸陷阱 1/2/5） | 不成立 | 同上：该区域一个节点都没有；控制栏在歌词面板之外，层叠顺序不变 |
+| 三个按钮被 `enabled` 门控 | 不成立 | `FullPlayerControls.kt:239/354` 的 `previousEnabled` 只等于 `playMode != INFINITY`（`PlayerCard.kt:718`）；播放键无门控 |
+| 切歌被歌词闸门阻塞 | 不成立 | `LyricRequestGate` 是 `AtomicLong` 单操作无锁闸门，**不挂起不加锁** |
+| 歌词与取链共用单线程调度器 | 不成立 | `fetchLyrics` 走 `viewModelScope`（Main），取链走 `Dispatchers.IO`，无 `limitedParallelism` |
+| `playNext` / `playSong` 在加载期 early-return | 不成立 | `playNext` 只在队列空时返回；`playSong` 非 suspend、无状态门控 |
+
+**仍存的两个可能**（都需复现现场才能定论）：主线程瞬时卡顿（`LyricsCache.get` 在 Main 上做 prefs 读 +
+Gson 反序列化）、或点击落在 `graphicsLayer` 过渡期的命中期（触摸陷阱 3）。
+
+### T1-C · 乱序播放：`playMode` 静默丢失 + 轮末重播 + 游标失步（**不是洗牌算法的问题**）
+
+用户报告「容易同一语种扎堆，刚刚随机到十首日语歌」，并确认自动播完也扎堆、曲库以日语为主。
+
+- **洗牌算法无缺陷**：Kotlin `shuffled()` 落到 `java.util.Collections.shuffle`，标准无偏 Durstenfeld
+  Fisher-Yates（javap 反汇编 `kotlin-stdlib-1.9.24` 核对）；无 `swap(i, random(0,n))` 式有偏写法、
+  无固定/秒级种子、无按语种/专辑分池。
+- **统计事实**：均匀随机排列下同类占比 k/n 时期望相邻同类对 = k(k-1)/n；n=50、日语 70% 时
+  P(≥10 连) ≈ **27.8%** ⇒ 在日语为主的库里是**正常统计现象**，算法层面无法"修正"分布。
+  **本 fork 不做「按语种均衡」**（语言是伪概念，网易云没有语言字段）。
+- **但有三处真缺陷**（它们才会造成"真·连播"）：
+
+| # | 缺陷 | 后果 | 修法 |
+|---|---|---|---|
+| 1 | `playMode` 只在 `remember` 里，Activity 重建即重置为 CYCLE | 静默退回顺序播放（网易歌单原始顺序常按语种/地区成块） | `PlaybackStateManager` 落盘 `play_mode`（非法值回落 0） |
+| 2 | 轮末分裂：手动路径重洗整池后播 `fresh[0]`；无缝路径把当前曲钉 0 位后播下标 0 | 轮末**重播刚播完的那首**（无缝路径必现） | 统一 `ShuffleRound.newRound` 并跳过下标 0；无缝路径用 `pendingRound` 让**预载与过渡读同一份序列** |
+| 3 | 队列面板点歌只改 `currentQueueIndex`，不同步 `shuffledPosition` | 之后的"下一首"按旧游标推进 ⇒ 已播歌再播 | `playFromQueue` 同步游标 |
+
+- **附带（产品向）**：`player/ShuffleRound.kt` 的 `disperse` 用**主艺人 id** 做「相邻两首不同艺人」约束，
+  最多剩余优先 + 随机打破平局，**下标 0 保持不动**（`shuffledIndices[0]` 恒等于正在播的那首是本应用的事实契约）；
+  池子太小 / 整张专辑同一艺人时**优雅退化**，绝不丢歌、绝不死循环。
+
+### T2 · 播放时禁止熄屏
+
+| 项 | 决策 |
+|---|---|
+| 触发 | **仅 `isPlaying == true`**（暂停 / 缓冲恢复系统策略） |
+| 范围 | **仅播放器界面**（竖屏全屏播放器与大屏共用同一个展开进度；mini bar 不算） |
+| 后台 | **不禁止**：`ON_PAUSE` 立刻摘 flag |
+| 默认 | 开（`ncrust_settings` 的 `keep_screen_on`），设置 → 播放可关 |
+| 实现 | `WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON`，**不用 WakeLock**（零权限、零依赖、不存在忘记释放） |
+
+- `ON_RESUME` 幂等重放（部分 ROM 从最近任务回来会重置窗口标志，与 v1.8.0 沉浸式同一套处理）、
+  `onDispose` 再清一次；
+- 媒体通知栏的暂停/继续天然更新 flag（同一个 `isPlaying` StateFlow）；
+- 展开态另存一份 `State` 供判定，**刻意不新增第二个 `snapshotFlow`**，也不在组合期读 `progress`
+  （那会让 `MainScreen` 跟着展开动画逐帧重组）；
+- 可观测性：`Log.i("NcrustBigScreen", "keep-screen-on: flag added/cleared")`，
+  交叉验证可用 `dumpsys window | grep mHoldScreenWindow`。
+
+### T4 · 动态字号（实验性，默认关）· **`SweepTrack.kt` 一行未改**
+
+按每句**估算折行数**给这一句一个离散倍率：1 行且填充率 ≤ 0.82 → ×1.15；≥3 行 → ×0.85；其余 ×1.0。
+倍率乘在用户 A-/A+ 的基准字号**之上**（不替换），并被 **48sp 绝对上限**夹住（A+ 的 1.5 档 ⇒ 放大档自动退回 1.0）；
+译文 / 音译同乘同一倍率 ⇒ 三层比例恒定。
+
+**红线复核（调研结论）**：`SweepGeometry` 只有「行号 + 横向 x」，**没有任何纵向 API** ——
+`build` 只消费 `charStart/charEnd/lineStart/lineEnd/lineForChar` + `fadePx`，`sample` 只返回
+`(lineIndex, x, rtl)`；行高与上下沿全部由渲染层直接问 `TextLayoutResult`。字号变化影响的是
+**折行结果**（= geo 的内容），那本来就是渲染层每次 layout 变化时重算的输入 ⇒ 只改
+`fontSize`/`lineHeight`，渐变 / 逐字 / 跨行插值全走既有路径。
+
+**为什么估算而不是测量**：真值要两遍排版（每行已有两层 `BasicText` → 四遍），S6（API 24 / 3GB）
+上是可感知开销，且首次滚到的行会有一次「基准 → 终值」跳变。估算 O(字符数)、无排版、无首帧跳变；
+判据保守到可在模型内证明「放大后仍占 1 行」（`fill ≤ 0.82` 且 ×1.15 ≤ 1）⇒ **不会振荡**。
+代价：拉丁比例字体只能近似（CJK 1em / ASCII 0.55~0.66em），判错一档只是字号差一档，
+不影响逐字几何（几何来自真实 layout）。
+
+**「关掉 = 与 v1.9.3 逐字节一致」如何保证**：`NcrustLyricLine.fontScale` 为 1f 时面板里**原样使用**
+`fontSize`/`lineHeight`（刻意不写成 `fontSize * 1f`），diff 可逐行审计。
+
 ## v2.0.0 · T3 离线缓存 Phase 2（本 fork：离线曲目管理 UI + 容量控制）
 
 > **范围声明（合规前提）**：Phase 2 **不做显式下载**。没有 media3 的 `DownloadManager` /
