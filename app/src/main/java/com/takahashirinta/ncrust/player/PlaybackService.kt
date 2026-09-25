@@ -79,6 +79,7 @@ import com.takahashirinta.ncrust.library.LibraryManager
 import com.takahashirinta.ncrust.network.CoverUrls
 import com.takahashirinta.ncrust.network.PlaylistApi
 import com.takahashirinta.ncrust.network.SongItem
+import com.takahashirinta.ncrust.source.MusicSource
 import com.takahashirinta.ncrust.source.musicSource
 import com.takahashirinta.ncrust.ui.i18n.getSavedLanguageCode
 import com.takahashirinta.ncrust.ui.i18n.stringsForCode
@@ -162,6 +163,18 @@ class PlaybackService : MediaLibraryService() {
         var onPlaybackError: ((Long) -> Unit)? = null
         // Fired on the main thread when ExoPlayer auto-transitions to a preloaded next item.
         var onSongTransitioned: (() -> Unit)? = null
+        /**
+         * v2.1.5：自动接续时把**真正起播那一项的身份**交给 ViewModel。
+         *
+         * 为什么单独一个回调而不是塞进 [onSongTransitioned]：那个回调是 v1.5.2 的既有契约
+         * （`() -> Unit`），而身份必须带载荷（QQ 的 songmid / media_mid）。
+         * 两者语义不同 —— 「切歌了」与「切到了哪一首」—— 分开后各自的调用方都读得懂。
+         *
+         * 参数：`(source, songId, sourceId, mediaId)`。
+         * `songId <= 0` 表示这次 transition 没解析出可用身份（老形状 / 车机插入项），
+         * 调用方应保持既有状态、不要拿它去取词。
+         */
+        var onTrackTransitioned: ((MusicSource, Long, String?, String?) -> Unit)? = null
         var onBufferingChanged: ((Boolean) -> Unit)? = null
         // B2-C：封面 Palette 提取出的主题色（ARGB）。null = 当前歌无封面，UI 回落预设色。
         // 由 PlaybackService 静态回调推给 PlayerViewModel.coverAccentRgb。
@@ -180,6 +193,27 @@ class PlaybackService : MediaLibraryService() {
 
         /** v1.8.0 · T5：探针 tag（debug 包用来看"到底 post 了几次"）。 */
         private const val TAG_LYRIC_NOTIFY = "NcrustLyricNotify"
+
+        /**
+         * v2.1.5 · P1 探针 tag：媒体面板（MediaSession metadata）到底发布了什么。
+         *
+         * ## 为什么需要它
+         *
+         * 「控制中心媒体面板不显示歌词」这个问题在 adb 上原本**无法归因**：
+         * `dumpsys media_session` 只打 `metadata:size=N, description=<title>,<artist>,<album>`，
+         * 看不到 key 的**身份**，也看不到「最后更新时间 / 闸门计数 / 通知重建次数」。
+         * 于是「应用从没发布过这一行」与「发布了但 ROM 不消费」在证据上长得一模一样。
+         *
+         * 本探针把这三件事一起打出来，判据就变成可执行的：
+         * - `keys=` 里有没有我们写的 key ⇒ **应用侧发布是否发生**；
+         * - `line=` / `title=` 是不是正在唱的那一行 ⇒ **内容是否正确**；
+         * - `gate[...]` 的 post/defer/same 计数 ⇒ **更新策略有没有把它挡住**；
+         * - 若以上全部正确而面板仍不显示，则结论只能是**ROM 侧不消费**（能力边界），
+         *   而不是应用 bug —— 这正是 v2.1.5 对 P1 的结论所需要的证据形式。
+         *
+         * 只在 debug 包打印；release 里这些计数器只是几个 Int 自增，不进任何热路径循环。
+         */
+        private const val TAG_MEDIA_PANEL = "NcrustMediaPanel"
     }
 
     // Metadata staged for the next gapless transition.
@@ -193,6 +227,16 @@ class PlaybackService : MediaLibraryService() {
      * 不再靠 pendingNextTitle 是否为 null 这种间接信号。
      */
     private var pendingNextUrl: String? = null
+    /**
+     * v2.1.5：待播槽位的**音源身份**。
+     *
+     * 预载项的 mediaId 现在自带音源（见 [PreloadSlot.mediaIdFor]），所以 transition 时
+     * 优先从 item 反解；这两项是**兜底**：老形状的 mediaId（`song:123` 且实际是 QQ 曲目）
+     * 反解不出音源，那时只能信 ViewModel 随 preload_next 一起送来的这份。
+     */
+    private var pendingNextSource: MusicSource = MusicSource.DEFAULT
+    private var pendingNextSourceId: String? = null
+    private var pendingNextMediaId: String? = null
     // 无缝预载的下一首封面位图: preload_next 时提前加载, 切换瞬间直接应用,
     // 任务栏不会出现"新歌标题 + 上一首封面"的过渡窗口
     private var pendingNextArtworkBitmap: Bitmap? = null
@@ -373,17 +417,28 @@ class PlaybackService : MediaLibraryService() {
             ) {
                 // Only handle automatic transitions triggered by ExoPlayer (gapless handoff).
                 if (reason != Player.MEDIA_ITEM_TRANSITION_REASON_AUTO) return
-                val itemSongId = PreloadSlot.songIdFromMediaId(mediaItem?.mediaId)
+                // v2.1.5：起播项的音源**从 item 自己身上读**。item 是 ExoPlayer 真正播的那一份，
+                // 而 pendingNext* 是旁路（last-write-wins）—— 身份必须跟着 item 走，
+                // 这正是跨源自动接续时会话/歌词留在上一首的接缝。
+                val itemIdentity = PreloadSlot.identityFromMediaId(mediaItem?.mediaId)
+                val itemSource = itemIdentity?.first
+                val itemSongId = itemIdentity?.second
                 val itemUrl = mediaItem?.localConfiguration?.uri?.toString()
                 // v1.5.2 串台守卫：只有「ExoPlayer 真正起播的那一项」就是待播槽位里那一首，
                 // 才允许把元数据写进通知栏 / 歌词 / ViewModel。重复入队的年代，这里会把
                 // 「下下首」的标题写到正在播的「上一首」上 —— 就是用户听到的串台。
                 // 现在宁可让 UI 停在原处（下一首自然会走硬切重新对齐），也绝不显示错歌。
-                if (!PreloadSlot.transitionMatches(pendingNextSongId, pendingNextUrl, itemSongId, itemUrl)) {
+                // v2.1.5：判定加上音源维度（网易云 123 与 QQ 123 是不同的歌）。
+                if (!PreloadSlot.transitionMatches(
+                        pendingNextSource, pendingNextSongId, pendingNextUrl,
+                        itemSource, itemSongId, itemUrl,
+                    )
+                ) {
                     Log.w(
                         "PlaybackService",
                         "AUTO transition outside the preload slot (itemId=" + mediaItem?.mediaId +
                             " url=" + itemUrl + ", slot songId=" + pendingNextSongId +
+                            " source=" + pendingNextSource.key +
                             ") — keep metadata in sync with audio, leave the slot for its own item"
                     )
                     // 刻意**不清**槽位：槽位项可能只是被排在了别的项之后（例如车机往播放列表里
@@ -401,17 +456,24 @@ class PlaybackService : MediaLibraryService() {
                 val slotArtist = pendingNextArtist
                 val slotArtwork = pendingNextArtwork
                 val slotSongId = pendingNextSongId
+                // v2.1.5：音源身份同样「item 优先、槽位兜底」，并把解析出的载荷一并接管。
+                val nextSource = itemSource ?: pendingNextSource
+                val nextSourceId = pendingNextSourceId
+                val nextMediaId = pendingNextMediaId
                 // 预载位图就绪则在切换瞬间直接应用(任务栏立即是新图), 未就绪回退异步加载。
                 val preloaded = pendingNextArtworkBitmap
                 clearPendingNext()
                 pendingNextArtworkBitmap = null
+                mediaSourceKey = nextSource.key
+                mediaSourceId = nextSourceId
+                mediaMediaId = nextMediaId
                 (itemTitle ?: slotTitle)?.let { mediaTitle = it }
                 mediaArtist = itemMetadata?.artist?.toString() ?: (slotArtist ?: "")
                 mediaSongId = itemSongId ?: slotSongId.takeIf { it > 0 }
                 Log.d(
                     "PlaybackService",
-                    "gapless transition -> songId=" + mediaSongId + " title=" + mediaTitle +
-                        " count=" + player.mediaItemCount
+                    "gapless transition -> songId=" + mediaSongId + " source=" + nextSource.key +
+                        " title=" + mediaTitle + " count=" + player.mediaItemCount
                 )
                 if (!slotArtwork.isNullOrEmpty()) {
                     currentArtworkUrl = slotArtwork
@@ -435,6 +497,12 @@ class PlaybackService : MediaLibraryService() {
                 if (finishedItems > 0) player.removeMediaItems(0, finishedItems)
                 updatePlaybackState()
                 updateNotify()
+                // v2.1.5：把**这次真正起播的曲目身份**交给 ViewModel。
+                // 这是它唯一应该用来路由取词的依据 —— 原先它读的是自己那份
+                // 「只有 playSong 才会更新」的音源字段，跨源自动接续时那是上一首的值。
+                onTrackTransitioned?.invoke(
+                    nextSource, mediaSongId ?: -1L, nextSourceId, nextMediaId,
+                )
                 onSongTransitioned?.invoke()
             }
         })
@@ -509,6 +577,11 @@ class PlaybackService : MediaLibraryService() {
                 pendingNextArtwork = intent.getStringExtra("artwork")
                 pendingNextSongId = nextSongId
                 pendingNextUrl = nextUrl
+                // v2.1.5：槽位必须连音源身份一起记。少了它，自动接续时这一项
+                // 在 ViewModel 眼里仍然是「上一首的音源」，取词就会问错平台。
+                pendingNextSource = MusicSource.fromKey(intent.getStringExtra("sourceKey"))
+                pendingNextSourceId = intent.getStringExtra("sourceId")
+                pendingNextMediaId = intent.getStringExtra("mediaId")
                 // 提前加载下一首封面: 无缝切换瞬间任务栏直接是新图,
                 // 不再出现"新歌标题 + 上一首封面"的过渡窗口
                 if (!pendingNextArtwork.isNullOrEmpty()) {
@@ -732,6 +805,12 @@ class PlaybackService : MediaLibraryService() {
         pendingNextArtwork = null
         pendingNextSongId = -1L
         pendingNextUrl = null
+        // v2.1.5：音源身份是槽位的一部分。漏清它比漏清标题更危险 ——
+        // 残留的 pendingNextSource 会让下一次 transition 把**别的音源**的曲目
+        // 认成槽位项，直接导致取词走错平台。
+        pendingNextSource = MusicSource.DEFAULT
+        pendingNextSourceId = null
+        pendingNextMediaId = null
     }
 
     /**
@@ -745,7 +824,10 @@ class PlaybackService : MediaLibraryService() {
     private fun buildPreloadMediaItem(url: String, songId: Long): androidx.media3.common.MediaItem {
         val builder = androidx.media3.common.MediaItem.Builder()
             .setUri(url)
-            .setMediaId(PreloadSlot.mediaIdFor(songId, url))
+            // v2.1.5：mediaId 带音源（`song:123` / `song:qqmusic:456`）。
+            // 这样 onMediaItemTransition 能**只凭 item 自己**回答「起播的是哪首歌」，
+            // 不必信任 last-write-wins 的旁路变量 —— 跨源接续的串台就断在这里。
+            .setMediaId(PreloadSlot.mediaIdFor(pendingNextSource, songId, url))
         val title = pendingNextTitle
         val artist = pendingNextArtist
         val artwork = pendingNextArtwork
@@ -932,6 +1014,21 @@ class PlaybackService : MediaLibraryService() {
      */
     private var lastLyricNotifyAt = 0L
 
+    // v2.1.5 · P1 探针计数（见 Companion.TAG_MEDIA_PANEL 的说明）。
+    private var probeGatePost = 0
+    private var probeGateDefer = 0
+    private var probeGateSame = 0
+    private var probeGateNotStarted = 0
+    private var probeNotifyBuilds = 0
+    // v2.1.5 · P1：**最后一次真正 setMetadata 出去的那一份**（键集与两行文字）。
+    // 不读 MediaSessionCompat（androidx.media 1.7.0 的会话侧没有 metadata getter），
+    // 而是记下应用发布的事实 —— 与 `dumpsys media_session` 里系统读到的那一份对照，
+    // 「应用发布了什么 / 系统收到了什么」才是可归因的两条独立证据。
+    private var lastPublishedPanelKeys = ""
+    private var lastPublishedPanelTitle: String? = null
+    private var lastPublishedPanelArtist: String? = null
+    private var lastPublishedPanelDisplaySubtitle: String? = null
+
     /**
      * v2.0.2：**通知里当前那一行歌词**（不是「当前播放到的那一行」）。
      *
@@ -1059,6 +1156,18 @@ class PlaybackService : MediaLibraryService() {
                 builder.putBitmap(android.support.v4.media.MediaMetadataCompat.METADATA_KEY_ART, it)
             }
             mediaSessionCompat?.setMetadata(builder.build())
+            // v2.1.5 · P1：记下**这一份发布了什么**，供探针与 dumpsys 对照。
+            lastPublishedPanelKeys = listOf(
+                android.support.v4.media.MediaMetadataCompat.METADATA_KEY_TITLE,
+                android.support.v4.media.MediaMetadataCompat.METADATA_KEY_ARTIST,
+                android.support.v4.media.MediaMetadataCompat.METADATA_KEY_DURATION,
+                android.support.v4.media.MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE,
+            ).joinToString(",") { it.substringAfterLast('.') } +
+                (if (currentArtworkBitmap != null) ",ART" else "")
+            lastPublishedPanelTitle = display.title
+            lastPublishedPanelArtist = display.subtitle
+            lastPublishedPanelDisplaySubtitle = ""
+            logMediaPanelSnapshot()
             lastMetadataTitle = display.title
             lastMetadataArtist = display.subtitle
             lastMetadataDuration = dur
@@ -1162,6 +1271,7 @@ class PlaybackService : MediaLibraryService() {
         )
         when (decision) {
             LyricNotifyGate.Decision.Post -> {
+                probeGatePost++
                 lyricNotifyHandler.removeCallbacks(lyricNotifyRetry)
                 updateNotify()
                 if (BuildConfig.DEBUG) {
@@ -1170,13 +1280,36 @@ class PlaybackService : MediaLibraryService() {
             }
 
             is LyricNotifyGate.Decision.Defer -> {
+                probeGateDefer++
                 lyricNotifyHandler.removeCallbacks(lyricNotifyRetry)
                 lyricNotifyHandler.postDelayed(lyricNotifyRetry, decision.retryInMs)
             }
 
-            LyricNotifyGate.Decision.SkipNotStarted,
-            LyricNotifyGate.Decision.SkipSameLine -> Unit
+            LyricNotifyGate.Decision.SkipNotStarted -> probeGateNotStarted++
+            LyricNotifyGate.Decision.SkipSameLine -> probeGateSame++
         }
+    }
+
+    /**
+     * v2.1.5 · P1 探针：把「媒体面板现在到底持有什么」整包打出来（仅 debug 包）。
+     *
+     * 只在**真的 setMetadata 之后**调用，所以它描述的是系统此刻读到的那一份，
+     * 而不是应用打算写的那一份 —— 这个区别正是排查 ROM 兼容问题时最容易搞混的地方。
+     */
+    private fun logMediaPanelSnapshot() {
+        if (!BuildConfig.DEBUG) return
+        Log.d(
+            TAG_MEDIA_PANEL,
+            "keys=[" + lastPublishedPanelKeys + "] " +
+                "title=" + lastPublishedPanelTitle +
+                " artist=" + lastPublishedPanelArtist +
+                " displaySubtitle='" + lastPublishedPanelDisplaySubtitle + "'" +
+                " line=" + mediaLyricLine +
+                " lastAt=" + lastLyricNotifyAt +
+                " gate[post=" + probeGatePost + " defer=" + probeGateDefer +
+                " same=" + probeGateSame + " notStarted=" + probeGateNotStarted + "] " +
+                "notifyBuilds=" + probeNotifyBuilds
+        )
     }
 
     private fun updateNotify() {
@@ -1197,6 +1330,7 @@ class PlaybackService : MediaLibraryService() {
             }
         }
         try {
+            probeNotifyBuilds++
             val n = buildNotification()
             if (!isServiceStarted) {
                 startForeground(1, n)

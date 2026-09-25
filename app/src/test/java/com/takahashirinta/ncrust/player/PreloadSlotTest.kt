@@ -8,8 +8,11 @@
 
 package com.takahashirinta.ncrust.player
 
+import com.takahashirinta.ncrust.source.MusicSource
+import com.takahashirinta.ncrust.source.SourceIds
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -164,5 +167,104 @@ class PreloadSlotTest {
         assertNull(PreloadSlot.songIdFromMediaId("u42"))
         assertNull(PreloadSlot.songIdFromMediaId(null))
         assertNull(PreloadSlot.songIdFromMediaId("song:0"))
+    }
+
+    // ---------- v2.1.5：跨源 ----------
+
+    /** 网易云一侧的 mediaId 形状**逐字节不变**，老媒体项与持久化数据不受影响。 */
+    @Test
+    fun netease_media_id_shape_is_unchanged() {
+        assertEquals("song:42", PreloadSlot.mediaIdFor(MusicSource.NETEASE, 42L, "u42"))
+        assertEquals(
+            MusicSource.NETEASE to 42L,
+            PreloadSlot.identityFromMediaId("song:42"),
+        )
+    }
+
+    /**
+     * QQ 曲目的预载项 mediaId 必须带音源。
+     *
+     * 旧实现写 `song:<qqId>`，而 qqId 带 `1L shl 62` 标志位 —— 那会被解析成
+     * 「网易云的一首巨大 id 的歌」。后果从「车机按网易云取链 404」一直到
+     * 「自动接续时无法从 item 回答这是哪个音源的歌」，后者正是跨源歌词串台的源头。
+     */
+    @Test
+    fun qq_media_id_carries_the_source() {
+        val qqId = SourceIds.qqId(456L, "0039MnYb0qxYhV")
+        val mediaId = PreloadSlot.mediaIdFor(MusicSource.QQMUSIC, qqId, "u456")
+        assertEquals("song:qqmusic:$qqId", mediaId)
+        assertEquals(
+            MusicSource.QQMUSIC to qqId,
+            PreloadSlot.identityFromMediaId(mediaId),
+        )
+        // 绝不能退化成「网易云的那个大 id」。
+        assertNotEquals(
+            MusicSource.NETEASE to qqId,
+            PreloadSlot.identityFromMediaId(mediaId),
+        )
+    }
+
+    /** 同号不同源：`netease:123` 与 `qqmusic:123` 在 transition 判定里必须分开。 */
+    @Test
+    fun transition_rejects_same_number_on_other_source() {
+        val qqId = SourceIds.qqId(123L, "mid")
+        // 槽位里是 QQ 的 123，起播项却是网易云的 123 —— 不是同一首，必须拒绝。
+        assertFalse(
+            PreloadSlot.transitionMatches(
+                MusicSource.QQMUSIC, qqId, "u",
+                MusicSource.NETEASE, 123L, "u",
+            )
+        )
+        assertTrue(
+            PreloadSlot.transitionMatches(
+                MusicSource.QQMUSIC, qqId, "u",
+                MusicSource.QQMUSIC, qqId, "u",
+            )
+        )
+    }
+
+    /**
+     * 跨源自动接续：QQ 槽位 → 起播项就是槽位里那一首。
+     *
+     * 这是 v2.1.5 的**核心回归用例**。旧判定只比裸 id，而
+     * `songIdFromMediaId("song:qqmusic:…")` 返回 null（`"qqmusic:456".toLongOrNull()` 为 null），
+     * 于是 QQ 的预载项**永远过不了守卫** —— gapless 静默失效、元数据停在上一首。
+     */
+    @Test
+    fun cross_source_transition_is_accepted_when_it_matches() {
+        val qqId = SourceIds.qqId(456L, "mid-c")
+        val qqMediaId = PreloadSlot.mediaIdFor(MusicSource.QQMUSIC, qqId, "uqq")
+        val identity = PreloadSlot.identityFromMediaId(qqMediaId)!!
+        assertTrue(
+            PreloadSlot.transitionMatches(
+                MusicSource.QQMUSIC, qqId, "uqq",
+                identity.first, identity.second, "uqq",
+            )
+        )
+    }
+
+    /** 起播项反解不出音源（老形状 / 车机插入项）时，带 id 的槽位一律拒绝 —— 宁可不更新也不显示错歌。 */
+    @Test
+    fun transition_rejects_unresolvable_item_when_slot_has_id() {
+        assertFalse(
+            PreloadSlot.transitionMatches(
+                MusicSource.NETEASE, 42L, "u",
+                null, null, "u",
+            )
+        )
+    }
+
+    /** 无 id 的槽位仍退回 URL 比对（既有行为，不因加音源维度而改变）。 */
+    @Test
+    fun transition_url_fallback_still_works_with_source() {
+        assertTrue(
+            PreloadSlot.transitionMatches(MusicSource.NETEASE, -1L, "u", null, null, "u")
+        )
+        assertFalse(
+            PreloadSlot.transitionMatches(MusicSource.NETEASE, -1L, "u", null, null, "other")
+        )
+        assertFalse(
+            PreloadSlot.transitionMatches(MusicSource.NETEASE, -1L, null, null, null, "u")
+        )
     }
 }

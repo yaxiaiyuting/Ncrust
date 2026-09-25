@@ -8,6 +8,9 @@
 
 package com.takahashirinta.ncrust.player
 
+import com.takahashirinta.ncrust.source.MusicSource
+import com.takahashirinta.ncrust.source.SourceIds
+
 /**
  * 「待播槽位」不变量（v1.5.2 串台修复）。
  *
@@ -41,11 +44,34 @@ object PreloadSlot {
         IGNORE,
     }
 
-    fun mediaIdFor(songId: Long, url: String): String =
-        if (songId > 0) MEDIA_ID_PREFIX + songId else url
+    /**
+     * 预载项的 mediaId（v2.1.5：**带音源**）。
+     *
+     * v2.1.4 及更早这里恒为 `song:<id>`。对 QQ 音乐来说那是一个**错的**编码：
+     * QQ 的 id 带 `1L shl 62` 标志位，`song:4611686018427…` 会被
+     * [SourceIds.parseMediaId] 解析成「网易云的一首巨大 id 的歌」。后果有两级：
+     * 轻的是车机 / 通知路径按网易云去取链（404 → 跳歌）；
+     * 重的是自动接续时**无法从 item 本身回答「这是哪个音源的歌」**，
+     * 只能退回信任旁路变量 —— 而那正是 v2.1.5 要修的串台源头。
+     *
+     * 网易云一侧的形状**逐字节不变**（`song:123`），所以老媒体项、车机 browse tree、
+     * 以及所有既有持久化数据都不受影响。
+     */
+    fun mediaIdFor(source: MusicSource, songId: Long, url: String): String =
+        if (songId > 0) (SourceIds.mediaId(source, songId) ?: url) else url
 
-    fun songIdFromMediaId(mediaId: String?): Long? =
-        mediaId?.removePrefix(MEDIA_ID_PREFIX)?.toLongOrNull()?.takeIf { it > 0 }
+    /** 网易云专用重载，保持 v2.1.0 之前的行为（既有调用点与单测零改动）。 */
+    fun mediaIdFor(songId: Long, url: String): String =
+        mediaIdFor(MusicSource.NETEASE, songId, url)
+
+    /**
+     * 从 mediaId 反解 `(音源, 歌曲 id)`。解析不出音源返回 null ——
+     * **不猜成网易云**，用错音源取链会拿到 404 或别人的歌。
+     */
+    fun identityFromMediaId(mediaId: String?): Pair<MusicSource, Long>? =
+        SourceIds.parseMediaId(mediaId)
+
+    fun songIdFromMediaId(mediaId: String?): Long? = identityFromMediaId(mediaId)?.second
 
     /**
      * @param pendingSongId 槽位里待播项的歌曲 id；无 id（老路径）时为 -1
@@ -69,18 +95,40 @@ object PreloadSlot {
     /**
      * transition 守卫：ExoPlayer 真正起播的那一项，是否就是槽位里预载的那一首。
      * 只有 true 才允许把 pendingNext* 写进通知栏 / 歌词 / ViewModel。
+     *
+     * v2.1.5 起**音源也参与判定**：`(source, id)` 两件套都对上才算同一首。
+     * 网易云的 `123` 与 QQ 的 `123` 是不同的歌，只比 id 会把它们判成同一首 ——
+     * 那正是「跨源切歌后元数据/歌词留在上一首」的另一半原因。
+     *
+     * @param itemSource 起播项的 mediaId 反解出的音源；反解不出（老形状 / 无 id 项）传 null
+     */
+    fun transitionMatches(
+        pendingSource: MusicSource,
+        pendingSongId: Long,
+        pendingUrl: String?,
+        itemSource: MusicSource?,
+        itemSongId: Long?,
+        itemUrl: String?,
+    ): Boolean {
+        if (pendingUrl == null) return false
+        // 槽位带 songId 时只认 (音源, songId)：起播项没有 id（不是我们入队的那一项）一律拒绝，
+        // 不能因为 URL 恰好相同就放行 —— 那是「宁可不更新，也不显示错歌」的底线。
+        if (pendingSongId > 0) return itemSongId == pendingSongId && itemSource == pendingSource
+        // 老路径 / 无 id 的预载项：退回 URL 比对。
+        return itemUrl != null && itemUrl == pendingUrl
+    }
+
+    /**
+     * 网易云默认重载（v1.5.2 起的既有形状）。**只为不破坏既有单测**：
+     * 生产代码一律走上面那个带音源的版本。
      */
     fun transitionMatches(
         pendingSongId: Long,
         pendingUrl: String?,
         itemSongId: Long?,
         itemUrl: String?,
-    ): Boolean {
-        if (pendingUrl == null) return false
-        // 槽位带 songId 时只认 songId：起播项没有 id（不是我们入队的那一项）一律拒绝，
-        // 不能因为 URL 恰好相同就放行 —— 那是「宁可不更新，也不显示错歌」的底线。
-        if (pendingSongId > 0) return itemSongId == pendingSongId
-        // 老路径 / 无 id 的预载项：退回 URL 比对。
-        return itemUrl != null && itemUrl == pendingUrl
-    }
+    ): Boolean = transitionMatches(
+        MusicSource.NETEASE, pendingSongId, pendingUrl,
+        itemSongId?.let { MusicSource.NETEASE }, itemSongId, itemUrl,
+    )
 }

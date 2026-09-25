@@ -157,6 +157,28 @@ object SourceIds {
     fun isQqId(id: Long): Boolean = (id and QQ_ID_FLAG) != 0L
 
     /**
+     * 从**裸 id** 反推音源（v2.1.5）。纯逻辑，JVM 可单测。
+     *
+     * 只有一个判据能用：[QQ_ID_FLAG]。网易云的 songId 是十进制百万~十亿量级
+     * （远小于 `2^40`），**永远不可能**触到位 62 —— 所以「带标志位 ⇒ QQ 音乐」
+     * 是一个结构性的、不会误判的结论，而不是启发式。
+     *
+     * ## 为什么需要它
+     *
+     * 有些持久化路径只存得下裸 id（`PlaybackStateManager` 的 `song_id` 就是），
+     * 那条路恢复出来的曲目**没有音源字符串**。若按「null ⇒ 网易云」处理，
+     * 一首 QQ 曲目会被拿去问网易云的歌词接口（id 是 `2^62` 量级，必然查不到），
+     * 表现就是「冷启动恢复 QQ 歌曲时永远没有歌词」。
+     * 有标志位在，这个二义性本来就不存在，不该丢掉这条信息。
+     *
+     * **注意它推不出 songmid**：QQ 取链与取词都需要 songmid，而那只能来自队列里的
+     * [com.takahashirinta.ncrust.network.SongItem.sourceId]。所以本函数只负责
+     * 「别问错平台」，不负责「能不能取到」。
+     */
+    fun sourceOfId(id: Long): MusicSource =
+        if (isQqId(id)) MusicSource.QQMUSIC else MusicSource.NETEASE
+
+    /**
      * 造一个 QQ 音乐的数字 id。
      *
      * @param rawSongId 服务端给的 songid。**<= 0 或已经占到标志位时**改用 [sourceId] 的散列兜底

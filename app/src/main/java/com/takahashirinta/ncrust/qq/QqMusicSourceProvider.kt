@@ -12,6 +12,7 @@ package com.takahashirinta.ncrust.qq
 
 import android.content.Context
 import android.util.Log
+import com.takahashirinta.ncrust.BuildConfig
 import com.takahashirinta.ncrust.network.SongItem
 import com.takahashirinta.ncrust.player.SongUrlResult
 import com.takahashirinta.ncrust.source.MusicSource
@@ -50,6 +51,29 @@ object QqMusicSourceProvider : MusicSourceProvider {
         runCatching { QqApi.searchSongs(keyword, limit) }
             .onFailure { Log.w(TAG, "search failed", it) }
             .getOrDefault(emptyList())
+            .also { results ->
+                // v2.1.5 · 探针：把 QQ 侧的搜索结果（身份三件套 + 标题）打到 logcat。
+                //
+                // 存在的理由：跨源切歌的验收要求「QQ ↔ 网易云混合队列连续切换」，
+                // 而**构造这样一条队列需要真实的 (songid, songmid, media_mid)** ——
+                // songmid 只从 QQ 服务端来，界面上又不显示。没有这条日志，
+                // 真机验证就只能靠反复点搜索结果猜哪一条是 QQ 的（列表只有 QQ 行带角标，
+                // 且聚合结果里 QQ 的 30 条排在网易云的 30 条之后）。
+                //
+                // 它与 [com.takahashirinta.ncrust.source.TrackKey] 的 `toString()` 同形，
+                // 所以日志里一眼就能对上「起播的是谁 / 请求为谁发的」。
+                // 只读、只在 debug 包出现、不改变任何行为（`also` 不碰返回值）。
+                if (BuildConfig.DEBUG) {
+                    Log.d(
+                        TAG,
+                        "search '$keyword' -> ${results.size} hits: " + results.take(8).joinToString(
+                            " | "
+                        ) { s ->
+                            "qqmusic:${s.id} mid=${s.sourceId} media=${s.mediaId} '${s.name}'"
+                        }
+                    )
+                }
+            }
 
     override suspend fun resolveUrl(song: SongItem, level: String): SongUrlResult? =
         runCatching { QqApi.fetchPlayUrl(song, level) }
