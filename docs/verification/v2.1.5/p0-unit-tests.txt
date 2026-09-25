@@ -1,0 +1,6 @@
+tests=587 failures=0 skipped=0
+  LyricLoadCoordinatorTest     15
+  LyricNotifyGateTest          17
+  LyricRequestGateTest         5
+  PreloadSlotTest              19
+  TrackKeyTest                 16

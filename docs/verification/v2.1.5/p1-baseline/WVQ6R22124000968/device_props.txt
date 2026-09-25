@@ -1,0 +1,8 @@
+$ adb -s WVQ6R22124000968 shell getprop ro.product.model        # WGR-W09
+$ adb -s WVQ6R22124000968 shell getprop ro.product.brand        # HUAWEI
+$ adb -s WVQ6R22124000968 shell getprop ro.product.manufacturer # HUAWEI
+$ adb -s WVQ6R22124000968 shell getprop ro.build.version.release # 12
+$ adb -s WVQ6R22124000968 shell getprop ro.build.version.sdk    # 31
+$ adb -s WVQ6R22124000968 shell getprop ro.build.display.id     # WGR-W09 4.2.0.213(C00E100R3P9)
+$ adb -s WVQ6R22124000968 shell getprop ro.build.characteristics # tablet
+$ adb -s WVQ6R22124000968 shell date                            # Fri Sep 25 12:10:45 CST 2026

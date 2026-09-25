@@ -1,0 +1,19 @@
+$ adb -s 0715f763f54c023a shell su -c 'cat /data/data/com.takahashirinta.ncrust/shared_prefs/ncrust_settings.xml'
+<?xml version='1.0' encoding='utf-8' standalone='yes' ?>
+<map>
+    <int name="lyrics_sweep_quality" value="1" />
+    <int name="wifi_quality" value="6" />
+    <boolean name="lyrics_dynamic_font" value="true" />
+    <boolean name="battery_prompt_done" value="true" />
+    <int name="lyrics_word_animation" value="0" />
+    <boolean name="lyrics_in_media_session" value="true" />
+    <int name="theme_color_index" value="4" />
+    <string name="theme_mode">DARK</string>
+    <int name="quality_ladder_version" value="2" />
+    <boolean name="auto_rotate" value="false" />
+    <int name="offline_cache_mb" value="4096" />
+    <boolean name="artist_reco_enabled" value="true" />
+    <boolean name="lyrics_romanization" value="true" />
+    <int name="mobile_quality" value="6" />
+</map>
+exit=0

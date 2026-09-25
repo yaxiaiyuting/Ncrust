@@ -2656,3 +2656,80 @@ PHASE0 报告 §2.3：「**已登录时追加** `comm.uin=<musicid>`、`comm.aut
    不显示超级会员，也不显示「你的账号能开到哪一档」。有意为之（宁可不显示，也不写一张可能撒谎的权益表）。
 4. 网易云侧未做回归测试。`QualityAssessment` 的展示规则变化影响所有音源，
    本版只对 QQ 与排序路径做了真机复核。
+
+## v2.1.5 新增（本 fork · 跨源切歌歌词串台专项）
+
+**一句话**：报障是「QQ 播完自动切到网易云，音频已变但歌词还是 QQ 那首」。
+根因不是"旧歌词没清"，而是**取词问错了平台**：自动接续那条路只更新了 `songId`，
+「当前歌属于哪个音源」还停在上一首，于是应用拿着**上一首 QQ 曲目的 songmid** 去问 QQ，
+拿回来的自然是上一首的词 —— 而且它通过了当时**所有**防串台闸门，因为那确实是"当前代"的响应。
+
+### 结构性的教训（下一个改播放器的人必读）
+
+1. **「当前播放的是谁」只能有一个写入点。** v2.1.4 之前它是三个并列 `var`
+   （`currentSongSourceKey` / `currentSongSourceId` / `currentSongMediaId`），
+   而**只有 `playSong()` 会写**。无缝预载的自动接续走的是另一条路
+   （`preloadNextSong` → `onMediaItemTransition` → `onSongTransitioned`）——
+   「只有一条路径会更新」的状态，迟早会被另一条路径漏掉。
+   本版收成一个 `currentTrack: TrackKey?`，三个旧名字退化成只读派生值。
+2. **路由依据必须是参数，不能是全局字段。** `fetchLyrics(songId)` 当年按全局字段分支
+   （`if (currentSongSourceKey == "qqmusic")`），于是"这次请求为谁发的"取决于调用顺序。
+   改成 `fetchLyrics(track: TrackKey)` 之后，问错平台在物理上不可能。
+3. **只比 id 的判据在双音源下是错的。** `TrackKey` 的相等性**只看 `(source, id)`**：
+   必须含音源（网易云 123 ≠ QQ 123），**不能**含 `sourceId` / `mediaId`
+   —— 那两个是**取链载荷**不是身份，算进去会让同一首歌在不同路径上被判成"切歌了"，
+   反过来把本该显示的歌词整包丢弃。
+4. **`songIdFromMediaId("song:qqmusic:…")` 返回 null。** v1.5.2 的 transition 守卫只比裸 id，
+   所以 QQ 的预载项**永远过不了守卫**（gapless 静默失效）。媒体项的 mediaId 必须过
+   `SourceIds.mediaId(source, id)`；网易云一侧形状逐字节不变（`song:123`），老数据不受影响。
+5. **续播状态只存得下裸 id，但 QQ 的 id 带 `1L shl 62` 标志位** ——
+   所以"带标志位 ⇒ QQ 音乐"是**结构性**结论（`SourceIds.sourceOfId`）。
+   旧逻辑按「null ⇒ 网易云」处理，会拿一个 `2^62` 量级的 id 去问网易云的歌词接口。
+
+### 真机才暴露的两个坑（单测抓不到）
+
+6. **去重与世代会互相锁死。** 第一版修复在真机上仍然没歌词：`MainActivity` 的切歌回调会再调
+   一次 `fetchLyricsForSong(当前 id)`，而它无条件 `onTrackChanged` 让世代前进 ⇒
+   在途请求被作废；同时 `fetchLyrics` 的**按曲目去重**又让重发被挡掉 ⇒ 两边都不干活。
+   修法：去重判据加上「那次请求仍是当前世代」（被作废的不算在途），
+   且 `fetchLyricsForSong` 对同一首歌不作废在途请求、并**原样沿用现有身份**
+   （用只有裸 id 的那份覆盖它 = 把 QQ 的 songmid 抹掉）。
+   **教训：判重键与失效判据必须是同一个东西的两个面，不能各写一套。**
+7. **`catch (e: Exception)` 会把 `CancellationException` 吃掉。** 真机日志实证
+   `playJob?.cancel()` 之后打出了 `E PlayerViewModel: fetchUrl failed / JobCancellationException`
+   —— 正常的协程取消被报成故障，噪声会掩盖真正的取链失败。取消必须原样抛出。
+
+### 媒体面板（P1）：结论是"能力边界"，不是 bug
+
+- 应用**已经**把当前歌词行发布到 `METADATA_KEY_TITLE`（v1.6.0 的用户约定：第一行歌词、
+  第二行 `歌名 · 艺人`），华为 SystemUI 的 `MediaDataManager` **确实消费了**它
+  （`dumpsys activity service SystemUIService` 里能看到 `song=<歌词行>`）。
+- **平台上不存在专门的歌词 metadata key**：华为 SystemUI.apk、`MediaMetadataCompat` 1.7.0、
+  media3-common 1.5.0 三处键集扫描均 0 命中；media3 1.5.0 **没有** `setLyrics()`。
+  所以"换一个正确的 key"这条路不存在，放进 TITLE 是唯一可行通道。
+- 「控制中心卡片**肉眼**是否显示、是否实时」**adb 无法判定** —— 不要声称已验证。
+- 本版**刻意不动** v2.0.2 刚稳定的通知重 post 路径（行节流/事件分类留到 v2.1.6）：
+  在没有屏幕侧验证手段时改它，是用风险换一个无法验证的收益。
+- 探针：`NcrustMediaPanel`（仅 debug 包）每次 `setMetadata` 后打印
+  `keys[] / title / artist / displaySubtitle / line / lastAt / gate[post,defer,same,notStarted] /
+  notifyBuilds`，把"应用发布了什么"变成可 grep 的事实。
+
+### 探针与验证工具
+
+| 工具 | 用途 |
+|---|---|
+| `NcrustTrack`（logcat tag） | 切歌 → 取词 → 渲染整条链，每行都带 `音源:id`。**旧日志只打 `songId`，出问题的维度根本没被记下来** |
+| `QqMusicSource`（debug 日志） | 打印 QQ 搜索结果的 `(id, mid, media_mid)` —— 构造跨源队列必须有三件套，而界面不显示 songmid |
+| `tools/seed-cross-source.py` | 生成混合队列的 `ncrust_playback_state.xml`。**字段名必须是 Gson 的 `mid` / `media_id`**，不是 Kotlin 属性名（写错的表现是 `unresolvable song ... missing sourceId`，看起来像取链故障） |
+| `tools/verify-cross-source-lyrics.sh` | 一键重跑跨源场景并自动判定（有 `qq lyric songId=<网易云 id>` 即串台） |
+
+### 本版的未验证项（与 release notes 保持一致）
+
+1. 华为控制中心的**屏幕侧**结论（见上）。
+2. **真机跨源连切 20 次**没跑成：单测有 20 轮确定性覆盖，真机完成的是一次完整的
+   QQ → 网易云自然完播接续（A/B 各一次）。原因是构造任意两首混合队列仍需手工取 songmid。
+3. **反向（网易云 → QQ）真机 A/B** 未做，只有单测。
+4. API 24 上 `dumpsys media_session` 里没有 Ncrust 会话（测量缺口，非负面结论）。
+5. **`lintDebug` 在 HEAD 上本来就是红的**（57 error，全是依赖版本/opt-in 类既有问题，
+   留档 `docs/verification/v2.1.5/lint-report-HEAD-unmodified.txt`）。本版引入
+   `app/lint-baseline.xml` 让它通过；基线里**没有**本次新增的文件，所以新引入的问题仍会被拦下。

@@ -1,0 +1,173 @@
+# Huawei Control Center: static capability discovery (task 3)
+# device: WVQ6R22124000968   (WGR-W09 / Android 12)
+# APKs:
+#   /system/priv-app/SystemUI/SystemUI.apk
+#   /system/priv-app/MediaPlaybackController/MediaPlaybackController.apk
+
+################ (a) which packages own a media-control UI
+$ adb -s WVQ6R22124000968 shell pm list packages | grep -iE 'systemui|media|hw'
+package:com.huawei.hwbluetoothpencilmanager
+package:com.huawei.hwpreview
+package:com.huawei.hwddmp
+package:com.android.providers.media
+package:com.huawei.hwperipheralscrossing
+package:com.huawei.multimedia.audioengine
+package:com.huawei.hwdiagnosis
+package:com.android.systemui.overlay
+package:androidhwext
+package:com.huawei.imedia.sws
+package:com.huawei.hwid
+package:com.huawei.mediacontroller
+package:com.huawei.hwread.dz
+package:ohos.media.medialibrary
+package:com.huawei.hwpanpayservice
+package:com.huawei.HwMultiScreenShot
+package:com.huawei.hwdockbar
+package:com.huawei.multimedia.hivideoplayengine
+package:com.huawei.hwstartupguide
+package:com.huawei.hwireader
+package:com.huawei.android.hwaps
+package:com.huawei.android.hwouc
+package:com.huawei.android.hwupgradeguide
+package:com.android.providers.media.module
+package:com.android.internal.systemui.navbar.gestural
+package:com.android.systemui
+package:com.huawei.hwdetectrepair
+package:com.huawei.hwvoipservice
+
+$ adb -s WVQ6R22124000968 shell pm path com.android.systemui
+package:/system/priv-app/SystemUI/SystemUI.apk
+$ adb -s WVQ6R22124000968 shell pm path com.huawei.mediacontroller
+package:/system/priv-app/MediaPlaybackController/MediaPlaybackController.apk
+
+################ (b) SystemUI's own parsed media model (MediaDataManager)
+# Full dump saved separately as t3_dumpsys_SystemUIService_FULL.txt
+$ adb -s WVQ6R22124000968 shell dumpsys activity service SystemUIService
+4:    MediaDataManager:
+5-    ----------------------------------------------------------------------------
+6-    listeners: [com.android.systemui.media.MediaTimeoutListener@b001f4a, com.android.systemui.media.MediaResumeListener@a8f6fd8]
+7:    mediaEntries: {0|com.takahashirinta.ncrust|1|null|10274=MediaData(userId=0, initialized=true, backgroundColor=-14136744, app=Ncrust, appIcon=android.graphics.drawable.BitmapDrawable@c8d92f5, artist=紫荆花盛开 · 李荣浩/梁咏琪, song=像一幅画, artwork=Icon(typ=BITMAP size=512x512), actions=[MediaAction(drawable=android.graphics.drawable.BitmapDrawable@98c688a, action=com.android.systemui.media.MediaDataManager$loadMediaDataInBg$runnable$1@d5ebefb, contentDescription=上一首), MediaAction(drawable=android.graphics.drawable.BitmapDrawable@a9fb18, action=com.android.systemui.media.MediaDataManager$loadMediaDataInBg$runnable$1@f716971, contentDescription=播放), MediaAction(drawable=android.graphics.drawable.BitmapDrawable@fd08356, action=com.android.systemui.media.MediaDataManager$loadMediaDataInBg$runnable$1@e504fd7, contentDescription=下一首)], actionsToShowInCompact=[0, 1, 2], packageName=com.takahashirinta.ncrust, token=android.media.session.MediaSession$Token@845bf2b, clickIntent=PendingIntent{7cfb0c4: android.os.BinderProxy@1dcd2c2}, device=null, active=false, resumeAction=null, resumption=false, notificationKey=0|com.takahashirinta.ncrust|1|null|10274, hasCheckedForResume=true)}
+8-    useMediaResumption: true
+9-
+10-    FalsingManager:
+11-    ----------------------------------------------------------------------------
+12-    BRIGHTLINE FALSING MANAGER
+13-    classifierEnabled=1
+--
+286:            com.android.systemui.media.MediaDataManager$appChangeReceiver$1@c369f31
+287-          Categories: 
+288-        android.intent.action.MANAGED_PROFILE_AVAILABLE:
+289-          Registered: true
+290-          Receivers:
+291-            com.android.systemui.statusbar.NotificationLockscreenUserManagerImpl$2@c006c63
+292-          Categories: 
+
+################ (c) does SystemUI mention 'lyric' at all?
+$ ... dumpsys activity service SystemUIService | grep -in lyric
+  <NO MATCH>
+
+################ (d) standard platform metadata keys referenced by each component
+# 31 keys is the complete android.media.metadata.* set; a lyrics key would appear here if read.
+---- /system/priv-app/SystemUI/SystemUI.apk
+android.media.metadata.ADVERTISEMENT
+android.media.metadata.ALBUM
+android.media.metadata.ALBUM_ART
+android.media.metadata.ALBUM_ARTIST
+android.media.metadata.ALBUM_ART_URI
+android.media.metadata.ART
+android.media.metadata.ARTIST
+android.media.metadata.ART_URI
+android.media.metadata.AUTHOR
+android.media.metadata.BT_FOLDER_TYPE
+android.media.metadata.COMPILATION
+android.media.metadata.COMPOSER
+android.media.metadata.DATE
+android.media.metadata.DISC_NUMBER
+android.media.metadata.DISPLAY_DESCRIPTION
+android.media.metadata.DISPLAY_ICON
+android.media.metadata.DISPLAY_ICON_URI
+android.media.metadata.DISPLAY_SUBTITLE
+android.media.metadata.DISPLAY_TITLE
+android.media.metadata.DOWNLOAD_STATUS
+android.media.metadata.DURATION
+android.media.metadata.GENRE
+android.media.metadata.MEDIA_ID
+android.media.metadata.MEDIA_URI
+android.media.metadata.NUM_TRACKS
+android.media.metadata.RATING
+android.media.metadata.TITLE
+android.media.metadata.TRACK_NUMBER
+android.media.metadata.USER_RATING
+android.media.metadata.WRITER
+android.media.metadata.YEAR
+    (count: 31)
+---- /system/priv-app/MediaPlaybackController/MediaPlaybackController.apk
+android.media.metadata.ART
+android.media.metadata.ARTIST
+android.media.metadata.TITLE
+    (count: 3)
+
+################ (e) any lyric-shaped token at all (singular AND plural)
+# POSITIVE CONTROL for this method: (d) above returns 31 real keys for SystemUI, so the
+# pipeline demonstrably finds key constants when they exist. Absence in (e) is therefore
+# a real absence of a lyric token, not a broken scan.
+---- /system/priv-app/SystemUI/SystemUI.apk
+  -- grep -iE 'lyric' (raw substr, any case), unique, first 40:
+$music_lyric_display_position_X_large
+$music_lyric_display_position_X_small
+localLyricBtn
+LYRIC
+mLocalLyricBtn
+music_lyric_display_position_X
+%music_lyric_display_position_X_medium
+  -- count: 12
+  -- metadata-key-SHAPED lyric tokens (e.g. *.metadata.LYRICS / METADATA_KEY_LYRICS):
+     (count: 0)
+---- /system/priv-app/MediaPlaybackController/MediaPlaybackController.apk
+  -- grep -iE 'lyric' (raw substr, any case), unique, first 40:
+0LyricUtil basic io exception in writeToLyricFile
+2LyricUtil create new file fail in writeToLyricFile
+2LyricUtil packageManager is null in isAppOpAllowed
+2ServiceAudioControl updateLyric not current card !
+3LyricUtil ActivityNotFoundException when jump lyric
+3MediaOperationUtil: lyricOnClick :audioCard is null
+3ServiceAudioControl updateLyric audioCard is null !
+4LyricUtil IOException occurred in getContentFromFile
+7LocalCardAdapterHelper: lyricOnClick :audioCard is null
+8AudioControl:activity, cardMap or lyricStateData is null
+8AudioControl:updateLyric playerId {}, lyricStateData  {}
+8ServiceAudioControl updateLyric lyricStateData is null !
+9ServiceAudioControl updateLyric lyric state not changed !
+back_desktop_lyric
+buildLyricAction
+createLyricDialog
+CServiceAudioControlObserver updateLyric updateNotify from lyric
+dismissLyricDialog
+DMediaControllerService mLyricDialog is showing, do not show it again
+EVENT_LYRIC_STATE_CHANGED
+getContentFromLyricFile
+getLocalLyricImg
+getLyric
+getLyricState
+ic_sing_lyric_activated
+%ic_sing_lyric_deactivate_notification
+ic_sing_lyric_lock
+ic_sing_lyric_notification
+initLyricBtnTouchListener
+JLocalCardAdapterHelper: globalLrc audio card is null,localLyricBtn is null
+jumpLyricPermission
+key_lyric_state
+lambda$createLyricDialog$0
+lambda$createLyricDialog$1
+lambda$createLyricDialog$2
+"lambda$initLyricBtnTouchListener$4
+:lambda$initLyricBtnTouchListener$4$OperateBtnClickAnimator
+&Lcom/huawei/commonlib/utils/LyricUtil;
+,Lcom/huawei/media/controller/LyricStateData;
+LLcom/huawei/commonlib/utils/-$$Lambda$LyricUtil$k1UihgoZwEeNY-T44OqnTvfO4TM;
+  -- count: 95
+  -- metadata-key-SHAPED lyric tokens (e.g. *.metadata.LYRICS / METADATA_KEY_LYRICS):
+LYRICS_DISPLAY
+LYRICS_HIDE
+LYRICS_UNLOOK
+     (count: 3)

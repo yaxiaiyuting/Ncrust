@@ -1,0 +1,677 @@
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/AndroidManifest.xml:23: Error: Missing intent-filter for action android.media.action.MEDIA_PLAY_FROM_SEARCH. [MissingIntentFilterForMediaSearch]
+    <application
+    ^
+
+   Explanation for issues of type "MissingIntentFilterForMediaSearch":
+   To support voice searches on Android Auto, you should also register an
+   intent-filter for the action android.media.action.MEDIA_PLAY_FROM_SEARCH.
+
+   To do this, add
+   `<intent-filter>`
+       `<action android:name="android.media.action.MEDIA_PLAY_FROM_SEARCH"
+   />`
+   `</intent-filter>`
+   to your <activity> or <service>.
+
+   https://developer.android.com/training/auto/audio/index.html#support_voice
+
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/player/PlaybackService.kt:330: Error: This class does not override onPlayFromSearch from MediaSession.Callback The method should be overridden and implemented to support Voice search on Android Auto. [MissingOnPlayFromSearch]
+            setCallback(object : MediaSessionCompat.Callback() {
+                        ~~~~~~
+
+   Explanation for issues of type "MissingOnPlayFromSearch":
+   To support voice searches on Android Auto, in addition to adding an
+   intent-filter for the action onPlayFromSearch, you also need to override
+   and implement onPlayFromSearch(String query, Bundle bundle)
+
+   https://developer.android.com/training/auto/audio/index.html#support_voice
+
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/network/crypto/EapiCrypto.kt:31: Error: Call requires API level 26, or core library desugaring (current min is 24): java.util.Base64#getDecoder [NewApi]
+        val bytes = try { java.util.Base64.getDecoder().decode(body) } catch (_: Exception) { return "" }
+                                           ~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/network/crypto/EapiCrypto.kt:31: Error: Call requires API level 26, or core library desugaring (current min is 24): java.util.Base64.Decoder#decode [NewApi]
+        val bytes = try { java.util.Base64.getDecoder().decode(body) } catch (_: Exception) { return "" }
+                                                        ~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/player/LiveUpdateNotifier.kt:73: Error: Call requires API level 36 (current min is 24): android.app.NotificationManager#canPostPromotedNotifications [NewApi]
+            ?.canPostPromotedNotifications() == true
+              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/player/LiveUpdateNotifier.kt:131: Error: Call requires API level 26 (current min is 24): android.app.NotificationManager#getNotificationChannel [NewApi]
+        if (nm.getNotificationChannel(CHANNEL_ID) != null) return
+               ~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/player/LiveUpdateNotifier.kt:132: Error: Call requires API level 26 (current min is 24): android.app.NotificationManager#createNotificationChannel [NewApi]
+        nm.createNotificationChannel(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/player/LiveUpdateNotifier.kt:133: Error: Call requires API level 26 (current min is 24): android.app.NotificationChannel() [NewApi]
+            NotificationChannel(CHANNEL_ID, "播放实时进度", NotificationManager.IMPORTANCE_MIN).apply {
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/player/LiveUpdateNotifier.kt:134: Error: Call requires API level 26 (current min is 24): android.app.NotificationChannel#setDescription [NewApi]
+                description = "状态栏实时更新区显示的播放进度"
+                ~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/player/LiveUpdateNotifier.kt:135: Error: Call requires API level 26 (current min is 24): android.app.NotificationChannel#setShowBadge [NewApi]
+                setShowBadge(false)
+                ~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/player/LiveUpdateNotifier.kt:136: Error: Call requires API level 26 (current min is 24): android.app.NotificationChannel#setSound [NewApi]
+                setSound(null, null)
+                ~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/player/LiveUpdateNotifier.kt:137: Error: Call requires API level 26 (current min is 24): android.app.NotificationChannel#enableVibration [NewApi]
+                enableVibration(false)
+                ~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/network/PlaylistApi.kt:706: Error: Call requires API level 26, or core library desugaring (current min is 24): java.util.Base64#getEncoder [NewApi]
+        val plain = EapiCrypto.decryptResponse(java.util.Base64.getEncoder().encodeToString(raw))
+                                                                ~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/network/PlaylistApi.kt:706: Error: Call requires API level 26, or core library desugaring (current min is 24): java.util.Base64.Encoder#encodeToString [NewApi]
+        val plain = EapiCrypto.decryptResponse(java.util.Base64.getEncoder().encodeToString(raw))
+                                                                             ~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/res/values-night/themes.xml:6: Error: android:windowLightNavigationBar requires API level 27 (current min is 24) [NewApi]
+        <item name="android:windowLightNavigationBar">false</item>
+              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/res/values/themes.xml:8: Error: android:windowLightNavigationBar requires API level 27 (current min is 24) [NewApi]
+        <item name="android:windowLightNavigationBar">false</item>
+              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "NewApi":
+   This check scans through all the Android API calls in the application and
+   warns about any calls that are not available on all versions targeted by
+   this application (according to its minimum SDK attribute in the manifest).
+
+   If you really want to use this API and don't need to support older devices
+   just set the minSdkVersion in your build.gradle or AndroidManifest.xml
+   files.
+
+   If your code is deliberately accessing newer APIs, and you have ensured
+   (e.g. with conditional execution) that this code will only ever be called
+   on a supported platform, then you can annotate your class or method with
+   the @TargetApi annotation specifying the local minimum SDK to apply, such
+   as @TargetApi(11), such that this check considers 11 rather than your
+   manifest file's minimum SDK as the required API level.
+
+   If you are deliberately setting android: attributes in style definitions,
+   make sure you place this in a values-vNN folder in order to avoid running
+   into runtime conflicts on certain devices where manufacturers have added
+   custom attributes whose ids conflict with the new ones on later platforms.
+
+   Similarly, you can use tools:targetApi="11" in an XML file to indicate that
+   the element will only be inflated in an adequate context.
+
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/gradle/libs.versions.toml:2: Warning: A newer version of com.android.application than 9.1.0 is available: 9.4.1. (There is also a newer version of 9.1.𝑥 available, if upgrading to 9.4.1 is difficult: 9.1.1) [AndroidGradlePluginVersion]
+agp = "9.1.0"
+      ~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/gradle/libs.versions.toml:2: Warning: A newer version of com.android.application than 9.1.0 is available: 9.4.1. (There is also a newer version of 9.1.𝑥 available, if upgrading to 9.4.1 is difficult: 9.1.1) [AndroidGradlePluginVersion]
+agp = "9.1.0"
+      ~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/gradle/libs.versions.toml:2: Warning: A newer version of com.android.application than 9.1.0 is available: 9.4.1. (There is also a newer version of 9.1.𝑥 available, if upgrading to 9.4.1 is difficult: 9.1.1) [AndroidGradlePluginVersion]
+agp = "9.1.0"
+      ~~~~~~~
+
+   Explanation for issues of type "AndroidGradlePluginVersion":
+   This detector looks for usage of the Android Gradle Plugin where the
+   version you are using is not the current stable release. Using older
+   versions is fine, and there are cases where you deliberately want to stick
+   with an older version. However, you may simply not be aware that a more
+   recent version is available, and that is what this lint check helps find.
+
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:136: Warning: A newer version of androidx.core:core-ktx than 1.13.0 is available: 1.19.1 [GradleDependency]
+    implementation("androidx.core:core-ktx:1.13.0")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:139: Warning: A newer version of androidx.activity:activity than 1.9.0 is available: 1.13.0 [GradleDependency]
+    implementation("androidx.activity:activity:1.9.0")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:142: Warning: A newer version of androidx.compose:compose-bom than 2024.12.01 is available: 2026.09.00 [GradleDependency]
+    implementation(platform("androidx.compose:compose-bom:2024.12.01"))
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:147: Warning: A newer version of androidx.activity:activity-compose than 1.9.0 is available: 1.13.0 [GradleDependency]
+    implementation("androidx.activity:activity-compose:1.9.0")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:148: Warning: A newer version of androidx.lifecycle:lifecycle-viewmodel-compose than 2.8.3 is available: 2.11.0 [GradleDependency]
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.3")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:153: Warning: A newer version of androidx.media3:media3-exoplayer than 1.5.0 is available: 1.11.1 [GradleDependency]
+    implementation("androidx.media3:media3-exoplayer:1.5.0")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:156: Warning: A newer version of androidx.media3:media3-datasource than 1.5.0 is available: 1.11.1 [GradleDependency]
+    implementation("androidx.media3:media3-datasource:1.5.0")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:157: Warning: A newer version of androidx.media3:media3-database than 1.5.0 is available: 1.11.1 [GradleDependency]
+    implementation("androidx.media3:media3-database:1.5.0")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:158: Warning: A newer version of androidx.media3:media3-session than 1.5.0 is available: 1.11.1 [GradleDependency]
+    implementation("androidx.media3:media3-session:1.5.0")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:159: Warning: A newer version of androidx.media3:media3-ui than 1.5.0 is available: 1.11.1 [GradleDependency]
+    implementation("androidx.media3:media3-ui:1.5.0")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:171: Warning: A newer version of com.google.code.gson:gson than 2.10.1 is available: 2.11.0 [GradleDependency]
+    implementation("com.google.code.gson:gson:2.10.1")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:174: Warning: A newer version of androidx.camera:camera-core than 1.4.1 is available: 1.6.2 [GradleDependency]
+    implementation("androidx.camera:camera-core:1.4.1")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:175: Warning: A newer version of androidx.camera:camera-camera2 than 1.4.1 is available: 1.6.2 [GradleDependency]
+    implementation("androidx.camera:camera-camera2:1.4.1")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:176: Warning: A newer version of androidx.camera:camera-lifecycle than 1.4.1 is available: 1.6.2 [GradleDependency]
+    implementation("androidx.camera:camera-lifecycle:1.4.1")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:177: Warning: A newer version of androidx.camera:camera-view than 1.4.1 is available: 1.6.2 [GradleDependency]
+    implementation("androidx.camera:camera-view:1.4.1")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:183: Warning: A newer version of androidx.lifecycle:lifecycle-viewmodel-ktx than 2.8.3 is available: 2.11.0 [GradleDependency]
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.3")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:184: Warning: A newer version of androidx.lifecycle:lifecycle-runtime-compose than 2.8.3 is available: 2.11.0 [GradleDependency]
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.3")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:188: Warning: A newer version of androidx.media:media than 1.7.0 is available: 1.8.0 [GradleDependency]
+    implementation("androidx.media:media:1.7.0")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:194: Warning: A newer version of androidx.navigation:navigation-compose than 2.8.5 is available: 2.10.2 [GradleDependency]
+    implementation("androidx.navigation:navigation-compose:2.8.5")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:199: Warning: A newer version of androidx.profileinstaller:profileinstaller than 1.4.0 is available: 1.4.1 [GradleDependency]
+    implementation("androidx.profileinstaller:profileinstaller:1.4.0")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:207: Warning: A newer version of androidx.test.ext:junit than 1.1.5 is available: 1.3.0 [GradleDependency]
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:208: Warning: A newer version of androidx.test.espresso:espresso-core than 3.5.1 is available: 3.7.0 [GradleDependency]
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/gradle/libs.versions.toml:3: Warning: A newer version of androidx.core:core-ktx than 1.10.1 is available: 1.19.1 [GradleDependency]
+coreKtx = "1.10.1"
+          ~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/gradle/libs.versions.toml:3: Warning: A newer version of androidx.core:core-ktx than 1.10.1 is available: 1.19.1 [GradleDependency]
+coreKtx = "1.10.1"
+          ~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/gradle/libs.versions.toml:3: Warning: A newer version of androidx.core:core-ktx than 1.10.1 is available: 1.19.1 [GradleDependency]
+coreKtx = "1.10.1"
+          ~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/gradle/libs.versions.toml:5: Warning: A newer version of androidx.test.ext:junit than 1.1.5 is available: 1.3.0 [GradleDependency]
+junitVersion = "1.1.5"
+               ~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/gradle/libs.versions.toml:5: Warning: A newer version of androidx.test.ext:junit than 1.1.5 is available: 1.3.0 [GradleDependency]
+junitVersion = "1.1.5"
+               ~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/gradle/libs.versions.toml:5: Warning: A newer version of androidx.test.ext:junit than 1.1.5 is available: 1.3.0 [GradleDependency]
+junitVersion = "1.1.5"
+               ~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/gradle/libs.versions.toml:6: Warning: A newer version of androidx.test.espresso:espresso-core than 3.5.1 is available: 3.7.0 [GradleDependency]
+espressoCore = "3.5.1"
+               ~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/gradle/libs.versions.toml:6: Warning: A newer version of androidx.test.espresso:espresso-core than 3.5.1 is available: 3.7.0 [GradleDependency]
+espressoCore = "3.5.1"
+               ~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/gradle/libs.versions.toml:6: Warning: A newer version of androidx.test.espresso:espresso-core than 3.5.1 is available: 3.7.0 [GradleDependency]
+espressoCore = "3.5.1"
+               ~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/gradle/libs.versions.toml:7: Warning: A newer version of androidx.appcompat:appcompat than 1.6.1 is available: 1.8.0 [GradleDependency]
+appcompat = "1.6.1"
+            ~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/gradle/libs.versions.toml:7: Warning: A newer version of androidx.appcompat:appcompat than 1.6.1 is available: 1.8.0 [GradleDependency]
+appcompat = "1.6.1"
+            ~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/gradle/libs.versions.toml:7: Warning: A newer version of androidx.appcompat:appcompat than 1.6.1 is available: 1.8.0 [GradleDependency]
+appcompat = "1.6.1"
+            ~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/gradle/libs.versions.toml:8: Warning: A newer version of com.google.android.material:material than 1.10.0 is available: 1.14.0 [GradleDependency]
+material = "1.10.0"
+           ~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/gradle/libs.versions.toml:8: Warning: A newer version of com.google.android.material:material than 1.10.0 is available: 1.14.0 [GradleDependency]
+material = "1.10.0"
+           ~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/gradle/libs.versions.toml:8: Warning: A newer version of com.google.android.material:material than 1.10.0 is available: 1.14.0 [GradleDependency]
+material = "1.10.0"
+           ~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/gradle/libs.versions.toml:9: Warning: A newer version of androidx.activity:activity than 1.8.0 is available: 1.13.0 [GradleDependency]
+activity = "1.8.0"
+           ~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/gradle/libs.versions.toml:9: Warning: A newer version of androidx.activity:activity than 1.8.0 is available: 1.13.0 [GradleDependency]
+activity = "1.8.0"
+           ~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/gradle/libs.versions.toml:9: Warning: A newer version of androidx.activity:activity than 1.8.0 is available: 1.13.0 [GradleDependency]
+activity = "1.8.0"
+           ~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/gradle/libs.versions.toml:10: Warning: A newer version of androidx.constraintlayout:constraintlayout than 2.1.4 is available: 2.2.2 [GradleDependency]
+constraintlayout = "2.1.4"
+                   ~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/gradle/libs.versions.toml:10: Warning: A newer version of androidx.constraintlayout:constraintlayout than 2.1.4 is available: 2.2.2 [GradleDependency]
+constraintlayout = "2.1.4"
+                   ~~~~~~~
+
+   Explanation for issues of type "GradleDependency":
+   This detector looks for usages of libraries where the version you are using
+   is not the current stable release. Using older versions is fine, and there
+   are cases where you deliberately want to stick with an older version.
+   However, you may simply not be aware that a more recent version is
+   available, and that is what this lint check helps find.
+
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/cache/OfflineAudioCache.kt: Error: This declaration is opt-in and its usage should be marked with @androidx.media3.common.util.UnstableApi or @OptIn(markerClass = androidx.media3.common.util.UnstableApi.class) [UnsafeOptInUsageError from androidx.annotation.experimental]
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/cache/OfflineAudioCache.kt: Error: This declaration is opt-in and its usage should be marked with @androidx.media3.common.util.UnstableApi or @OptIn(markerClass = androidx.media3.common.util.UnstableApi.class) [UnsafeOptInUsageError from androidx.annotation.experimental]
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/cache/OfflineAudioCache.kt:63: Error: This declaration is opt-in and its usage should be marked with @androidx.media3.common.util.UnstableApi or @OptIn(markerClass = androidx.media3.common.util.UnstableApi.class) [UnsafeOptInUsageError from androidx.annotation.experimental]
+    private var cache: SimpleCache? = null
+                       ~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/cache/OfflineAudioCache.kt:94: Error: This declaration is opt-in and its usage should be marked with @androidx.media3.common.util.UnstableApi or @OptIn(markerClass = androidx.media3.common.util.UnstableApi.class) [UnsafeOptInUsageError from androidx.annotation.experimental]
+    fun get(context: Context): SimpleCache {
+                               ~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/cache/OfflineAudioCache.kt:100: Error: This declaration is opt-in and its usage should be marked with @androidx.media3.common.util.UnstableApi or @OptIn(markerClass = androidx.media3.common.util.UnstableApi.class) [UnsafeOptInUsageError from androidx.annotation.experimental]
+            val built = SimpleCache(
+                ~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/cache/OfflineAudioCache.kt:100: Error: This declaration is opt-in and its usage should be marked with @androidx.media3.common.util.UnstableApi or @OptIn(markerClass = androidx.media3.common.util.UnstableApi.class) [UnsafeOptInUsageError from androidx.annotation.experimental]
+            val built = SimpleCache(
+                        ~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/cache/OfflineAudioCache.kt:102: Error: This declaration is opt-in and its usage should be marked with @androidx.media3.common.util.UnstableApi or @OptIn(markerClass = androidx.media3.common.util.UnstableApi.class) [UnsafeOptInUsageError from androidx.annotation.experimental]
+                LeastRecentlyUsedCacheEvictor(maxBytes(app)),
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/cache/OfflineAudioCache.kt:103: Error: This declaration is opt-in and its usage should be marked with @androidx.media3.common.util.UnstableApi or @OptIn(markerClass = androidx.media3.common.util.UnstableApi.class) [UnsafeOptInUsageError from androidx.annotation.experimental]
+                StandaloneDatabaseProvider(app),
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/cache/OfflineAudioCache.kt:113: Error: This declaration is opt-in and its usage should be marked with @androidx.media3.common.util.UnstableApi or @OptIn(markerClass = androidx.media3.common.util.UnstableApi.class) [UnsafeOptInUsageError from androidx.annotation.experimental]
+        val c = get(app)
+            ~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/cache/OfflineAudioCache.kt:114: Error: This declaration is opt-in and its usage should be marked with @androidx.media3.common.util.UnstableApi or @OptIn(markerClass = androidx.media3.common.util.UnstableApi.class) [UnsafeOptInUsageError from androidx.annotation.experimental]
+        return CacheDataSource.Factory()
+                               ~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/cache/OfflineAudioCache.kt:115: Error: This declaration is opt-in and its usage should be marked with @androidx.media3.common.util.UnstableApi or @OptIn(markerClass = androidx.media3.common.util.UnstableApi.class) [UnsafeOptInUsageError from androidx.annotation.experimental]
+            .setCache(c)
+             ~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/cache/OfflineAudioCache.kt:116: Error: This declaration is opt-in and its usage should be marked with @androidx.media3.common.util.UnstableApi or @OptIn(markerClass = androidx.media3.common.util.UnstableApi.class) [UnsafeOptInUsageError from androidx.annotation.experimental]
+            .setUpstreamDataSourceFactory(DefaultDataSource.Factory(app))
+             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/cache/OfflineAudioCache.kt:117: Error: This declaration is opt-in and its usage should be marked with @androidx.media3.common.util.UnstableApi or @OptIn(markerClass = androidx.media3.common.util.UnstableApi.class) [UnsafeOptInUsageError from androidx.annotation.experimental]
+            .setCacheWriteDataSinkFactory(
+             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/cache/OfflineAudioCache.kt:118: Error: This declaration is opt-in and its usage should be marked with @androidx.media3.common.util.UnstableApi or @OptIn(markerClass = androidx.media3.common.util.UnstableApi.class) [UnsafeOptInUsageError from androidx.annotation.experimental]
+                CacheDataSink.Factory().setCache(c).setFragmentSize(CacheDataSink.DEFAULT_FRAGMENT_SIZE)
+                              ~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/cache/OfflineAudioCache.kt:118: Error: This declaration is opt-in and its usage should be marked with @androidx.media3.common.util.UnstableApi or @OptIn(markerClass = androidx.media3.common.util.UnstableApi.class) [UnsafeOptInUsageError from androidx.annotation.experimental]
+                CacheDataSink.Factory().setCache(c).setFragmentSize(CacheDataSink.DEFAULT_FRAGMENT_SIZE)
+                                        ~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/cache/OfflineAudioCache.kt:118: Error: This declaration is opt-in and its usage should be marked with @androidx.media3.common.util.UnstableApi or @OptIn(markerClass = androidx.media3.common.util.UnstableApi.class) [UnsafeOptInUsageError from androidx.annotation.experimental]
+                CacheDataSink.Factory().setCache(c).setFragmentSize(CacheDataSink.DEFAULT_FRAGMENT_SIZE)
+                                                    ~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/cache/OfflineAudioCache.kt:118: Error: This declaration is opt-in and its usage should be marked with @androidx.media3.common.util.UnstableApi or @OptIn(markerClass = androidx.media3.common.util.UnstableApi.class) [UnsafeOptInUsageError from androidx.annotation.experimental]
+                CacheDataSink.Factory().setCache(c).setFragmentSize(CacheDataSink.DEFAULT_FRAGMENT_SIZE)
+                                                                                  ~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/cache/OfflineAudioCache.kt:120: Error: This declaration is opt-in and its usage should be marked with @androidx.media3.common.util.UnstableApi or @OptIn(markerClass = androidx.media3.common.util.UnstableApi.class) [UnsafeOptInUsageError from androidx.annotation.experimental]
+            .setCacheKeyFactory { spec -> OfflineKeys.keyOf(spec.uri.toString()) ?: spec.uri.toString() }
+             ~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/cache/OfflineAudioCache.kt:120: Error: This declaration is opt-in and its usage should be marked with @androidx.media3.common.util.UnstableApi or @OptIn(markerClass = androidx.media3.common.util.UnstableApi.class) [UnsafeOptInUsageError from androidx.annotation.experimental]
+            .setCacheKeyFactory { spec -> OfflineKeys.keyOf(spec.uri.toString()) ?: spec.uri.toString() }
+                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/cache/OfflineAudioCache.kt:120: Error: This declaration is opt-in and its usage should be marked with @androidx.media3.common.util.UnstableApi or @OptIn(markerClass = androidx.media3.common.util.UnstableApi.class) [UnsafeOptInUsageError from androidx.annotation.experimental]
+            .setCacheKeyFactory { spec -> OfflineKeys.keyOf(spec.uri.toString()) ?: spec.uri.toString() }
+                                  ~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/cache/OfflineAudioCache.kt:120: Error: This declaration is opt-in and its usage should be marked with @androidx.media3.common.util.UnstableApi or @OptIn(markerClass = androidx.media3.common.util.UnstableApi.class) [UnsafeOptInUsageError from androidx.annotation.experimental]
+            .setCacheKeyFactory { spec -> OfflineKeys.keyOf(spec.uri.toString()) ?: spec.uri.toString() }
+                                                                 ~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/cache/OfflineAudioCache.kt:120: Error: This declaration is opt-in and its usage should be marked with @androidx.media3.common.util.UnstableApi or @OptIn(markerClass = androidx.media3.common.util.UnstableApi.class) [UnsafeOptInUsageError from androidx.annotation.experimental]
+            .setCacheKeyFactory { spec -> OfflineKeys.keyOf(spec.uri.toString()) ?: spec.uri.toString() }
+                                                                                         ~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/cache/OfflineAudioCache.kt:121: Error: This declaration is opt-in and its usage should be marked with @androidx.media3.common.util.UnstableApi or @OptIn(markerClass = androidx.media3.common.util.UnstableApi.class) [UnsafeOptInUsageError from androidx.annotation.experimental]
+            .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR)
+             ~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/cache/OfflineAudioCache.kt:121: Error: This declaration is opt-in and its usage should be marked with @androidx.media3.common.util.UnstableApi or @OptIn(markerClass = androidx.media3.common.util.UnstableApi.class) [UnsafeOptInUsageError from androidx.annotation.experimental]
+            .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR)
+                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/cache/OfflineAudioCache.kt:126: Error: This declaration is opt-in and its usage should be marked with @androidx.media3.common.util.UnstableApi or @OptIn(markerClass = androidx.media3.common.util.UnstableApi.class) [UnsafeOptInUsageError from androidx.annotation.experimental]
+        runCatching { get(context).keys.contains(key) }.getOrDefault(false)
+                                   ~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/cache/OfflineAudioCache.kt:130: Error: This declaration is opt-in and its usage should be marked with @androidx.media3.common.util.UnstableApi or @OptIn(markerClass = androidx.media3.common.util.UnstableApi.class) [UnsafeOptInUsageError from androidx.annotation.experimental]
+        runCatching { get(context).cacheSpace }.getOrDefault(0L)
+                                   ~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/cache/OfflineAudioCache.kt:139: Error: This declaration is opt-in and its usage should be marked with @androidx.media3.common.util.UnstableApi or @OptIn(markerClass = androidx.media3.common.util.UnstableApi.class) [UnsafeOptInUsageError from androidx.annotation.experimental]
+        runCatching { get(context).keys.toSet() }.getOrDefault(emptySet())
+                                   ~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/cache/OfflineAudioCache.kt:143: Error: This declaration is opt-in and its usage should be marked with @androidx.media3.common.util.UnstableApi or @OptIn(markerClass = androidx.media3.common.util.UnstableApi.class) [UnsafeOptInUsageError from androidx.annotation.experimental]
+        runCatching { get(context).keys.filter { OfflineKeys.songIdOf(it) == songId } }
+                                   ~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/cache/OfflineAudioCache.kt:155: Error: This declaration is opt-in and its usage should be marked with @androidx.media3.common.util.UnstableApi or @OptIn(markerClass = androidx.media3.common.util.UnstableApi.class) [UnsafeOptInUsageError from androidx.annotation.experimental]
+        val c = get(context)
+            ~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/cache/OfflineAudioCache.kt:159: Error: This declaration is opt-in and its usage should be marked with @androidx.media3.common.util.UnstableApi or @OptIn(markerClass = androidx.media3.common.util.UnstableApi.class) [UnsafeOptInUsageError from androidx.annotation.experimental]
+            runCatching { c.getCachedSpans(key) }.getOrNull()?.forEach { span ->
+                            ~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/cache/OfflineAudioCache.kt:159: Error: This declaration is opt-in and its usage should be marked with @androidx.media3.common.util.UnstableApi or @OptIn(markerClass = androidx.media3.common.util.UnstableApi.class) [UnsafeOptInUsageError from androidx.annotation.experimental]
+            runCatching { c.getCachedSpans(key) }.getOrNull()?.forEach { span ->
+                                                                         ~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/cache/OfflineAudioCache.kt:160: Error: This declaration is opt-in and its usage should be marked with @androidx.media3.common.util.UnstableApi or @OptIn(markerClass = androidx.media3.common.util.UnstableApi.class) [UnsafeOptInUsageError from androidx.annotation.experimental]
+                if (span.isCached) {
+                         ~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/cache/OfflineAudioCache.kt:161: Error: This declaration is opt-in and its usage should be marked with @androidx.media3.common.util.UnstableApi or @OptIn(markerClass = androidx.media3.common.util.UnstableApi.class) [UnsafeOptInUsageError from androidx.annotation.experimental]
+                    total += span.length
+                    ~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/cache/OfflineAudioCache.kt:161: Error: This declaration is opt-in and its usage should be marked with @androidx.media3.common.util.UnstableApi or @OptIn(markerClass = androidx.media3.common.util.UnstableApi.class) [UnsafeOptInUsageError from androidx.annotation.experimental]
+                    total += span.length
+                                  ~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/cache/OfflineAudioCache.kt:183: Error: This declaration is opt-in and its usage should be marked with @androidx.media3.common.util.UnstableApi or @OptIn(markerClass = androidx.media3.common.util.UnstableApi.class) [UnsafeOptInUsageError from androidx.annotation.experimental]
+            val c = get(app)
+                ~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/cache/OfflineAudioCache.kt:186: Error: This declaration is opt-in and its usage should be marked with @androidx.media3.common.util.UnstableApi or @OptIn(markerClass = androidx.media3.common.util.UnstableApi.class) [UnsafeOptInUsageError from androidx.annotation.experimental]
+                c.removeResource(key)
+                  ~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/cache/OfflineAudioCache.kt:219: Error: This declaration is opt-in and its usage should be marked with @androidx.media3.common.util.UnstableApi or @OptIn(markerClass = androidx.media3.common.util.UnstableApi.class) [UnsafeOptInUsageError from androidx.annotation.experimental]
+        runCatching { get(app).keys.toList().forEach { get(app).removeResource(it) } }
+                               ~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/cache/OfflineAudioCache.kt:219: Error: This declaration is opt-in and its usage should be marked with @androidx.media3.common.util.UnstableApi or @OptIn(markerClass = androidx.media3.common.util.UnstableApi.class) [UnsafeOptInUsageError from androidx.annotation.experimental]
+        runCatching { get(app).keys.toList().forEach { get(app).removeResource(it) } }
+                                                                ~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/player/SongUrlFetcher.kt:74: Error: This declaration is opt-in and its usage should be marked with @androidx.media3.common.util.UnstableApi or @OptIn(markerClass = androidx.media3.common.util.UnstableApi.class) [UnsafeOptInUsageError from androidx.annotation.experimental]
+        runCatching { FfmpegLibrary.isAvailable() }.getOrDefault(false)
+                                    ~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/player/SongUrlFetcher.kt:91: Error: This declaration is opt-in and its usage should be marked with @androidx.media3.common.util.UnstableApi or @OptIn(markerClass = androidx.media3.common.util.UnstableApi.class) [UnsafeOptInUsageError from androidx.annotation.experimental]
+                "ffmpegVersion=" + runCatching { FfmpegLibrary.getVersion() }.getOrDefault("n/a") +
+                                                               ~~~~~~~~~~
+
+   Explanation for issues of type "UnsafeOptInUsageError":
+   This API has been flagged as opt-in with error-level severity.
+
+   Any declaration annotated with this marker is considered part of an
+   unstable or
+   otherwise non-standard API surface and its call sites should accept the
+   opt-in
+   aspect of it by using the @OptIn annotation, using the marker annotation
+   --
+   effectively causing further propagation of the opt-in aspect -- or
+   configuring
+   the UnsafeOptInUsageError check's options for project-wide opt-in.
+
+   To configure project-wide opt-in, specify the opt-in option value in
+   lint.xml
+   as a comma-delimited list of opted-in annotations:
+
+   <lint>
+       <issue id="UnsafeOptInUsageError">
+           <option name="opt-in" value="com.foo.ExperimentalBarAnnotation" />
+       </issue>
+   </lint>
+
+   Vendor: Android Open Source Project
+   Identifier: androidx.annotation.experimental
+   Feedback: https://issuetracker.google.com/issues/new?component=459778
+
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/components/SongCard.kt:46: Warning: Modifier parameter should be the first optional parameter [ModifierParameter from androidx.compose.ui]
+    modifier: Modifier = Modifier,
+    ~~~~~~~~
+
+   Explanation for issues of type "ModifierParameter":
+   The first (or only) Modifier parameter in a Composable function should
+   follow the following rules:
+   - Be named modifier
+   - Have a type of Modifier
+   - Either have no default value, or have a default value of Modifier
+   - If optional, be the first optional parameter in the parameter list
+
+   Vendor: Jetpack Compose
+   Identifier: androidx.compose.ui
+   Feedback: https://issuetracker.google.com/issues/new?component=612128
+
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/player/PlayerCard.kt:788: Error: Target state parameter _ is not used [UnusedCrossfadeTargetStateParameter from androidx.compose.animation]
+                            ) { _ ->
+                                ~
+
+   Explanation for issues of type "UnusedCrossfadeTargetStateParameter":
+   content lambda in Crossfade works as a lookup function that returns the
+   corresponding content based on the parameter (a state of type T). It is
+   important for this lambda to return content specific to the input
+   parameter, so that the different contents can be properly crossfaded. Not
+   using the input parameter to the content lambda will result in the same
+   content for different input (i.e. target state) and therefore an erroneous
+   crossfade between the exact same content.`
+
+   Vendor: Jetpack Compose
+   Identifier: androidx.compose.animation
+   Feedback: https://issuetracker.google.com/issues/new?component=612128
+
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/network/crypto/EapiCrypto.kt:34: Warning: ECB encryption mode should not be used (was "AES/ECB/PKCS5Padding") [GetInstance]
+            val cipher = Cipher.getInstance("AES/ECB/PKCS5Padding")
+                                            ~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/network/crypto/EapiCrypto.kt:43: Warning: ECB encryption mode should not be used (was "AES/ECB/PKCS5Padding") [GetInstance]
+        val cipher = Cipher.getInstance("AES/ECB/PKCS5Padding")
+                                        ~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "GetInstance":
+   Cipher#getInstance should not be called with ECB as the cipher mode or
+   without setting the cipher mode because the default mode on android is ECB,
+   which is insecure.
+
+   https://goo.gle/GetInstance
+
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/MainActivity.kt:1754: Warning: Using setJavaScriptEnabled can introduce XSS vulnerabilities into your application, review carefully [SetJavaScriptEnabled]
+                        settings.javaScriptEnabled = true
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "SetJavaScriptEnabled":
+   Your code should not invoke setJavaScriptEnabled if you are not sure that
+   your app really requires JavaScript support.
+
+   https://goo.gle/SetJavaScriptEnabled
+   https://developer.android.com/training/articles/security-tips
+
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/AndroidManifest.xml:59: Warning: Exported service does not require permission [ExportedService]
+        <service
+         ~~~~~~~
+
+   Explanation for issues of type "ExportedService":
+   Exported services (services which either set exported=true or contain an
+   intent-filter and do not specify exported=false) should define a permission
+   that an entity must have in order to launch the service or bind to it.
+   Without this, any application can use this service.
+
+   https://goo.gle/ExportedService
+
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/MainActivity.kt:759: Information: Prefer mutableFloatStateOf instead of mutableStateOf [AutoboxingStateCreation from androidx.compose.runtime]
+    var rootHeightPx by remember { mutableStateOf(0f) }
+                                   ~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/screen/OfflineCacheOverlay.kt:113: Information: Prefer mutableIntStateOf instead of mutableStateOf [AutoboxingStateCreation from androidx.compose.runtime]
+    var reload by remember { mutableStateOf(0) }
+                             ~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/screen/OfflineCacheOverlay.kt:117: Information: Prefer mutableLongStateOf instead of mutableStateOf [AutoboxingStateCreation from androidx.compose.runtime]
+    var usedBytes by remember { mutableStateOf(0L) }
+                                ~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/screen/OfflineCacheOverlay.kt:118: Information: Prefer mutableIntStateOf instead of mutableStateOf [AutoboxingStateCreation from androidx.compose.runtime]
+    var limitMb by remember { mutableStateOf(OfflineAudioCache.maxMb(context)) }
+                              ~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/player/PlayerCard.kt:229: Information: Prefer mutableFloatStateOf instead of mutableStateOf [AutoboxingStateCreation from androidx.compose.runtime]
+    var wideCoverSizePx by remember { mutableStateOf(0f) }
+                                      ~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/components/QqQrLoginDialog.kt:89: Information: Prefer mutableIntStateOf instead of mutableStateOf [AutoboxingStateCreation from androidx.compose.runtime]
+    var generation by remember { mutableStateOf(0) }
+                                 ~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/components/QqQrLoginDialog.kt:92: Information: Prefer mutableIntStateOf instead of mutableStateOf [AutoboxingStateCreation from androidx.compose.runtime]
+    var unavailableStreak by remember { mutableStateOf(0) }
+                                        ~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/components/QqQrLoginDialog.kt:93: Information: Prefer mutableIntStateOf instead of mutableStateOf [AutoboxingStateCreation from androidx.compose.runtime]
+    var networkStreak by remember { mutableStateOf(0) }
+                                    ~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/screen/UserScreen.kt:154: Information: Prefer mutableFloatStateOf instead of mutableStateOf [AutoboxingStateCreation from androidx.compose.runtime]
+    var lyricsFontScale by remember { mutableStateOf(LyricsDisplayPrefs.readFontScale(prefs)) }
+                                      ~~~~~~~~~~~~~~
+
+   Explanation for issues of type "AutoboxingStateCreation":
+   Calling mutableStateOf<T>() when T is either backed by a primitive type on
+   the JVM or is a value class results in a state implementation that requires
+   all state values to be boxed. This usually causes an additional allocation
+   for each state write, and adds some additional work to auto-unbox values
+   when reading the value of the state. Instead, prefer to use a specialized
+   primitive state implementation for Int, Long, Float, and Double when the
+   state does not need to track null values and does not override the default
+   SnapshotMutationPolicy. See mutableIntStateOf(), mutableLongStateOf(),
+   mutableFloatStateOf(), and mutableDoubleStateOf() for more information.
+
+   Vendor: Jetpack Compose
+   Identifier: androidx.compose.runtime
+   Feedback: https://issuetracker.google.com/issues/new?component=612128
+
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/res/xml/backup_rules.xml:8: Warning: The resource R.xml.backup_rules appears to be unused [UnusedResources]
+<full-backup-content>
+^
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/res/xml/data_extraction_rules.xml:6: Warning: The resource R.xml.data_extraction_rules appears to be unused [UnusedResources]
+<data-extraction-rules>
+^
+
+   Explanation for issues of type "UnusedResources":
+   Unused resources make applications larger and slow down builds.
+
+
+   The unused resource check can ignore tests. If you want to include
+   resources that are only referenced from tests, consider packaging them in a
+   test source set instead.
+
+   You can include test sources in the unused resource check by setting the
+   system property lint.unused-resources.include-tests =true, and to exclude
+   them (usually for performance reasons), use
+   lint.unused-resources.exclude-tests =true.
+   ,
+
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml:2: Warning: The application adaptive icon is missing a monochrome tag [MonochromeLauncherIcon]
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+^
+
+   Explanation for issues of type "MonochromeLauncherIcon":
+   If android:roundIcon and android:icon are both in your manifest, you must
+   either remove the reference to android:roundIcon if it is not needed; or,
+   supply the monochrome icon in the drawable defined by the android:roundIcon
+   and android:icon attribute.
+
+   For example, if android:roundIcon and android:icon are both in the
+   manifest, a launcher might choose to use android:roundIcon over
+   android:icon to display the adaptive app icon. Therefore, your themed
+   application iconwill not show if your monochrome attribute is not also
+   specified in android:roundIcon.
+
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:139: Information: Add suffix -ktx to enable the Kotlin extensions for this library [KtxExtensionAvailable]
+    implementation("androidx.activity:activity:1.9.0")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "KtxExtensionAvailable":
+   Android KTX extensions augment some libraries with support for modern
+   Kotlin language features like extension functions, extension properties,
+   lambdas, named parameters, coroutines, and more.
+
+   In Kotlin projects, use the KTX version of a library by replacing the
+   dependency in your build.gradle file. For example, you can replace
+   androidx.fragment:fragment with androidx.fragment:fragment-ktx.
+
+   https://developer.android.com/kotlin/ktx
+
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:133: Warning: Use version catalog instead [UseTomlInstead]
+    implementation("io.github.takahashirinta:kanesumi-controls:0.1.0-SNAPSHOT")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:134: Warning: Use version catalog instead [UseTomlInstead]
+    implementation("io.github.takahashirinta:kanesumi-structure:0.1.0-SNAPSHOT")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:136: Warning: Use version catalog instead (androidx.core:core-ktx is already available as androidx-core-ktx, but using version 1.10.1 instead) [UseTomlInstead]
+    implementation("androidx.core:core-ktx:1.13.0")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:138: Warning: Use version catalog instead [UseTomlInstead]
+    implementation("com.google.zxing:core:3.5.3")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:139: Warning: Use version catalog instead (androidx.activity:activity is already available as androidx-activity, but using version 1.8.0 instead) [UseTomlInstead]
+    implementation("androidx.activity:activity:1.9.0")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:142: Warning: Use version catalog instead [UseTomlInstead]
+    implementation(platform("androidx.compose:compose-bom:2024.12.01"))
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:143: Warning: Use version catalog instead [UseTomlInstead]
+    implementation("androidx.compose.ui:ui")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:144: Warning: Use version catalog instead [UseTomlInstead]
+    implementation("androidx.compose.ui:ui-graphics")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:145: Warning: Use version catalog instead [UseTomlInstead]
+    implementation("androidx.compose.ui:ui-tooling-preview")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:146: Warning: Use version catalog instead [UseTomlInstead]
+    implementation("androidx.compose.material:material-icons-extended")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:147: Warning: Use version catalog instead [UseTomlInstead]
+    implementation("androidx.activity:activity-compose:1.9.0")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:148: Warning: Use version catalog instead [UseTomlInstead]
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.3")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:149: Warning: Use version catalog instead [UseTomlInstead]
+    debugImplementation("androidx.compose.ui:ui-tooling")
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:153: Warning: Use version catalog instead [UseTomlInstead]
+    implementation("androidx.media3:media3-exoplayer:1.5.0")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:156: Warning: Use version catalog instead [UseTomlInstead]
+    implementation("androidx.media3:media3-datasource:1.5.0")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:157: Warning: Use version catalog instead [UseTomlInstead]
+    implementation("androidx.media3:media3-database:1.5.0")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:158: Warning: Use version catalog instead [UseTomlInstead]
+    implementation("androidx.media3:media3-session:1.5.0")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:159: Warning: Use version catalog instead [UseTomlInstead]
+    implementation("androidx.media3:media3-ui:1.5.0")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:168: Warning: Use version catalog instead [UseTomlInstead]
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:169: Warning: Use version catalog instead [UseTomlInstead]
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:170: Warning: Use version catalog instead [UseTomlInstead]
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:171: Warning: Use version catalog instead [UseTomlInstead]
+    implementation("com.google.code.gson:gson:2.10.1")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:174: Warning: Use version catalog instead [UseTomlInstead]
+    implementation("androidx.camera:camera-core:1.4.1")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:175: Warning: Use version catalog instead [UseTomlInstead]
+    implementation("androidx.camera:camera-camera2:1.4.1")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:176: Warning: Use version catalog instead [UseTomlInstead]
+    implementation("androidx.camera:camera-lifecycle:1.4.1")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:177: Warning: Use version catalog instead [UseTomlInstead]
+    implementation("androidx.camera:camera-view:1.4.1")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:180: Warning: Use version catalog instead [UseTomlInstead]
+    implementation("io.coil-kt:coil-compose:2.6.0")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:183: Warning: Use version catalog instead [UseTomlInstead]
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.3")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:184: Warning: Use version catalog instead [UseTomlInstead]
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.3")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:187: Warning: Use version catalog instead [UseTomlInstead]
+    implementation("androidx.palette:palette-ktx:1.0.0")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:188: Warning: Use version catalog instead [UseTomlInstead]
+    implementation("androidx.media:media:1.7.0")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:191: Warning: Use version catalog instead [UseTomlInstead]
+    implementation("androidx.legacy:legacy-support-v4:1.0.0")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:194: Warning: Use version catalog instead [UseTomlInstead]
+    implementation("androidx.navigation:navigation-compose:2.8.5")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:199: Warning: Use version catalog instead [UseTomlInstead]
+    implementation("androidx.profileinstaller:profileinstaller:1.4.0")
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:201: Warning: Use the existing version catalog reference (libs.junit) instead [UseTomlInstead]
+    testImplementation("junit:junit:4.13.2")
+                       ~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:206: Warning: Use version catalog instead [UseTomlInstead]
+    testImplementation("org.json:json:20231013")
+                       ~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:207: Warning: Use the existing version catalog reference (libs.androidx.junit) instead [UseTomlInstead]
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts:208: Warning: Use the existing version catalog reference (libs.androidx.espresso.core) instead [UseTomlInstead]
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "UseTomlInstead":
+   If your project is using a libs.versions.toml file, you should place all
+   Gradle dependencies in the TOML file. This lint check looks for version
+   declarations outside of the TOML file and suggests moving them (and in the
+   IDE, provides a quickfix to performing the operation automatically).
+
+57 errors, 91 warnings

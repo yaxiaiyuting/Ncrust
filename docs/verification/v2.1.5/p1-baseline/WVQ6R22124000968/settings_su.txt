@@ -1,0 +1,3 @@
+$ adb -s WVQ6R22124000968 shell su -c 'cat /data/data/com.takahashirinta.ncrust/shared_prefs/ncrust_settings.xml'
+/system/bin/sh: su: inaccessible or not found
+exit=127

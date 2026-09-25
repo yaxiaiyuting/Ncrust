@@ -1,0 +1,55 @@
+$ adb -s WVQ6R22124000968 shell dumpsys package com.huawei.mediacontroller  <-- (first 40 lines of version/flag info)
+Activity Resolver Table:
+  Non-Data Actions:
+      com.huawei.intent.action.MEDIA_CONTROLLER_CENTER:
+        101a462 com.huawei.mediacontroller/.MainActivity filter 39509f3
+          Action: "com.huawei.intent.action.MEDIA_CONTROLLER_CENTER"
+          Category: "android.intent.category.DEFAULT"
+      com.huawei.lisense.HW_SHOW_LISENSE:
+        46f76b0 com.huawei.mediacontroller/.license.EmptyLicenseActivity filter 5bf5929
+          Action: "com.huawei.lisense.HW_SHOW_LISENSE"
+          Category: "android.intent.category.DEFAULT"
+
+Receiver Resolver Table:
+  Non-Data Actions:
+      com.huawei.bluetooth.action.ASSISTANT_REPORT_SHARE_AUDIO_SOURCE_DEVICE:
+        e59a4ae com.huawei.mediacontroller/.deviceswitcher.audiodeviceswitcher.ShareAudioReceiver filter 8ec524f
+          Action: "com.huawei.bluetooth.action.ASSISTANT_REPORT_SHARE_AUDIO_SOURCE_DEVICE"
+
+Service Resolver Table:
+  Non-Data Actions:
+      android.telecom.InCallService:
+        31f5dba com.huawei.mediacontroller/.phoneswitcher.phonedeviceswitcher.MediaPlayBackInCallService filter ac5c46b permission android.permission.BIND_INCALL_SERVICE
+          Action: "android.telecom.InCallService"
+      com.huawei.aa.action.WATCHSYNCSERVICE:
+        5cd4ddc com.huawei.mediacontroller/.watch.WatchSyncService filter a4b5ee5 permission com.huawei.permission.notification.fixed
+          Action: "com.huawei.aa.action.WATCHSYNCSERVICE"
+          Category: "android.intent.category.DEFAULT"
+
+Domain verification status:
+
+Permissions:
+  Permission [com.huawei.mediacontroller.permission.ACTION_CLOSE_APP] (725ab20):
+    sourcePackage=com.huawei.mediacontroller
+    uid=10061 gids=[] type=0 prot=signature
+    perm=PermissionInfo{fedccd9 com.huawei.mediacontroller.permission.ACTION_CLOSE_APP}
+
+Permissions:
+  Permission [com.huawei.mediacontroller.permission.ACTION_CHOOSEN_DEVICE_CHANGED] (580869e):
+    sourcePackage=com.huawei.mediacontroller
+    uid=10061 gids=[] type=0 prot=signature|privileged
+    perm=PermissionInfo{cf1a57f com.huawei.mediacontroller.permission.ACTION_CHOOSEN_DEVICE_CHANGED}
+exit=0
+
+$ adb -s WVQ6R22124000968 shell dumpsys package com.huawei.mediacontroller | grep -E 'versionName|versionCode|codePath|flags=|pkgFlags'
+    codePath=/system/priv-app/MediaPlaybackController
+    versionCode=0 minSdk=29 targetSdk=30
+    versionName=13.0.0.56
+    flags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    hwflags=[ ]
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+        android.permission.POST_NOTIFICATIONS: granted=true, flags=[ SYSTEM_FIXED|GRANTED_BY_DEFAULT]
+        android.permission.BLUETOOTH_CONNECT: granted=true, flags=[ REVOKE_WHEN_REQUESTED|USER_SENSITIVE_WHEN_GRANTED]
+        android.permission.BLUETOOTH_ADVERTISE: granted=true, flags=[ REVOKE_WHEN_REQUESTED|USER_SENSITIVE_WHEN_GRANTED]
+        android.permission.BLUETOOTH_SCAN: granted=true, flags=[ REVOKE_WHEN_REQUESTED|USER_SENSITIVE_WHEN_GRANTED]
+exit=0

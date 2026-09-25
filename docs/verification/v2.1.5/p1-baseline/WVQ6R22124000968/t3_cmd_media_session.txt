@@ -1,0 +1,33 @@
+$ adb -s WVQ6R22124000968 shell cmd media_session list-sessions
+Sessions:
+  tag=NcrustSession, package=com.takahashirinta.ncrust
+  tag=androidx.media3.session.id., package=com.takahashirinta.ncrust
+exit=0
+
+$ adb -s WVQ6R22124000968 shell cmd media_session  (usage)
+usage: media_session [subcommand] [options]
+       media_session dispatch KEY
+       media_session dispatch KEY
+       media_session list-sessions
+       media_session monitor <tag>
+       media_session volume [options]
+
+media_session dispatch: dispatch a media key to the system.
+                KEY may be: play, pause, play-pause, mute, headsethook,
+                stop, next, previous, rewind, record, fast-forword.
+media_session list-sessions: print a list of the current sessions.
+media_session monitor: monitor updates to the specified session.
+                       Use the tag from list-sessions.
+media_session volume:  the options are as follows: 
+		--stream STREAM selects the stream to control, see AudioManager.STREAM_*
+		                controls AudioManager.STREAM_MUSIC if no stream is specified
+		--set INDEX     sets the volume index value
+		--adj DIRECTION adjusts the volume, use raise|same|lower for the direction
+		--get           outputs the current volume
+		--show          shows the UI during the volume change
+	examples:
+		adb shell media volume --show --stream 3 --set 11
+		adb shell media volume --stream 0 --adj lower
+		adb shell media volume --stream 3 --get
+
+exit=0

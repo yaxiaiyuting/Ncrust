@@ -1,0 +1,3 @@
+$ adb -s 3B15CD00GB700000 shell run-as com.takahashirinta.ncrust cat /data/data/com.takahashirinta.ncrust/shared_prefs/ncrust_settings.xml
+run-as: package not debuggable: com.takahashirinta.ncrust
+exit=1

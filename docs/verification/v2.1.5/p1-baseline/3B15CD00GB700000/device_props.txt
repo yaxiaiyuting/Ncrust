@@ -1,0 +1,8 @@
+$ adb -s 3B15CD00GB700000 shell getprop ro.product.model        # PLC110
+$ adb -s 3B15CD00GB700000 shell getprop ro.product.brand        # OnePlus
+$ adb -s 3B15CD00GB700000 shell getprop ro.product.manufacturer # OnePlus
+$ adb -s 3B15CD00GB700000 shell getprop ro.build.version.release # 16
+$ adb -s 3B15CD00GB700000 shell getprop ro.build.version.sdk    # 36
+$ adb -s 3B15CD00GB700000 shell getprop ro.build.display.id     # PLC110_16.0.10.500(CN01)
+$ adb -s 3B15CD00GB700000 shell getprop ro.build.characteristics # default
+$ adb -s 3B15CD00GB700000 shell date                            # Fri Sep 25 12:10:45 CST 2026

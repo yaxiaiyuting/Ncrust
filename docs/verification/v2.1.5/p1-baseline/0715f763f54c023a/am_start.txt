@@ -1,0 +1,3 @@
+Starting: Intent { cmp=com.takahashirinta.ncrust/.MainActivity launchParam=MultiScreenLaunchParams { mDisplayId=0 mFlags=0 } }
+Warning: Activity not started, its current task has been brought to the front
+exit=0

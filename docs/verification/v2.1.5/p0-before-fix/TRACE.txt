@@ -1,0 +1,6 @@
+### 未修复（HEAD d6b0fce = v2.1.4）· 跨源切歌日志切片
+
+09-25 12:24:40.024  8711  8711 D PlayerViewModel: fetchLyrics id=4611686018427485677 code=200 lrc=14 tlyric=0 yrc=0 romalrc=0 current=4611686018427485677
+09-25 12:24:40.032  8711  8711 I PlayerViewModel: 歌词源 songId=4611686018427485677 phase=1 picked=YRC lines=1 words=false
+09-25 12:25:17.511  8711  8711 D PlaybackService: gapless transition -> songId=5257138 title=屋顶 count=2
+09-25 12:25:17.826  8711  8711 I PlayerViewModel: qq lyric songId=5257138 lines=63

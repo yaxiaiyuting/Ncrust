@@ -1,0 +1,49 @@
+# Source provenance for the metadata-key analysis
+# Devices report versionName=2.1.4-gpl versionCode=34 (uninstallable/installed build) -> that is git HEAD.
+$ git rev-parse HEAD
+d6b0fce721dffa8cc567e6471acdaad9f2abcfc8
+$ git log -1 --format='%h %ad %s' --date=iso
+d6b0fce 2026-09-25 03:35:55 +0800 docs: v2.1.4 的根因、改法、验证边界与发布信息
+$ git status --short   # working tree is DIRTY: another agent has v2.1.5 edits in flight
+ M app/src/main/java/com/takahashirinta/ncrust/player/PlaybackService.kt
+ M app/src/main/java/com/takahashirinta/ncrust/player/PreloadSlot.kt
+ M app/src/main/java/com/takahashirinta/ncrust/source/MusicSource.kt
+ M app/src/main/java/com/takahashirinta/ncrust/ui/viewmodel/PlayerViewModel.kt
+?? app/src/main/java/com/takahashirinta/ncrust/lyric/LyricLoadCoordinator.kt
+?? app/src/main/java/com/takahashirinta/ncrust/source/TrackKey.kt
+?? docs/
+
+# HEAD's version (what is actually installed):
+$ git show HEAD:app/build.gradle.kts | grep -E 'versionName|versionCode'
+        // 本 fork 自有的版本线：基于上游 1.3.1 (versionCode 6)。
+        // versionCode 必须严格大于上游，否则后续 fork 版本无法覆盖安装。
+        // v1.9.0 的 versionCode 是**实测**定的，不是按任务书推的：任务书写「v1.8.0 = 21，本版 22」，
+        // 已发布的 v1.9.0-gpl 制品**不原地替换**，走新的 versionCode，保持发布产物可复现。
+        // （versionCode 24，修的是歌词镜像回退），照抄会与线上包撞号、无法覆盖安装 ⇒ 本版取 25。
+        // **第四次**：任务书建议「versionCode 以 next-version.sh 输出为准」—— 本版起这就是硬流程，
+        versionCode = 34
+        versionName = "2.1.4-gpl"
+
+# HEAD's metadata-writing block in PlaybackService.kt:
+$ git show HEAD:app/src/main/java/com/takahashirinta/ncrust/player/PlaybackService.kt | grep -n 'METADATA_KEY\|putString\|putLong\|putBitmap'
+140:         * METADATA_KEY_ARTIST**，`DISPLAY_SUBTITLE` 被完全忽略（AOSP 源码级结论，见 TASK.md
+1047:                .putString(android.support.v4.media.MediaMetadataCompat.METADATA_KEY_TITLE, display.title)
+1048:                .putString(android.support.v4.media.MediaMetadataCompat.METADATA_KEY_ARTIST, display.subtitle)
+1049:                .putLong(android.support.v4.media.MediaMetadataCompat.METADATA_KEY_DURATION, dur)
+1052:            builder.putString(
+1053:                android.support.v4.media.MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE,
+1059:                builder.putBitmap(android.support.v4.media.MediaMetadataCompat.METADATA_KEY_ART, it)
+
+# Are the 5 written keys the same at HEAD as in the dirty working tree?
+$ diff <(git show HEAD:.../PlaybackService.kt | sed -n '1030,1075p') <(sed -n '1091,1136p' .../PlaybackService.kt)
+1,3d0
+<         // Metadata 只在 title/artist/duration/封面变化时重发——旧实现每 250ms 都要走一遍
+<         // MediaMetadataCompat.Builder + 跨进程 IPC 到系统 MediaSession，纯浪费。
+<         // 位图用**引用**比较: 实例变了(新封面加载完成)就重发, 同图不重发。
+36a34,36
+> 
+>     /**
+>      * 立刻广播一次当前进度。
+
+# HEAD sha256 of the file:
+c4c29670380eb507bc45b5f6851f0f9c51c51761f5a1004cf5f0a7744584aa5b  -

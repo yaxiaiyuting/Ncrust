@@ -1,0 +1,42 @@
+$ adb -s WVQ6R22124000968 shell dumpsys activity service SystemUIService 2>/dev/null | head -40
+SERVICE com.android.systemui/.SystemUIService 816fe4b pid=2249 user=0
+  Client:
+
+    MediaDataManager:
+    ----------------------------------------------------------------------------
+    listeners: [com.android.systemui.media.MediaTimeoutListener@b001f4a, com.android.systemui.media.MediaResumeListener@a8f6fd8]
+    mediaEntries: {0|com.takahashirinta.ncrust|1|null|10274=MediaData(userId=0, initialized=true, backgroundColor=-14136744, app=Ncrust, appIcon=android.graphics.drawable.BitmapDrawable@c8d92f5, artist=紫荆花盛开 · 李荣浩/梁咏琪, song=像一幅画, artwork=Icon(typ=BITMAP size=512x512), actions=[MediaAction(drawable=android.graphics.drawable.BitmapDrawable@98c688a, action=com.android.systemui.media.MediaDataManager$loadMediaDataInBg$runnable$1@d5ebefb, contentDescription=上一首), MediaAction(drawable=android.graphics.drawable.BitmapDrawable@a9fb18, action=com.android.systemui.media.MediaDataManager$loadMediaDataInBg$runnable$1@f716971, contentDescription=播放), MediaAction(drawable=android.graphics.drawable.BitmapDrawable@fd08356, action=com.android.systemui.media.MediaDataManager$loadMediaDataInBg$runnable$1@e504fd7, contentDescription=下一首)], actionsToShowInCompact=[0, 1, 2], packageName=com.takahashirinta.ncrust, token=android.media.session.MediaSession$Token@845bf2b, clickIntent=PendingIntent{7cfb0c4: android.os.BinderProxy@1dcd2c2}, device=null, active=false, resumeAction=null, resumption=false, notificationKey=0|com.takahashirinta.ncrust|1|null|10274, hasCheckedForResume=true)}
+    useMediaResumption: true
+
+    FalsingManager:
+    ----------------------------------------------------------------------------
+    BRIGHTLINE FALSING MANAGER
+    classifierEnabled=1
+    mJustUnlockedWithFace=0
+    isDocked=0
+    width=2560
+    height=1600
+
+    No recent swipes
+
+    Recent falsing info:
+      xdpi, ydpi: 239.058, 239.058
+      width, height: 2560, 1600
+      
+
+    com.android.systemui.statusbar.notification.InstantAppNotifier:
+    ----------------------------------------------------------------------------
+
+    com.android.systemui.util.leak.GarbageMonitorService:
+    ----------------------------------------------------------------------------
+
+    com.android.systemui.power.PowerUI:
+    ----------------------------------------------------------------------------
+    mLowBatteryAlertCloseLevel=15
+    mLowBatteryReminderLevels=[10, 5]
+    mBatteryLevel=100
+    mBatteryStatus=5
+    mPlugType=2
+    mInvalidCharger=0
+    mScreenOffTime=-1
+exit=0

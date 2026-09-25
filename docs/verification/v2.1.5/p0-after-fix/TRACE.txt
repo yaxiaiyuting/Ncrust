@@ -1,0 +1,21 @@
+### 已修复（v2.1.5 工作区）· 跨源切歌日志切片
+# 队列: [qqmusic 晴天(mid=0039MnYb0qxYhV), netease 屋顶(5257138)]，起播 QQ，seek 到 266s 让 QQ 自然播完
+# 期望: 自动接续到 屋顶 后，取词走**网易云**路径，拿到 55 行(屋顶的词)，且**没有** qq lyric 请求。
+
+09-25 12:26:10.798 I/NcrustTrack( 9156): lyric request begin: track=qqmusic:4611686018427485677 gen=1
+09-25 12:26:10.799 W/NcrustTrack( 9156): qq lyric skipped: track=qqmusic:4611686018427485677 missing songmid
+09-25 12:26:32.826 I/NcrustTrack( 9156): playSong -> currentTrack=qqmusic:4611686018427485677 mid=0039MnYb0qxYhV media=003Qui1q2u1Zho cacheKey=null
+09-25 12:26:33.023 I/NcrustTrack( 9156): preload enqueued: slotTrack=netease:5257138
+09-25 12:26:33.305 I/NcrustTrack( 9156): lyric request begin: track=qqmusic:4611686018427485677 mid=0039MnYb0qxYhV media=003Qui1q2u1Zho gen=3
+09-25 12:26:33.562 I/NcrustTrack( 9156): qq lyric APPLIED track=qqmusic:4611686018427485677 mid=0039MnYb0qxYhV media=003Qui1q2u1Zho lines=63
+09-25 12:26:38.223 I/NcrustTrack( 9156): playSong -> currentTrack=qqmusic:4611686018427485677 mid=0039MnYb0qxYhV media=003Qui1q2u1Zho cacheKey=null
+09-25 12:26:38.439 I/NcrustTrack( 9156): lyric request begin: track=qqmusic:4611686018427485677 mid=0039MnYb0qxYhV media=003Qui1q2u1Zho gen=5
+09-25 12:26:38.647 I/NcrustTrack( 9156): qq lyric APPLIED track=qqmusic:4611686018427485677 mid=0039MnYb0qxYhV media=003Qui1q2u1Zho lines=63
+09-25 12:26:45.642 I/NcrustTrack( 9156): preload enqueued: slotTrack=netease:5257138
+09-25 12:26:49.672 D/PlaybackService( 9156): gapless transition -> songId=5257138 source=netease title=屋顶 count=2
+09-25 12:26:49.697 I/NcrustTrack( 9156): transition reported: track=netease:5257138 (source=netease id=5257138)
+09-25 12:26:49.703 I/NcrustTrack( 9156): auto transition -> currentTrack=netease:5257138 cacheKey=5257138
+09-25 12:26:49.705 I/NcrustTrack( 9156): lyric request begin: track=netease:5257138 gen=7
+09-25 12:26:49.708 D/PlayerViewModel( 9156): fetchLyrics cache hit id=5257138 lrc=1137
+09-25 12:26:49.951 I/PlayerViewModel( 9156): 歌词源 songId=5257138 phase=1 picked=YRC lines=55 words=true
+09-25 12:26:50.019 I/NcrustTrack( 9156): preload enqueued: slotTrack=qqmusic:4611686018427485677 mid=0039MnYb0qxYhV media=003Qui1q2u1Zho

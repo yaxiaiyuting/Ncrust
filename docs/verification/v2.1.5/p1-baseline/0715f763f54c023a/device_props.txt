@@ -1,0 +1,8 @@
+$ adb -s 0715f763f54c023a shell getprop ro.product.model        # SM-G9209
+$ adb -s 0715f763f54c023a shell getprop ro.product.brand        # samsung
+$ adb -s 0715f763f54c023a shell getprop ro.product.manufacturer # samsung
+$ adb -s 0715f763f54c023a shell getprop ro.build.version.release # 7.0
+$ adb -s 0715f763f54c023a shell getprop ro.build.version.sdk    # 24
+$ adb -s 0715f763f54c023a shell getprop ro.build.display.id     # NRD90M.G9209KEU2ERI2
+$ adb -s 0715f763f54c023a shell getprop ro.build.characteristics # phone,emulator,china_wlan
+$ adb -s 0715f763f54c023a shell date                            # Fri Sep 25 12:10:46 CST 2026

@@ -1,0 +1,64 @@
+# Static string scan of Huawei ROM media-control APKs (read-only, no files written on device)
+# Method: adb shell "unzip -p <apk> <member> | strings | grep -Ei <pattern>"
+
+################ /system/priv-app/SystemUI/SystemUI.apk
+-- dex members:
+  9380556  2008-01-01 00:00   classes2.dex
+ 10527384  2008-01-01 00:00   classes.dex
+  1882980  2008-01-01 00:00   classes3.dex
+-- grep -Ei 'lyric' over all classes*.dex string constants:
+$music_lyric_display_position_X_large
+$music_lyric_display_position_X_small
+localLyricBtn
+LYRIC
+mLocalLyricBtn
+music_lyric_display_position_X
+%music_lyric_display_position_X_medium
+   (matches: 12)
+
+################ /system/priv-app/MediaPlaybackController/MediaPlaybackController.apk
+-- dex members:
+  4066716  1981-01-01 01:01   classes.dex
+-- grep -Ei 'lyric' over all classes*.dex string constants:
+0LyricUtil basic io exception in writeToLyricFile
+2LyricUtil create new file fail in writeToLyricFile
+2LyricUtil packageManager is null in isAppOpAllowed
+2ServiceAudioControl updateLyric not current card !
+3LyricUtil ActivityNotFoundException when jump lyric
+3MediaOperationUtil: lyricOnClick :audioCard is null
+3ServiceAudioControl updateLyric audioCard is null !
+4LyricUtil IOException occurred in getContentFromFile
+7LocalCardAdapterHelper: lyricOnClick :audioCard is null
+8AudioControl:activity, cardMap or lyricStateData is null
+8AudioControl:updateLyric playerId {}, lyricStateData  {}
+8ServiceAudioControl updateLyric lyricStateData is null !
+9ServiceAudioControl updateLyric lyric state not changed !
+back_desktop_lyric
+buildLyricAction
+createLyricDialog
+CServiceAudioControlObserver updateLyric updateNotify from lyric
+dismissLyricDialog
+DMediaControllerService mLyricDialog is showing, do not show it again
+EVENT_LYRIC_STATE_CHANGED
+getContentFromLyricFile
+getLocalLyricImg
+getLyric
+getLyricState
+ic_sing_lyric_activated
+%ic_sing_lyric_deactivate_notification
+ic_sing_lyric_lock
+ic_sing_lyric_notification
+initLyricBtnTouchListener
+JLocalCardAdapterHelper: globalLrc audio card is null,localLyricBtn is null
+jumpLyricPermission
+key_lyric_state
+lambda$createLyricDialog$0
+lambda$createLyricDialog$1
+lambda$createLyricDialog$2
+"lambda$initLyricBtnTouchListener$4
+:lambda$initLyricBtnTouchListener$4$OperateBtnClickAnimator
+&Lcom/huawei/commonlib/utils/LyricUtil;
+,Lcom/huawei/media/controller/LyricStateData;
+LLcom/huawei/commonlib/utils/-$$Lambda$LyricUtil$k1UihgoZwEeNY-T44OqnTvfO4TM;
+   (matches: 95)
+
