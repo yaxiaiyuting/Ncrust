@@ -133,4 +133,124 @@ internal object LyricsPanelScroll {
         if (lineCount <= 0) return 0
         return (currentIndex.coerceAtLeast(0) + 1).coerceIn(1, lineCount)
     }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // v2.5.2：把「一整条歌词」摆正，而不是只摆它的顶边
+    // ═══════════════════════════════════════════════════════════════════════
+
+    /**
+     * 上下渐隐带的高度比例：视口的 **30%**。
+     *
+     * v1.7.0 · P1 引入（`LyricsView` 里内联），v2.5.2 抽到这里成为**唯一落点** ——
+     * 因为从本版起，**面板自己**也要用这个数（它决定「整条歌词最高能摆到哪」，
+     * 见 [blockTopPx] 的 `minTopPx`）。两处各写一份 `min(100dp, 0.3 × vh)` 就是第二处真相：
+     * 渐隐带调窄了而定位没跟着调，歌词就会被压在渐隐里发灰。
+     */
+    const val FADE_FRACTION = 0.30f
+
+    /** 渐隐带基准高度（dp）。竖屏全屏面板（约 700dp）下就是这个值。 */
+    const val BASE_FADE_DP = 100f
+
+    /** 渐隐带高度下限（dp）：极短视口下也不允许渐隐把整块歌词糊掉。 */
+    const val MIN_FADE_DP = 24f
+
+    /**
+     * 渐隐带高度（px）：`clamp(min(基准, 30% × 视口), 下限, +∞)`。
+     *
+     * 与 `LyricsView` 里画出来的那两条渐隐 **必须**是同一个数（同一函数算出）——
+     * 见 [FADE_FRACTION] 的说明。
+     */
+    fun fadeHeightPx(viewportHeightPx: Int, baseFadePx: Float, minFadePx: Float): Float {
+        if (viewportHeightPx <= 0) return baseFadePx
+        return minOf(baseFadePx, viewportHeightPx * FADE_FRACTION).coerceAtLeast(minFadePx)
+    }
+
+    /**
+     * v2.5.2：**一整条歌词**（原句 + 译文 + 音译，含折行）的顶边目标位置（px）。
+     *
+     * ## 这一版修的是什么（用户报的原话：「自动居中只是把第一行居中」）
+     *
+     * v2.5.1 及以前，定位的语义是「**条目顶边**落在视口 [leadFraction] 处」
+     * （[leadOffsetPx]）。在只有一行的时候这没问题；但一个 LazyColumn 条目实际是
+     * `Box(padding 10dp) { Column { 原句、译文、音译 } }`：
+     *
+     * | 条目内容 | 高度（大屏 42/26/24sp + 20dp padding） |
+     * |---|---|
+     * | 只有原句 | ≈ 62dp |
+     * | 原句 + 译文 | ≈ 88dp |
+     * | 原句 + 译文 + 音译 | ≈ 112dp |
+     *
+     * 大屏模式右栏的视口只有约 232dp：把**顶边**放在正中（116dp）时，
+     * 三行条目会一直铺到 228dp —— 视觉中点在 74% 处，也就是用户说的
+     * 「第一行居中了，其他行全掉在下面」。**行数越多、偏得越狠**，而带翻译的歌
+     * 恰好行数最多，所以那条反馈点名了「带有翻译的歌曲」。
+     *
+     * ## 新语义：整条的中点落在 [leadFraction] 处
+     *
+     * `top = 视口 × leadFraction − 条目高 / 2`，再做两道夹取：
+     *
+     * 1. **不高于渐隐带**（`top ≥ minTopPx`，调用方传 [fadeHeightPx]）。极高的条目
+     *    （三行 + 折行）在 232dp 视口里若强行居中，顶边会落到 60dp —— 正好钻进
+     *    渐隐带里发灰。此时「尽量居中且不被渐隐吃掉」比「数学上严格居中」重要；
+     * 2. **不高于视口顶边**（`top ≥ 0`）：条目比视口还高时退化成顶对齐，
+     *    这是滚动容器的通用行为，也保证第一行永远可读。
+     *
+     * ## 与旧行为的关系
+     *
+     * - `itemHeightPx <= 0`（**还没排版过、量不到高度**）⇒ 返回 [leadOffsetPx]，
+     *   **逐字节等于 v2.5.1**。调用方拿到高度后会在同一帧内纠正（见
+     *   `NcrustLyricsPanel.placeLine`），所以这只是「还没量到」的中间态；
+     * - 单行条目下两者只差 `高/2 ≈ 31dp`，这正是「把这一行本身摆在目标处」
+     *   与「把这一条的顶边摆在目标处」的差别 —— 前者才是用户说的「居中」。
+     *
+     * @param viewportHeightPx 面板视口高度；<= 0（首帧 / 无界约束）⇒ 返回 0，与旧行为一致
+     * @param leadFraction 目标高度比例（竖屏 [LEAD_FRACTION]，横屏 [CENTER_FRACTION]）
+     * @param itemHeightPx 该条目的**实测**高度（含 10dp 上下 padding 与所有折行）；<= 0 = 未知
+     * @param minTopPx 顶边下限（通常传 [fadeHeightPx] 的结果）
+     */
+    fun blockTopPx(
+        viewportHeightPx: Int,
+        leadFraction: Float,
+        itemHeightPx: Int,
+        minTopPx: Float,
+    ): Float {
+        val centered = viewportHeightPx * leadFraction - itemHeightPx / 2f
+        return centered.coerceAtLeast(minTopPx).coerceAtLeast(0f)
+    }
+
+    /**
+     * 定位 offset（px）—— [blockTopPx] 的「直接可用」版本（负值 = 内容上移）。
+     *
+     * 高度未知时回落 [leadOffsetPx]（v2.5.1 的顶边语义），调用方据此先摆一次、
+     * 量到高度后再纠正。
+     */
+    fun blockOffsetPx(
+        viewportHeightPx: Int,
+        leadFraction: Float,
+        itemHeightPx: Int,
+        minTopPx: Float,
+    ): Int {
+        if (viewportHeightPx <= 0) return 0
+        if (itemHeightPx <= 0) return leadOffsetPx(viewportHeightPx, leadFraction)
+        return -blockTopPx(viewportHeightPx, leadFraction, itemHeightPx, minTopPx).toInt()
+    }
+
+    /**
+     * 已经把条目摆到 [currentTopPx] 之后，还需要再滚多少（正数 = 继续上移）。
+     *
+     * 用于「先按旧行为摆一次 → 量到高度 → 同一帧纠正」这条路径。返回 0 表示
+     * 位置已经正确（或高度/视口未知），调用方不该做无意义的滚动 ——
+     * 无意义滚动会把 `isScrollInProgress` 翻起来，进而误触发「用户滚动了」的旗子。
+     */
+    fun blockCorrectionPx(
+        viewportHeightPx: Int,
+        leadFraction: Float,
+        itemHeightPx: Int,
+        minTopPx: Float,
+        currentTopPx: Int,
+    ): Int {
+        if (viewportHeightPx <= 0 || itemHeightPx <= 0) return 0
+        val desired = blockTopPx(viewportHeightPx, leadFraction, itemHeightPx, minTopPx).toInt()
+        return currentTopPx - desired
+    }
 }

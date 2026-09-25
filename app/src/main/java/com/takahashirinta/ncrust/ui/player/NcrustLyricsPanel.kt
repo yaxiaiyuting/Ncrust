@@ -18,6 +18,7 @@ package com.takahashirinta.ncrust.ui.player
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -41,6 +42,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
@@ -218,6 +220,90 @@ fun NcrustLyricsPanel(
     var programmaticScrolling by remember { mutableStateOf(false) }
     var lastAutoScrolledIndex by remember { mutableIntStateOf(-1) }
 
+    // ─────────────────────────────────────────────────────────────────────
+    // v2.5.2：条目**实测高度**缓存 + 「整条居中」的定位助手
+    //
+    // 用户反馈：「自动居中只是把第一行居中，多行歌词、尤其是带翻译的歌，
+    // 大屏模式下看起来很痛苦」。根因是定位语义是「**顶边**落在目标高度」，
+    // 而一个条目是 `原句 + 译文 + 音译`（含折行）的整块 —— 行数越多，整块越往下坠。
+    // 完整推导见 `LyricsPanelScroll.blockTopPx` 的 KDoc。
+    //
+    // 高度只能实测（折行数取决于可用宽度与字号），所以：
+    //  · 用 `snapshotFlow` 把**已经排版过的**条目高度记下来（只有可见的 5~8 条，
+    //    开销是每次布局写几个 int）；
+    //  · 用普通 `HashMap` 而不是 `mutableStateMapOf`：它**不参与重组**，只在滚动回调里读。
+    //    换成 state map 会让每次布局都触发一次面板重组 —— 那是本仓库明令禁止的动画期重组。
+    // ─────────────────────────────────────────────────────────────────────
+    val itemHeights = remember { HashMap<Int, Int>() }
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.layoutInfo.visibleItemsInfo }
+            .collect { infos ->
+                for (info in infos) itemHeights[info.index] = info.size
+            }
+    }
+
+    val density = LocalDensity.current
+    val baseFadePx = with(density) { LyricsPanelScroll.BASE_FADE_DP.dp.toPx() }
+    val minFadePx = with(density) { LyricsPanelScroll.MIN_FADE_DP.dp.toPx() }
+
+    /** 顶边下限 = 上下渐隐带高度（与 `LyricsView` 画出来的是同一个数）。 */
+    fun minTopPxOf(viewportHeightPx: Int): Float =
+        LyricsPanelScroll.fadeHeightPx(viewportHeightPx, baseFadePx, minFadePx)
+
+    /** 「整条居中」的 offset；高度还没量到 ⇒ 自动回落 v2.5.1 的顶边语义。 */
+    fun offsetFor(targetItemIndex: Int, viewportHeightPx: Int): Int =
+        LyricsPanelScroll.blockOffsetPx(
+            viewportHeightPx = viewportHeightPx,
+            leadFraction = leadFraction,
+            itemHeightPx = itemHeights[targetItemIndex] ?: -1,
+            minTopPx = minTopPxOf(viewportHeightPx),
+        )
+
+    /**
+     * 直接摆到「整条居中」（无动画）。
+     *
+     * 高度未知时先按 v2.5.1 的位置摆一次（那一步同时让它**进入可见区**、从而被量到），
+     * 等一帧让排版落地，再用实测高度做一次纠正。纠正用 `scrollBy`：这条路径本来就是跳变，
+     * 多一段动画反而会看出「跳到位再弹一下」。
+     */
+    suspend fun placeLine(targetItemIndex: Int, viewportHeightPx: Int) {
+        listState.scrollToItem(targetItemIndex, offsetFor(targetItemIndex, viewportHeightPx))
+        if ((itemHeights[targetItemIndex] ?: -1) > 0) return
+        withFrameNanos { }
+        val info = listState.layoutInfo.visibleItemsInfo.firstOrNull { it.index == targetItemIndex } ?: return
+        itemHeights[targetItemIndex] = info.size
+        val correction = LyricsPanelScroll.blockCorrectionPx(
+            viewportHeightPx = viewportHeightPx,
+            leadFraction = leadFraction,
+            itemHeightPx = info.size,
+            minTopPx = minTopPxOf(viewportHeightPx),
+            currentTopPx = info.offset,
+        )
+        if (correction != 0) listState.scrollBy(correction.toFloat())
+    }
+
+    /**
+     * 动画走到「整条居中」。
+     *
+     * 高度已知 ⇒ 一次动画到位（播放中的跨行跟随走的就是这条，也是用户见得最多的一条）。
+     * 高度未知（跳到很远、从未排版过的一行）⇒ 先**瞬时**摆到旧的顶边位置让它可见，
+     * 拿到高度后再动画走到居中位置。顺序刻意如此：反过来的话用户会先看到
+     * 「跳到位、再弹一下」，比「跳到附近、再平滑滑正」更突兀。
+     */
+    suspend fun animateToLine(targetItemIndex: Int, viewportHeightPx: Int) {
+        if ((itemHeights[targetItemIndex] ?: -1) <= 0) {
+            listState.scrollToItem(
+                targetItemIndex,
+                LyricsPanelScroll.leadOffsetPx(viewportHeightPx, leadFraction),
+            )
+            withFrameNanos { }
+            listState.layoutInfo.visibleItemsInfo
+                .firstOrNull { it.index == targetItemIndex }
+                ?.let { itemHeights[targetItemIndex] = it.size }
+        }
+        listState.animateScrollToItem(targetItemIndex, offsetFor(targetItemIndex, viewportHeightPx))
+    }
+
     // 换歌 / 换歌词表：清状态 + 把当前行重新定位。
     //
     // v2.0.1：这里原来是**无条件** `scrollToItem(0)`（回顶）。在大屏模式下（右栏歌词面板
@@ -233,14 +319,16 @@ fun NcrustLyricsPanel(
     // 配合 LyricsPanelScroll 的顶部留白夹取，"回顶"与"首句落在 36%"在数学上已经是同一个位置。
     LaunchedEffect(lines) {
         userScrolling = false
+        // v2.5.2：换歌词表 ⇒ 条目高度全部作废（行数/译文/音译都可能变），必须清缓存。
+        itemHeights.clear()
         val idx = currentIndex.coerceAtLeast(0)
         smoothCurrentIndex.snapTo(idx.toFloat())
         lastAutoScrolledIndex = currentIndex
         val vh = listState.layoutInfo.viewportSize.height
         if (vh > 0) {
-            listState.scrollToItem(
+            placeLine(
                 LyricsPanelScroll.targetItemIndex(currentIndex, lines.size),
-                LyricsPanelScroll.leadOffsetPx(vh, leadFraction),
+                vh,
             )
         } else {
             // 还没排版（首帧）：先回顶。顶部留白一旦按视口夹取，"回顶"就是"首句落在 36%"。
@@ -258,9 +346,9 @@ fun NcrustLyricsPanel(
         }
         val idx = currentIndex.coerceAtLeast(0)
         smoothCurrentIndex.snapTo(idx.toFloat())
-        listState.scrollToItem(
+        placeLine(
             LyricsPanelScroll.targetItemIndex(currentIndex, lines.size),
-            LyricsPanelScroll.leadOffsetPx(vh, leadFraction),
+            vh,
         )
         lastAutoScrolledIndex = idx
     }
@@ -278,9 +366,9 @@ fun NcrustLyricsPanel(
         }
         val idx = currentIndex.coerceAtLeast(0)
         smoothCurrentIndex.snapTo(idx.toFloat())
-        listState.scrollToItem(
+        placeLine(
             LyricsPanelScroll.targetItemIndex(currentIndex, lines.size),
-            LyricsPanelScroll.leadOffsetPx(vh, leadFraction),
+            vh,
         )
         lastAutoScrolledIndex = idx
     }
@@ -297,9 +385,9 @@ fun NcrustLyricsPanel(
         val vh = listState.layoutInfo.viewportSize.height
         programmaticScrolling = true
         try {
-            listState.animateScrollToItem(
+            animateToLine(
                 LyricsPanelScroll.targetItemIndex(currentIndex, lines.size),
-                LyricsPanelScroll.leadOffsetPx(vh, leadFraction),
+                vh,
             )
         } finally {
             programmaticScrolling = false
@@ -357,9 +445,11 @@ fun NcrustLyricsPanel(
         programmaticScrolling = true
         try {
             // 用 animateScrollToItem 而不是 scrollToItem：任务书 7.3 要求「动画平滑、不突兀」。
-            listState.animateScrollToItem(
+            // v2.5.2：目标是「**整条**歌词（原句+译文+音译）的中点落在视口正中」，
+            // 不再是「条目顶边落在正中」—— 后者正是用户报的「只把第一行居中」。
+            animateToLine(
                 LyricsPanelScroll.targetItemIndex(currentIndex, lines.size),
-                LyricsPanelScroll.leadOffsetPx(vh, leadFraction),
+                vh,
             )
         } finally {
             programmaticScrolling = false

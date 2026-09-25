@@ -303,9 +303,17 @@ fun LyricsView(
     // 约 210dp 高（PCL110 实测：1272px 高 − 系统栏/挖孔 − 控制条 ~84dp），两条
     // 100dp 的渐隐会把整块歌词糊掉。取 min(100dp, 30% 视口高)，竖屏数值分毫不变，
     // 横屏自动收窄；不引入任何新的渲染路径（仍是同样两个 Box + 同一个 verticalGradient）。
+    //
+    // ★ v2.5.2：公式搬进 `LyricsPanelScroll.fadeHeightPx` —— 从本版起**面板自己也要用它**
+    //   （它是「整条歌词最高能摆到哪」的下限，见 `blockTopPx` 的 `minTopPx`）。
+    //   两处各写一份就是第二处真相：渐隐带调窄了而定位没跟着调，当前行就会被压在渐隐里发灰。
     var panelHeightPx by remember { mutableFloatStateOf(Float.MAX_VALUE) }
     val fadeHeight = with(LocalDensity.current) {
-        minOf(100.dp.toPx(), panelHeightPx * 0.3f).coerceAtLeast(24.dp.toPx()).toDp()
+        LyricsPanelScroll.fadeHeightPx(
+            viewportHeightPx = if (panelHeightPx.isFinite()) panelHeightPx.toInt() else 0,
+            baseFadePx = LyricsPanelScroll.BASE_FADE_DP.dp.toPx(),
+            minFadePx = LyricsPanelScroll.MIN_FADE_DP.dp.toPx(),
+        ).toDp()
     }
 
     Box(
