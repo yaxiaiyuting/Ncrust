@@ -1,0 +1,65 @@
+MEDIA SESSION SERVICE (dumpsys media_session)
+
+10 sessions listeners.
+Global priority session is com.android.server.telecom/o8/1 (userId=0)
+  o8 com.android.server.telecom/o8/1 (userId=0)
+    ownerPid=1693, ownerUid=1000, userId=0
+    package=com.android.server.telecom
+    launchIntent=null
+    mediaButtonReceiver=null
+    active=false
+    flags=65537
+    rating type=0
+    controllers: 0
+    state=null
+    audioAttrs=AudioAttributes: usage=USAGE_VOICE_COMMUNICATION content=CONTENT_TYPE_SPEECH flags=0x800 tags= bundle=null
+    volumeType=LOCAL, controlType=ABSOLUTE, max=0, current=0, volumeControlId=null
+    metadata: null
+    queueTitle=null, size=0
+User Records:
+Record for full_user=0
+  Volume key long-press listener: null
+  Volume key long-press listener package: 
+  Media key listener: null
+  Media key listener package: 
+  OnMediaKeyEventDispatchedListener: added 0 listener(s)
+  OnMediaKeyEventSessionChangedListener: added 1 listener(s)
+    from com.oplus.bttestmode
+  Last MediaButtonReceiver: MBR {pi=PendingIntent{1c3356f: PendingIntentRecord{bcdb928 tv.danmaku.bili broadcastIntent}}, componentName=null, type=0, pkg=tv.danmaku.bili}
+  Media button session is tv.danmaku.bili/HeadsetControlPlayAdapter.Session/296 (userId=0)
+  Sessions Stack - have 2 sessions:
+    HeadsetControlPlayAdapter.Session tv.danmaku.bili/HeadsetControlPlayAdapter.Session/296 (userId=0)
+      ownerPid=29418, ownerUid=10346, userId=0
+      package=tv.danmaku.bili
+      launchIntent=null
+      mediaButtonReceiver=MBR {pi=PendingIntent{1c3356f: PendingIntentRecord{bcdb928 tv.danmaku.bili broadcastIntent}}, componentName=null, type=0, pkg=tv.danmaku.bili}
+      active=true
+      flags=3
+      rating type=0
+      controllers: 11
+      state=PlaybackState {state=PAUSED(2), position=147263, buffered position=0, speed=1.0, updated=292766950, actions=823, custom actions=[Action:mName='like, mIcon=2131236648, mExtras=null, Action:mName='close, mIcon=2131236641, mExtras=null], active item id=-1, error=null}
+      audioAttrs=AudioAttributes: usage=USAGE_MEDIA content=CONTENT_TYPE_UNKNOWN flags=0x800 tags= bundle=null
+      volumeType=LOCAL, controlType=ABSOLUTE, max=0, current=0, volumeControlId=null
+      metadata: size=9, description=Archlinux太新，Debian又太保守，而这个Linux发行版刚好卡在了中间, 播完暂停, null
+      queueTitle=null, size=0
+    QQMusicMediaSession com.tencent.qqmusic/QQMusicMediaSession/283 (userId=0)
+      ownerPid=25647, ownerUid=10340, userId=0
+      package=com.tencent.qqmusic
+      launchIntent=null
+      mediaButtonReceiver=MBR {pi=PendingIntent{7ce5596: PendingIntentRecord{8f25517 com.tencent.qqmusic broadcastIntent}}, componentName=ComponentInfo{com.tencent.qqmusic/androidx.media.session.MediaButtonReceiver}, type=1, pkg=com.tencent.qqmusic}
+      active=true
+      flags=3
+      rating type=0
+      controllers: 6
+      state=PlaybackState {state=PAUSED(2), position=136661, buffered position=0, speed=1.0, updated=260903221, actions=1911, custom actions=[], active item id=-1, error=null}
+      audioAttrs=AudioAttributes: usage=USAGE_MEDIA content=CONTENT_TYPE_UNKNOWN flags=0x800 tags= bundle=null
+      volumeType=LOCAL, controlType=ABSOLUTE, max=0, current=0, volumeControlId=null
+      metadata: size=21, description=稻香, 周杰伦, 魔杰座
+      queueTitle=null, size=0
+Audio playback (lastly played comes first)
+  uid=10346 packages=tv.danmaku.bili 
+Media session config:
+  media_button_receiver_fgs_allowlist_duration_ms: [cur: 10000, def: 10000]
+  media_session_calback_fgs_allowlist_duration_ms: [cur: 10000, def: 10000]
+  media_session_callback_fgs_while_in_use_temp_allow_duration_ms: [cur: 10000, def: 10000]
+  media_session_temp_user_engaged_duration_ms: [cur: 600000, def: 600000]

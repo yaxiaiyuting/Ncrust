@@ -84,7 +84,15 @@ netease 屋顶(5257138)]`，从队列起播 QQ 那首，`seek` 到 266s（该曲
 
 ---
 
-## 4. 静态门禁
+## 4. 产物与装机
+
+| 文件 | 内容 |
+|---|---|
+| `dex-check.txt` | 两个产物的 dex 静态扫描：**release 单 dex、29,369 个方法、max registers_size=248、0 个超 255**；debug 24 dex、11 个方法超 255（集中在 i18n `Strings` 与 `PlayerCard`，R8 在 release 里把它们拆开了）。含 DEX version 037 = API 24 格式的说明，以及**一次被实测纠正的错误推断**（我一开始以为 registers_size>255 会导致 ART 拒绝加载，真机反驳了它） |
+| `release-install/media_session-<serial>.txt` | release 包在 WGR-W09（API 31）与 PLC110（API 36）上 **34 → 35 覆盖安装成功**后的 `dumpsys media_session` |
+| `..`（APK 本体） | `dist/Ncrust-v2.1.5-gpl-release.apk` / `-debug.apk`；`apksigner` 证书 SHA-256 与 v2.1.4 **逐字节相同** |
+
+## 5. 静态门禁
 
 | 文件 | 内容 |
 |---|---|
@@ -103,5 +111,8 @@ netease 屋顶(5257138)]`，从队列起播 QQ 那首，`seek` 到 266s（该曲
 3. **反向（网易云 → QQ）真机 A/B**：同一接缝，只有单测覆盖。
 4. **API 24 上的媒体会话元数据**：该机 `dumpsys` 里没有 Ncrust 会话，属测量缺口。
 5. **华为私有歌词协议**（`LyricUtil` / `updateMediaCommand LYRIC_STATE`）对第三方是否可达。
-6. **降级重试路径**：A/B 中 QQ 曲目在 `hires` 档遇到 404 后降到 `lossless`
+6. **release 包没有在 Android 7.0 / API 24 上装过**：该机上装的是 debug 构建，两者签名不同，
+   换装必须先卸载、会清掉用户登录态与 1066 首队列。dex 格式与寄存器指标已静态覆盖
+   （且 release 比 debug 更干净），但「release 在 API 24 冷启」仍是缺口。
+7. **降级重试路径**：A/B 中 QQ 曲目在 `hires` 档遇到 404 后降到 `lossless`
    （日志可见），该行为与 v2.1.4 一致、本版未改，但没有专门为它做回归。

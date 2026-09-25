@@ -1,0 +1,85 @@
+# v2.1.5 产物 dex 静态检查（含一次被实测纠正的错误推断）
+
+> 任务书把「dex 255 寄存器上限」列为**只有真机才能暴露**的问题。
+> 它的一部分其实是**静态可查**的：`registers_size` 就写在每个 code item 的头部。
+> 所以这里把产物扫一遍，再把结论与真机行为对齐 —— 过程中我自己先错了一次，
+> 记录在 §4，因为它正是「不要直接采信初步判断」的实例。
+
+---
+
+## 1. 命令
+
+```bash
+unzip -o dist/Ncrust-v2.1.5-gpl-<release|debug>.apk "*.dex"
+$ANDROID_HOME/build-tools/36.0.0/dexdump -d <dex> | awk '/registers *:/ {v=$NF+0; ...}'
+$ANDROID_HOME/build-tools/36.0.0/dexdump -f classes.dex | grep "DEX version"
+```
+
+## 2. 结果
+
+| 产物 | dex 文件数 | DEX version | 带代码的方法数 | max registers_size | > 255 的方法数 |
+|---|---|---|---|---|---|
+| **release**（R8 minify + shrink） | **1** | 037 | 29,369 | **248** | **0** |
+| **debug**（不 minify） | 24 | 037 | 174,588 | **500** | **11** |
+
+release 侧完全干净：没有任何方法的 `registers_size` 超过 255，余量 7。
+
+debug 侧超限的 11 个方法**全部集中在两处**（`dexdump -d` 逐条解出）：
+
+```
+classes10.dex  registers=500  Lcom/takahashirinta/ncrust/ui/i18n/Strings;.<init>
+classes10.dex  registers=492  Lcom/takahashirinta/ncrust/ui/i18n/Strings;.copy
+classes10.dex  registers=278  Lcom/takahashirinta/ncrust/ui/i18n/Strings;.copy$default
+classes10.dex  registers=261  Lcom/takahashirinta/ncrust/ui/i18n/Strings;.<init>
+classes10.dex  registers=264  Lcom/takahashirinta/ncrust/ui/i18n/{De_DE,En,Jp_JP,Jp_MY,Ko_NK,Ru_RU}Kt.<clinit>
+classes16.dex  registers=265  Lcom/takahashirinta/ncrust/ui/player/PlayerCardKt;.PlayerCard
+```
+
+即 **i18n 那个约 165 个属性的 `Strings` data class**（构造函数与 `copy`）与
+`PlayerCard` 这个巨型 composable。它们在 debug 包里没有被 R8 重写，
+所以保留了「一个方法吃下全部参数」的形状；release 里 R8 把它们拆开/内联了。
+
+## 3. DEX version 037 = Android 7.0 的格式
+
+037 是 **Android 7.0（API 24）引入**的 dex 版本（默认/静态接口方法），
+正是本仓库 `minSdk = 24` 对应的版本 —— 不是「新格式装在老系统上」。
+对照：035 = API ≤6.0、037 = API 24、038 = API 26、039 = API 28。
+
+## 4. ⚠️ 我一开始推错了，实测把它纠正过来
+
+**错误推断**：看到 `registers_size = 500` 时我写下「超过 255 的方法在 ART 上必然验证失败」，
+于是 debug 包应当装不上 API 24。
+
+**实测反驳**：同一份源码的 debug 构建**正是**装在 SM-G9209（Android 7.0 / API 24）上、
+启动、并且跑完了整条跨源切歌验证（见 `../p0-after-fix/`）——这中间
+`Strings.<init>`（中文本地化）与 `PlayerCard`（我展开了播放器卡片）**都真的执行了**。
+
+**纠正后的结论**：`registers_size` 是 ushort，ART 并不因为「值 > 255」就整体拒绝一个方法；
+真正的约束是**指令能否编码寄存器号**（普通形式是 8 位，`/range` 变体是 16 位），
+d8 会为超限的方法改用可编码的形式。所以：
+
+- 「>255 方法数 = 0」是一个**健康信号**（说明产物压根不需要那些 workaround），
+  但**不是**「不满足就装不上」的硬门槛；
+- 本版**发布产物（release）在这个指标上是干净的**（max 248 / 0 个超限），
+  所以这一类风险对用户拿到的包不存在；
+- 这条经验写进 AGENTS.md：**静态指标只能当信号，能不能跑必须真机说话。**
+
+## 5. 真机侧（不是静态推断）
+
+| 产物 | 设备 | 结果 |
+|---|---|---|
+| debug | SM-G9209 / Android 7.0 / API 24 | 安装 + 启动 + 完成 QQ→网易云自然完播接续验证（`../p0-after-fix/`） |
+| release | WGR-W09 / Android 12 / API 31 | **34 → 35 覆盖安装成功** + 启动 |
+| release | PLC110 / Android 16 / API 36 | **34 → 35 覆盖安装成功** + 启动 |
+
+release 是**单 dex**：29,369 个带代码的方法远低于 65,536 的单 dex 上限，
+因此 API 24 上不存在 multidex 首启二次加载的问题。
+debug 是 24 个 dex，而 multidex 在 **API 21+ 由系统原生支持**（不需要 support-library
+或 `attachBaseContext` 额外处理），与实测一致。
+
+## 6. 未验证
+
+**release 构建没有在 API 24 上装过。** 该机上装的是 debug 构建，两者签名不同，
+换装必须先卸载，会清掉用户的登录态与 1066 首队列 —— 未执行。
+dex 格式与寄存器指标已由 §2 的静态扫描覆盖（且 release 比 debug 更干净），
+但「release 包在 Android 7.0 上冷启」这一条仍是缺口，已列入 release notes 的未验证清单。

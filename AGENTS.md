@@ -2714,6 +2714,22 @@ PHASE0 报告 §2.3：「**已登录时追加** `comm.uin=<musicid>`、`comm.aut
   `keys[] / title / artist / displaySubtitle / line / lastAt / gate[post,defer,same,notStarted] /
   notifyBuilds`，把"应用发布了什么"变成可 grep 的事实。
 
+### dex 指标：静态只能当信号，能不能跑要真机说话
+
+- release 产物（R8 minify）**单 dex、29,369 个方法、`max registers_size = 248`、0 个方法超 255**；
+  debug 产物 24 dex、**11 个方法超 255**（`registers_size` 最高 500），全部集中在
+  i18n 那个约 165 属性的 `Strings` data class（`<init>` / `copy`）与 `PlayerCard` ——
+  R8 在 release 里把它们拆开/内联了。
+- **踩到的错误推断**：看到 `registers_size = 500` 时我断定「ART 必然验证失败、debug 包装不上
+  API 24」。实测反驳：那份 debug 构建就在 SM-G9209（Android 7.0）上跑完了整条跨源切歌验证，
+  而 `Strings.<init>` 与 `PlayerCard` 都真的执行了。`registers_size` 是 ushort，
+  真正的约束是**指令能否编码寄存器号**（普通形式 8 位、`/range` 变体 16 位），
+  d8 会为超限方法改用可编码形式。
+- 所以：**>255 计数 = 0 是健康信号，不是硬门槛**。判「能不能跑」必须真机。
+- DEX version **037 = Android 7.0（API 24）** 引入的格式，正是 minSdk 24 对应的版本
+  （035=API≤6.0、037=API 24、038=API 26、039=API 28）。release 是单 dex，
+  远低于 65,536 上限 ⇒ API 24 上没有 multidex 首启二次加载的风险。
+
 ### 探针与验证工具
 
 | 工具 | 用途 |
@@ -2730,6 +2746,8 @@ PHASE0 报告 §2.3：「**已登录时追加** `comm.uin=<musicid>`、`comm.aut
    QQ → 网易云自然完播接续（A/B 各一次）。原因是构造任意两首混合队列仍需手工取 songmid。
 3. **反向（网易云 → QQ）真机 A/B** 未做，只有单测。
 4. API 24 上 `dumpsys media_session` 里没有 Ncrust 会话（测量缺口，非负面结论）。
-5. **`lintDebug` 在 HEAD 上本来就是红的**（57 error，全是依赖版本/opt-in 类既有问题，
+5. **release 包没有在 Android 7.0 / API 24 上装过**（该机装的是 debug 构建，换装要卸载、
+   会清数据）。dex 指标已静态覆盖，但冷启未验。
+6. **`lintDebug` 在 HEAD 上本来就是红的**（57 error，全是依赖版本/opt-in 类既有问题，
    留档 `docs/verification/v2.1.5/lint-report-HEAD-unmodified.txt`）。本版引入
    `app/lint-baseline.xml` 让它通过；基线里**没有**本次新增的文件，所以新引入的问题仍会被拦下。
