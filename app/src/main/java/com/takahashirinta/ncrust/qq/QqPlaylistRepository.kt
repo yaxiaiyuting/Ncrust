@@ -89,6 +89,25 @@ object QqPlaylistRepository {
             )
         }
 
+        // ★ 联网前先验登录态。
+        //
+        // 这一条是**真机实测逼出来的**，不是防御性编程：探针 §5.1/§5.3 证实
+        // `GetPlaylistByUin` 是「按 uin 公开可读」的 —— 票据被改坏、甚至完全不带 cookie，
+        // 它**照样返回 code=0 + 歌单列表**。所以「列表拿成功」永远不能证明登录态有效，
+        // 而「列表拿失败」也永远不会报 `1000`。
+        //
+        // 实测过程：把 qqmusic_key / qm_keyst 改成 INVALIDTICKET 后点刷新，
+        // 界面**没有任何过期提示**（PCL110 截图 16-login-expired-after-refresh.png），
+        // 因为服务端对公开数据根本不看票据。唯一可靠的判据是 `GetLoginUserInfo`（无 cookie ⇒ `1000`）。
+        //
+        // 代价：缓存过期/手动刷新时多一次请求。缓存新鲜时**一个请求都不发**（上面已提前返回），
+        // 所以日常浏览不受影响。
+        if (!QqPlaylistApi.checkLoginValid()) {
+            return degradedOrFail(
+                cachedList?.playlists, PlaylistDegradation.NEED_LOGIN, PlaylistHardFailure.NeedLogin,
+            )
+        }
+
         return when (val r = QqPlaylistApi.fetchOwnedPlaylists(ownerId)) {
             is QqPlaylistResult.Ok -> {
                 val fav = fetchFavoritesSafely(ownerId, r.value)
@@ -196,6 +215,14 @@ object QqPlaylistRepository {
                     PlaylistDetailData(cachedDetail.songs, cachedDetail.tracks),
                     fromCache = true, fresh = true, degradation = deg,
                 )
+            )
+        }
+
+        // 同 loadList：详情接口同样是公开可读的（探针 §5.3 实测 dirid=201 无 cookie 也返回数据），
+        // 所以联网前必须单独验一次登录态，否则「登录过期」在详情页永远不会出现。
+        if (!QqPlaylistApi.checkLoginValid()) {
+            return detailDegradedOrFail(
+                cachedDetail, PlaylistDegradation.NEED_LOGIN, PlaylistHardFailure.NeedLogin,
             )
         }
 
