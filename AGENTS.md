@@ -3178,3 +3178,88 @@ media3 的 `ChannelMixingMatrix` 只实现 `N→N / 1→2 / 2→1`，**6→1 抛
 所以主构造器 **245 -> 244**，腾出了 1 个槽位。
 **下一个要加文案的人：主构造器只剩 1 个空位，请先腾位置再加组**
 （v2.3.0 的做法是把语义相近的两条搬进已有的嵌套组）。
+
+## v2.5.1 新增（本 fork · 页面切换动效用户可配 + 关闭 v2.5.0 的遗留验证缺口）
+
+> **发布说明**：`docs/verification/v2.5.1/CHANGELOG-v2.5.1.md`。
+> **证据索引**：`docs/verification/v2.5.1/EVIDENCE.md`。
+> **真机证据**：`docs/verification/v2.5.1/verification/` 与 `screenshots/`。
+
+### 三条新规则（本版起是硬约束）
+
+1. **debug 包的性能数据不得作为性能基线；性能验证必须用 release 包。**
+   理由不是洁癖：本仓库的 release 走 **R8 全量优化**（删死代码、内联、混淆、shrink 资源），
+   dex 体积与类加载时间和 debug 包**不是一个量级**。v2.5.0 的遗留清单里就有一条
+   真实的错误示范 —— 用 debug 包的冷启动时间（1223ms / 1711ms）去讨论「性能」。
+   落地要求：
+   - 任何**对外声称的性能结论**（冷启动、帧时间、掉帧率、内存）都必须标注产物的
+     `versionCode` 与 build type，且 build type 必须是 `release`；
+   - 与 `dumpsys gfxinfo` / macrobenchmark 相关的测量一律先确认设备上装的是 release 包
+     （`dumpsys package <pkg> | grep versionName` 不够 —— debug/release 的 versionName 相同，
+     要看**签名**或重新安装并记录）；
+   - debug 包的数据**可以**用来定位问题（它更好调试），但**不得**写进发布说明当成基线，
+     也不得用它推导「流畅/不流畅」。
+   本版的数据见 `docs/verification/v2.5.1/verification/`（S6 / release 42 / gfxinfo framestats）。
+
+2. **任务书的前提必须探针验证；被引用的参考对象必须确认技术栈。**
+   v2.5.0 已经因此修正过三处任务书前提（参考对象是 Electron 桌面端而不是 Android 项目、
+   「M3 Expressive 四档」实为六个弹簧、`player.addMediaItem` 会破坏待播槽位不变量）。
+   本版把它从**教训**升级为**规则**，因为这类错误有一个共同形状：
+   **引用的对象真实存在、名字也对，但技术栈或版本对不上，于是整套取值都无从落地。**
+   落地要求：
+   - 拿到「参考 X 项目 / 照 M3 的 Y 规范」这类指令，**先确认 X 的技术栈**
+     （浅克隆后查 `*.gradle*` / `AndroidManifest.xml` / `*.kt` / `pubspec.yaml` 是否为空）
+     与 Y 的**官方版本**，再决定取值；
+   - 任务书里的每一个数值都要有**一手出处**（androidx 源码 / 官方文档 / 真实响应），
+     二手转述（博客、注释、AI 摘要）不算；
+   - 探针结论**与任务书冲突时以探针为准**，并把冲突逐条写进 release notes
+     （v2.5.0 的「与任务书三处前提的偏差」就是模板），**不许**默默照抄错的。
+   本版实例：「参考 SPlayer-Next」的历史结论、HCT 阈值 4.0 与 HSV 饱和度 0.08 的**分工**
+   （前者判「够不够彩」，后者是另一条遗留口径），都是先探针再落笔。
+
+3. **影响体验的动效默认启用，但必须提供开关，由用户选择。**
+   v2.5.0 把页面转场**一刀切关掉**，理由是「低端机上转场是切换动作的主要掉帧源」。
+   理由成立，处置不成立：那等于**用产品决策替代了用户决策** ——
+   高端机用户白丢一个体验，低端机用户也没得选。v2.5.1 起改为「默认开 + 用户可关」。
+   落地要求：
+   - 新增**影响体验**的动效（页面转场、列表入场、面板动效…）默认**开**，
+     且在设置页有一个**可持久化**的开关；「关掉」必须逐字节回到「没有这个动效」的行为；
+   - 开关的**默认值必须有迁移规则**：键不存在（老用户）按默认值处理，
+     并在单测里钉住（铁律 5）。**不得**把「上一版没有这个功能」解读成「用户选了关」；
+   - 开关必须**立即生效**，不得要求重启 —— 状态提升到设置页与消费点的共同祖先
+     （本版是 `MainScreen`），两处各存一份就是状态分裂；
+   - 开关**不豁免**规则 1：仍然要用 **release 包**给出量化数据，
+     并在 release notes 里如实写出「开着有多贵、关掉能省多少」。
+
+### 本版的单一落点与新增守卫
+
+| 文件 | 作用 | 守卫 |
+|---|---|---|
+| `ui/theme/PageTransitionSetting.kt` | 「页面切换动效」开关的**唯一读写入口**（键名 / 默认值 / 迁移 / 脏键回落 / 时长） | `PageTransitionSettingTest`（10 例：键名契约、迁移、显式值、脏键、关闭=0ms） |
+| `ui/components/SongMenuSheetLayout.kt` | 歌曲菜单操作列表的**最大高度**判定（纯逻辑） | `SongMenuSheetLayoutTest`（8 例：S6 回归场景、高屏不生效、上限 < 屏幕高、单调性、半开区间） |
+| `ui/theme/AppMotion.kt` | 页面转场的时长/曲线（`PAGE_TRANSITION_MS` / `pageTransitionEasing` / `pageTransitionSpec()`） | `AppMotionSpecTest` + `PageTransitionSettingTest` |
+
+### 本版的关键取舍（有意为之，不是遗漏）
+
+| 取舍 | 理由 |
+|---|---|
+| **另起 v2.5.1，不重打 v2.5.0 的 tag** | v2.5.0-gpl 当时仍是 Draft、技术上可移动，但：① 本仓库先例（v2.1.1/v2.1.2 的 draft-only tag 也是「另起一版而不是改它」）；② v2.5.0 的 draft 里已上传两个已签名 APK，重打 tag 会让 **versionCode 41** 对应两份不同产物。代价：多占一个版本号 |
+| **动效参数不调**（保留 260ms + fade + 1/12 位移） | **调过一轮**：改成纯不透明位移（去 alpha 混合）后「仅返回」的 90 分位中位 **34ms → 40ms 更差**，于是回退。瓶颈不在混合而在整页绘制 |
+| **转场关闭时用 `EnterTransition.None` 而不是 `tween(0)`** | `tween(0)` 仍会挂一个 Transition 对象并逐帧回调；规则 17 的「关闭时不能有残留动画计算」指的是前者 |
+| **灰度封面 / 三模式真机验证本版未做** | 用户在本轮中途指示停止设备测试。**不用单测冒充真机证据**，如实写进 `EVIDENCE.md` §6.2 留给下一轮 |
+
+### 本版新增/改写的文件
+
+| 文件 | 作用 |
+|---|---|
+| `ui/theme/PageTransitionSetting.kt` | 页面转场开关（**唯一**读写入口 + 迁移 + 纯逻辑时长） |
+| `ui/components/SongMenuSheetLayout.kt` | 菜单高度上限（纯逻辑，可单测） |
+| `ui/theme/AppMotion.kt` | 新增 `pageTransitionEasing` / `pageTransitionSpec()`；`PAGE_TRANSITION_MS` 第一次有调用点 |
+| `ui/navigation/NavGraph.kt` | 四个转场按开关分支；「用户决策」注释改写为「用户可配，默认启用」的完整沿革 |
+| `ui/i18n/Strings.kt` | 新增嵌套组 `MotionStrings`（标题 + 说明） |
+| `ui/screen/UserScreen.kt` / `MainActivity.kt` | 设置页开关 + `MainScreen` 持有状态（立即生效的唯一真相） |
+
+**文案预算**：`Strings` 主构造器在 v2.5.0 已降到 244（腾 2 花 1），
+本版的 `motion: MotionStrings` 用掉**最后一个空位** ⇒ 回到 **245 = 天花板**，
+`this + 245 + 8 mask + DefaultConstructorMarker = 255` 正好用满。
+**下一个要加文案的人：余量现在是 0，必须先腾出一个位置再加组。**

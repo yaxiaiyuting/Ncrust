@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='utf-8' standalone='yes' ?>
+<map>
+    <int name="wifi_quality" value="6" />
+    <boolean name="battery_prompt_done" value="true" />
+    <boolean name="lyrics_dynamic_font" value="true" />
+    <int name="lyrics_word_animation" value="0" />
+    <boolean name="lyrics_in_media_session" value="true" />
+    <string name="theme_mode">DARK</string>
+    <boolean name="lyrics_romanization" value="true" />
+    <int name="quality_ladder_version" value="2" />
+    <int name="mobile_quality" value="6" />
+</map>

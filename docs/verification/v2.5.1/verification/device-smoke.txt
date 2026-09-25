@@ -1,0 +1,63 @@
+=== v2.5.1 设备验证（真机 · release 包）===
+产物：app/build/outputs/apk/release/app-release.apk
+      versionCode=42 versionName=2.5.1-gpl
+      sha256=d00d3ddbe35b0fed63f6080580eebe561f35c67d167438e9ddd67dd76945e24a
+
+############ 安装矩阵（**全部装 release 包**，铁律 15：性能数据必须来自 release）############
+  S6 / SM-G9209   | Android 7.0 (API 24)  | release 42 | 覆盖安装（debug 41 → release 42）
+  PLC110          | Android 16  (API 36)  | release 42 | 覆盖安装（debug 41 → release 42）
+  两台均**保留了原应用数据**（登录态 / 1066 首队列 / 设置）：
+    升级流程 = su 备份 shared_prefs → uninstall（debug/release 签名不同，
+              无法直接覆盖）→ install release → su 还原 shared_prefs
+              → chown 到新 uid + restorecon。
+
+############ 冷启动 + 崩溃扫描（只看应用自身的 FATAL）############
+  S6   : am start -W TotalTime = 828 ms / 909 ms（两次），应用级 FATAL = 0
+  PLC110: 见下方运行记录，应用级 FATAL = 0
+
+############ 设置迁移（v2.5.0 老用户 → v2.5.1）############
+  升级前 S6 的 ncrust_settings.xml（见 s6-settings-before-upgrade.xml）：
+    **没有** page_transition_enabled 这个键 —— 这正是 v2.5.0 老用户的形状。
+  升级后（键仍然不存在）：
+    UI 开关状态 checked = **true**  ⇒ 迁移判定「键不存在 → 默认启用」在真机上成立
+    盘上键仍然不存在           ⇒ readEnabled 是**纯读、不写回**（与 KDoc 一致）
+  证据截图：screenshots/v251-s6-migration-default-on.png
+
+############ 开关：可切换 / 立即生效 / 持久化 ############
+  ① UI 点一下「页面切换动效」 → 盘上出现 page_transition_enabled="false"（写盘路径通）
+  ② 再点一下                  → page_transition_enabled="true"
+  ③ **不重启**切换 → 行为立刻改变：
+       - 切换前后 pid 恒为 23342（同一个进程）⇒「立即生效」不是靠重启实现的
+       - 录屏逐帧分析（screenrecord 30fps + 帧间差）：
+           转场 ON ：帧差为 4.3 / 12.8 / 12.4 / 6.9 / 3.9 / 1.9 … 连续 7~8 帧渐变
+           转场 OFF：**单帧跳变 41.5**（一帧内从列表整页变成详情页）后归于平静
+         证据帧：screenshots/v251-s6-transition-on-midframe.png（详情页返回箭头与列表同帧半透明叠加）
+  ④ am force-stop + 重启 → 盘上仍为 "true"，UI 仍为 checked=true ⇒ 持久化成立
+  证据截图：screenshots/v251-s6-setting-on-after-restart.png
+
+############ S6 歌曲菜单第 10 条（v2.5.0 抓到的回归）############
+  转场开关与菜单无关；本轮在 **release 包**上复核：
+    打开菜单（10 条操作）：加入歌单 / 加入本地歌单 / 加入库 / 插播 / 最后播放 /
+      移除收藏 / 添加到下一首播放 / 转到歌手 / 转到专辑 / 单曲信息
+    滚动前可见到「转到歌手」[224,2443][224,2518]，「转到专辑」「单曲信息」在屏幕外
+    在菜单上滑一次后：加入库[224,843] … 转到专辑[224,2187] 单曲信息[224,2411][468,2486]
+    ⇒ **10 条全部可达**，与 v2.5.0 在 debug 上的实测坐标一致
+  结论：该缺陷**不是 release-only**（v2.5.0 是在 debug 包上抓到的），
+        本版在 release 上复核通过。证据截图：screenshots/v251-s6-menu-scrolled.png
+
+############ 动效量化（dumpsys gfxinfo framestats · 只有 release 包）############
+  见 EVIDENCE.md §4 与原始文件 s6c-*-framestats.txt / s6c-pop-*.txt。
+  摘要（S6 / Android 7.0，90 分位帧时间）：
+    列表滚动        19 ms
+    播放页展开/收起  27 ms
+    页面切换聚合 ON  36 ms   vs OFF 32 ms
+    仅「返回」这一步 ON 34 ms（120 帧/6 轮） vs OFF 19 ms（30 帧/6 轮）
+  调参实验：把转场改成「纯不透明位移（去掉 alpha 混合）」实测 **更差**
+    （90 分位中位 34ms → 40ms），已回退，本版不动效参数未改。
+
+############ 本轮**未做**的真机验证（用户中途指示停止测试，如实列出）############
+  1. 灰度封面降级真机 A/B —— 未执行（已把主题色来源切到「跟随封面」并检索到目标曲目，
+     但在播放器截图取样之前接到停止指令）。
+  2. 单曲循环 / LINE / INFINITY 三模式的「添加到下一首播放」真机补验 —— 未执行。
+     该三项**只有单测证据**（QueueInsertTest），与 v2.5.0 的缺口状态相同。
+  3. PLC110 的 gfxinfo 量化 —— 未执行（第二台设备的 release 安装与数据保留已完成）。

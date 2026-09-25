@@ -1,0 +1,1430 @@
+### round 1
+Applications Graphics Acceleration Info:
+Uptime: 53851756 Realtime: 111901096
+
+** Graphics info for pid 25969 [com.takahashirinta.ncrust] **
+
+Stats since: 53848710457009ns
+Total frames rendered: 20
+Janky frames: 20 (100.00%)
+50th percentile: 19ms
+90th percentile: 24ms
+95th percentile: 30ms
+99th percentile: 30ms
+Number Missed Vsync: 0
+Number High input latency: 0
+Number Slow UI thread: 3
+Number Slow bitmap uploads: 0
+Number Slow issue draw commands: 14
+HISTOGRAM: 5ms=0 6ms=0 7ms=0 8ms=0 9ms=0 10ms=0 11ms=0 12ms=0 13ms=0 14ms=0 15ms=0 16ms=0 17ms=1 18ms=4 19ms=10 20ms=3 21ms=0 22ms=0 23ms=0 24ms=1 25ms=0 26ms=0 27ms=0 28ms=0 29ms=0 30ms=1 31ms=0 32ms=0 34ms=0 36ms=0 38ms=0 40ms=0 42ms=0 44ms=0 46ms=0 48ms=0 53ms=0 57ms=0 61ms=0 65ms=0 69ms=0 73ms=0 77ms=0 81ms=0 85ms=0 89ms=0 93ms=0 97ms=0 101ms=0 105ms=0 109ms=0 113ms=0 117ms=0 121ms=0 125ms=0 129ms=0 133ms=0 150ms=0 200ms=0 250ms=0 300ms=0 350ms=0 400ms=0 450ms=0 500ms=0 550ms=0 600ms=0 650ms=0 700ms=0 750ms=0 800ms=0 850ms=0 900ms=0 950ms=0 1000ms=0 1050ms=0 1100ms=0 1150ms=0 1200ms=0 1250ms=0 1300ms=0 1350ms=0 1400ms=0 1450ms=0 1500ms=0 1550ms=0 1600ms=0 1650ms=0 1700ms=0 1750ms=0 1800ms=0 1850ms=0 1900ms=0 1950ms=0 2000ms=0 2050ms=0 2100ms=0 2150ms=0 2200ms=0 2250ms=0 2300ms=0 2350ms=0 2400ms=0 2450ms=0 2500ms=0 2550ms=0 2600ms=0 2650ms=0 2700ms=0 2750ms=0 2800ms=0 2850ms=0 2900ms=0 2950ms=0 3000ms=0 3050ms=0 3100ms=0 3150ms=0 3200ms=0 3250ms=0 3300ms=0 3350ms=0 3400ms=0 3450ms=0 3500ms=0 3550ms=0 3600ms=0 3650ms=0 3700ms=0 3750ms=0 3800ms=0 3850ms=0 3900ms=0 3950ms=0 4000ms=0 4050ms=0 4100ms=0 4150ms=0 4200ms=0 4250ms=0 4300ms=0 4350ms=0 4400ms=0 4450ms=0 4500ms=0 4550ms=0 4600ms=0 4650ms=0 4700ms=0 4750ms=0 4800ms=0 4850ms=0 4900ms=0 4950ms=0
+
+Caches:
+Current memory usage / total memory usage (bytes) / hit ratio (%) / biggest memory usage (bytes):
+  TextureCache         29719995 / 92274688   99.6578  31728883
+  LayerCache                  0 / 60817408    0.0000         0 (numLayers = 0)
+  Layers total          0 (numLayers = 0)
+  RenderBufferCache           0 /  8388608    0.0000         0
+  GradientCache               0 /  2097152    0.0000         0
+  PathCache                   0 / 16777216   50.0000    404320
+  TessellationCache      237024 /  1048576   99.7942
+  TextDropShadowCache         0 /  6291456    0.0000         0
+  PatchCache                  0 /   131072    0.0000         0
+  FontRenderer A8     5242880 /  5242880
+    Font CacheTexture    938064 /  1048576   89.4608 (usage ratio)
+    Font CacheTexture   1609084 /  4194304   38.3636 (usage ratio)
+  FontRenderer RGBA         0 /        0
+  FontRenderer total  5242880 /  5242880
+Other:
+  FboCache                    0 /        0    0.0000
+Total memory usage:
+  35199899 bytes, 33.57 MB
+
+All Textures in TexctureCache 
+# No./ memory usage (bytes)/ size (width X height) / image type / hit count:
+#  1 /    11236 / ( 106 X  106)/   GL_ALPHA /   50
+#  2 /    11236 / ( 106 X  106)/   GL_ALPHA /   53
+#  3 /    11236 / ( 106 X  106)/   GL_ALPHA /   50
+#  4 /    11236 / ( 106 X  106)/   GL_ALPHA /   47
+#  5 /   331776 / ( 288 X  288)/    GL_RGBA /  122
+#  6 /   331776 / ( 288 X  288)/    GL_RGBA /  103
+#  7 /    12544 / ( 112 X  112)/   GL_ALPHA /  909
+#  8 /     9216 / (  96 X   96)/   GL_ALPHA /   65
+#  9 /   331776 / ( 288 X  288)/    GL_RGBA /  267
+# 10 /     9216 / (  96 X   96)/   GL_ALPHA /   62
+# 11 /   331776 / ( 288 X  288)/    GL_RGBA /  464
+# 12 /   331776 / ( 288 X  288)/    GL_RGBA /  298
+# 13 /  4000000 / (1000 X 1000)/    GL_RGBA /  124
+# 14 /   331776 / ( 288 X  288)/    GL_RGBA /  273
+# 15 /   331776 / ( 288 X  288)/    GL_RGBA /  120
+# 16 /   331776 / ( 288 X  288)/    GL_RGBA /  291
+# 17 /  4000000 / (1000 X 1000)/    GL_RGBA /  240
+# 18 /  1638400 / ( 640 X  640)/    GL_RGBA /   39
+# 19 /  1638400 / ( 640 X  640)/    GL_RGBA /   41
+# 20 /  1638400 / ( 640 X  640)/    GL_RGBA /  897
+# 21 /   409600 / ( 320 X  320)/    GL_RGBA /  901
+# 22 /   331776 / ( 288 X  288)/    GL_RGBA /   50
+# 23 /  1638400 / ( 640 X  640)/    GL_RGBA /  947
+# 24 /  1638400 / ( 640 X  640)/    GL_RGBA /  947
+# 25 /     7744 / (  88 X   88)/   GL_ALPHA /  909
+# 26 /     5625 / (  75 X   75)/   GL_ALPHA /  909
+# 27 /  1638400 / ( 640 X  640)/    GL_RGBA /  901
+# 28 /   331776 / ( 288 X  288)/    GL_RGBA /  240
+# 29 /     7744 / (  88 X   88)/   GL_ALPHA / 1321
+# 30 /     7744 / (  88 X   88)/   GL_ALPHA / 1373
+# 31 /   331776 / ( 288 X  288)/    GL_RGBA /  261
+# 32 /     7744 / (  88 X   88)/   GL_ALPHA / 1802
+# 33 /     7744 / (  88 X   88)/   GL_ALPHA / 1802
+# 34 /     9216 / (  96 X   96)/   GL_ALPHA /   58
+# 35 /   331776 / ( 288 X  288)/    GL_RGBA /  300
+# 36 /     9216 / (  96 X   96)/   GL_ALPHA /   61
+# 37 /   331776 / ( 288 X  288)/    GL_RGBA /  182
+# 38 /     9216 / (  96 X   96)/   GL_ALPHA / 1800
+# 39 /   331776 / ( 288 X  288)/    GL_RGBA /  230
+# 40 /     9216 / (  96 X   96)/   GL_ALPHA / 1800
+# 41 /     5625 / (  75 X   75)/   GL_ALPHA /  909
+# 42 /  1638400 / ( 640 X  640)/    GL_RGBA /  947
+# 43 /     5625 / (  75 X   75)/   GL_ALPHA /  454
+# 44 /  4665600 / (1080 X 1080)/    GL_RGBA / 8085
+# 45 /     7744 / (  88 X   88)/   GL_ALPHA / 1802
+# 46 /   331776 / ( 288 X  288)/    GL_RGBA /  155
+# 47 /     7744 / (  88 X   88)/   GL_ALPHA /  917
+# 48 /     7744 / (  88 X   88)/   GL_ALPHA /  917
+# 49 /     7744 / (  88 X   88)/   GL_ALPHA / 1802
+
+
+Pipeline=FrameBuilder
+Profile data in ms:
+
+	com.takahashirinta.ncrust/com.takahashirinta.ncrust.MainActivity/android.view.ViewRootImpl@613f835 (visibility=0)
+View hierarchy:
+
+  com.takahashirinta.ncrust/com.takahashirinta.ncrust.MainActivity/android.view.ViewRootImpl@613f835
+  7 views, 8.45 kB of display lists
+
+
+Total ViewRootImpl: 1
+Total Views:        7
+Total DisplayList:  8.45 kB
+
+Applications Graphics Acceleration Info:
+Uptime: 53851829 Realtime: 111901170
+
+** Graphics info for pid 25969 [com.takahashirinta.ncrust] **
+
+Stats since: 53848710457009ns
+Total frames rendered: 20
+Janky frames: 20 (100.00%)
+50th percentile: 19ms
+90th percentile: 24ms
+95th percentile: 30ms
+99th percentile: 30ms
+Number Missed Vsync: 0
+Number High input latency: 0
+Number Slow UI thread: 3
+Number Slow bitmap uploads: 0
+Number Slow issue draw commands: 14
+HISTOGRAM: 5ms=0 6ms=0 7ms=0 8ms=0 9ms=0 10ms=0 11ms=0 12ms=0 13ms=0 14ms=0 15ms=0 16ms=0 17ms=1 18ms=4 19ms=10 20ms=3 21ms=0 22ms=0 23ms=0 24ms=1 25ms=0 26ms=0 27ms=0 28ms=0 29ms=0 30ms=1 31ms=0 32ms=0 34ms=0 36ms=0 38ms=0 40ms=0 42ms=0 44ms=0 46ms=0 48ms=0 53ms=0 57ms=0 61ms=0 65ms=0 69ms=0 73ms=0 77ms=0 81ms=0 85ms=0 89ms=0 93ms=0 97ms=0 101ms=0 105ms=0 109ms=0 113ms=0 117ms=0 121ms=0 125ms=0 129ms=0 133ms=0 150ms=0 200ms=0 250ms=0 300ms=0 350ms=0 400ms=0 450ms=0 500ms=0 550ms=0 600ms=0 650ms=0 700ms=0 750ms=0 800ms=0 850ms=0 900ms=0 950ms=0 1000ms=0 1050ms=0 1100ms=0 1150ms=0 1200ms=0 1250ms=0 1300ms=0 1350ms=0 1400ms=0 1450ms=0 1500ms=0 1550ms=0 1600ms=0 1650ms=0 1700ms=0 1750ms=0 1800ms=0 1850ms=0 1900ms=0 1950ms=0 2000ms=0 2050ms=0 2100ms=0 2150ms=0 2200ms=0 2250ms=0 2300ms=0 2350ms=0 2400ms=0 2450ms=0 2500ms=0 2550ms=0 2600ms=0 2650ms=0 2700ms=0 2750ms=0 2800ms=0 2850ms=0 2900ms=0 2950ms=0 3000ms=0 3050ms=0 3100ms=0 3150ms=0 3200ms=0 3250ms=0 3300ms=0 3350ms=0 3400ms=0 3450ms=0 3500ms=0 3550ms=0 3600ms=0 3650ms=0 3700ms=0 3750ms=0 3800ms=0 3850ms=0 3900ms=0 3950ms=0 4000ms=0 4050ms=0 4100ms=0 4150ms=0 4200ms=0 4250ms=0 4300ms=0 4350ms=0 4400ms=0 4450ms=0 4500ms=0 4550ms=0 4600ms=0 4650ms=0 4700ms=0 4750ms=0 4800ms=0 4850ms=0 4900ms=0 4950ms=0
+
+Caches:
+Current memory usage / total memory usage (bytes) / hit ratio (%) / biggest memory usage (bytes):
+  TextureCache         29719995 / 92274688   99.6578  31728883
+  LayerCache                  0 / 60817408    0.0000         0 (numLayers = 0)
+  Layers total          0 (numLayers = 0)
+  RenderBufferCache           0 /  8388608    0.0000         0
+  GradientCache               0 /  2097152    0.0000         0
+  PathCache                   0 / 16777216   50.0000    404320
+  TessellationCache      237024 /  1048576   99.7942
+  TextDropShadowCache         0 /  6291456    0.0000         0
+  PatchCache                  0 /   131072    0.0000         0
+  FontRenderer A8     5242880 /  5242880
+    Font CacheTexture    938064 /  1048576   89.4608 (usage ratio)
+    Font CacheTexture   1609084 /  4194304   38.3636 (usage ratio)
+  FontRenderer RGBA         0 /        0
+  FontRenderer total  5242880 /  5242880
+Other:
+  FboCache                    0 /        0    0.0000
+Total memory usage:
+  35199899 bytes, 33.57 MB
+
+All Textures in TexctureCache 
+# No./ memory usage (bytes)/ size (width X height) / image type / hit count:
+#  1 /    11236 / ( 106 X  106)/   GL_ALPHA /   50
+#  2 /    11236 / ( 106 X  106)/   GL_ALPHA /   53
+#  3 /    11236 / ( 106 X  106)/   GL_ALPHA /   50
+#  4 /    11236 / ( 106 X  106)/   GL_ALPHA /   47
+#  5 /   331776 / ( 288 X  288)/    GL_RGBA /  122
+#  6 /   331776 / ( 288 X  288)/    GL_RGBA /  103
+#  7 /    12544 / ( 112 X  112)/   GL_ALPHA /  909
+#  8 /     9216 / (  96 X   96)/   GL_ALPHA /   65
+#  9 /   331776 / ( 288 X  288)/    GL_RGBA /  267
+# 10 /     9216 / (  96 X   96)/   GL_ALPHA /   62
+# 11 /   331776 / ( 288 X  288)/    GL_RGBA /  464
+# 12 /   331776 / ( 288 X  288)/    GL_RGBA /  298
+# 13 /  4000000 / (1000 X 1000)/    GL_RGBA /  124
+# 14 /   331776 / ( 288 X  288)/    GL_RGBA /  273
+# 15 /   331776 / ( 288 X  288)/    GL_RGBA /  120
+# 16 /   331776 / ( 288 X  288)/    GL_RGBA /  291
+# 17 /  4000000 / (1000 X 1000)/    GL_RGBA /  240
+# 18 /  1638400 / ( 640 X  640)/    GL_RGBA /   39
+# 19 /  1638400 / ( 640 X  640)/    GL_RGBA /   41
+# 20 /  1638400 / ( 640 X  640)/    GL_RGBA /  897
+# 21 /   409600 / ( 320 X  320)/    GL_RGBA /  901
+# 22 /   331776 / ( 288 X  288)/    GL_RGBA /   50
+# 23 /  1638400 / ( 640 X  640)/    GL_RGBA /  947
+# 24 /  1638400 / ( 640 X  640)/    GL_RGBA /  947
+# 25 /     7744 / (  88 X   88)/   GL_ALPHA /  909
+# 26 /     5625 / (  75 X   75)/   GL_ALPHA /  909
+# 27 /  1638400 / ( 640 X  640)/    GL_RGBA /  901
+# 28 /   331776 / ( 288 X  288)/    GL_RGBA /  240
+# 29 /     7744 / (  88 X   88)/   GL_ALPHA / 1321
+# 30 /     7744 / (  88 X   88)/   GL_ALPHA / 1373
+# 31 /   331776 / ( 288 X  288)/    GL_RGBA /  261
+# 32 /     7744 / (  88 X   88)/   GL_ALPHA / 1802
+# 33 /     7744 / (  88 X   88)/   GL_ALPHA / 1802
+# 34 /     9216 / (  96 X   96)/   GL_ALPHA /   58
+# 35 /   331776 / ( 288 X  288)/    GL_RGBA /  300
+# 36 /     9216 / (  96 X   96)/   GL_ALPHA /   61
+# 37 /   331776 / ( 288 X  288)/    GL_RGBA /  182
+# 38 /     9216 / (  96 X   96)/   GL_ALPHA / 1800
+# 39 /   331776 / ( 288 X  288)/    GL_RGBA /  230
+# 40 /     9216 / (  96 X   96)/   GL_ALPHA / 1800
+# 41 /     5625 / (  75 X   75)/   GL_ALPHA /  909
+# 42 /  1638400 / ( 640 X  640)/    GL_RGBA /  947
+# 43 /     5625 / (  75 X   75)/   GL_ALPHA /  454
+# 44 /  4665600 / (1080 X 1080)/    GL_RGBA / 8085
+# 45 /     7744 / (  88 X   88)/   GL_ALPHA / 1802
+# 46 /   331776 / ( 288 X  288)/    GL_RGBA /  155
+# 47 /     7744 / (  88 X   88)/   GL_ALPHA /  917
+# 48 /     7744 / (  88 X   88)/   GL_ALPHA /  917
+# 49 /     7744 / (  88 X   88)/   GL_ALPHA / 1802
+
+
+Pipeline=FrameBuilder
+Profile data in ms:
+
+	com.takahashirinta.ncrust/com.takahashirinta.ncrust.MainActivity/android.view.ViewRootImpl@613f835 (visibility=0)
+
+---PROFILEDATA---
+Flags,IntendedVsync,Vsync,OldestInputEvent,NewestInputEvent,HandleInputStart,AnimationStart,PerformTraversalsStart,DrawStart,SyncQueued,SyncStart,IssueDrawCommandsStart,SwapBuffers,FrameCompleted,
+0,53849862469978,53849862469978,9223372036854775807,0,53849862845801,53849862847343,53849874092843,53849874154051,53849876656134,53849876791676,53849876970759,53849879328009,53849883347968,
+0,53849879421180,53849879421180,9223372036854775807,0,53849879631301,53849879651051,53849884716468,53849884758468,53849886926884,53849886951676,53849887119093,53849889662051,53849897050426,
+0,53849896372551,53849896372551,9223372036854775807,0,53849896570926,53849896589051,53849897650801,53849897698093,53849898344343,53849898365551,53849898617926,53849901548801,53849917121593,
+0,53849916235279,53849916235279,9223372036854775807,0,53849916459718,53849916480176,53849916967009,53849917011468,53849917420468,53849917439426,53849917669301,53849918968051,53849934536343,
+0,53849933185564,53849933185564,9223372036854775807,0,53849933603801,53849933636968,53849934417259,53849934503468,53849935207009,53849935234801,53849935592093,53849941761718,53849952370343,
+0,53849950136200,53849950136200,9223372036854775807,0,53849950529801,53849950559509,53849951671759,53849951764801,53849952465259,53849952496468,53849952849509,53849954873843,53849968351634,
+0,53849967086585,53849967086585,9223372036854775807,0,53849967412801,53849967445343,53849968470843,53849968572509,53849969295676,53849969329801,53849969736801,53849972147843,53849985183801,
+0,53849983210639,53849983210639,9223372036854775807,0,53849984103218,53849984138426,53849985046634,53849985142634,53849985952968,53849985984926,53849986361843,53849988645301,53850002401843,
+0,53850000000199,53850000000199,9223372036854775807,0,53850000682176,53850000727134,53850002874384,53850003030551,53850004436634,53850004616593,53850005574676,53850009684551,53850019672093,
+0,53850016782537,53850016782537,9223372036854775807,0,53850017488343,53850017532759,53850019601134,53850019758468,53850021659801,53850021884343,53850023190134,53850028281593,53850036773218,
+0,53850033572401,53850033572401,9223372036854775807,0,53850034285634,53850034338009,53850037036968,53850037229384,53850038875593,53850038976926,53850040140218,53850045358759,53850052926051,
+0,53850050363692,53850050363692,9223372036854775807,0,53850050992468,53850051044468,53850053891384,53850054089301,53850055620926,53850055838801,53850057000218,53850062650634,53850069850759,
+0,53850067154630,53850067154630,9223372036854775807,0,53850067837509,53850067887926,53850070494468,53850070725509,53850072585468,53850072807759,53850074069509,53850079419843,53850086638551,
+0,53850083945646,53850083945646,9223372036854775807,0,53850084736509,53850084787343,53850087084259,53850087284509,53850088904009,53850088993926,53850090191426,53850095529218,53850104064634,
+0,53850100799146,53850100799146,9223372036854775807,0,53850101318468,53850101370093,53850104208634,53850104425134,53850106155093,53850106386676,53850107659218,53850113342051,53850119785009,
+0,53850117545324,53850117545324,9223372036854775807,0,53850118179843,53850118237176,53850120885176,53850121111968,53850122723551,53850122956259,53850124248926,53850129500051,53850137102009,
+0,53850134346531,53850134346531,9223372036854775807,0,53850135257259,53850135311468,53850137592051,53850137811218,53850138021593,53850138157301,53850139299801,53850144338968,53850154330968,
+0,53850151147893,53850151147893,9223372036854775807,0,53850151738551,53850151742843,53850154879676,53850155037384,53850155222718,53850155501218,53850156613134,53850162195801,53850170505634,
+0,53850167947750,53850167947750,9223372036854775807,0,53850168573468,53850168624634,53850186765134,53850186928843,53850188806551,53850188978134,53850190542551,53850194959801,53850198557884,
+0,53850184745090,53850184745090,9223372036854775807,0,53850195412551,53850195466259,53850199446718,53850199598509,53850200341009,53850200571426,53850200974176,53850206061384,53850209126134,
+---PROFILEDATA---
+
+
+View hierarchy:
+
+  com.takahashirinta.ncrust/com.takahashirinta.ncrust.MainActivity/android.view.ViewRootImpl@613f835
+  7 views, 8.45 kB of display lists
+
+
+Total ViewRootImpl: 1
+Total Views:        7
+Total DisplayList:  8.45 kB
+
+### round 2
+Applications Graphics Acceleration Info:
+Uptime: 53861616 Realtime: 111910957
+
+** Graphics info for pid 25969 [com.takahashirinta.ncrust] **
+
+Stats since: 53858595998388ns
+Total frames rendered: 20
+Janky frames: 19 (95.00%)
+50th percentile: 26ms
+90th percentile: 36ms
+95th percentile: 42ms
+99th percentile: 42ms
+Number Missed Vsync: 1
+Number High input latency: 0
+Number Slow UI thread: 12
+Number Slow bitmap uploads: 0
+Number Slow issue draw commands: 14
+HISTOGRAM: 5ms=0 6ms=0 7ms=0 8ms=0 9ms=0 10ms=0 11ms=0 12ms=0 13ms=0 14ms=1 15ms=0 16ms=0 17ms=1 18ms=4 19ms=0 20ms=0 21ms=2 22ms=0 23ms=0 24ms=0 25ms=2 26ms=3 27ms=1 28ms=1 29ms=0 30ms=0 31ms=1 32ms=1 34ms=1 36ms=1 38ms=0 40ms=0 42ms=1 44ms=0 46ms=0 48ms=0 53ms=0 57ms=0 61ms=0 65ms=0 69ms=0 73ms=0 77ms=0 81ms=0 85ms=0 89ms=0 93ms=0 97ms=0 101ms=0 105ms=0 109ms=0 113ms=0 117ms=0 121ms=0 125ms=0 129ms=0 133ms=0 150ms=0 200ms=0 250ms=0 300ms=0 350ms=0 400ms=0 450ms=0 500ms=0 550ms=0 600ms=0 650ms=0 700ms=0 750ms=0 800ms=0 850ms=0 900ms=0 950ms=0 1000ms=0 1050ms=0 1100ms=0 1150ms=0 1200ms=0 1250ms=0 1300ms=0 1350ms=0 1400ms=0 1450ms=0 1500ms=0 1550ms=0 1600ms=0 1650ms=0 1700ms=0 1750ms=0 1800ms=0 1850ms=0 1900ms=0 1950ms=0 2000ms=0 2050ms=0 2100ms=0 2150ms=0 2200ms=0 2250ms=0 2300ms=0 2350ms=0 2400ms=0 2450ms=0 2500ms=0 2550ms=0 2600ms=0 2650ms=0 2700ms=0 2750ms=0 2800ms=0 2850ms=0 2900ms=0 2950ms=0 3000ms=0 3050ms=0 3100ms=0 3150ms=0 3200ms=0 3250ms=0 3300ms=0 3350ms=0 3400ms=0 3450ms=0 3500ms=0 3550ms=0 3600ms=0 3650ms=0 3700ms=0 3750ms=0 3800ms=0 3850ms=0 3900ms=0 3950ms=0 4000ms=0 4050ms=0 4100ms=0 4150ms=0 4200ms=0 4250ms=0 4300ms=0 4350ms=0 4400ms=0 4450ms=0 4500ms=0 4550ms=0 4600ms=0 4650ms=0 4700ms=0 4750ms=0 4800ms=0 4850ms=0 4900ms=0 4950ms=0
+
+Caches:
+Current memory usage / total memory usage (bytes) / hit ratio (%) / biggest memory usage (bytes):
+  TextureCache         29740447 / 92274688   99.6627  31728883
+  LayerCache                  0 / 60817408    0.0000         0 (numLayers = 0)
+  Layers total          0 (numLayers = 0)
+  RenderBufferCache           0 /  8388608    0.0000         0
+  GradientCache               0 /  2097152    0.0000         0
+  PathCache                   0 / 16777216   50.0000    404320
+  TessellationCache      237024 /  1048576   99.7986
+  TextDropShadowCache         0 /  6291456    0.0000         0
+  PatchCache                  0 /   131072    0.0000         0
+  FontRenderer A8     5242880 /  5242880
+    Font CacheTexture    938064 /  1048576   89.4608 (usage ratio)
+    Font CacheTexture   1609084 /  4194304   38.3636 (usage ratio)
+  FontRenderer RGBA         0 /        0
+  FontRenderer total  5242880 /  5242880
+Other:
+  FboCache                    0 /        0    0.0000
+Total memory usage:
+  35220351 bytes, 33.59 MB
+
+All Textures in TexctureCache 
+# No./ memory usage (bytes)/ size (width X height) / image type / hit count:
+#  1 /    11236 / ( 106 X  106)/   GL_ALPHA /   51
+#  2 /    11236 / ( 106 X  106)/   GL_ALPHA /   50
+#  3 /    11236 / ( 106 X  106)/   GL_ALPHA /   53
+#  4 /    11236 / ( 106 X  106)/   GL_ALPHA /   50
+#  5 /    11236 / ( 106 X  106)/   GL_ALPHA /   47
+#  6 /   331776 / ( 288 X  288)/    GL_RGBA /  151
+#  7 /   331776 / ( 288 X  288)/    GL_RGBA /  126
+#  8 /    12544 / ( 112 X  112)/   GL_ALPHA /  995
+#  9 /     9216 / (  96 X   96)/   GL_ALPHA /   65
+# 10 /   331776 / ( 288 X  288)/    GL_RGBA /  267
+# 11 /     9216 / (  96 X   96)/   GL_ALPHA /   62
+# 12 /   331776 / ( 288 X  288)/    GL_RGBA /  464
+# 13 /   331776 / ( 288 X  288)/    GL_RGBA /  298
+# 14 /  4000000 / (1000 X 1000)/    GL_RGBA /  153
+# 15 /   331776 / ( 288 X  288)/    GL_RGBA /  273
+# 16 /   331776 / ( 288 X  288)/    GL_RGBA /  139
+# 17 /   331776 / ( 288 X  288)/    GL_RGBA /  291
+# 18 /  4000000 / (1000 X 1000)/    GL_RGBA /  263
+# 19 /  1638400 / ( 640 X  640)/    GL_RGBA /   39
+# 20 /  1638400 / ( 640 X  640)/    GL_RGBA /   41
+# 21 /  1638400 / ( 640 X  640)/    GL_RGBA /  983
+# 22 /   409600 / ( 320 X  320)/    GL_RGBA /  987
+# 23 /   331776 / ( 288 X  288)/    GL_RGBA /   50
+# 24 /  1638400 / ( 640 X  640)/    GL_RGBA / 1033
+# 25 /     9216 / (  96 X   96)/   GL_ALPHA /   63
+# 26 /  1638400 / ( 640 X  640)/    GL_RGBA / 1033
+# 27 /     7744 / (  88 X   88)/   GL_ALPHA /  995
+# 28 /     5625 / (  75 X   75)/   GL_ALPHA /  995
+# 29 /  1638400 / ( 640 X  640)/    GL_RGBA /  987
+# 30 /   331776 / ( 288 X  288)/    GL_RGBA /  263
+# 31 /     7744 / (  88 X   88)/   GL_ALPHA / 1364
+# 32 /     7744 / (  88 X   88)/   GL_ALPHA / 1459
+# 33 /   331776 / ( 288 X  288)/    GL_RGBA /  290
+# 34 /     7744 / (  88 X   88)/   GL_ALPHA / 1888
+# 35 /     7744 / (  88 X   88)/   GL_ALPHA / 1888
+# 36 /     9216 / (  96 X   96)/   GL_ALPHA /   58
+# 37 /   331776 / ( 288 X  288)/    GL_RGBA /  300
+# 38 /     9216 / (  96 X   96)/   GL_ALPHA /   61
+# 39 /   331776 / ( 288 X  288)/    GL_RGBA /  182
+# 40 /     9216 / (  96 X   96)/   GL_ALPHA / 1886
+# 41 /   331776 / ( 288 X  288)/    GL_RGBA /  230
+# 42 /     9216 / (  96 X   96)/   GL_ALPHA / 1886
+# 43 /     5625 / (  75 X   75)/   GL_ALPHA /  995
+# 44 /  1638400 / ( 640 X  640)/    GL_RGBA / 1033
+# 45 /     5625 / (  75 X   75)/   GL_ALPHA /  497
+# 46 /  4665600 / (1080 X 1080)/    GL_RGBA / 8257
+# 47 /     7744 / (  88 X   88)/   GL_ALPHA / 1888
+# 48 /   331776 / ( 288 X  288)/    GL_RGBA /  176
+# 49 /     7744 / (  88 X   88)/   GL_ALPHA /  960
+# 50 /     7744 / (  88 X   88)/   GL_ALPHA /  960
+# 51 /     7744 / (  88 X   88)/   GL_ALPHA / 1888
+
+
+Pipeline=FrameBuilder
+Profile data in ms:
+
+	com.takahashirinta.ncrust/com.takahashirinta.ncrust.MainActivity/android.view.ViewRootImpl@613f835 (visibility=0)
+View hierarchy:
+
+  com.takahashirinta.ncrust/com.takahashirinta.ncrust.MainActivity/android.view.ViewRootImpl@613f835
+  7 views, 8.45 kB of display lists
+
+
+Total ViewRootImpl: 1
+Total Views:        7
+Total DisplayList:  8.45 kB
+
+Applications Graphics Acceleration Info:
+Uptime: 53861677 Realtime: 111911018
+
+** Graphics info for pid 25969 [com.takahashirinta.ncrust] **
+
+Stats since: 53858595998388ns
+Total frames rendered: 20
+Janky frames: 19 (95.00%)
+50th percentile: 26ms
+90th percentile: 36ms
+95th percentile: 42ms
+99th percentile: 42ms
+Number Missed Vsync: 1
+Number High input latency: 0
+Number Slow UI thread: 12
+Number Slow bitmap uploads: 0
+Number Slow issue draw commands: 14
+HISTOGRAM: 5ms=0 6ms=0 7ms=0 8ms=0 9ms=0 10ms=0 11ms=0 12ms=0 13ms=0 14ms=1 15ms=0 16ms=0 17ms=1 18ms=4 19ms=0 20ms=0 21ms=2 22ms=0 23ms=0 24ms=0 25ms=2 26ms=3 27ms=1 28ms=1 29ms=0 30ms=0 31ms=1 32ms=1 34ms=1 36ms=1 38ms=0 40ms=0 42ms=1 44ms=0 46ms=0 48ms=0 53ms=0 57ms=0 61ms=0 65ms=0 69ms=0 73ms=0 77ms=0 81ms=0 85ms=0 89ms=0 93ms=0 97ms=0 101ms=0 105ms=0 109ms=0 113ms=0 117ms=0 121ms=0 125ms=0 129ms=0 133ms=0 150ms=0 200ms=0 250ms=0 300ms=0 350ms=0 400ms=0 450ms=0 500ms=0 550ms=0 600ms=0 650ms=0 700ms=0 750ms=0 800ms=0 850ms=0 900ms=0 950ms=0 1000ms=0 1050ms=0 1100ms=0 1150ms=0 1200ms=0 1250ms=0 1300ms=0 1350ms=0 1400ms=0 1450ms=0 1500ms=0 1550ms=0 1600ms=0 1650ms=0 1700ms=0 1750ms=0 1800ms=0 1850ms=0 1900ms=0 1950ms=0 2000ms=0 2050ms=0 2100ms=0 2150ms=0 2200ms=0 2250ms=0 2300ms=0 2350ms=0 2400ms=0 2450ms=0 2500ms=0 2550ms=0 2600ms=0 2650ms=0 2700ms=0 2750ms=0 2800ms=0 2850ms=0 2900ms=0 2950ms=0 3000ms=0 3050ms=0 3100ms=0 3150ms=0 3200ms=0 3250ms=0 3300ms=0 3350ms=0 3400ms=0 3450ms=0 3500ms=0 3550ms=0 3600ms=0 3650ms=0 3700ms=0 3750ms=0 3800ms=0 3850ms=0 3900ms=0 3950ms=0 4000ms=0 4050ms=0 4100ms=0 4150ms=0 4200ms=0 4250ms=0 4300ms=0 4350ms=0 4400ms=0 4450ms=0 4500ms=0 4550ms=0 4600ms=0 4650ms=0 4700ms=0 4750ms=0 4800ms=0 4850ms=0 4900ms=0 4950ms=0
+
+Caches:
+Current memory usage / total memory usage (bytes) / hit ratio (%) / biggest memory usage (bytes):
+  TextureCache         29740447 / 92274688   99.6627  31728883
+  LayerCache                  0 / 60817408    0.0000         0 (numLayers = 0)
+  Layers total          0 (numLayers = 0)
+  RenderBufferCache           0 /  8388608    0.0000         0
+  GradientCache               0 /  2097152    0.0000         0
+  PathCache                   0 / 16777216   50.0000    404320
+  TessellationCache      237024 /  1048576   99.7986
+  TextDropShadowCache         0 /  6291456    0.0000         0
+  PatchCache                  0 /   131072    0.0000         0
+  FontRenderer A8     5242880 /  5242880
+    Font CacheTexture    938064 /  1048576   89.4608 (usage ratio)
+    Font CacheTexture   1609084 /  4194304   38.3636 (usage ratio)
+  FontRenderer RGBA         0 /        0
+  FontRenderer total  5242880 /  5242880
+Other:
+  FboCache                    0 /        0    0.0000
+Total memory usage:
+  35220351 bytes, 33.59 MB
+
+All Textures in TexctureCache 
+# No./ memory usage (bytes)/ size (width X height) / image type / hit count:
+#  1 /    11236 / ( 106 X  106)/   GL_ALPHA /   51
+#  2 /    11236 / ( 106 X  106)/   GL_ALPHA /   50
+#  3 /    11236 / ( 106 X  106)/   GL_ALPHA /   53
+#  4 /    11236 / ( 106 X  106)/   GL_ALPHA /   50
+#  5 /    11236 / ( 106 X  106)/   GL_ALPHA /   47
+#  6 /   331776 / ( 288 X  288)/    GL_RGBA /  151
+#  7 /   331776 / ( 288 X  288)/    GL_RGBA /  126
+#  8 /    12544 / ( 112 X  112)/   GL_ALPHA /  995
+#  9 /     9216 / (  96 X   96)/   GL_ALPHA /   65
+# 10 /   331776 / ( 288 X  288)/    GL_RGBA /  267
+# 11 /     9216 / (  96 X   96)/   GL_ALPHA /   62
+# 12 /   331776 / ( 288 X  288)/    GL_RGBA /  464
+# 13 /   331776 / ( 288 X  288)/    GL_RGBA /  298
+# 14 /  4000000 / (1000 X 1000)/    GL_RGBA /  153
+# 15 /   331776 / ( 288 X  288)/    GL_RGBA /  273
+# 16 /   331776 / ( 288 X  288)/    GL_RGBA /  139
+# 17 /   331776 / ( 288 X  288)/    GL_RGBA /  291
+# 18 /  4000000 / (1000 X 1000)/    GL_RGBA /  263
+# 19 /  1638400 / ( 640 X  640)/    GL_RGBA /   39
+# 20 /  1638400 / ( 640 X  640)/    GL_RGBA /   41
+# 21 /  1638400 / ( 640 X  640)/    GL_RGBA /  983
+# 22 /   409600 / ( 320 X  320)/    GL_RGBA /  987
+# 23 /   331776 / ( 288 X  288)/    GL_RGBA /   50
+# 24 /  1638400 / ( 640 X  640)/    GL_RGBA / 1033
+# 25 /     9216 / (  96 X   96)/   GL_ALPHA /   63
+# 26 /  1638400 / ( 640 X  640)/    GL_RGBA / 1033
+# 27 /     7744 / (  88 X   88)/   GL_ALPHA /  995
+# 28 /     5625 / (  75 X   75)/   GL_ALPHA /  995
+# 29 /  1638400 / ( 640 X  640)/    GL_RGBA /  987
+# 30 /   331776 / ( 288 X  288)/    GL_RGBA /  263
+# 31 /     7744 / (  88 X   88)/   GL_ALPHA / 1364
+# 32 /     7744 / (  88 X   88)/   GL_ALPHA / 1459
+# 33 /   331776 / ( 288 X  288)/    GL_RGBA /  290
+# 34 /     7744 / (  88 X   88)/   GL_ALPHA / 1888
+# 35 /     7744 / (  88 X   88)/   GL_ALPHA / 1888
+# 36 /     9216 / (  96 X   96)/   GL_ALPHA /   58
+# 37 /   331776 / ( 288 X  288)/    GL_RGBA /  300
+# 38 /     9216 / (  96 X   96)/   GL_ALPHA /   61
+# 39 /   331776 / ( 288 X  288)/    GL_RGBA /  182
+# 40 /     9216 / (  96 X   96)/   GL_ALPHA / 1886
+# 41 /   331776 / ( 288 X  288)/    GL_RGBA /  230
+# 42 /     9216 / (  96 X   96)/   GL_ALPHA / 1886
+# 43 /     5625 / (  75 X   75)/   GL_ALPHA /  995
+# 44 /  1638400 / ( 640 X  640)/    GL_RGBA / 1033
+# 45 /     5625 / (  75 X   75)/   GL_ALPHA /  497
+# 46 /  4665600 / (1080 X 1080)/    GL_RGBA / 8257
+# 47 /     7744 / (  88 X   88)/   GL_ALPHA / 1888
+# 48 /   331776 / ( 288 X  288)/    GL_RGBA /  176
+# 49 /     7744 / (  88 X   88)/   GL_ALPHA /  960
+# 50 /     7744 / (  88 X   88)/   GL_ALPHA /  960
+# 51 /     7744 / (  88 X   88)/   GL_ALPHA / 1888
+
+
+Pipeline=FrameBuilder
+Profile data in ms:
+
+	com.takahashirinta.ncrust/com.takahashirinta.ncrust.MainActivity/android.view.ViewRootImpl@613f835 (visibility=0)
+
+---PROFILEDATA---
+Flags,IntendedVsync,Vsync,OldestInputEvent,NewestInputEvent,HandleInputStart,AnimationStart,PerformTraversalsStart,DrawStart,SyncQueued,SyncStart,IssueDrawCommandsStart,SwapBuffers,FrameCompleted,
+0,53859709921302,53859709921302,9223372036854775807,0,53859710225556,53859710227264,53859721413056,53859721467597,53859723580931,53859723624639,53859723802681,53859726500347,53859731670806,
+0,53859720524003,53859720524003,9223372036854775807,0,53859724366514,53859724395306,53859729529097,53859729582431,53859732435556,53859732463222,53859732632764,53859735024472,53859742477597,
+0,53859737314003,53859737314003,9223372036854775807,0,53859737722514,53859737742056,53859738798972,53859738846431,53859739471722,53859742534431,53859742771514,53859749597431,53859755063181,
+0,53859754102253,53859754102253,9223372036854775807,0,53859754642597,53859754661681,53859755205556,53859755253347,53859755658389,53859755678431,53859755918097,53859757230514,53859772466347,
+0,53859771049451,53859771049451,9223372036854775807,0,53859771747181,53859771766431,53859772281764,53859772326181,53859772749306,53859772769097,53859773007972,53859774304306,53859788865639,
+0,53859788000580,53859788000580,9223372036854775807,0,53859788216472,53859788232472,53859788720681,53859788771139,53859789193597,53859789214222,53859789435806,53859793121847,53859806618347,
+0,53859804951613,53859804951613,9223372036854775807,0,53859805588264,53859805620847,53859806779181,53859806883847,53859807651472,53859807686681,53859808153597,53859810719722,53859823557222,
+0,53859821901674,53859821901674,9223372036854775807,0,53859822517597,53859822555597,53859823886681,53859823991014,53859824973597,53859825024847,53859825602056,53859828815056,53859840443556,
+0,53859838051414,53859838051414,9223372036854775807,0,53859838840139,53859838889597,53859840187681,53859840342181,53859841789806,53859842131681,53859844434431,53859855786347,53859864873722,
+0,53859854840500,53859854840500,9223372036854775807,0,53859856322306,53859856414264,53859862184847,53859862620097,53859867551264,53859868094014,53859869795097,53859883126139,53859891169889,
+0,53859871776826,53859871776826,9223372036854775807,0,53859873469972,53859873555222,53859877235181,53859877592722,53859881273222,53859891519972,53859893075514,53859907670097,53859914851972,
+0,53859888570237,53859888570237,9223372036854775807,0,53859895875222,53859896054181,53859902166389,53859902521931,53859906048847,53859915051764,53859915717347,53859922381597,53859926479972,
+0,53859905359727,53859905359727,9223372036854775807,0,53859916743306,53859916811056,53859919032931,53859919283056,53859921699722,53859926648389,53859927309347,53859933253181,53859941988139,
+0,53859922153829,53859922153829,9223372036854775807,0,53859928145639,53859928206514,53859930288306,53859930551014,53859932587722,53859942180806,53859943477556,53859949970889,53859958036472,
+0,53859938763582,53859938763582,9223372036854775807,0,53859944446097,53859944512472,53859946529931,53859946781889,53859949367806,53859958257181,53859959204556,53859966614972,53859975016347,
+0,53859955531991,53859955531991,9223372036854775807,0,53859960344264,53859960411056,53859962514264,53859962768639,53859965051597,53859975193222,53859976221181,53859982741264,53859991880139,
+0,53859972268204,53859972268204,9223372036854775807,0,53859977209347,53859977270306,53859979263389,53859979503889,53859981833222,53859992048847,53859993382764,53859999293347,53860008362097,
+0,53859989111100,53859989111100,9223372036854775807,0,53859994294014,53859994371097,53859996373722,53859996647014,53859996914514,53860008529222,53860009451181,53860015503014,53860026464306,
+0,53860005825579,53860005825579,9223372036854775807,0,53860011345431,53860011351056,53860034215931,53860034368597,53860036042264,53860036361097,53860037676222,53860044672306,53860048903514,
+0,53860022660073,53860039609225,9223372036854775807,0,53860044192014,53860044261472,53860049274014,53860049478764,53860050404306,53860050681597,53860051172514,53860056014056,53860060001639,
+---PROFILEDATA---
+
+
+View hierarchy:
+
+  com.takahashirinta.ncrust/com.takahashirinta.ncrust.MainActivity/android.view.ViewRootImpl@613f835
+  7 views, 8.45 kB of display lists
+
+
+Total ViewRootImpl: 1
+Total Views:        7
+Total DisplayList:  8.45 kB
+
+### round 3
+Applications Graphics Acceleration Info:
+Uptime: 53871445 Realtime: 111920786
+
+** Graphics info for pid 25969 [com.takahashirinta.ncrust] **
+
+Stats since: 53868392843726ns
+Total frames rendered: 20
+Janky frames: 20 (100.00%)
+50th percentile: 25ms
+90th percentile: 40ms
+95th percentile: 42ms
+99th percentile: 42ms
+Number Missed Vsync: 1
+Number High input latency: 0
+Number Slow UI thread: 12
+Number Slow bitmap uploads: 0
+Number Slow issue draw commands: 14
+HISTOGRAM: 5ms=0 6ms=0 7ms=0 8ms=0 9ms=0 10ms=0 11ms=0 12ms=0 13ms=0 14ms=0 15ms=0 16ms=0 17ms=2 18ms=2 19ms=0 20ms=1 21ms=1 22ms=0 23ms=2 24ms=1 25ms=2 26ms=0 27ms=0 28ms=0 29ms=1 30ms=2 31ms=0 32ms=1 34ms=0 36ms=3 38ms=0 40ms=1 42ms=1 44ms=0 46ms=0 48ms=0 53ms=0 57ms=0 61ms=0 65ms=0 69ms=0 73ms=0 77ms=0 81ms=0 85ms=0 89ms=0 93ms=0 97ms=0 101ms=0 105ms=0 109ms=0 113ms=0 117ms=0 121ms=0 125ms=0 129ms=0 133ms=0 150ms=0 200ms=0 250ms=0 300ms=0 350ms=0 400ms=0 450ms=0 500ms=0 550ms=0 600ms=0 650ms=0 700ms=0 750ms=0 800ms=0 850ms=0 900ms=0 950ms=0 1000ms=0 1050ms=0 1100ms=0 1150ms=0 1200ms=0 1250ms=0 1300ms=0 1350ms=0 1400ms=0 1450ms=0 1500ms=0 1550ms=0 1600ms=0 1650ms=0 1700ms=0 1750ms=0 1800ms=0 1850ms=0 1900ms=0 1950ms=0 2000ms=0 2050ms=0 2100ms=0 2150ms=0 2200ms=0 2250ms=0 2300ms=0 2350ms=0 2400ms=0 2450ms=0 2500ms=0 2550ms=0 2600ms=0 2650ms=0 2700ms=0 2750ms=0 2800ms=0 2850ms=0 2900ms=0 2950ms=0 3000ms=0 3050ms=0 3100ms=0 3150ms=0 3200ms=0 3250ms=0 3300ms=0 3350ms=0 3400ms=0 3450ms=0 3500ms=0 3550ms=0 3600ms=0 3650ms=0 3700ms=0 3750ms=0 3800ms=0 3850ms=0 3900ms=0 3950ms=0 4000ms=0 4050ms=0 4100ms=0 4150ms=0 4200ms=0 4250ms=0 4300ms=0 4350ms=0 4400ms=0 4450ms=0 4500ms=0 4550ms=0 4600ms=0 4650ms=0 4700ms=0 4750ms=0 4800ms=0 4850ms=0 4900ms=0 4950ms=0
+
+Caches:
+Current memory usage / total memory usage (bytes) / hit ratio (%) / biggest memory usage (bytes):
+  TextureCache         29760899 / 92274688   99.6675  31728883
+  LayerCache                  0 / 60817408    0.0000         0 (numLayers = 0)
+  Layers total          0 (numLayers = 0)
+  RenderBufferCache           0 /  8388608    0.0000         0
+  GradientCache               0 /  2097152    0.0000         0
+  PathCache                   0 / 16777216   50.0000    404320
+  TessellationCache      237024 /  1048576   99.8029
+  TextDropShadowCache         0 /  6291456    0.0000         0
+  PatchCache                  0 /   131072    0.0000         0
+  FontRenderer A8     5242880 /  5242880
+    Font CacheTexture    938064 /  1048576   89.4608 (usage ratio)
+    Font CacheTexture   1609084 /  4194304   38.3636 (usage ratio)
+  FontRenderer RGBA         0 /        0
+  FontRenderer total  5242880 /  5242880
+Other:
+  FboCache                    0 /        0    0.0000
+Total memory usage:
+  35240803 bytes, 33.61 MB
+
+All Textures in TexctureCache 
+# No./ memory usage (bytes)/ size (width X height) / image type / hit count:
+#  1 /    11236 / ( 106 X  106)/   GL_ALPHA /   51
+#  2 /    11236 / ( 106 X  106)/   GL_ALPHA /   50
+#  3 /    11236 / ( 106 X  106)/   GL_ALPHA /   53
+#  4 /    11236 / ( 106 X  106)/   GL_ALPHA /   50
+#  5 /    11236 / ( 106 X  106)/   GL_ALPHA /   47
+#  6 /   331776 / ( 288 X  288)/    GL_RGBA /  151
+#  7 /   331776 / ( 288 X  288)/    GL_RGBA /  178
+#  8 /    12544 / ( 112 X  112)/   GL_ALPHA / 1081
+#  9 /     9216 / (  96 X   96)/   GL_ALPHA /   65
+# 10 /   331776 / ( 288 X  288)/    GL_RGBA /  267
+# 11 /     9216 / (  96 X   96)/   GL_ALPHA /   62
+# 12 /   331776 / ( 288 X  288)/    GL_RGBA /  464
+# 13 /   331776 / ( 288 X  288)/    GL_RGBA /  298
+# 14 /  4000000 / (1000 X 1000)/    GL_RGBA /  153
+# 15 /   331776 / ( 288 X  288)/    GL_RGBA /  273
+# 16 /   331776 / ( 288 X  288)/    GL_RGBA /  179
+# 17 /   331776 / ( 288 X  288)/    GL_RGBA /  291
+# 18 /  4000000 / (1000 X 1000)/    GL_RGBA /  315
+# 19 /  1638400 / ( 640 X  640)/    GL_RGBA /   39
+# 20 /  1638400 / ( 640 X  640)/    GL_RGBA /   41
+# 21 /     9216 / (  96 X   96)/   GL_ALPHA /   63
+# 22 /  1638400 / ( 640 X  640)/    GL_RGBA / 1069
+# 23 /    11236 / ( 106 X  106)/   GL_ALPHA /   51
+# 24 /   409600 / ( 320 X  320)/    GL_RGBA / 1073
+# 25 /   331776 / ( 288 X  288)/    GL_RGBA /   50
+# 26 /  1638400 / ( 640 X  640)/    GL_RGBA / 1119
+# 27 /     9216 / (  96 X   96)/   GL_ALPHA /   63
+# 28 /  1638400 / ( 640 X  640)/    GL_RGBA / 1119
+# 29 /     7744 / (  88 X   88)/   GL_ALPHA / 1081
+# 30 /     5625 / (  75 X   75)/   GL_ALPHA / 1081
+# 31 /  1638400 / ( 640 X  640)/    GL_RGBA / 1073
+# 32 /   331776 / ( 288 X  288)/    GL_RGBA /  315
+# 33 /     7744 / (  88 X   88)/   GL_ALPHA / 1407
+# 34 /     7744 / (  88 X   88)/   GL_ALPHA / 1545
+# 35 /   331776 / ( 288 X  288)/    GL_RGBA /  290
+# 36 /     7744 / (  88 X   88)/   GL_ALPHA / 1974
+# 37 /     7744 / (  88 X   88)/   GL_ALPHA / 1974
+# 38 /     9216 / (  96 X   96)/   GL_ALPHA /   58
+# 39 /   331776 / ( 288 X  288)/    GL_RGBA /  300
+# 40 /     9216 / (  96 X   96)/   GL_ALPHA /   61
+# 41 /   331776 / ( 288 X  288)/    GL_RGBA /  182
+# 42 /     9216 / (  96 X   96)/   GL_ALPHA / 1972
+# 43 /   331776 / ( 288 X  288)/    GL_RGBA /  230
+# 44 /     9216 / (  96 X   96)/   GL_ALPHA / 1972
+# 45 /     5625 / (  75 X   75)/   GL_ALPHA / 1081
+# 46 /  1638400 / ( 640 X  640)/    GL_RGBA / 1119
+# 47 /     5625 / (  75 X   75)/   GL_ALPHA /  540
+# 48 /  4665600 / (1080 X 1080)/    GL_RGBA / 8429
+# 49 /     7744 / (  88 X   88)/   GL_ALPHA / 1974
+# 50 /   331776 / ( 288 X  288)/    GL_RGBA /  176
+# 51 /     7744 / (  88 X   88)/   GL_ALPHA / 1003
+# 52 /     7744 / (  88 X   88)/   GL_ALPHA / 1003
+# 53 /     7744 / (  88 X   88)/   GL_ALPHA / 1974
+
+
+Pipeline=FrameBuilder
+Profile data in ms:
+
+	com.takahashirinta.ncrust/com.takahashirinta.ncrust.MainActivity/android.view.ViewRootImpl@613f835 (visibility=0)
+View hierarchy:
+
+  com.takahashirinta.ncrust/com.takahashirinta.ncrust.MainActivity/android.view.ViewRootImpl@613f835
+  7 views, 8.45 kB of display lists
+
+
+Total ViewRootImpl: 1
+Total Views:        7
+Total DisplayList:  8.45 kB
+
+Applications Graphics Acceleration Info:
+Uptime: 53871511 Realtime: 111920851
+
+** Graphics info for pid 25969 [com.takahashirinta.ncrust] **
+
+Stats since: 53868392843726ns
+Total frames rendered: 20
+Janky frames: 20 (100.00%)
+50th percentile: 25ms
+90th percentile: 40ms
+95th percentile: 42ms
+99th percentile: 42ms
+Number Missed Vsync: 1
+Number High input latency: 0
+Number Slow UI thread: 12
+Number Slow bitmap uploads: 0
+Number Slow issue draw commands: 14
+HISTOGRAM: 5ms=0 6ms=0 7ms=0 8ms=0 9ms=0 10ms=0 11ms=0 12ms=0 13ms=0 14ms=0 15ms=0 16ms=0 17ms=2 18ms=2 19ms=0 20ms=1 21ms=1 22ms=0 23ms=2 24ms=1 25ms=2 26ms=0 27ms=0 28ms=0 29ms=1 30ms=2 31ms=0 32ms=1 34ms=0 36ms=3 38ms=0 40ms=1 42ms=1 44ms=0 46ms=0 48ms=0 53ms=0 57ms=0 61ms=0 65ms=0 69ms=0 73ms=0 77ms=0 81ms=0 85ms=0 89ms=0 93ms=0 97ms=0 101ms=0 105ms=0 109ms=0 113ms=0 117ms=0 121ms=0 125ms=0 129ms=0 133ms=0 150ms=0 200ms=0 250ms=0 300ms=0 350ms=0 400ms=0 450ms=0 500ms=0 550ms=0 600ms=0 650ms=0 700ms=0 750ms=0 800ms=0 850ms=0 900ms=0 950ms=0 1000ms=0 1050ms=0 1100ms=0 1150ms=0 1200ms=0 1250ms=0 1300ms=0 1350ms=0 1400ms=0 1450ms=0 1500ms=0 1550ms=0 1600ms=0 1650ms=0 1700ms=0 1750ms=0 1800ms=0 1850ms=0 1900ms=0 1950ms=0 2000ms=0 2050ms=0 2100ms=0 2150ms=0 2200ms=0 2250ms=0 2300ms=0 2350ms=0 2400ms=0 2450ms=0 2500ms=0 2550ms=0 2600ms=0 2650ms=0 2700ms=0 2750ms=0 2800ms=0 2850ms=0 2900ms=0 2950ms=0 3000ms=0 3050ms=0 3100ms=0 3150ms=0 3200ms=0 3250ms=0 3300ms=0 3350ms=0 3400ms=0 3450ms=0 3500ms=0 3550ms=0 3600ms=0 3650ms=0 3700ms=0 3750ms=0 3800ms=0 3850ms=0 3900ms=0 3950ms=0 4000ms=0 4050ms=0 4100ms=0 4150ms=0 4200ms=0 4250ms=0 4300ms=0 4350ms=0 4400ms=0 4450ms=0 4500ms=0 4550ms=0 4600ms=0 4650ms=0 4700ms=0 4750ms=0 4800ms=0 4850ms=0 4900ms=0 4950ms=0
+
+Caches:
+Current memory usage / total memory usage (bytes) / hit ratio (%) / biggest memory usage (bytes):
+  TextureCache         29760899 / 92274688   99.6675  31728883
+  LayerCache                  0 / 60817408    0.0000         0 (numLayers = 0)
+  Layers total          0 (numLayers = 0)
+  RenderBufferCache           0 /  8388608    0.0000         0
+  GradientCache               0 /  2097152    0.0000         0
+  PathCache                   0 / 16777216   50.0000    404320
+  TessellationCache      237024 /  1048576   99.8029
+  TextDropShadowCache         0 /  6291456    0.0000         0
+  PatchCache                  0 /   131072    0.0000         0
+  FontRenderer A8     5242880 /  5242880
+    Font CacheTexture    938064 /  1048576   89.4608 (usage ratio)
+    Font CacheTexture   1609084 /  4194304   38.3636 (usage ratio)
+  FontRenderer RGBA         0 /        0
+  FontRenderer total  5242880 /  5242880
+Other:
+  FboCache                    0 /        0    0.0000
+Total memory usage:
+  35240803 bytes, 33.61 MB
+
+All Textures in TexctureCache 
+# No./ memory usage (bytes)/ size (width X height) / image type / hit count:
+#  1 /    11236 / ( 106 X  106)/   GL_ALPHA /   51
+#  2 /    11236 / ( 106 X  106)/   GL_ALPHA /   50
+#  3 /    11236 / ( 106 X  106)/   GL_ALPHA /   53
+#  4 /    11236 / ( 106 X  106)/   GL_ALPHA /   50
+#  5 /    11236 / ( 106 X  106)/   GL_ALPHA /   47
+#  6 /   331776 / ( 288 X  288)/    GL_RGBA /  151
+#  7 /   331776 / ( 288 X  288)/    GL_RGBA /  178
+#  8 /    12544 / ( 112 X  112)/   GL_ALPHA / 1081
+#  9 /     9216 / (  96 X   96)/   GL_ALPHA /   65
+# 10 /   331776 / ( 288 X  288)/    GL_RGBA /  267
+# 11 /     9216 / (  96 X   96)/   GL_ALPHA /   62
+# 12 /   331776 / ( 288 X  288)/    GL_RGBA /  464
+# 13 /   331776 / ( 288 X  288)/    GL_RGBA /  298
+# 14 /  4000000 / (1000 X 1000)/    GL_RGBA /  153
+# 15 /   331776 / ( 288 X  288)/    GL_RGBA /  273
+# 16 /   331776 / ( 288 X  288)/    GL_RGBA /  179
+# 17 /   331776 / ( 288 X  288)/    GL_RGBA /  291
+# 18 /  4000000 / (1000 X 1000)/    GL_RGBA /  315
+# 19 /  1638400 / ( 640 X  640)/    GL_RGBA /   39
+# 20 /  1638400 / ( 640 X  640)/    GL_RGBA /   41
+# 21 /     9216 / (  96 X   96)/   GL_ALPHA /   63
+# 22 /  1638400 / ( 640 X  640)/    GL_RGBA / 1069
+# 23 /    11236 / ( 106 X  106)/   GL_ALPHA /   51
+# 24 /   409600 / ( 320 X  320)/    GL_RGBA / 1073
+# 25 /   331776 / ( 288 X  288)/    GL_RGBA /   50
+# 26 /  1638400 / ( 640 X  640)/    GL_RGBA / 1119
+# 27 /     9216 / (  96 X   96)/   GL_ALPHA /   63
+# 28 /  1638400 / ( 640 X  640)/    GL_RGBA / 1119
+# 29 /     7744 / (  88 X   88)/   GL_ALPHA / 1081
+# 30 /     5625 / (  75 X   75)/   GL_ALPHA / 1081
+# 31 /  1638400 / ( 640 X  640)/    GL_RGBA / 1073
+# 32 /   331776 / ( 288 X  288)/    GL_RGBA /  315
+# 33 /     7744 / (  88 X   88)/   GL_ALPHA / 1407
+# 34 /     7744 / (  88 X   88)/   GL_ALPHA / 1545
+# 35 /   331776 / ( 288 X  288)/    GL_RGBA /  290
+# 36 /     7744 / (  88 X   88)/   GL_ALPHA / 1974
+# 37 /     7744 / (  88 X   88)/   GL_ALPHA / 1974
+# 38 /     9216 / (  96 X   96)/   GL_ALPHA /   58
+# 39 /   331776 / ( 288 X  288)/    GL_RGBA /  300
+# 40 /     9216 / (  96 X   96)/   GL_ALPHA /   61
+# 41 /   331776 / ( 288 X  288)/    GL_RGBA /  182
+# 42 /     9216 / (  96 X   96)/   GL_ALPHA / 1972
+# 43 /   331776 / ( 288 X  288)/    GL_RGBA /  230
+# 44 /     9216 / (  96 X   96)/   GL_ALPHA / 1972
+# 45 /     5625 / (  75 X   75)/   GL_ALPHA / 1081
+# 46 /  1638400 / ( 640 X  640)/    GL_RGBA / 1119
+# 47 /     5625 / (  75 X   75)/   GL_ALPHA /  540
+# 48 /  4665600 / (1080 X 1080)/    GL_RGBA / 8429
+# 49 /     7744 / (  88 X   88)/   GL_ALPHA / 1974
+# 50 /   331776 / ( 288 X  288)/    GL_RGBA /  176
+# 51 /     7744 / (  88 X   88)/   GL_ALPHA / 1003
+# 52 /     7744 / (  88 X   88)/   GL_ALPHA / 1003
+# 53 /     7744 / (  88 X   88)/   GL_ALPHA / 1974
+
+
+Pipeline=FrameBuilder
+Profile data in ms:
+
+	com.takahashirinta.ncrust/com.takahashirinta.ncrust.MainActivity/android.view.ViewRootImpl@613f835 (visibility=0)
+
+---PROFILEDATA---
+Flags,IntendedVsync,Vsync,OldestInputEvent,NewestInputEvent,HandleInputStart,AnimationStart,PerformTraversalsStart,DrawStart,SyncQueued,SyncStart,IssueDrawCommandsStart,SwapBuffers,FrameCompleted,
+0,53869540432722,53869540432722,9223372036854775807,0,53869540730894,53869540732769,53869552217394,53869552278227,53869554540019,53869554585310,53869554769769,53869557033060,53869561880977,
+0,53869557383943,53869557383943,9223372036854775807,0,53869557598685,53869557616352,53869562500977,53869562543102,53869564707560,53869564734060,53869564905477,53869567272977,53869575000852,
+0,53869574335275,53869574335275,9223372036854775807,0,53869574535477,53869574553019,53869575662352,53869575712727,53869576413102,53869576435894,53869576678602,53869579461060,53869595062727,
+0,53869593893372,53869593893372,9223372036854775807,0,53869594466727,53869594486977,53869594990644,53869595035060,53869595445727,53869595464602,53869595698435,53869596999769,53869611857810,
+0,53869610843159,53869610843159,9223372036854775807,0,53869611299435,53869611317060,53869611874310,53869611929685,53869612348394,53869612369185,53869612590810,53869613831644,53869629342269,
+0,53869627793981,53869627793981,9223372036854775807,0,53869628190685,53869628228894,53869629562019,53869629686935,53869630805519,53869630854310,53869631570810,53869634877019,53869646497727,
+0,53869644742870,53869644742870,9223372036854775807,0,53869645266269,53869645304810,53869646602185,53869646732810,53869647717852,53869647771602,53869648338102,53869651734269,53869668052477,
+0,53869660845645,53869660845645,9223372036854775807,0,53869662941185,53869663065727,53869667601310,53869668240852,53869673530769,53869674013977,53869676473769,53869688447602,53869698647394,
+0,53869677611651,53869677611651,9223372036854775807,0,53869678913435,53869679004352,53869682701727,53869683061185,53869686342477,53869698979144,53869701120935,53869714167269,53869721020852,
+0,53869694544578,53869694544578,9223372036854775807,0,53869703746185,53869703880769,53869708286102,53869708614435,53869712122102,53869721402935,53869722590352,53869735562560,53869740534477,
+0,53869711311470,53869711311470,9223372036854775807,0,53869725208602,53869725400894,53869730447102,53869730757227,53869733707352,53869740742477,53869741505019,53869750897644,53869755791477,
+0,53869728074139,53869728074139,9223372036854775807,0,53869742677769,53869742750769,53869745002519,53869745414019,53869748546185,53869756026435,53869756803935,53869765667977,53869769350935,
+0,53869744842194,53869744842194,9223372036854775807,0,53869757923602,53869758017060,53869760538435,53869760848227,53869763649060,53869769525060,53869770280310,53869776315477,53869780664019,
+0,53869761553001,53869761553001,9223372036854775807,0,53869771249394,53869771309144,53869773260185,53869773509852,53869775714019,53869780838102,53869782222560,53869787996644,53869797669894,
+0,53869778284907,53869778284907,9223372036854775807,0,53869783185019,53869783249477,53869785220060,53869785463644,53869787524810,53869797851560,53869798780477,53869804426977,53869814304060,
+0,53869795075597,53869795075597,9223372036854775807,0,53869799639144,53869799699269,53869801716602,53869801955685,53869803992852,53869814515519,53869815615352,53869821178977,53869831184560,
+0,53869811939452,53869811939452,9223372036854775807,0,53869816551185,53869816608727,53869818404477,53869818666185,53869818901269,53869831353227,53869832620727,53869837795435,53869847898685,
+0,53869828661030,53869828661030,9223372036854775807,0,53869833474227,53869833478477,53869835599519,53869835781685,53869836002852,53869848084185,53869849000519,53869854936977,53869865576352,
+0,53869845517437,53869845517437,9223372036854775807,0,53869850613852,53869850694769,53869875805894,53869875961727,53869877740602,53869878066935,53869879555560,53869884973269,53869889149352,
+0,53869862244096,53869879193248,9223372036854775807,0,53869885481685,53869885542852,53869890558435,53869890746060,53869891577019,53869891898685,53869892411185,53869899059394,53869903459644,
+---PROFILEDATA---
+
+
+View hierarchy:
+
+  com.takahashirinta.ncrust/com.takahashirinta.ncrust.MainActivity/android.view.ViewRootImpl@613f835
+  7 views, 8.45 kB of display lists
+
+
+Total ViewRootImpl: 1
+Total Views:        7
+Total DisplayList:  8.45 kB
+
+### round 4
+Applications Graphics Acceleration Info:
+Uptime: 53881320 Realtime: 111930661
+
+** Graphics info for pid 25969 [com.takahashirinta.ncrust] **
+
+Stats since: 53878248129481ns
+Total frames rendered: 20
+Janky frames: 18 (90.00%)
+50th percentile: 19ms
+90th percentile: 30ms
+95th percentile: 36ms
+99th percentile: 36ms
+Number Missed Vsync: 0
+Number High input latency: 0
+Number Slow UI thread: 4
+Number Slow bitmap uploads: 0
+Number Slow issue draw commands: 12
+HISTOGRAM: 5ms=0 6ms=0 7ms=0 8ms=0 9ms=0 10ms=0 11ms=0 12ms=0 13ms=0 14ms=0 15ms=0 16ms=2 17ms=3 18ms=2 19ms=4 20ms=4 21ms=1 22ms=1 23ms=0 24ms=0 25ms=0 26ms=0 27ms=0 28ms=0 29ms=1 30ms=1 31ms=0 32ms=0 34ms=0 36ms=1 38ms=0 40ms=0 42ms=0 44ms=0 46ms=0 48ms=0 53ms=0 57ms=0 61ms=0 65ms=0 69ms=0 73ms=0 77ms=0 81ms=0 85ms=0 89ms=0 93ms=0 97ms=0 101ms=0 105ms=0 109ms=0 113ms=0 117ms=0 121ms=0 125ms=0 129ms=0 133ms=0 150ms=0 200ms=0 250ms=0 300ms=0 350ms=0 400ms=0 450ms=0 500ms=0 550ms=0 600ms=0 650ms=0 700ms=0 750ms=0 800ms=0 850ms=0 900ms=0 950ms=0 1000ms=0 1050ms=0 1100ms=0 1150ms=0 1200ms=0 1250ms=0 1300ms=0 1350ms=0 1400ms=0 1450ms=0 1500ms=0 1550ms=0 1600ms=0 1650ms=0 1700ms=0 1750ms=0 1800ms=0 1850ms=0 1900ms=0 1950ms=0 2000ms=0 2050ms=0 2100ms=0 2150ms=0 2200ms=0 2250ms=0 2300ms=0 2350ms=0 2400ms=0 2450ms=0 2500ms=0 2550ms=0 2600ms=0 2650ms=0 2700ms=0 2750ms=0 2800ms=0 2850ms=0 2900ms=0 2950ms=0 3000ms=0 3050ms=0 3100ms=0 3150ms=0 3200ms=0 3250ms=0 3300ms=0 3350ms=0 3400ms=0 3450ms=0 3500ms=0 3550ms=0 3600ms=0 3650ms=0 3700ms=0 3750ms=0 3800ms=0 3850ms=0 3900ms=0 3950ms=0 4000ms=0 4050ms=0 4100ms=0 4150ms=0 4200ms=0 4250ms=0 4300ms=0 4350ms=0 4400ms=0 4450ms=0 4500ms=0 4550ms=0 4600ms=0 4650ms=0 4700ms=0 4750ms=0 4800ms=0 4850ms=0 4900ms=0 4950ms=0
+
+Caches:
+Current memory usage / total memory usage (bytes) / hit ratio (%) / biggest memory usage (bytes):
+  TextureCache         29658639 / 92274688   99.6722  31728883
+  LayerCache                  0 / 60817408    0.0000         0 (numLayers = 0)
+  Layers total          0 (numLayers = 0)
+  RenderBufferCache           0 /  8388608    0.0000         0
+  GradientCache               0 /  2097152    0.0000         0
+  PathCache                   0 / 16777216   50.0000    404320
+  TessellationCache      237024 /  1048576   99.8071
+  TextDropShadowCache         0 /  6291456    0.0000         0
+  PatchCache                  0 /   131072    0.0000         0
+  FontRenderer A8     5242880 /  5242880
+    Font CacheTexture    938064 /  1048576   89.4608 (usage ratio)
+    Font CacheTexture   1609084 /  4194304   38.3636 (usage ratio)
+  FontRenderer RGBA         0 /        0
+  FontRenderer total  5242880 /  5242880
+Other:
+  FboCache                    0 /        0    0.0000
+Total memory usage:
+  35138543 bytes, 33.51 MB
+
+All Textures in TexctureCache 
+# No./ memory usage (bytes)/ size (width X height) / image type / hit count:
+#  1 /   331776 / ( 288 X  288)/    GL_RGBA /  174
+#  2 /   331776 / ( 288 X  288)/    GL_RGBA /  209
+#  3 /    12544 / ( 112 X  112)/   GL_ALPHA / 1169
+#  4 /   331776 / ( 288 X  288)/    GL_RGBA /  267
+#  5 /   331776 / ( 288 X  288)/    GL_RGBA /  464
+#  6 /   331776 / ( 288 X  288)/    GL_RGBA /  298
+#  7 /  4000000 / (1000 X 1000)/    GL_RGBA /  176
+#  8 /   331776 / ( 288 X  288)/    GL_RGBA /  273
+#  9 /   331776 / ( 288 X  288)/    GL_RGBA /  201
+# 10 /   331776 / ( 288 X  288)/    GL_RGBA /  291
+# 11 /  4000000 / (1000 X 1000)/    GL_RGBA /  346
+# 12 /  1638400 / ( 640 X  640)/    GL_RGBA /   39
+# 13 /  1638400 / ( 640 X  640)/    GL_RGBA /   41
+# 14 /  1638400 / ( 640 X  640)/    GL_RGBA / 1157
+# 15 /   409600 / ( 320 X  320)/    GL_RGBA / 1161
+# 16 /   331776 / ( 288 X  288)/    GL_RGBA /   50
+# 17 /  1638400 / ( 640 X  640)/    GL_RGBA / 1207
+# 18 /  1638400 / ( 640 X  640)/    GL_RGBA / 1207
+# 19 /     7744 / (  88 X   88)/   GL_ALPHA / 1169
+# 20 /     5625 / (  75 X   75)/   GL_ALPHA / 1169
+# 21 /  1638400 / ( 640 X  640)/    GL_RGBA / 1161
+# 22 /   331776 / ( 288 X  288)/    GL_RGBA /  346
+# 23 /     7744 / (  88 X   88)/   GL_ALPHA / 1451
+# 24 /     7744 / (  88 X   88)/   GL_ALPHA / 1633
+# 25 /   331776 / ( 288 X  288)/    GL_RGBA /  313
+# 26 /     7744 / (  88 X   88)/   GL_ALPHA / 2062
+# 27 /     7744 / (  88 X   88)/   GL_ALPHA / 2062
+# 28 /   331776 / ( 288 X  288)/    GL_RGBA /  300
+# 29 /   331776 / ( 288 X  288)/    GL_RGBA /  182
+# 30 /     9216 / (  96 X   96)/   GL_ALPHA / 2060
+# 31 /   331776 / ( 288 X  288)/    GL_RGBA /  230
+# 32 /     9216 / (  96 X   96)/   GL_ALPHA / 2060
+# 33 /    11236 / ( 106 X  106)/   GL_ALPHA /   53
+# 34 /     5625 / (  75 X   75)/   GL_ALPHA / 1169
+# 35 /  1638400 / ( 640 X  640)/    GL_RGBA / 1207
+# 36 /     9216 / (  96 X   96)/   GL_ALPHA /   65
+# 37 /     5625 / (  75 X   75)/   GL_ALPHA /  584
+# 38 /  4665600 / (1080 X 1080)/    GL_RGBA / 8605
+# 39 /     7744 / (  88 X   88)/   GL_ALPHA / 2062
+# 40 /   331776 / ( 288 X  288)/    GL_RGBA /  195
+# 41 /     7744 / (  88 X   88)/   GL_ALPHA / 1047
+# 42 /     7744 / (  88 X   88)/   GL_ALPHA / 1047
+# 43 /     7744 / (  88 X   88)/   GL_ALPHA / 2062
+
+
+Pipeline=FrameBuilder
+Profile data in ms:
+
+	com.takahashirinta.ncrust/com.takahashirinta.ncrust.MainActivity/android.view.ViewRootImpl@613f835 (visibility=0)
+View hierarchy:
+
+  com.takahashirinta.ncrust/com.takahashirinta.ncrust.MainActivity/android.view.ViewRootImpl@613f835
+  7 views, 8.45 kB of display lists
+
+
+Total ViewRootImpl: 1
+Total Views:        7
+Total DisplayList:  8.45 kB
+
+Applications Graphics Acceleration Info:
+Uptime: 53881397 Realtime: 111930738
+
+** Graphics info for pid 25969 [com.takahashirinta.ncrust] **
+
+Stats since: 53878248129481ns
+Total frames rendered: 20
+Janky frames: 18 (90.00%)
+50th percentile: 19ms
+90th percentile: 30ms
+95th percentile: 36ms
+99th percentile: 36ms
+Number Missed Vsync: 0
+Number High input latency: 0
+Number Slow UI thread: 4
+Number Slow bitmap uploads: 0
+Number Slow issue draw commands: 12
+HISTOGRAM: 5ms=0 6ms=0 7ms=0 8ms=0 9ms=0 10ms=0 11ms=0 12ms=0 13ms=0 14ms=0 15ms=0 16ms=2 17ms=3 18ms=2 19ms=4 20ms=4 21ms=1 22ms=1 23ms=0 24ms=0 25ms=0 26ms=0 27ms=0 28ms=0 29ms=1 30ms=1 31ms=0 32ms=0 34ms=0 36ms=1 38ms=0 40ms=0 42ms=0 44ms=0 46ms=0 48ms=0 53ms=0 57ms=0 61ms=0 65ms=0 69ms=0 73ms=0 77ms=0 81ms=0 85ms=0 89ms=0 93ms=0 97ms=0 101ms=0 105ms=0 109ms=0 113ms=0 117ms=0 121ms=0 125ms=0 129ms=0 133ms=0 150ms=0 200ms=0 250ms=0 300ms=0 350ms=0 400ms=0 450ms=0 500ms=0 550ms=0 600ms=0 650ms=0 700ms=0 750ms=0 800ms=0 850ms=0 900ms=0 950ms=0 1000ms=0 1050ms=0 1100ms=0 1150ms=0 1200ms=0 1250ms=0 1300ms=0 1350ms=0 1400ms=0 1450ms=0 1500ms=0 1550ms=0 1600ms=0 1650ms=0 1700ms=0 1750ms=0 1800ms=0 1850ms=0 1900ms=0 1950ms=0 2000ms=0 2050ms=0 2100ms=0 2150ms=0 2200ms=0 2250ms=0 2300ms=0 2350ms=0 2400ms=0 2450ms=0 2500ms=0 2550ms=0 2600ms=0 2650ms=0 2700ms=0 2750ms=0 2800ms=0 2850ms=0 2900ms=0 2950ms=0 3000ms=0 3050ms=0 3100ms=0 3150ms=0 3200ms=0 3250ms=0 3300ms=0 3350ms=0 3400ms=0 3450ms=0 3500ms=0 3550ms=0 3600ms=0 3650ms=0 3700ms=0 3750ms=0 3800ms=0 3850ms=0 3900ms=0 3950ms=0 4000ms=0 4050ms=0 4100ms=0 4150ms=0 4200ms=0 4250ms=0 4300ms=0 4350ms=0 4400ms=0 4450ms=0 4500ms=0 4550ms=0 4600ms=0 4650ms=0 4700ms=0 4750ms=0 4800ms=0 4850ms=0 4900ms=0 4950ms=0
+
+Caches:
+Current memory usage / total memory usage (bytes) / hit ratio (%) / biggest memory usage (bytes):
+  TextureCache         29658639 / 92274688   99.6722  31728883
+  LayerCache                  0 / 60817408    0.0000         0 (numLayers = 0)
+  Layers total          0 (numLayers = 0)
+  RenderBufferCache           0 /  8388608    0.0000         0
+  GradientCache               0 /  2097152    0.0000         0
+  PathCache                   0 / 16777216   50.0000    404320
+  TessellationCache      237024 /  1048576   99.8071
+  TextDropShadowCache         0 /  6291456    0.0000         0
+  PatchCache                  0 /   131072    0.0000         0
+  FontRenderer A8     5242880 /  5242880
+    Font CacheTexture    938064 /  1048576   89.4608 (usage ratio)
+    Font CacheTexture   1609084 /  4194304   38.3636 (usage ratio)
+  FontRenderer RGBA         0 /        0
+  FontRenderer total  5242880 /  5242880
+Other:
+  FboCache                    0 /        0    0.0000
+Total memory usage:
+  35138543 bytes, 33.51 MB
+
+All Textures in TexctureCache 
+# No./ memory usage (bytes)/ size (width X height) / image type / hit count:
+#  1 /   331776 / ( 288 X  288)/    GL_RGBA /  174
+#  2 /   331776 / ( 288 X  288)/    GL_RGBA /  209
+#  3 /    12544 / ( 112 X  112)/   GL_ALPHA / 1169
+#  4 /   331776 / ( 288 X  288)/    GL_RGBA /  267
+#  5 /   331776 / ( 288 X  288)/    GL_RGBA /  464
+#  6 /   331776 / ( 288 X  288)/    GL_RGBA /  298
+#  7 /  4000000 / (1000 X 1000)/    GL_RGBA /  176
+#  8 /   331776 / ( 288 X  288)/    GL_RGBA /  273
+#  9 /   331776 / ( 288 X  288)/    GL_RGBA /  201
+# 10 /   331776 / ( 288 X  288)/    GL_RGBA /  291
+# 11 /  4000000 / (1000 X 1000)/    GL_RGBA /  346
+# 12 /  1638400 / ( 640 X  640)/    GL_RGBA /   39
+# 13 /  1638400 / ( 640 X  640)/    GL_RGBA /   41
+# 14 /  1638400 / ( 640 X  640)/    GL_RGBA / 1157
+# 15 /   409600 / ( 320 X  320)/    GL_RGBA / 1161
+# 16 /   331776 / ( 288 X  288)/    GL_RGBA /   50
+# 17 /  1638400 / ( 640 X  640)/    GL_RGBA / 1207
+# 18 /  1638400 / ( 640 X  640)/    GL_RGBA / 1207
+# 19 /     7744 / (  88 X   88)/   GL_ALPHA / 1169
+# 20 /     5625 / (  75 X   75)/   GL_ALPHA / 1169
+# 21 /  1638400 / ( 640 X  640)/    GL_RGBA / 1161
+# 22 /   331776 / ( 288 X  288)/    GL_RGBA /  346
+# 23 /     7744 / (  88 X   88)/   GL_ALPHA / 1451
+# 24 /     7744 / (  88 X   88)/   GL_ALPHA / 1633
+# 25 /   331776 / ( 288 X  288)/    GL_RGBA /  313
+# 26 /     7744 / (  88 X   88)/   GL_ALPHA / 2062
+# 27 /     7744 / (  88 X   88)/   GL_ALPHA / 2062
+# 28 /   331776 / ( 288 X  288)/    GL_RGBA /  300
+# 29 /   331776 / ( 288 X  288)/    GL_RGBA /  182
+# 30 /     9216 / (  96 X   96)/   GL_ALPHA / 2060
+# 31 /   331776 / ( 288 X  288)/    GL_RGBA /  230
+# 32 /     9216 / (  96 X   96)/   GL_ALPHA / 2060
+# 33 /    11236 / ( 106 X  106)/   GL_ALPHA /   53
+# 34 /     5625 / (  75 X   75)/   GL_ALPHA / 1169
+# 35 /  1638400 / ( 640 X  640)/    GL_RGBA / 1207
+# 36 /     9216 / (  96 X   96)/   GL_ALPHA /   65
+# 37 /     5625 / (  75 X   75)/   GL_ALPHA /  584
+# 38 /  4665600 / (1080 X 1080)/    GL_RGBA / 8605
+# 39 /     7744 / (  88 X   88)/   GL_ALPHA / 2062
+# 40 /   331776 / ( 288 X  288)/    GL_RGBA /  195
+# 41 /     7744 / (  88 X   88)/   GL_ALPHA / 1047
+# 42 /     7744 / (  88 X   88)/   GL_ALPHA / 1047
+# 43 /     7744 / (  88 X   88)/   GL_ALPHA / 2062
+
+
+Pipeline=FrameBuilder
+Profile data in ms:
+
+	com.takahashirinta.ncrust/com.takahashirinta.ncrust.MainActivity/android.view.ViewRootImpl@613f835 (visibility=0)
+
+---PROFILEDATA---
+Flags,IntendedVsync,Vsync,OldestInputEvent,NewestInputEvent,HandleInputStart,AnimationStart,PerformTraversalsStart,DrawStart,SyncQueued,SyncStart,IssueDrawCommandsStart,SwapBuffers,FrameCompleted,
+0,53879401508485,53879401508485,9223372036854775807,0,53879401773440,53879401775148,53879412921815,53879412980648,53879415090065,53879415135732,53879415320315,53879417803690,53879422611232,
+0,53879418459380,53879418459380,9223372036854775807,0,53879418706315,53879418726023,53879424195648,53879424244940,53879426397523,53879426423690,53879426594148,53879428984982,53879435975857,
+0,53879435410635,53879435410635,9223372036854775807,0,53879435597648,53879435616523,53879436757482,53879436805107,53879437464523,53879437485232,53879437723982,53879440623273,53879451560773,
+0,53879450410588,53879450410588,9223372036854775807,0,53879450992898,53879451011440,53879451489023,53879451542357,53879451991107,53879452010732,53879452245982,53879453533482,53879468214523,
+0,53879467361492,53879467361492,9223372036854775807,0,53879467593148,53879467612440,53879468118148,53879468163190,53879468583982,53879468603148,53879468833648,53879470194607,53879485300273,
+0,53879484312304,53879484312304,9223372036854775807,0,53879484561773,53879484581898,53879485188190,53879485254482,53879485829690,53879485853357,53879486147815,53879487737732,53879503066898,
+0,53879501262938,53879501262938,9223372036854775807,0,53879501860065,53879501899857,53879503175107,53879503302523,53879504293565,53879504338357,53879504892773,53879508098732,53879519815815,
+0,53879518212922,53879518212922,9223372036854775807,0,53879518600857,53879518642065,53879521486565,53879521721065,53879523151773,53879523513940,53879526049440,53879540691398,53879548925773,
+0,53879534445126,53879534445126,9223372036854775807,0,53879536239565,53879536331648,53879539955482,53879540493732,53879543886982,53879549082273,53879549736648,53879557635648,53879562144232,
+0,53879551250419,53879551250419,9223372036854775807,0,53879552112648,53879552176690,53879555322273,53879555547565,53879557437023,53879562335940,53879563029107,53879567751482,53879572836398,
+0,53879567927590,53879567927590,9223372036854775807,0,53879569131607,53879569213232,53879572484773,53879572714357,53879574722398,53879574962440,53879575650273,53879581093898,53879588374648,
+0,53879584734136,53879584734136,9223372036854775807,0,53879585386398,53879585441898,53879587913982,53879588128648,53879589855065,53879589938690,53879591398273,53879596553523,53879604859232,
+0,53879601541053,53879601541053,9223372036854775807,0,53879602156523,53879602209065,53879604870815,53879605073565,53879606745690,53879606835273,53879607915107,53879613590857,53879621033732,
+0,53879618348134,53879618348134,9223372036854775807,0,53879618885357,53879618936065,53879621270107,53879621476940,53879623192690,53879623417148,53879624626898,53879629982357,53879638214982,
+0,53879635155268,53879635155268,9223372036854775807,0,53879636230523,53879636287898,53879638734773,53879638945315,53879640950982,53879641252648,53879642855315,53879649419773,53879656109857,
+0,53879652030590,53879652030590,9223372036854775807,0,53879652640523,53879652704898,53879656276107,53879656537565,53879658579857,53879658715023,53879660467982,53879666325148,53879672105357,
+0,53879668854026,53879668854026,9223372036854775807,0,53879669437440,53879669488940,53879671866232,53879672090815,53879673844440,53879673955815,53879675205190,53879680895023,53879688144232,
+0,53879685673745,53879685673745,9223372036854775807,0,53879686309107,53879686359857,53879688827565,53879689033398,53879689228773,53879689344982,53879690580565,53879695740940,53879706028857,
+0,53879702492096,53879702492096,9223372036854775807,0,53879703222940,53879703228023,53879723291690,53879723442482,53879725069523,53879725383273,53879726782648,53879732106732,53879739211732,
+0,53879719312470,53879719312470,9223372036854775807,0,53879732334940,53879732396148,53879737729982,53879737923815,53879739080690,53879739368898,53879739868190,53879745474815,53879749190523,
+---PROFILEDATA---
+
+
+View hierarchy:
+
+  com.takahashirinta.ncrust/com.takahashirinta.ncrust.MainActivity/android.view.ViewRootImpl@613f835
+  7 views, 8.45 kB of display lists
+
+
+Total ViewRootImpl: 1
+Total Views:        7
+Total DisplayList:  8.45 kB
+
+### round 5
+Applications Graphics Acceleration Info:
+Uptime: 53891110 Realtime: 111940450
+
+** Graphics info for pid 25969 [com.takahashirinta.ncrust] **
+
+Stats since: 53888070610236ns
+Total frames rendered: 20
+Janky frames: 20 (100.00%)
+50th percentile: 25ms
+90th percentile: 34ms
+95th percentile: 40ms
+99th percentile: 40ms
+Number Missed Vsync: 1
+Number High input latency: 0
+Number Slow UI thread: 12
+Number Slow bitmap uploads: 0
+Number Slow issue draw commands: 16
+HISTOGRAM: 5ms=0 6ms=0 7ms=0 8ms=0 9ms=0 10ms=0 11ms=0 12ms=0 13ms=0 14ms=0 15ms=0 16ms=0 17ms=4 18ms=1 19ms=2 20ms=0 21ms=1 22ms=0 23ms=1 24ms=0 25ms=3 26ms=2 27ms=1 28ms=1 29ms=0 30ms=0 31ms=0 32ms=2 34ms=1 36ms=0 38ms=0 40ms=1 42ms=0 44ms=0 46ms=0 48ms=0 53ms=0 57ms=0 61ms=0 65ms=0 69ms=0 73ms=0 77ms=0 81ms=0 85ms=0 89ms=0 93ms=0 97ms=0 101ms=0 105ms=0 109ms=0 113ms=0 117ms=0 121ms=0 125ms=0 129ms=0 133ms=0 150ms=0 200ms=0 250ms=0 300ms=0 350ms=0 400ms=0 450ms=0 500ms=0 550ms=0 600ms=0 650ms=0 700ms=0 750ms=0 800ms=0 850ms=0 900ms=0 950ms=0 1000ms=0 1050ms=0 1100ms=0 1150ms=0 1200ms=0 1250ms=0 1300ms=0 1350ms=0 1400ms=0 1450ms=0 1500ms=0 1550ms=0 1600ms=0 1650ms=0 1700ms=0 1750ms=0 1800ms=0 1850ms=0 1900ms=0 1950ms=0 2000ms=0 2050ms=0 2100ms=0 2150ms=0 2200ms=0 2250ms=0 2300ms=0 2350ms=0 2400ms=0 2450ms=0 2500ms=0 2550ms=0 2600ms=0 2650ms=0 2700ms=0 2750ms=0 2800ms=0 2850ms=0 2900ms=0 2950ms=0 3000ms=0 3050ms=0 3100ms=0 3150ms=0 3200ms=0 3250ms=0 3300ms=0 3350ms=0 3400ms=0 3450ms=0 3500ms=0 3550ms=0 3600ms=0 3650ms=0 3700ms=0 3750ms=0 3800ms=0 3850ms=0 3900ms=0 3950ms=0 4000ms=0 4050ms=0 4100ms=0 4150ms=0 4200ms=0 4250ms=0 4300ms=0 4350ms=0 4400ms=0 4450ms=0 4500ms=0 4550ms=0 4600ms=0 4650ms=0 4700ms=0 4750ms=0 4800ms=0 4850ms=0 4900ms=0 4950ms=0
+
+Caches:
+Current memory usage / total memory usage (bytes) / hit ratio (%) / biggest memory usage (bytes):
+  TextureCache         29679091 / 92274688   99.6766  31728883
+  LayerCache                  0 / 60817408    0.0000         0 (numLayers = 0)
+  Layers total          0 (numLayers = 0)
+  RenderBufferCache           0 /  8388608    0.0000         0
+  GradientCache               0 /  2097152    0.0000         0
+  PathCache                   0 / 16777216   50.0000    404320
+  TessellationCache      237024 /  1048576   99.8110
+  TextDropShadowCache         0 /  6291456    0.0000         0
+  PatchCache                  0 /   131072    0.0000         0
+  FontRenderer A8     5242880 /  5242880
+    Font CacheTexture    938064 /  1048576   89.4608 (usage ratio)
+    Font CacheTexture   1609084 /  4194304   38.3636 (usage ratio)
+  FontRenderer RGBA         0 /        0
+  FontRenderer total  5242880 /  5242880
+Other:
+  FboCache                    0 /        0    0.0000
+Total memory usage:
+  35158995 bytes, 33.53 MB
+
+All Textures in TexctureCache 
+# No./ memory usage (bytes)/ size (width X height) / image type / hit count:
+#  1 /     9216 / (  96 X   96)/   GL_ALPHA /   63
+#  2 /   331776 / ( 288 X  288)/    GL_RGBA /  203
+#  3 /   331776 / ( 288 X  288)/    GL_RGBA /  232
+#  4 /    12544 / ( 112 X  112)/   GL_ALPHA / 1255
+#  5 /   331776 / ( 288 X  288)/    GL_RGBA /  267
+#  6 /   331776 / ( 288 X  288)/    GL_RGBA /  464
+#  7 /   331776 / ( 288 X  288)/    GL_RGBA /  298
+#  8 /  4000000 / (1000 X 1000)/    GL_RGBA /  205
+#  9 /   331776 / ( 288 X  288)/    GL_RGBA /  273
+# 10 /   331776 / ( 288 X  288)/    GL_RGBA /  220
+# 11 /   331776 / ( 288 X  288)/    GL_RGBA /  291
+# 12 /  4000000 / (1000 X 1000)/    GL_RGBA /  369
+# 13 /  1638400 / ( 640 X  640)/    GL_RGBA /   39
+# 14 /  1638400 / ( 640 X  640)/    GL_RGBA /   41
+# 15 /  1638400 / ( 640 X  640)/    GL_RGBA / 1243
+# 16 /   409600 / ( 320 X  320)/    GL_RGBA / 1247
+# 17 /   331776 / ( 288 X  288)/    GL_RGBA /   50
+# 18 /  1638400 / ( 640 X  640)/    GL_RGBA / 1293
+# 19 /  1638400 / ( 640 X  640)/    GL_RGBA / 1293
+# 20 /     7744 / (  88 X   88)/   GL_ALPHA / 1255
+# 21 /     5625 / (  75 X   75)/   GL_ALPHA / 1255
+# 22 /    11236 / ( 106 X  106)/   GL_ALPHA /   51
+# 23 /  1638400 / ( 640 X  640)/    GL_RGBA / 1247
+# 24 /   331776 / ( 288 X  288)/    GL_RGBA /  369
+# 25 /     7744 / (  88 X   88)/   GL_ALPHA / 1494
+# 26 /     7744 / (  88 X   88)/   GL_ALPHA / 1719
+# 27 /   331776 / ( 288 X  288)/    GL_RGBA /  342
+# 28 /     7744 / (  88 X   88)/   GL_ALPHA / 2148
+# 29 /     7744 / (  88 X   88)/   GL_ALPHA / 2148
+# 30 /   331776 / ( 288 X  288)/    GL_RGBA /  300
+# 31 /   331776 / ( 288 X  288)/    GL_RGBA /  182
+# 32 /     9216 / (  96 X   96)/   GL_ALPHA / 2146
+# 33 /   331776 / ( 288 X  288)/    GL_RGBA /  230
+# 34 /     9216 / (  96 X   96)/   GL_ALPHA / 2146
+# 35 /    11236 / ( 106 X  106)/   GL_ALPHA /   53
+# 36 /     5625 / (  75 X   75)/   GL_ALPHA / 1255
+# 37 /  1638400 / ( 640 X  640)/    GL_RGBA / 1293
+# 38 /     9216 / (  96 X   96)/   GL_ALPHA /   65
+# 39 /     5625 / (  75 X   75)/   GL_ALPHA /  627
+# 40 /  4665600 / (1080 X 1080)/    GL_RGBA / 8777
+# 41 /     7744 / (  88 X   88)/   GL_ALPHA / 2148
+# 42 /   331776 / ( 288 X  288)/    GL_RGBA /  216
+# 43 /     7744 / (  88 X   88)/   GL_ALPHA / 1090
+# 44 /     7744 / (  88 X   88)/   GL_ALPHA / 1090
+# 45 /     7744 / (  88 X   88)/   GL_ALPHA / 2148
+
+
+Pipeline=FrameBuilder
+Profile data in ms:
+
+	com.takahashirinta.ncrust/com.takahashirinta.ncrust.MainActivity/android.view.ViewRootImpl@613f835 (visibility=0)
+View hierarchy:
+
+  com.takahashirinta.ncrust/com.takahashirinta.ncrust.MainActivity/android.view.ViewRootImpl@613f835
+  7 views, 8.45 kB of display lists
+
+
+Total ViewRootImpl: 1
+Total Views:        7
+Total DisplayList:  8.45 kB
+
+Applications Graphics Acceleration Info:
+Uptime: 53891176 Realtime: 111940517
+
+** Graphics info for pid 25969 [com.takahashirinta.ncrust] **
+
+Stats since: 53888070610236ns
+Total frames rendered: 20
+Janky frames: 20 (100.00%)
+50th percentile: 25ms
+90th percentile: 34ms
+95th percentile: 40ms
+99th percentile: 40ms
+Number Missed Vsync: 1
+Number High input latency: 0
+Number Slow UI thread: 12
+Number Slow bitmap uploads: 0
+Number Slow issue draw commands: 16
+HISTOGRAM: 5ms=0 6ms=0 7ms=0 8ms=0 9ms=0 10ms=0 11ms=0 12ms=0 13ms=0 14ms=0 15ms=0 16ms=0 17ms=4 18ms=1 19ms=2 20ms=0 21ms=1 22ms=0 23ms=1 24ms=0 25ms=3 26ms=2 27ms=1 28ms=1 29ms=0 30ms=0 31ms=0 32ms=2 34ms=1 36ms=0 38ms=0 40ms=1 42ms=0 44ms=0 46ms=0 48ms=0 53ms=0 57ms=0 61ms=0 65ms=0 69ms=0 73ms=0 77ms=0 81ms=0 85ms=0 89ms=0 93ms=0 97ms=0 101ms=0 105ms=0 109ms=0 113ms=0 117ms=0 121ms=0 125ms=0 129ms=0 133ms=0 150ms=0 200ms=0 250ms=0 300ms=0 350ms=0 400ms=0 450ms=0 500ms=0 550ms=0 600ms=0 650ms=0 700ms=0 750ms=0 800ms=0 850ms=0 900ms=0 950ms=0 1000ms=0 1050ms=0 1100ms=0 1150ms=0 1200ms=0 1250ms=0 1300ms=0 1350ms=0 1400ms=0 1450ms=0 1500ms=0 1550ms=0 1600ms=0 1650ms=0 1700ms=0 1750ms=0 1800ms=0 1850ms=0 1900ms=0 1950ms=0 2000ms=0 2050ms=0 2100ms=0 2150ms=0 2200ms=0 2250ms=0 2300ms=0 2350ms=0 2400ms=0 2450ms=0 2500ms=0 2550ms=0 2600ms=0 2650ms=0 2700ms=0 2750ms=0 2800ms=0 2850ms=0 2900ms=0 2950ms=0 3000ms=0 3050ms=0 3100ms=0 3150ms=0 3200ms=0 3250ms=0 3300ms=0 3350ms=0 3400ms=0 3450ms=0 3500ms=0 3550ms=0 3600ms=0 3650ms=0 3700ms=0 3750ms=0 3800ms=0 3850ms=0 3900ms=0 3950ms=0 4000ms=0 4050ms=0 4100ms=0 4150ms=0 4200ms=0 4250ms=0 4300ms=0 4350ms=0 4400ms=0 4450ms=0 4500ms=0 4550ms=0 4600ms=0 4650ms=0 4700ms=0 4750ms=0 4800ms=0 4850ms=0 4900ms=0 4950ms=0
+
+Caches:
+Current memory usage / total memory usage (bytes) / hit ratio (%) / biggest memory usage (bytes):
+  TextureCache         29679091 / 92274688   99.6766  31728883
+  LayerCache                  0 / 60817408    0.0000         0 (numLayers = 0)
+  Layers total          0 (numLayers = 0)
+  RenderBufferCache           0 /  8388608    0.0000         0
+  GradientCache               0 /  2097152    0.0000         0
+  PathCache                   0 / 16777216   50.0000    404320
+  TessellationCache      237024 /  1048576   99.8110
+  TextDropShadowCache         0 /  6291456    0.0000         0
+  PatchCache                  0 /   131072    0.0000         0
+  FontRenderer A8     5242880 /  5242880
+    Font CacheTexture    938064 /  1048576   89.4608 (usage ratio)
+    Font CacheTexture   1609084 /  4194304   38.3636 (usage ratio)
+  FontRenderer RGBA         0 /        0
+  FontRenderer total  5242880 /  5242880
+Other:
+  FboCache                    0 /        0    0.0000
+Total memory usage:
+  35158995 bytes, 33.53 MB
+
+All Textures in TexctureCache 
+# No./ memory usage (bytes)/ size (width X height) / image type / hit count:
+#  1 /     9216 / (  96 X   96)/   GL_ALPHA /   63
+#  2 /   331776 / ( 288 X  288)/    GL_RGBA /  203
+#  3 /   331776 / ( 288 X  288)/    GL_RGBA /  232
+#  4 /    12544 / ( 112 X  112)/   GL_ALPHA / 1255
+#  5 /   331776 / ( 288 X  288)/    GL_RGBA /  267
+#  6 /   331776 / ( 288 X  288)/    GL_RGBA /  464
+#  7 /   331776 / ( 288 X  288)/    GL_RGBA /  298
+#  8 /  4000000 / (1000 X 1000)/    GL_RGBA /  205
+#  9 /   331776 / ( 288 X  288)/    GL_RGBA /  273
+# 10 /   331776 / ( 288 X  288)/    GL_RGBA /  220
+# 11 /   331776 / ( 288 X  288)/    GL_RGBA /  291
+# 12 /  4000000 / (1000 X 1000)/    GL_RGBA /  369
+# 13 /  1638400 / ( 640 X  640)/    GL_RGBA /   39
+# 14 /  1638400 / ( 640 X  640)/    GL_RGBA /   41
+# 15 /  1638400 / ( 640 X  640)/    GL_RGBA / 1243
+# 16 /   409600 / ( 320 X  320)/    GL_RGBA / 1247
+# 17 /   331776 / ( 288 X  288)/    GL_RGBA /   50
+# 18 /  1638400 / ( 640 X  640)/    GL_RGBA / 1293
+# 19 /  1638400 / ( 640 X  640)/    GL_RGBA / 1293
+# 20 /     7744 / (  88 X   88)/   GL_ALPHA / 1255
+# 21 /     5625 / (  75 X   75)/   GL_ALPHA / 1255
+# 22 /    11236 / ( 106 X  106)/   GL_ALPHA /   51
+# 23 /  1638400 / ( 640 X  640)/    GL_RGBA / 1247
+# 24 /   331776 / ( 288 X  288)/    GL_RGBA /  369
+# 25 /     7744 / (  88 X   88)/   GL_ALPHA / 1494
+# 26 /     7744 / (  88 X   88)/   GL_ALPHA / 1719
+# 27 /   331776 / ( 288 X  288)/    GL_RGBA /  342
+# 28 /     7744 / (  88 X   88)/   GL_ALPHA / 2148
+# 29 /     7744 / (  88 X   88)/   GL_ALPHA / 2148
+# 30 /   331776 / ( 288 X  288)/    GL_RGBA /  300
+# 31 /   331776 / ( 288 X  288)/    GL_RGBA /  182
+# 32 /     9216 / (  96 X   96)/   GL_ALPHA / 2146
+# 33 /   331776 / ( 288 X  288)/    GL_RGBA /  230
+# 34 /     9216 / (  96 X   96)/   GL_ALPHA / 2146
+# 35 /    11236 / ( 106 X  106)/   GL_ALPHA /   53
+# 36 /     5625 / (  75 X   75)/   GL_ALPHA / 1255
+# 37 /  1638400 / ( 640 X  640)/    GL_RGBA / 1293
+# 38 /     9216 / (  96 X   96)/   GL_ALPHA /   65
+# 39 /     5625 / (  75 X   75)/   GL_ALPHA /  627
+# 40 /  4665600 / (1080 X 1080)/    GL_RGBA / 8777
+# 41 /     7744 / (  88 X   88)/   GL_ALPHA / 2148
+# 42 /   331776 / ( 288 X  288)/    GL_RGBA /  216
+# 43 /     7744 / (  88 X   88)/   GL_ALPHA / 1090
+# 44 /     7744 / (  88 X   88)/   GL_ALPHA / 1090
+# 45 /     7744 / (  88 X   88)/   GL_ALPHA / 2148
+
+
+Pipeline=FrameBuilder
+Profile data in ms:
+
+	com.takahashirinta.ncrust/com.takahashirinta.ncrust.MainActivity/android.view.ViewRootImpl@613f835 (visibility=0)
+
+---PROFILEDATA---
+Flags,IntendedVsync,Vsync,OldestInputEvent,NewestInputEvent,HandleInputStart,AnimationStart,PerformTraversalsStart,DrawStart,SyncQueued,SyncStart,IssueDrawCommandsStart,SwapBuffers,FrameCompleted,
+0,53889221684642,53889221684642,9223372036854775807,0,53889222101820,53889222103486,53889233046361,53889233099986,53889235195236,53889235334695,53889235521361,53889237902778,53889239650736,
+0,53889238636156,53889238636156,9223372036854775807,0,53889238842945,53889238863445,53889243636736,53889243676361,53889245735361,53889245761320,53889245932570,53889248322070,53889256489486,
+0,53889255587758,53889255587758,9223372036854775807,0,53889255848028,53889255867820,53889257023695,53889257070528,53889257702361,53889257722861,53889257958528,53889261070820,53889273461486,
+0,53889272539010,53889272539010,9223372036854775807,0,53889272848820,53889272869653,53889273385903,53889273452778,53889273905570,53889273924861,53889274154611,53889275421861,53889289931570,
+0,53889288681347,53889288681347,9223372036854775807,0,53889289107820,53889289123820,53889289725320,53889289768153,53889290487945,53889290507111,53889290823611,53889292091445,53889306835320,
+0,53889305473113,53889305473113,9223372036854775807,0,53889305934986,53889305974278,53889306901028,53889306991111,53889307795195,53889307835070,53889308258986,53889311016153,53889325177278,
+0,53889322309505,53889322309505,9223372036854775807,0,53889323324528,53889323368861,53889324592611,53889324726695,53889325811111,53889325853861,53889326363945,53889329710278,53889341608111,
+0,53889339100377,53889339100377,9223372036854775807,0,53889339533320,53889339570403,53889340870278,53889341026653,53889342258570,53889342306111,53889342991903,53889346183945,53889361112820,
+0,53889355889351,53889355889351,9223372036854775807,0,53889356911445,53889357144070,53889362852778,53889363466945,53889367597986,53889368174403,53889370947986,53889383406403,53889390450570,
+0,53889372675400,53889372675400,9223372036854775807,0,53889373922986,53889374008278,53889377651361,53889378009153,53889381885778,53889390960653,53889392422403,53889406096861,53889409772403,
+0,53889389463443,53889389463443,9223372036854775807,0,53889395067236,53889395276611,53889403751986,53889403992570,53889406007236,53889409944195,53889410763736,53889416562361,53889426046028,
+0,53889406157065,53889406157065,9223372036854775807,0,53889411738986,53889411799695,53889413770570,53889414013986,53889416139861,53889426364861,53889427538236,53889433175528,53889442634528,
+0,53889423065849,53889423065849,9223372036854775807,0,53889428464820,53889428523153,53889430528486,53889430740486,53889432634736,53889442801236,53889443844861,53889449772736,53889458975653,
+0,53889439850042,53889439850042,9223372036854775807,0,53889444666403,53889444725778,53889446716278,53889446958486,53889449079945,53889459145570,53889460441070,53889466453528,53889476472070,
+0,53889456633543,53889456633543,9223372036854775807,0,53889461332778,53889461392486,53889463409861,53889463658611,53889465805236,53889476644611,53889477693111,53889484480736,53889493231361,
+0,53889473417186,53889473417186,9223372036854775807,0,53889478482111,53889478539236,53889480778778,53889481022486,53889483095861,53889493396528,53889494706861,53889501199945,53889508969195,
+0,53889490202099,53889490202099,9223372036854775807,0,53889495593611,53889495669070,53889497666695,53889497938236,53889500343278,53889509190820,53889510489903,53889515943361,53889526584486,
+0,53889506877989,53889506877989,9223372036854775807,0,53889511457653,53889511518445,53889513401111,53889513650903,53889513877986,53889526743445,53889527901278,53889534747528,53889543464236,
+0,53889523720981,53889523720981,9223372036854775807,0,53889529648945,53889529654570,53889549762778,53889549939111,53889551822236,53889552130445,53889553577070,53889559973278,53889564744736,
+0,53889540489735,53889557438887,9223372036854775807,0,53889560403653,53889560467320,53889565295320,53889565452861,53889566118361,53889566391278,53889566816736,53889571175903,53889576723320,
+---PROFILEDATA---
+
+
+View hierarchy:
+
+  com.takahashirinta.ncrust/com.takahashirinta.ncrust.MainActivity/android.view.ViewRootImpl@613f835
+  7 views, 8.45 kB of display lists
+
+
+Total ViewRootImpl: 1
+Total Views:        7
+Total DisplayList:  8.45 kB
+
+### round 6
+Applications Graphics Acceleration Info:
+Uptime: 53900947 Realtime: 111950287
+
+** Graphics info for pid 25969 [com.takahashirinta.ncrust] **
+
+Stats since: 53897887502199ns
+Total frames rendered: 20
+Janky frames: 20 (100.00%)
+50th percentile: 19ms
+90th percentile: 34ms
+95th percentile: 36ms
+99th percentile: 36ms
+Number Missed Vsync: 0
+Number High input latency: 0
+Number Slow UI thread: 6
+Number Slow bitmap uploads: 0
+Number Slow issue draw commands: 13
+HISTOGRAM: 5ms=0 6ms=0 7ms=0 8ms=0 9ms=0 10ms=0 11ms=0 12ms=0 13ms=0 14ms=0 15ms=0 16ms=0 17ms=3 18ms=6 19ms=3 20ms=2 21ms=1 22ms=1 23ms=1 24ms=0 25ms=0 26ms=0 27ms=0 28ms=0 29ms=0 30ms=0 31ms=1 32ms=0 34ms=1 36ms=1 38ms=0 40ms=0 42ms=0 44ms=0 46ms=0 48ms=0 53ms=0 57ms=0 61ms=0 65ms=0 69ms=0 73ms=0 77ms=0 81ms=0 85ms=0 89ms=0 93ms=0 97ms=0 101ms=0 105ms=0 109ms=0 113ms=0 117ms=0 121ms=0 125ms=0 129ms=0 133ms=0 150ms=0 200ms=0 250ms=0 300ms=0 350ms=0 400ms=0 450ms=0 500ms=0 550ms=0 600ms=0 650ms=0 700ms=0 750ms=0 800ms=0 850ms=0 900ms=0 950ms=0 1000ms=0 1050ms=0 1100ms=0 1150ms=0 1200ms=0 1250ms=0 1300ms=0 1350ms=0 1400ms=0 1450ms=0 1500ms=0 1550ms=0 1600ms=0 1650ms=0 1700ms=0 1750ms=0 1800ms=0 1850ms=0 1900ms=0 1950ms=0 2000ms=0 2050ms=0 2100ms=0 2150ms=0 2200ms=0 2250ms=0 2300ms=0 2350ms=0 2400ms=0 2450ms=0 2500ms=0 2550ms=0 2600ms=0 2650ms=0 2700ms=0 2750ms=0 2800ms=0 2850ms=0 2900ms=0 2950ms=0 3000ms=0 3050ms=0 3100ms=0 3150ms=0 3200ms=0 3250ms=0 3300ms=0 3350ms=0 3400ms=0 3450ms=0 3500ms=0 3550ms=0 3600ms=0 3650ms=0 3700ms=0 3750ms=0 3800ms=0 3850ms=0 3900ms=0 3950ms=0 4000ms=0 4050ms=0 4100ms=0 4150ms=0 4200ms=0 4250ms=0 4300ms=0 4350ms=0 4400ms=0 4450ms=0 4500ms=0 4550ms=0 4600ms=0 4650ms=0 4700ms=0 4750ms=0 4800ms=0 4850ms=0 4900ms=0 4950ms=0
+
+Caches:
+Current memory usage / total memory usage (bytes) / hit ratio (%) / biggest memory usage (bytes):
+  TextureCache         29679091 / 92274688   99.6808  31728883
+  LayerCache                  0 / 60817408    0.0000         0 (numLayers = 0)
+  Layers total          0 (numLayers = 0)
+  RenderBufferCache           0 /  8388608    0.0000         0
+  GradientCache               0 /  2097152    0.0000         0
+  PathCache                   0 / 16777216   50.0000    404320
+  TessellationCache      237024 /  1048576   99.8147
+  TextDropShadowCache         0 /  6291456    0.0000         0
+  PatchCache                  0 /   131072    0.0000         0
+  FontRenderer A8     5242880 /  5242880
+    Font CacheTexture    938064 /  1048576   89.4608 (usage ratio)
+    Font CacheTexture   1609084 /  4194304   38.3636 (usage ratio)
+  FontRenderer RGBA         0 /        0
+  FontRenderer total  5242880 /  5242880
+Other:
+  FboCache                    0 /        0    0.0000
+Total memory usage:
+  35158995 bytes, 33.53 MB
+
+All Textures in TexctureCache 
+# No./ memory usage (bytes)/ size (width X height) / image type / hit count:
+#  1 /    11236 / ( 106 X  106)/   GL_ALPHA /   51
+#  2 /     9216 / (  96 X   96)/   GL_ALPHA /   63
+#  3 /   331776 / ( 288 X  288)/    GL_RGBA /  226
+#  4 /   331776 / ( 288 X  288)/    GL_RGBA /  261
+#  5 /    12544 / ( 112 X  112)/   GL_ALPHA / 1341
+#  6 /   331776 / ( 288 X  288)/    GL_RGBA /  267
+#  7 /   331776 / ( 288 X  288)/    GL_RGBA /  464
+#  8 /   331776 / ( 288 X  288)/    GL_RGBA /  298
+#  9 /  4000000 / (1000 X 1000)/    GL_RGBA /  228
+# 10 /   331776 / ( 288 X  288)/    GL_RGBA /  273
+# 11 /   331776 / ( 288 X  288)/    GL_RGBA /  241
+# 12 /   331776 / ( 288 X  288)/    GL_RGBA /  291
+# 13 /  4000000 / (1000 X 1000)/    GL_RGBA /  398
+# 14 /  1638400 / ( 640 X  640)/    GL_RGBA /   39
+# 15 /  1638400 / ( 640 X  640)/    GL_RGBA /   41
+# 16 /  1638400 / ( 640 X  640)/    GL_RGBA / 1329
+# 17 /   409600 / ( 320 X  320)/    GL_RGBA / 1333
+# 18 /   331776 / ( 288 X  288)/    GL_RGBA /   50
+# 19 /  1638400 / ( 640 X  640)/    GL_RGBA / 1379
+# 20 /  1638400 / ( 640 X  640)/    GL_RGBA / 1379
+# 21 /     7744 / (  88 X   88)/   GL_ALPHA / 1341
+# 22 /     5625 / (  75 X   75)/   GL_ALPHA / 1341
+# 23 /  1638400 / ( 640 X  640)/    GL_RGBA / 1333
+# 24 /   331776 / ( 288 X  288)/    GL_RGBA /  398
+# 25 /     7744 / (  88 X   88)/   GL_ALPHA / 1537
+# 26 /     7744 / (  88 X   88)/   GL_ALPHA / 1805
+# 27 /   331776 / ( 288 X  288)/    GL_RGBA /  365
+# 28 /     7744 / (  88 X   88)/   GL_ALPHA / 2234
+# 29 /     7744 / (  88 X   88)/   GL_ALPHA / 2234
+# 30 /   331776 / ( 288 X  288)/    GL_RGBA /  300
+# 31 /   331776 / ( 288 X  288)/    GL_RGBA /  182
+# 32 /     9216 / (  96 X   96)/   GL_ALPHA / 2232
+# 33 /   331776 / ( 288 X  288)/    GL_RGBA /  230
+# 34 /     9216 / (  96 X   96)/   GL_ALPHA / 2232
+# 35 /    11236 / ( 106 X  106)/   GL_ALPHA /   53
+# 36 /     5625 / (  75 X   75)/   GL_ALPHA / 1341
+# 37 /  1638400 / ( 640 X  640)/    GL_RGBA / 1379
+# 38 /     9216 / (  96 X   96)/   GL_ALPHA /   65
+# 39 /     5625 / (  75 X   75)/   GL_ALPHA /  670
+# 40 /  4665600 / (1080 X 1080)/    GL_RGBA / 8949
+# 41 /     7744 / (  88 X   88)/   GL_ALPHA / 2234
+# 42 /   331776 / ( 288 X  288)/    GL_RGBA /  235
+# 43 /     7744 / (  88 X   88)/   GL_ALPHA / 1133
+# 44 /     7744 / (  88 X   88)/   GL_ALPHA / 1133
+# 45 /     7744 / (  88 X   88)/   GL_ALPHA / 2234
+
+
+Pipeline=FrameBuilder
+Profile data in ms:
+
+	com.takahashirinta.ncrust/com.takahashirinta.ncrust.MainActivity/android.view.ViewRootImpl@613f835 (visibility=0)
+View hierarchy:
+
+  com.takahashirinta.ncrust/com.takahashirinta.ncrust.MainActivity/android.view.ViewRootImpl@613f835
+  7 views, 8.45 kB of display lists
+
+
+Total ViewRootImpl: 1
+Total Views:        7
+Total DisplayList:  8.45 kB
+
+Applications Graphics Acceleration Info:
+Uptime: 53901027 Realtime: 111950368
+
+** Graphics info for pid 25969 [com.takahashirinta.ncrust] **
+
+Stats since: 53897887502199ns
+Total frames rendered: 20
+Janky frames: 20 (100.00%)
+50th percentile: 19ms
+90th percentile: 34ms
+95th percentile: 36ms
+99th percentile: 36ms
+Number Missed Vsync: 0
+Number High input latency: 0
+Number Slow UI thread: 6
+Number Slow bitmap uploads: 0
+Number Slow issue draw commands: 13
+HISTOGRAM: 5ms=0 6ms=0 7ms=0 8ms=0 9ms=0 10ms=0 11ms=0 12ms=0 13ms=0 14ms=0 15ms=0 16ms=0 17ms=3 18ms=6 19ms=3 20ms=2 21ms=1 22ms=1 23ms=1 24ms=0 25ms=0 26ms=0 27ms=0 28ms=0 29ms=0 30ms=0 31ms=1 32ms=0 34ms=1 36ms=1 38ms=0 40ms=0 42ms=0 44ms=0 46ms=0 48ms=0 53ms=0 57ms=0 61ms=0 65ms=0 69ms=0 73ms=0 77ms=0 81ms=0 85ms=0 89ms=0 93ms=0 97ms=0 101ms=0 105ms=0 109ms=0 113ms=0 117ms=0 121ms=0 125ms=0 129ms=0 133ms=0 150ms=0 200ms=0 250ms=0 300ms=0 350ms=0 400ms=0 450ms=0 500ms=0 550ms=0 600ms=0 650ms=0 700ms=0 750ms=0 800ms=0 850ms=0 900ms=0 950ms=0 1000ms=0 1050ms=0 1100ms=0 1150ms=0 1200ms=0 1250ms=0 1300ms=0 1350ms=0 1400ms=0 1450ms=0 1500ms=0 1550ms=0 1600ms=0 1650ms=0 1700ms=0 1750ms=0 1800ms=0 1850ms=0 1900ms=0 1950ms=0 2000ms=0 2050ms=0 2100ms=0 2150ms=0 2200ms=0 2250ms=0 2300ms=0 2350ms=0 2400ms=0 2450ms=0 2500ms=0 2550ms=0 2600ms=0 2650ms=0 2700ms=0 2750ms=0 2800ms=0 2850ms=0 2900ms=0 2950ms=0 3000ms=0 3050ms=0 3100ms=0 3150ms=0 3200ms=0 3250ms=0 3300ms=0 3350ms=0 3400ms=0 3450ms=0 3500ms=0 3550ms=0 3600ms=0 3650ms=0 3700ms=0 3750ms=0 3800ms=0 3850ms=0 3900ms=0 3950ms=0 4000ms=0 4050ms=0 4100ms=0 4150ms=0 4200ms=0 4250ms=0 4300ms=0 4350ms=0 4400ms=0 4450ms=0 4500ms=0 4550ms=0 4600ms=0 4650ms=0 4700ms=0 4750ms=0 4800ms=0 4850ms=0 4900ms=0 4950ms=0
+
+Caches:
+Current memory usage / total memory usage (bytes) / hit ratio (%) / biggest memory usage (bytes):
+  TextureCache         29679091 / 92274688   99.6808  31728883
+  LayerCache                  0 / 60817408    0.0000         0 (numLayers = 0)
+  Layers total          0 (numLayers = 0)
+  RenderBufferCache           0 /  8388608    0.0000         0
+  GradientCache               0 /  2097152    0.0000         0
+  PathCache                   0 / 16777216   50.0000    404320
+  TessellationCache      237024 /  1048576   99.8147
+  TextDropShadowCache         0 /  6291456    0.0000         0
+  PatchCache                  0 /   131072    0.0000         0
+  FontRenderer A8     5242880 /  5242880
+    Font CacheTexture    938064 /  1048576   89.4608 (usage ratio)
+    Font CacheTexture   1609084 /  4194304   38.3636 (usage ratio)
+  FontRenderer RGBA         0 /        0
+  FontRenderer total  5242880 /  5242880
+Other:
+  FboCache                    0 /        0    0.0000
+Total memory usage:
+  35158995 bytes, 33.53 MB
+
+All Textures in TexctureCache 
+# No./ memory usage (bytes)/ size (width X height) / image type / hit count:
+#  1 /    11236 / ( 106 X  106)/   GL_ALPHA /   51
+#  2 /     9216 / (  96 X   96)/   GL_ALPHA /   63
+#  3 /   331776 / ( 288 X  288)/    GL_RGBA /  226
+#  4 /   331776 / ( 288 X  288)/    GL_RGBA /  261
+#  5 /    12544 / ( 112 X  112)/   GL_ALPHA / 1341
+#  6 /   331776 / ( 288 X  288)/    GL_RGBA /  267
+#  7 /   331776 / ( 288 X  288)/    GL_RGBA /  464
+#  8 /   331776 / ( 288 X  288)/    GL_RGBA /  298
+#  9 /  4000000 / (1000 X 1000)/    GL_RGBA /  228
+# 10 /   331776 / ( 288 X  288)/    GL_RGBA /  273
+# 11 /   331776 / ( 288 X  288)/    GL_RGBA /  241
+# 12 /   331776 / ( 288 X  288)/    GL_RGBA /  291
+# 13 /  4000000 / (1000 X 1000)/    GL_RGBA /  398
+# 14 /  1638400 / ( 640 X  640)/    GL_RGBA /   39
+# 15 /  1638400 / ( 640 X  640)/    GL_RGBA /   41
+# 16 /  1638400 / ( 640 X  640)/    GL_RGBA / 1329
+# 17 /   409600 / ( 320 X  320)/    GL_RGBA / 1333
+# 18 /   331776 / ( 288 X  288)/    GL_RGBA /   50
+# 19 /  1638400 / ( 640 X  640)/    GL_RGBA / 1379
+# 20 /  1638400 / ( 640 X  640)/    GL_RGBA / 1379
+# 21 /     7744 / (  88 X   88)/   GL_ALPHA / 1341
+# 22 /     5625 / (  75 X   75)/   GL_ALPHA / 1341
+# 23 /  1638400 / ( 640 X  640)/    GL_RGBA / 1333
+# 24 /   331776 / ( 288 X  288)/    GL_RGBA /  398
+# 25 /     7744 / (  88 X   88)/   GL_ALPHA / 1537
+# 26 /     7744 / (  88 X   88)/   GL_ALPHA / 1805
+# 27 /   331776 / ( 288 X  288)/    GL_RGBA /  365
+# 28 /     7744 / (  88 X   88)/   GL_ALPHA / 2234
+# 29 /     7744 / (  88 X   88)/   GL_ALPHA / 2234
+# 30 /   331776 / ( 288 X  288)/    GL_RGBA /  300
+# 31 /   331776 / ( 288 X  288)/    GL_RGBA /  182
+# 32 /     9216 / (  96 X   96)/   GL_ALPHA / 2232
+# 33 /   331776 / ( 288 X  288)/    GL_RGBA /  230
+# 34 /     9216 / (  96 X   96)/   GL_ALPHA / 2232
+# 35 /    11236 / ( 106 X  106)/   GL_ALPHA /   53
+# 36 /     5625 / (  75 X   75)/   GL_ALPHA / 1341
+# 37 /  1638400 / ( 640 X  640)/    GL_RGBA / 1379
+# 38 /     9216 / (  96 X   96)/   GL_ALPHA /   65
+# 39 /     5625 / (  75 X   75)/   GL_ALPHA /  670
+# 40 /  4665600 / (1080 X 1080)/    GL_RGBA / 8949
+# 41 /     7744 / (  88 X   88)/   GL_ALPHA / 2234
+# 42 /   331776 / ( 288 X  288)/    GL_RGBA /  235
+# 43 /     7744 / (  88 X   88)/   GL_ALPHA / 1133
+# 44 /     7744 / (  88 X   88)/   GL_ALPHA / 1133
+# 45 /     7744 / (  88 X   88)/   GL_ALPHA / 2234
+
+
+Pipeline=FrameBuilder
+Profile data in ms:
+
+	com.takahashirinta.ncrust/com.takahashirinta.ncrust.MainActivity/android.view.ViewRootImpl@613f835 (visibility=0)
+
+---PROFILEDATA---
+Flags,IntendedVsync,Vsync,OldestInputEvent,NewestInputEvent,HandleInputStart,AnimationStart,PerformTraversalsStart,DrawStart,SyncQueued,SyncStart,IssueDrawCommandsStart,SwapBuffers,FrameCompleted,
+0,53899044432107,53899044432107,9223372036854775807,0,53899045045033,53899045046824,53899056485324,53899056549283,53899058919033,53899058965658,53899059148616,53899061849824,53899066387574,
+0,53899061168774,53899061168774,9223372036854775807,0,53899062529116,53899062548033,53899067838074,53899067881199,53899070366741,53899070398658,53899070592908,53899073429866,53899079774574,
+0,53899078010357,53899078010357,9223372036854775807,0,53899078490366,53899078519116,53899080369866,53899080428574,53899081229574,53899081259616,53899081544033,53899084975033,53899096301658,
+0,53899094813024,53899094813024,9223372036854775807,0,53899095330866,53899095350574,53899095863741,53899095917449,53899096398741,53899096420449,53899096671241,53899098036824,53899113133199,
+0,53899111764227,53899111764227,9223372036854775807,0,53899112090616,53899112111366,53899112613116,53899112657908,53899113121033,53899113187491,53899113433533,53899114746283,53899129489741,
+0,53899128715436,53899128715436,9223372036854775807,0,53899128947241,53899128966116,53899129440908,53899129487074,53899129902741,53899129921366,53899130352616,53899131665658,53899146381366,
+0,53899145666573,53899145666573,9223372036854775807,0,53899146304908,53899146324199,53899146803616,53899146846491,53899147277366,53899147297074,53899147540991,53899148835949,53899164480449,
+0,53899162615852,53899162615852,9223372036854775807,0,53899163232699,53899163269949,53899164819116,53899164925824,53899165916033,53899165965491,53899166542116,53899169763741,53899180795366,
+0,53899178674029,53899178674029,9223372036854775807,0,53899179426741,53899179463408,53899180773824,53899180884158,53899181944158,53899182096533,53899182601199,53899185878991,53899197177449,
+0,53899195439534,53899195439534,9223372036854775807,0,53899196084241,53899196125658,53899197296116,53899197422699,53899198433533,53899198477324,53899198984949,53899202759324,53899218989574,
+0,53899212337881,53899212337881,9223372036854775807,0,53899213389033,53899213481533,53899220790116,53899221408991,53899226819616,53899227225033,53899228856741,53899239788908,53899244529824,
+0,53899229095536,53899229095536,9223372036854775807,0,53899231397533,53899231488824,53899236323866,53899236684449,53899238983116,53899244699491,53899245374199,53899253232241,53899257072991,
+0,53899245858758,53899245858758,9223372036854775807,0,53899246659199,53899246733783,53899249486741,53899249787616,53899252638699,53899257241033,53899257865074,53899263393824,53899268169783,
+0,53899262618859,53899262618859,9223372036854775807,0,53899265427824,53899265488783,53899268026574,53899268264533,53899269979824,53899270199033,53899270957574,53899275863158,53899282298158,
+0,53899279383423,53899279383423,9223372036854775807,0,53899279980324,53899280118449,53899282958199,53899283180991,53899284923283,53899285153616,53899286315449,53899291474824,53899299234074,
+0,53899296187411,53899296187411,9223372036854775807,0,53899296760658,53899296821741,53899299521158,53899299745824,53899301747699,53899301976949,53899303045741,53899308318199,53899316553366,
+0,53899313068291,53899313068291,9223372036854775807,0,53899314180324,53899314232366,53899317188366,53899317406658,53899319280908,53899319393116,53899321331783,53899326974241,53899332703283,
+0,53899329778960,53899329778960,9223372036854775807,0,53899330374741,53899330429824,53899332917949,53899333177533,53899333407699,53899333668949,53899334890866,53899339750116,53899350217741,
+0,53899346602312,53899346602312,9223372036854775807,0,53899347295991,53899347300949,53899368212949,53899368389866,53899370396908,53899370672533,53899372229783,53899379364991,53899384755866,
+0,53899363415269,53899363415269,9223372036854775807,0,53899378038324,53899378106866,53899383495449,53899383688991,53899384695991,53899384920533,53899385398033,53899390234491,53899399400991,
+---PROFILEDATA---
+
+
+View hierarchy:
+
+  com.takahashirinta.ncrust/com.takahashirinta.ncrust.MainActivity/android.view.ViewRootImpl@613f835
+  7 views, 8.45 kB of display lists
+
+
+Total ViewRootImpl: 1
+Total Views:        7
+Total DisplayList:  8.45 kB
+

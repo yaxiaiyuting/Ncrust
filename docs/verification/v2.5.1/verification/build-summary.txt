@@ -1,0 +1,27 @@
+=== v2.5.1 构建与测试（原始输出 · 最终构建，源码 = f90aec0）===
+命令：./gradlew clean testDebugUnitTest lint assembleDebug assembleRelease
+BUILD SUCCESSFUL in 3m 14s
+421 actionable tasks: 133 executed, 288 up-to-date
+
+############ 单测 ############
+类 81 / 用例 1087 / 失败 0 / 错误 0 / 跳过 0
+
+############ lint ############
+0 errors, 8 warnings (56 errors, 102 warnings filtered by baseline lint-baseline.xml)
+severity 分布: {'Information': 2, 'Warning': 8}
+Error/Fatal 条数: 0
+
+############ 产物 ############
+--- app/build/outputs/apk/debug/app-debug.apk
+  size=30745966 bytes  mtime=2026-09-25 20:47:03.353877069 +0800
+  package: name='com.takahashirinta.ncrust' versionCode='42' versionName='2.5.1-gpl' platformBuildVersionName='16' platformBuildVersionCode='36' compileSdkVersion='36' compileSdkVersionCodename='16'
+  sha256=32fb2140192839645017deccee8a28fd0194ad8bc2d7bda03188fc7cf2fd230e  app/build/outputs/apk/debug/app-debug.apk
+--- app/build/outputs/apk/release/app-release.apk
+  size=10042824 bytes  mtime=2026-09-25 20:48:54.196221059 +0800
+  package: name='com.takahashirinta.ncrust' versionCode='42' versionName='2.5.1-gpl' platformBuildVersionName='16' platformBuildVersionCode='36' compileSdkVersion='36' compileSdkVersionCodename='16'
+  sha256=d00d3ddbe35b0fed63f6080580eebe561f35c67d167438e9ddd67dd76945e24a  app/build/outputs/apk/release/app-release.apk
+
+############ release 签名 ############
+Signer #1 certificate DN: CN=Ncrust GPL Fork, OU=Personal, O=yaxiaiyuting, L=Unknown, ST=Unknown, C=CN
+Signer #1 certificate SHA-256 digest: e75af3ffbcf76a36a567188d88d132adf3c7484c53c20a3a083cb1d222025511
+Signer #1 certificate SHA-1 digest: 12f56c4b8bcdb72590f198e247210842e54d9b38

@@ -1,0 +1,103 @@
+== next-version.sh ==
+repo:      /home/duanjb666/deepseek/ncrust-gpl/Ncrust
+dist:      /home/duanjb666/deepseek/ncrust-gpl/dist
+aapt2:     /home/duanjb666/Android/sdk/build-tools/36.0.0//aapt2
+
+-- 最近 5 个 tag --
+v2.5.0-gpl
+v2.4.0-gpl
+v2.3.0-gpl
+v2.2.1-gpl
+v2.2.0-gpl
+
+-- tag 内 build.gradle versionCode 最大值: 41  (v2.5.0-gpl)
+-- 仓库当前 build.gradle: versionCode=41 versionName=2.5.0-gpl
+
+-- dist/*.apk badging（共 68 个） --
+  Ncrust-v1.0.4-gpl-release.apk	7
+  Ncrust-v1.1.0-gpl-debug.apk	8
+  Ncrust-v1.1.0-gpl-release.apk	8
+  Ncrust-v1.1.1-gpl-debug.apk	9
+  Ncrust-v1.1.1-gpl-release.apk	9
+  Ncrust-v1.2.0-gpl-debug.apk	10
+  Ncrust-v1.2.0-gpl-release.apk	10
+  Ncrust-v1.3.0-gpl-debug.apk	11
+  Ncrust-v1.3.0-gpl-release.apk	11
+  Ncrust-v1.3.1-gpl-debug.apk	6
+  Ncrust-v1.4.0-gpl-debug.apk	12
+  Ncrust-v1.4.0-gpl-release.apk	12
+  Ncrust-v1.4.1-gpl-debug.apk	13
+  Ncrust-v1.4.1-gpl-release.apk	13
+  Ncrust-v1.4.2-gpl-debug.apk	14
+  Ncrust-v1.4.2-gpl-release.apk	14
+  Ncrust-v1.5.0-gpl-debug.apk	15
+  Ncrust-v1.5.0-gpl-release.apk	15
+  Ncrust-v1.5.2-gpl-debug.apk	17
+  Ncrust-v1.5.2-gpl-release.apk	17
+  Ncrust-v1.6.0-gpl-debug.apk	18
+  Ncrust-v1.6.0-gpl-release.apk	18
+  Ncrust-v1.6.1-gpl-debug.apk	19
+  Ncrust-v1.6.1-gpl-release.apk	19
+  Ncrust-v1.7.0-gpl-debug.apk	20
+  Ncrust-v1.7.0-gpl-release.apk	20
+  Ncrust-v1.8.0-gpl-debug.apk	21
+  Ncrust-v1.8.0-gpl-release.apk	21
+  Ncrust-v1.8.1-gpl-debug.apk	22
+  Ncrust-v1.8.1-gpl-release.apk	22
+  Ncrust-v1.9.0-gpl-debug.apk	23
+  Ncrust-v1.9.0-gpl-release.apk	23
+  Ncrust-v1.9.1-gpl-debug.apk	24
+  Ncrust-v1.9.1-gpl-release.apk	24
+  Ncrust-v1.9.2-gpl-debug.apk	25
+  Ncrust-v1.9.2-gpl-release.apk	25
+  Ncrust-v1.9.3-gpl-debug.apk	26
+  Ncrust-v1.9.3-gpl-release.apk	26
+  Ncrust-v2.0.0-gpl-debug.apk	27
+  Ncrust-v2.0.0-gpl-release.apk	27
+  Ncrust-v2.0.1-gpl-debug.apk	28
+  Ncrust-v2.0.1-gpl-release.apk	28
+  Ncrust-v2.0.2-gpl-debug.apk	29
+  Ncrust-v2.0.2-gpl-release.apk	29
+  Ncrust-v2.1.0-gpl-debug.apk	30
+  Ncrust-v2.1.0-gpl-release.apk	30
+  Ncrust-v2.1.1-gpl-debug.apk	31
+  Ncrust-v2.1.1-gpl-release.apk	31
+  Ncrust-v2.1.2-gpl-debug.apk	32
+  Ncrust-v2.1.2-gpl-release.apk	32
+  Ncrust-v2.1.3-gpl-debug.apk	33
+  Ncrust-v2.1.3-gpl-release.apk	33
+  Ncrust-v2.1.4-gpl-debug.apk	34
+  Ncrust-v2.1.4-gpl-release.apk	34
+  Ncrust-v2.1.5-gpl-debug.apk	35
+  Ncrust-v2.1.5-gpl-release.apk	35
+  Ncrust-v2.1.6-gpl-debug.apk	36
+  Ncrust-v2.1.6-gpl-release.apk	36
+  Ncrust-v2.2.0-gpl-debug.apk	37
+  Ncrust-v2.2.0-gpl-release.apk	37
+  Ncrust-v2.2.1-gpl-debug.apk	38
+  Ncrust-v2.2.1-gpl-release.apk	38
+  Ncrust-v2.3.0-gpl-debug.apk	39
+  Ncrust-v2.3.0-gpl-release.apk	39
+  Ncrust-v2.4.0-gpl-debug.apk	40
+  Ncrust-v2.4.0-gpl-release.apk	40
+  Ncrust-v2.5.0-gpl-debug.apk	41
+  Ncrust-v2.5.0-gpl-release.apk	41
+
+==========================================
+  MAX versionCode (所有来源) = 41   [Ncrust-v2.5.0-gpl-debug.apk]
+  下一个可用 versionCode     = 42
+==========================================
+
+############ 定号：脚本输出 ############
+==========================================
+  MAX versionCode (所有来源) = 41   [Ncrust-v2.5.0-gpl-debug.apk]
+  下一个可用 versionCode     = 42
+==========================================
+
+############ 定号：脚本输出 ############
+
+############ 打 tag 前的三源一致性复核（自证）############
+tag v2.5.0-gpl 指向的 build.gradle：versionCode=41
+本版产物 release badging：versionCode='42'
+本版产物 debug   badging：versionCode='42'
+工作区 build.gradle：versionCode=42
