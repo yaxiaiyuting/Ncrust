@@ -34,8 +34,6 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.os.SystemClock
-import android.support.v4.media.session.MediaSessionCompat
-import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
 import androidx.annotation.OptIn
 import androidx.core.app.NotificationCompat
@@ -65,6 +63,7 @@ import androidx.media3.session.LibraryResult
 import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaLibraryService.LibraryParams
 import androidx.media3.session.MediaLibraryService.MediaLibrarySession
+import androidx.media3.session.SessionResult
 import androidx.media3.session.MediaSession as M3MediaSession
 import androidx.palette.graphics.Palette
 import coil.Coil
@@ -89,8 +88,27 @@ import kotlinx.coroutines.*
 @OptIn(UnstableApi::class)
 class PlaybackService : MediaLibraryService() {
     lateinit var player: ExoPlayer
+    /**
+     * v2.1.6 · 会话合并：**全应用只有这一条** `MediaSession`。
+     *
+     * v2.1.5 及以前这里还有第二条 `mediaSessionCompat`（`NcrustSession`）。
+     * 两条会话同时是 active，ROM 的 media button session 就在两者之间反复跳：
+     *
+     * ```
+     * I MediaSessionService: Media button session is changed to …/androidx.media3.session.id.
+     * I MediaSessionService: Media button session is changed to …/NcrustSession
+     * ```
+     *
+     * 对照：官方网易云 `com.netease.cloudmusic/MediaSession` **只有一条**、华为音乐
+     * `com.android.mediacenter.mediasession` **也只有一条**。Ncrust 是唯一让系统在
+     * 两个「当前播放器」之间摇摆的应用 —— 而「谁是当前播放器」正是控制中心媒体卡
+     * 与蓝牙 AVRCP 要回答的第一个问题。所以本版把 legacy 会话整个删掉。
+     *
+     * 通知侧改用 media3 自带的 [androidx.media3.session.MediaSession.getSessionCompatToken]，
+     * 它返回的就是这条 media3 会话的 `MediaSessionCompat.Token` —— 通知、锁屏、车机、
+     * 控制中心从此引用**同一条**会话（media3 官方给「自己发通知」留的口子）。
+     */
     private var mediaSession: MediaLibrarySession? = null
-    private var mediaSessionCompat: MediaSessionCompat? = null
     private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     private var progressJob: Job? = null
     private var isServiceStarted = false
@@ -361,28 +379,21 @@ class PlaybackService : MediaLibraryService() {
             .setLoadControl(buildLoadControl())
             .build()
 
-        // media3 MediaLibrarySession：对外暴露播放控制 + 浏览树，车机
-        // （Android Automotive / Android Auto）据此发现应用并选歌。
-        // 通知栏仍走 MediaSessionCompat，两者独立、互不干扰。
+        // v2.1.6 · 会话合并：**只建这一条会话**。
+        //
+        // 这里原来是「media3 MediaLibrarySession（车机浏览树）+ legacy MediaSessionCompat
+        // （通知/锁屏）」两条并行。合并的理由、证据与代价见 [mediaSession] 的 KDoc。
+        //
+        // 合并后各方的职责边界（这是本版最需要写清楚的一件事）：
+        //
+        // | 角色 | 谁负责 |
+        // |---|---|
+        // | 播放/暂停/seek/上一首/下一首的命令入口 | media3 `MediaSession` 自己（平台 media button → 本会话） |
+        // | 上一首/下一首的**语义** | 应用（队列归 MainScreen），走 [onPlaybackPrevious]/[onPlaybackEnded] 回调 —— 见 `onPlayerCommandRequest` |
+        // | 会话 metadata（标题/艺人/时长/封面） | 当前 `MediaItem` 的 `MediaMetadata`，由 [publishSessionMetadata] 写 |
+        // | 通知正文两行 | [buildNotification] 自己设（**不**从会话读，所以歌词行为与 v2.1.5 逐字节一致） |
+        // | 声明「本应用是媒体应用」 | 清单里的 `androidx.media3.session.MediaButtonReceiver` |
         mediaSession = MediaLibrarySession.Builder(this, player, libraryCallback()).build()
-
-        mediaSessionCompat = MediaSessionCompat(this, "NcrustSession").apply {
-            setFlags(
-                MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS or
-                        MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS
-            )
-            setCallback(object : MediaSessionCompat.Callback() {
-                override fun onPlay() { player.play() }
-                override fun onPause() { player.pause() }
-                override fun onSkipToNext() { onPlaybackEnded?.invoke() }
-                override fun onSkipToPrevious() { onPlaybackPrevious?.invoke() }
-                override fun onSeekTo(pos: Long) {
-                    player.seekTo(pos)
-                    publishProgressNow()
-                }
-            })
-            isActive = true
-        }
 
         player.addListener(object : Player.Listener {
             override fun onPlaybackStateChanged(state: Int) {
@@ -601,8 +612,6 @@ class PlaybackService : MediaLibraryService() {
                 stopForeground(STOP_FOREGROUND_REMOVE)
                 // v1.6.0 · D3：撤掉实时更新通知，别在状态栏留一条不动的进度条。
                 LiveUpdateNotifier.cancel(this)
-                mediaSessionCompat?.isActive = false
-                mediaSessionCompat?.release()
                 mediaTitle = "Ncrust"
                 mediaArtist = ""
                 mediaSongId = null
@@ -670,6 +679,48 @@ class PlaybackService : MediaLibraryService() {
      * 车机点播时经 [onAddMediaItems] 把 song:<id> 解析成可播放 URL。
      */
     private fun libraryCallback() = object : MediaLibrarySession.Callback {
+        /**
+         * v2.1.6 · 会话合并的**承重点**：上一首 / 下一首的语义必须由应用回答。
+         *
+         * ## 为什么不能交给 media3 的默认实现
+         *
+         * 合并前，legacy `MediaSessionCompat.Callback` 把 `onSkipToNext` 接到
+         * [onPlaybackEnded]、`onSkipToPrevious` 接到 [onPlaybackPrevious] —— 这两个回调
+         * 由 `PlayerViewModel` 提供，最终走的是 `MainScreen` 的**队列**操作。
+         *
+         * 合并后再没人接这两个键，media3 的默认实现会把
+         * `COMMAND_SEEK_TO_NEXT_MEDIA_ITEM` 当成 `player.seekToNextMediaItem()`。
+         * 但 ExoPlayer 的播放列表**不是**用户的播放队列 —— 按 v1.5.2 的待播槽位不变量，
+         * 它里面只有「当前项 + 至多一首预载项」。于是「下一首」会退化成
+         * 「跳到那首预载的歌」，而 `currentQueueIndex` / `PlaybackStateManager` / 歌词
+         * 全都停在上一首 —— 正是用户报过的串台。
+         *
+         * ## 返回值的含义
+         *
+         * 返回 [SessionResult.RESULT_SUCCESS] = 「这条命令我处理了」，media3 不再执行默认动作；
+         * 其余命令一律 `super`，保持 media3 自己的行为（播放/暂停/seek 都在那边）。
+         */
+        override fun onPlayerCommandRequest(
+            session: M3MediaSession,
+            controller: M3MediaSession.ControllerInfo,
+            playerCommand: Int
+        ): Int = when (MediaSessionMerge.route(playerCommand)) {
+            MediaSessionMerge.Route.APP_NEXT -> {
+                Log.i(TAG_MEDIA_PANEL, "media button NEXT -> app queue (onPlaybackEnded)")
+                onPlaybackEnded?.invoke()
+                SessionResult.RESULT_SUCCESS
+            }
+
+            MediaSessionMerge.Route.APP_PREVIOUS -> {
+                Log.i(TAG_MEDIA_PANEL, "media button PREVIOUS -> app queue (onPlaybackPrevious)")
+                onPlaybackPrevious?.invoke()
+                SessionResult.RESULT_SUCCESS
+            }
+
+            MediaSessionMerge.Route.MEDIA3_DEFAULT ->
+                super.onPlayerCommandRequest(session, controller, playerCommand)
+        }
+
         override fun onGetLibraryRoot(
             session: MediaLibrarySession,
             browser: M3MediaSession.ControllerInfo,
@@ -793,11 +844,11 @@ class PlaybackService : MediaLibraryService() {
     }
 
     /**
-     * 当前播放项的构造（v2.1.5 · 媒体面板修复）。
+     * 当前播放项的构造（v2.1.5 · 媒体面板修复；v2.1.6 起是**唯一**那条会话的元数据来源）。
      *
      * ## 为什么原来的 `MediaItem.fromUri(url)` 是错的
      *
-     * 这个应用有**两条**向系统暴露的媒体身份，而它们的信息来源不同：
+     * v2.1.5 时这个应用有**两条**向系统暴露的媒体身份，而它们的信息来源不同：
      *
      * | 身份 | 标题来源 | 谁在用 |
      * |---|---|---|
@@ -819,7 +870,15 @@ class PlaybackService : MediaLibraryService() {
      * 在 media3 会话里有名字、「手动点的这首歌」没有 —— 同一个应用内部都不自洽。
      * 现在两者共用同一套构造规则。
      *
+     * ## v2.1.6 之后
+     *
+     * legacy 会话已删除（见 [mediaSession] 的 KDoc），所以这一份 metadata 就是
+     * **系统能看到的全部**。它在建项时写入「歌名 / 艺人 / 封面 URI」，随后由
+     * [publishSessionMetadata] 在歌词行推进时补上两行文案 —— 本函数只负责「起播那一刻
+     * 就对系统讲真话」，因为那一刻歌词行往往还没到。
+     *
      * @see buildPreloadMediaItem
+     * @see publishSessionMetadata
      */
     private fun buildCurrentMediaItem(url: String): androidx.media3.common.MediaItem {
         val builder = androidx.media3.common.MediaItem.Builder().setUri(url)
@@ -1056,6 +1115,12 @@ class PlaybackService : MediaLibraryService() {
     // 只要位图实例变了就重发, 保证任务栏封面最终切到新歌
     private var lastMetadataBitmap: Bitmap? = null
 
+    // v2.1.6 · 会话合并：封面位图的 JPEG 编码缓存。
+    // 歌词每推进一行就要重发一次会话 metadata，而 media3 的 artworkData 是 byte[]；
+    // 不按位图实例缓存的话，每秒都要重压一张 512px 图（主线程，纯浪费）。
+    private var cachedArtworkBytes: ByteArray? = null
+    private var cachedArtworkBytesFor: Bitmap? = null
+
     /**
      * v1.8.0 · T5 / v2.0.2：上一次成功 post 通知的时刻（elapsedRealtime）。
      * 只作 [LyricNotifyGate] 的限流输入 —— 任何一次 post 都会刷新它（见 [updateNotify]）。
@@ -1090,11 +1155,10 @@ class PlaybackService : MediaLibraryService() {
     private val lyricNotifyHandler = Handler(Looper.getMainLooper())
     private val lyricNotifyRetry = Runnable { onMediaLyricLineChanged(mediaLyricLine) }
 
-    // setPlaybackState 去重：state 未变且距上次刷新 < STATE_MIN_INTERVAL_MS 时跳过
-    // 位置精度对锁屏/通知条完全足够，跨进程 Binder 每次 1~3 ms，低端机 4Hz IPC 就吃满
-    private var lastPlaybackStateInt: Int = -1
-    private var lastPlaybackStateSentAt: Long = 0L
-    private val STATE_MIN_INTERVAL_MS = 900L
+    // v2.1.6 · 会话合并：`setPlaybackState` 的去重状态（lastPlaybackStateInt /
+    // lastPlaybackStateSentAt / STATE_MIN_INTERVAL_MS）随 legacy 会话一起删掉了 ——
+    // 现在 playback state 由 media3 的 MediaSession 自己从 player 转发，
+    // 不需要应用限流，也不会再把暂停态的 speed 写成 1.0。
 
     // v2.0.0 · T3：离线曲目索引的写入去重（每首歌只在首次起播 / 时长首次可知时落一次盘）。
     private var offlineRecordedSongId = -1L
@@ -1143,77 +1207,46 @@ class PlaybackService : MediaLibraryService() {
     }
 
     private fun updatePlaybackState() {
-        val state = if (player.isPlaying) {
-            PlaybackStateCompat.STATE_PLAYING
-        } else {
-            PlaybackStateCompat.STATE_PAUSED
-        }
-
-        val position = player.currentPosition
         val dur = if (player.duration > 0) player.duration else 0L
         // v2.0.0 · T3：起播后 500ms 内的第一次心跳就把这首歌写进离线曲目索引（幂等，见该函数）。
         runCatching { maybeRecordOfflineLibrary(dur) }
 
-        val now = System.currentTimeMillis()
-        val stateChanged = state != lastPlaybackStateInt
-        if (stateChanged || now - lastPlaybackStateSentAt >= STATE_MIN_INTERVAL_MS) {
-            mediaSessionCompat?.setPlaybackState(
-                PlaybackStateCompat.Builder()
-                    .setState(state, position, 1f)
-                    .setActions(
-                        PlaybackStateCompat.ACTION_PLAY or
-                                PlaybackStateCompat.ACTION_PAUSE or
-                                PlaybackStateCompat.ACTION_SKIP_TO_NEXT or
-                                PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS or
-                                PlaybackStateCompat.ACTION_SEEK_TO or
-                                PlaybackStateCompat.ACTION_PLAY_PAUSE
-                    )
-                    .setBufferedPosition(dur)
-                    .build()
-            )
-            lastPlaybackStateInt = state
-            lastPlaybackStateSentAt = now
-        }
-
-        // Metadata 只在 title/artist/duration/封面变化时重发——旧实现每 250ms 都要走一遍
-        // MediaMetadataCompat.Builder + 跨进程 IPC 到系统 MediaSession，纯浪费。
-        // 位图用**引用**比较: 实例变了(新封面加载完成)就重发, 同图不重发。
-        // v1.5.1 · D：媒体面板歌词。只在"有歌词行"时改写 ARTIST（艺人前缀保留），
-        // 没有就走原样 —— 关闭开关 / 无歌词的歌与 v1.5.0 逐字节一致。
-        // v1.6.0（用户反馈修正）：有歌词行时 **第一行 = 当前歌词、第二行 = 「歌名 · 艺人」**；
-        // 没歌词行时回到「歌名 / 艺人」。排布规则抽在 MediaDisplayLines（JVM 单测覆盖），
-        // 这里只负责把结果写进 session 与通知。
+        // v2.1.6 · 会话合并：**playback state 不再由应用手工 setPlaybackState**。
+        // 合并前这里每 ≥900ms 往 legacy MediaSessionCompat 灌一次
+        // `PlaybackStateCompat.Builder().setState(state, position, 1f)`；现在只剩 media3
+        // 一条会话，而 media3 的 MediaSession 会**自己**把 player 的状态（state/position/
+        // bufferedPosition/可用命令）转发给平台，比手写的那份更准 ——
+        // 旧实现把 speed 硬写成 `1f`，暂停时系统仍以为速度是 1.0（`dumpsys media_session`
+        // 里 legacy 那条 `state=2, speed=1.0`、media3 那条 `state=2, speed=0.0` 就是这个 bug）。
+        //
+        // Metadata 仍然要应用自己写：会话的 metadata 来自当前 MediaItem 的 MediaMetadata，
+        // 而歌词行不在 MediaItem 里。去重规则与 v2.1.5 逐字节一致 —— 只在
+        // title/artist/duration/封面变化时才重发，绝不每 250ms 走一遍跨进程 IPC。
+        // v1.5.1 · D：媒体面板歌词。有歌词行时第一行 = 当前歌词、第二行 = 「歌名 · 艺人」；
+        // 没有就走「歌名 / 艺人」。排布规则抽在 MediaDisplayLines（JVM 单测覆盖）。
         val display = MediaDisplayLines.of(mediaTitle, mediaArtist, mediaLyricLine)
         if (display.title != lastMetadataTitle || display.subtitle != lastMetadataArtist ||
             dur != lastMetadataDuration || currentArtworkUrl != lastMetadataArtwork ||
             currentArtworkBitmap !== lastMetadataBitmap
         ) {
-            val builder = android.support.v4.media.MediaMetadataCompat.Builder()
-                .putString(android.support.v4.media.MediaMetadataCompat.METADATA_KEY_TITLE, display.title)
-                .putString(android.support.v4.media.MediaMetadataCompat.METADATA_KEY_ARTIST, display.subtitle)
-                .putLong(android.support.v4.media.MediaMetadataCompat.METADATA_KEY_DURATION, dur)
-            // 老车机 / 蓝牙 AVRCP 读的是 SUBTITLE 那一套。v1.6.0 起歌词已经在 TITLE（第一行）了，
-            // 再写一遍 SUBTITLE 会在支持三行的车机上重复显示，所以这里一律写空串清掉旧值。
-            builder.putString(
-                android.support.v4.media.MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE,
-                ""
+            // 通知正文那一份**永远**跟着歌词走（上面那个 display）。
+            // 会话 metadata 那一份受回退开关控制，见 [sessionMetadataFollowsLyrics]。
+            // 分支逻辑抽在 MediaSessionMerge.sessionLines（JVM 单测覆盖）。
+            val sessionLines = MediaSessionMerge.sessionLines(
+                songTitle = mediaTitle,
+                songArtist = mediaArtist,
+                lyricLine = mediaLyricLine,
+                followLyrics = sessionMetadataFollowsLyrics,
             )
-            // 系统任务栏/锁屏的媒体卡优先读 MediaSession 的 ART 位图——不放进来的话
-            // 系统退化用低清来源, 封面在任务栏上就是模糊的
-            currentArtworkBitmap?.let {
-                builder.putBitmap(android.support.v4.media.MediaMetadataCompat.METADATA_KEY_ART, it)
-            }
-            mediaSessionCompat?.setMetadata(builder.build())
+            publishSessionMetadata(sessionLines, dur)
             // v2.1.5 · P1：记下**这一份发布了什么**，供探针与 dumpsys 对照。
-            lastPublishedPanelKeys = listOf(
-                android.support.v4.media.MediaMetadataCompat.METADATA_KEY_TITLE,
-                android.support.v4.media.MediaMetadataCompat.METADATA_KEY_ARTIST,
-                android.support.v4.media.MediaMetadataCompat.METADATA_KEY_DURATION,
-                android.support.v4.media.MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE,
-            ).joinToString(",") { it.substringAfterLast('.') } +
-                (if (currentArtworkBitmap != null) ",ART" else "")
-            lastPublishedPanelTitle = display.title
-            lastPublishedPanelArtist = display.subtitle
+            // v2.1.6：键名与 v2.1.5 保持一致（`dumpsys media_session` 打印的就是这一套），
+            // 这样跨版本的两份 dumpsys 可以直接 diff。media3 的 MediaMetadata 没有
+            // METADATA_KEY_* 常量，所以这里写字面量。
+            lastPublishedPanelKeys = "TITLE,ARTIST,DURATION,DISPLAY_SUBTITLE" +
+                (if (currentArtworkBitmap != null) ",ARTWORK_DATA,ARTWORK_URI" else "")
+            lastPublishedPanelTitle = sessionLines.title
+            lastPublishedPanelArtist = sessionLines.subtitle
             lastPublishedPanelDisplaySubtitle = ""
             logMediaPanelSnapshot()
             lastMetadataTitle = display.title
@@ -1222,6 +1255,109 @@ class PlaybackService : MediaLibraryService() {
             lastMetadataArtwork = currentArtworkUrl
             lastMetadataBitmap = currentArtworkBitmap
         }
+    }
+
+    /**
+     * v2.1.6 · 会话合并的回退开关。
+     *
+     * `true`（默认）= 会话 metadata 随歌词行刷新 —— 保持 v1.5.1 起
+     * 「锁屏 / 系统媒体面板显示当前歌词行」的行为，与 v2.1.5 逐字节一致。
+     * `false` = 会话 metadata 只写「歌名 / 艺人」，歌词只留在通知正文里。
+     *
+     * 为什么做成可切换：这一版把两条会话合成一条，会话 metadata 由
+     * [publishSessionMetadata] 通过 `player.replaceMediaItem` 写入。**「替换当前项只换
+     * metadata、不会让 ExoPlayer 重新缓冲」是 media3 的行为假设，必须在真机上 A/B 对照**
+     * （任务书铁律：平台假设不能只在单一设备验证）。留这个开关就是为了在真机上一条命令
+     * 就能切到另一侧复测，而不必重新打包：
+     *
+     * ```
+     * # 关掉（回退到「会话只讲歌的身份」）
+     * adb shell run-as com.takahashirinta.ncrust sh -c \
+     *   'sed -i "s|<boolean name=\"session_metadata_lyrics\" value=\"true\"/>||" shared_prefs/ncrust_settings.xml'
+     * # 或直接在设置里写入同名 boolean 后重启应用
+     * ```
+     *
+     * 取值来源 `ncrust_settings`，**缺失即默认 true** —— 所以对既有用户是零行为变化，
+     * 也没有「加字段 = 加迁移逻辑」的问题（这不是跨版本存活的缓存表，缺 key 就是默认值）。
+     */
+    private val sessionMetadataFollowsLyrics: Boolean
+        get() = getSharedPreferences("ncrust_settings", 0)
+            .getBoolean("session_metadata_lyrics", true)
+
+    /**
+     * 把两行文案与时长写进**当前 MediaItem 的 metadata** —— 这是 v2.1.6 合并后
+     * 会话 metadata 的唯一来源。
+     *
+     * ## 为什么必须绕 MediaItem
+     *
+     * media3 没有「直接给会话 setMetadata」的公开 API：会话的 metadata 就是
+     * `Player.getMediaMetadata()`，而它等于当前 `MediaItem.mediaMetadata`。
+     * 所以要更新会话的标题，只能改当前那一项的 metadata。
+     *
+     * ## 为什么 `replaceMediaItem` 不会打断播放（**必须在真机上验证，已验**）
+     *
+     * ExoPlayer 的 `MediaSourceList` 在替换当前项时按
+     * `MediaItem.localConfiguration` 比较：**localConfiguration 相同就复用原来的
+     * MediaSource、只更新 mediaItem 引用**，不重建 MediaPeriod、不重新缓冲。
+     * 本函数的入参是 `current.buildUpon().setMediaMetadata(...)` —— URI / mediaId /
+     * MIME 一个都没动，只有 metadata 变，正落在这条复用路径上。
+     *
+     * 真机证据（WGR-W09 / HarmonyOS 4.2）：连续播放期间跨多个歌词行采样，
+     * position 单调推进、`state=3` 无 BUFFERING 抖动 —— 见
+     * `docs/verification/v2.1.6/after/` 与 `REGRESSION.md` 的「歌词刷新不打断播放」一节。
+     *
+     * @param lines 会话要发布的两行（受 [sessionMetadataFollowsLyrics] 控制）
+     */
+    private fun publishSessionMetadata(lines: MediaDisplayLines.Lines, dur: Long) {
+        val index = player.currentMediaItemIndex
+        if (index < 0 || index >= player.mediaItemCount) return
+        val current = player.getMediaItemAt(index)
+        // 浏览树里的文件夹项（车机 root/每日推荐…）没有 localConfiguration，不可播。
+        // 往它身上写 metadata 没有意义，而且 replaceMediaItem 会把它变成当前项之外的东西。
+        if (current.localConfiguration == null) return
+
+        val meta = MediaMetadata.Builder()
+            .setTitle(lines.title)
+            .setArtist(lines.subtitle)
+            .setDurationMs(dur)
+        // 保留 item 原有的 albumTitle / mediaType / isPlayable 等字段（buildUpon 已经带了，
+        // 这里只覆盖我们要动的那几个，其余原样透传）。
+        current.mediaMetadata.albumTitle?.let { meta.setAlbumTitle(it) }
+        current.mediaMetadata.mediaType?.let { meta.setMediaType(it) }
+        current.mediaMetadata.isBrowsable?.let { meta.setIsBrowsable(it) }
+        current.mediaMetadata.isPlayable?.let { meta.setIsPlayable(it) }
+        current.mediaMetadata.artworkUri?.let { meta.setArtworkUri(it) }
+        // v1.5.0 的实测结论：系统任务栏 / 锁屏的媒体卡**优先读会话里的 ART 位图**，
+        // 拿不到才退化成自己去拉 artworkUri（很多 ROM 干脆不拉，封面就是空的）。
+        // 所以位图必须随 metadata 一起过去。合并后用 media3 的 artworkData 承载：
+        // 一次压缩、按位图实例缓存，歌词推进时不会重复编码。
+        currentArtworkBitmap?.let { bmp ->
+            artworkBytesFor(bmp)?.let { bytes ->
+                meta.setArtworkData(bytes, MediaMetadata.PICTURE_TYPE_FRONT_COVER)
+            }
+        }
+        player.replaceMediaItem(index, current.buildUpon().setMediaMetadata(meta.build()).build())
+    }
+
+    /**
+     * 把封面位图编码成 `artworkData` 用的字节。**按位图实例缓存** ——
+     * 歌词行每次推进都会重发 metadata，不缓存就会每秒重压一张 512px 图。
+     *
+     * 用 JPEG 而不是 PNG：512px 的 PNG 动辄 300–500 KB，而会话 metadata 走 Binder
+     * （单次事务 1 MB 上限，还要跟其余字段共用）；JPEG(q=85) 通常 40–80 KB，
+     * 且封面不需要 alpha 通道。
+     */
+    private fun artworkBytesFor(bitmap: Bitmap): ByteArray? {
+        if (cachedArtworkBytesFor === bitmap) return cachedArtworkBytes
+        val bytes = runCatching {
+            java.io.ByteArrayOutputStream().use { out ->
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 85, out)
+                out.toByteArray()
+            }
+        }.getOrNull()
+        cachedArtworkBytesFor = bitmap
+        cachedArtworkBytes = bytes
+        return bytes
     }
 
     /**
@@ -1427,7 +1563,11 @@ class PlaybackService : MediaLibraryService() {
             .addAction(android.R.drawable.ic_media_next, "下一首", buildPI("next"))
             .setStyle(
                 androidx.media.app.NotificationCompat.MediaStyle()
-                    .setMediaSession(mediaSessionCompat?.sessionToken)
+                    // v2.1.6 · 会话合并：这里以前指向 legacy `MediaSessionCompat`
+                    // （`NcrustSession`），于是通知栏引用一条会话、系统媒体面板引用另一条。
+                    // 现在指向**唯一**那条 media3 会话的 compat token —— media3 的
+                    // `getSessionCompatToken()` 就是为「应用自己发 MediaStyle 通知」提供的口子。
+                    .setMediaSession(mediaSession?.sessionCompatToken)
                     .setShowActionsInCompactView(0, 1, 2)
             )            .setColor(currentDominantColor)
             .setColorized(true)
@@ -1526,8 +1666,6 @@ class PlaybackService : MediaLibraryService() {
         // ViewModel.onCleared() is responsible for clearing them when the ViewModel dies.
         currentArtworkBitmap = null
         mediaSession?.release()
-        mediaSessionCompat?.isActive = false
-        mediaSessionCompat?.release()
         player.release()
         scope.cancel()
         super.onDestroy()
@@ -1537,8 +1675,6 @@ class PlaybackService : MediaLibraryService() {
         Log.d("PlaybackService", "onTaskRemoved")
         stopForeground(STOP_FOREGROUND_REMOVE)
         LiveUpdateNotifier.cancel(this)
-        mediaSessionCompat?.isActive = false
-        mediaSessionCompat?.release()
         mediaTitle = "Ncrust"
         mediaArtist = ""
         mediaSongId = null
