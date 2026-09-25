@@ -4,8 +4,8 @@
 JAVA_HOME=/usr/lib/jvm/java-21-openjdk ./gradlew clean testDebugUnitTest lint assembleDebug assembleRelease
 
 ## 单测
-tests=935 failures=0 errors=0 skipped=0
-（v2.3.0 基线 829 ⇒ 本版净增 106 条）
+tests=937 failures=0 errors=0 skipped=0
+（v2.3.0 基线 829 ⇒ 本版净增 108 条；其中 2 条是模拟器验证抓到的「回显虚高」修复的回归单测）
 新增测试类（@Test 数）：
   crosssource/CrossSourceMatcherTest.kt   37
   crosssource/CatalogAggregatorTest.kt    23
@@ -21,4 +21,4 @@ Fatal=0 Error=0
 ## APK
 debug:   app/build/outputs/apk/debug/app-debug.apk      versionCode=40 versionName=2.4.0-gpl
 release: app/build/outputs/apk/release/app-release.apk  versionCode=40 versionName=2.4.0-gpl
-release sha256(前16): e70477763168a11f
+release sha256(前16): 2b9576aea55a5b87（最终；tag v2.4.0-gpl = HEAD）
