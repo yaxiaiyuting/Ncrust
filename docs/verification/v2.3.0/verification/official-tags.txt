@@ -1,0 +1,41 @@
+# 官方（原唱 / 翻唱）标签（v2.3.0 release 真机实测）
+
+## 1. 判据（回顾，来自探针）
+
+- `originCoverType == 1` ⇒ **原唱**
+- `originCoverType == 2` ⇒ **翻唱**（其中 51% 另带 `originSongSimpleData`，可显示原曲）
+- `0` / `3` / 字段缺失 / **QQ 全部** ⇒ **不显示**
+
+自洽性（探针）：对 60 条「翻唱」回头查它声称的原曲，**58 条（96.7%）** 是 `1`，
+剩余 2 条是 `0`（无信息）；`originCoverType == 1` 的 429 条里 **0 条**带
+`originSongSimpleData`。
+
+## 2. 真机实测（release 包）
+
+搜索 `Taylor Swift`，多行显示「原唱」角标（dump `v230-24-search-tags-scrolled.xml`）：
+
+```
+Love Story                  → [可播放] [原唱]
+Cruel Summer                → [可播放] [原唱]
+Welcome To New York         → [可播放] [原唱]
+Enchanted                   → [可播放] [原唱]
+```
+
+角标与歌名同一行（`[344,783][644,858]` 歌名 / `[858,797][934,844]` 原唱角标），
+小角标、不抢主视觉（任务书 6.3）。
+截图 `screenshots/v230-24-search-tags-scrolled.png`。
+
+**「原唱」出现在 Taylor Swift 自己的歌上是正确的**：这些就是她本人的原版录音
+（`Fearless` / `Lover` / `1989 (Deluxe)` / `Speak Now (Deluxe Edition)` 都是她的正式专辑）。
+
+## 3. 未验证缺口（如实）
+
+1. **「翻唱」角标 + 「原唱：X · Y」副标题没有真机截图**：
+   本轮 `Taylor Swift` 的前 30 条里没有翻唱版本。判定逻辑与其边界
+   （无原曲信息时只显示「翻唱」、原曲名为空时不显示副标题、`originCoverType` 0/3 不打标签、
+   QQ 恒不打标签）由 `SongTagsTest` 的 8 条用例覆盖，其中一条专门钉
+   「标题自称原唱但服务端标 2 时以服务端为准」
+   （真实样本 `晴天 (原唱 周杰伦)` —— 它是翻唱）。
+2. **QQ 侧不打任何版本标签**是本版的**有意设计**（探针：QQ 的 `label`/`type`/`ov`/
+   `singer[].type` 在 130 条样本上全部同值，`songtype` 字段不存在），
+   不是「还没做」。真机上表现为 QQ 行没有版本角标。

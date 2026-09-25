@@ -1,0 +1,127 @@
+==============================================================================
+① 网易云 POST /api/cloudsearch/pc  type=1  关键词=周杰伦
+==============================================================================
+HTTP body 顶层 key: code, result, trp
+result 顶层 key: songCount, songs
+songs 条数 = 30
+result.privileges 存在? False
+单曲对象 key: al, alia, ar, cd, cf, copyright, cp, djId, dt, fee, ftype, h, id, l, m, mark, mst, mv, name, no, originCoverType, pop, privilege, pst, publishTime, resourceState, rtUrls, rtype, s_id, single, sq, st, t, v, version
+
+逐曲：name | fee | privilege(st,pl,dl,fl,sp,cp,maxbr,flag,toast) | 是否有 al.id
+  想你就写信 (Live)                       fee=1    al.id=36412633     ar=周杰伦,李硕,张鑫
+  屋顶                                 fee=8    al.id=512175       ar=周杰伦,温岚,吴宗宪
+  布拉格广场                              fee=1    al.id=21349        ar=蔡依林,周杰伦
+  默 (Live)                           fee=1    al.id=135010288    ar=李荣浩,周杰伦
+  因为爱情 (Live)                        fee=1    al.id=35757091     ar=周杰伦,那英
+  骑士精神                               fee=1    al.id=21349        ar=蔡依林,周杰伦
+  海盗                                 fee=1    al.id=21343        ar=蔡依林,周杰伦
+  屋顶 (Live)                          fee=1    al.id=73876816     ar=周杰伦,宿涵,张神儿
+  布拉格广场                              fee=1    al.id=18884        ar=蔡依林,周杰伦
+  刀马旦                                fee=1    al.id=25475        ar=李玟,周杰伦
+  乌克丽丽 (Live)                        fee=1    al.id=36412633     ar=周杰伦,陈颖恩,肖邦妮,朱文婷
+  山歌好比春江水.多谢了(Live)                  fee=0    al.id=28650        ar=宋祖英,周杰伦
+  黄浦江深                               fee=0    al.id=36774064     ar=宋祖英,周杰伦
+  Try (Kung Fu Panda 3 Official Them fee=0    al.id=34439096     ar=派伟俊,周杰伦
+  布拉格广场                              fee=1    al.id=510845       ar=蔡依林,周杰伦
+  刀马旦                                fee=1    al.id=25460        ar=李玟,周杰伦
+  骑士精神                               fee=1    al.id=18884        ar=蔡依林,周杰伦
+  一笑而过 + 你的背包 (Live)                 fee=1    al.id=35757091     ar=周杰伦,刘欢
+  沧海一声笑 (Live)                       fee=1    al.id=35757091     ar=那英,周杰伦,刘欢,陈奕迅
+  海盗                                 fee=1    al.id=21326        ar=蔡依林,周杰伦
+  布拉格广场                              fee=1    al.id=34429091     ar=蔡依林,周杰伦
+  刀马旦                                fee=1    al.id=34429091     ar=李玟,周杰伦
+  骑士精神                               fee=1    al.id=21326        ar=蔡依林,周杰伦
+  让我一次爱个够 + 因为爱所以爱 + 抚仙湖 + 等你下课 + 霍元 fee=1    al.id=71747366     ar=庾澄庆,周杰伦,谢霆锋,李健
+  只有为你 + 安静 + 不管有多苦 + 满 + 我要夏天 (Live fee=1    al.id=34783199     ar=那英,汪峰,庾澄庆,周杰伦
+  布拉格广场                              fee=1    al.id=34429108     ar=蔡依林,周杰伦
+  刀马旦                                fee=1    al.id=512175       ar=周杰伦,李玟
+  布拉格广场                              fee=1    al.id=21326        ar=蔡依林,周杰伦
+  骑士精神                               fee=1    al.id=34432052     ar=蔡依林,周杰伦
+  结尾曲-友谊地久天长(Live)                   fee=0    al.id=28650        ar=宋祖英,郎朗,多明戈,周杰伦
+
+fee 分布: {"1": 25, "8": 1, "0": 4}
+
+==============================================================================
+② 网易云 艺人页 GET /api/v1/artist/{id}  （周杰伦 id=6452）
+==============================================================================
+顶层 key: artist, code, hotSongs, more
+hotSongs 条数 = 50
+hotSong key: a, al, alia, ar, artistClassics, cd, cf, cp, crbt, djId, dt, eq, fee, ftype, h, hr, id, l, m, mark, mst, mv, name, no, noCopyrightRcmd, pop, privilege, pst, rt, rtUrl, rtUrls, rtype, rurl, songJumpInfo, sq, st, t, v
+privilege 存在? False
+  布拉格广场                              fee=1    al=看我72变
+  屋顶                                 fee=8    al=男女情歌对唱冠军全记录
+  默 (Live)                           fee=1    al=2021中国好声音 第1期
+  想你就写信 (Live)                       fee=1    al=中国新歌声第二季 第13期
+  刀马旦                                fee=1    al=Promise
+  手牵手                                fee=0    al=用音乐加油！！手牵手大合唱
+  骑士精神                               fee=1    al=看我72变
+  因为爱情 (Live)                        fee=1    al=中国新歌声第二季 第1期
+  布拉格广场                              fee=1    al=跨世纪金曲精选
+  海盗                                 fee=1    al=城堡
+
+==============================================================================
+③ 网易云 专辑页 GET /api/v1/album/{id}
+==============================================================================
+顶层 key: code, resourceState
+songs 条数 = 0
+privilege 存在? False
+album.company = None
+
+==============================================================================
+④ 网易云 单曲详情 POST /api/v3/song/detail
+==============================================================================
+顶层 key: code, privileges, songs
+privilege 存在? False
+song key: a, additionalTitle, al, alia, ar, artistClassics, awardTags, cd, cf, copyright, cp, crbt, displayTags, djId, dt, entertainmentTags, fee, ftype, h, hr, id, l, m, mainTitle, mark, markTags, mst, mv, name, no, noCopyrightRcmd, originCoverType, originSongSimpleData, pop, pst, publishTime, resourceState, rt, rtUrl, rtUrls, rtype, rurl, s_id, single, songFeature, songJumpInfo, sq, st, t, tagPicList, v, version
+sample privilege: {"id": 186016, "fee": 0, "payed": 0, "st": -200, "pl": 0, "dl": 0, "sp": 0, "cp": 0, "subp": 0, "cs": false, "maxbr": 999000, "fl": 0, "toast": false, "flag": 256, "preSell": false, "playMaxbr": 999000, "downloadMaxbr": 999000, "maxBrLevel": "lossless", "playMaxBrLevel": "lossless", "downloadMaxBrLevel": "lossless", "plLevel": "none", "dlLevel": "none", "flLevel": "none", "rscl": null, "freeTrialPrivilege": {"resConsumable": false, "userConsumable": false, "listenType": null, "cannotListenReason": 1, "playReason": null, "freeLimitTagType": null}, "rightSource": 0, "chargeInfoList": [{"rate": 128000, "chargeUrl": null, "chargeMessage": null, "chargeType": 0}, {"rate": 192000, "chargeUrl": null, "chargeMessage": null, "chargeType": 0}, {"rate": 320000, "chargeUrl": null, "chargeMessage": null, "chargeType": 0}, {"rate": 999000, "chargeUrl": null, "chargeMessage": null, "chargeType": 1}], "code": 0, "message": null, "plLevels": null, "dlLevels": null, "ignoreCache": null, "bd": null}
+
+==============================================================================
+⑤ 网易云 取链预检 POST /api/song/enhance/player/url/v1  （成本测量）
+==============================================================================
+id=186016     code=200   url=空      fee=0     level=None       time=464ms
+id=34507006   code=200   url=空      fee=0     level=None       time=489ms
+
+==============================================================================
+⑥ 网易云「无版权/下架」在搜索阶段能不能识别 —— 用已知样本对照
+==============================================================================
+关键词 周杰伦 晴天         命中 10 条；privileges 无
+    晴天 (原唱 周杰伦)                    fee=8    st=None pl=None     toast=None
+    晴天                             fee=8    st=None pl=None     toast=None
+    晴天(深情版)                        fee=8    st=None pl=None     toast=None
+    晴天                             fee=8    st=None pl=None     toast=None
+    晴天 (钢琴版) [原唱: 周杰伦]             fee=1    st=None pl=None     toast=None
+    晴天 (女声版))                      fee=8    st=None pl=None     toast=None
+    周杰伦-晴天 (DJ苏天伦版)                fee=0    st=None pl=None     toast=None
+    晴天 (吉他版) (原唱：周杰伦)              fee=1    st=None pl=None     toast=None
+    晴天                             fee=0    st=None pl=None     toast=None
+    周杰伦“晴天”PopxTrap Beat           fee=0    st=None pl=None     toast=None
+关键词 Taylor Swift   命中 10 条；privileges 无
+    Patient Zero                   fee=1    st=None pl=None     toast=None
+    Pink Clouding                  fee=1    st=None pl=None     toast=None
+    Cleveland!                     fee=1    st=None pl=None     toast=None
+    Love Story                     fee=1    st=None pl=None     toast=None
+    Cruel Summer                   fee=1    st=None pl=None     toast=None
+    I Forgot That You Existed      fee=1    st=None pl=None     toast=None
+    Babylon                        fee=1    st=None pl=None     toast=None
+    Opalite                        fee=1    st=None pl=None     toast=None
+    Babylon                        fee=1    st=None pl=None     toast=None
+    Cleveland!                     fee=1    st=None pl=None     toast=None
+关键词 五月天            命中 10 条；privileges 无
+    突然好想你                          fee=1    st=None pl=None     toast=None
+    后来的我们                          fee=1    st=None pl=None     toast=None
+    如果我们不曾相遇                       fee=1    st=None pl=None     toast=None
+    步步                             fee=1    st=None pl=None     toast=None
+    倔强                             fee=1    st=None pl=None     toast=None
+    突然好想你                          fee=1    st=None pl=None     toast=None
+    知足                             fee=1    st=None pl=None     toast=None
+    一颗苹果                           fee=1    st=None pl=None     toast=None
+    干杯                             fee=1    st=None pl=None     toast=None
+    仓颉                             fee=1    st=None pl=None     toast=None
+
+==============================================================================
+⑦ 「官方 / 原唱 / 翻唱」字段搜索
+==============================================================================
+所有单曲级字段（搜索接口）：
+  a, al, al.id, al.name, al.pic, al.picUrl, al.pic_str, al.tns, alia, ar, ar[].alia, ar[].alias, ar[].id, ar[].name, ar[].tns, artistClassics, cd, cf, copyright, cp, crbt, djId, dt, eq, fee, ftype, h, h.br, h.fid, h.size, h.sr, h.vd, hr, id, l, l.br, l.fid, l.size, l.sr, l.vd, m, m.br, m.fid, m.size, m.sr, m.vd, mark, mst, mv, name, no, noCopyrightRcmd, originCoverType, originSongSimpleData, originSongSimpleData.albumMeta, originSongSimpleData.albumMeta.id, originSongSimpleData.albumMeta.name, originSongSimpleData.artists, originSongSimpleData.artists[].id, originSongSimpleData.artists[].name, originSongSimpleData.name, originSongSimpleData.songId, pop, privilege, privilege.bd, privilege.chargeInfoList, privilege.chargeInfoList[].chargeMessage, privilege.chargeInfoList[].chargeType, privilege.chargeInfoList[].chargeUrl, privilege.chargeInfoList[].rate, privilege.code, privilege.cp, privilege.cs, privilege.dl, privilege.dlLevel, privilege.dlLevels, privilege.downloadMaxBrLevel, privilege.downloadMaxbr, privilege.fee, privilege.fl, privilege.flLevel, privilege.flag, privilege.freeTrialPrivilege, privilege.freeTrialPrivilege.cannotListenReason, privilege.freeTrialPrivilege.freeLimitTagType, privilege.freeTrialPrivilege.listenType, privilege.freeTrialPrivilege.playReason, privilege.freeTrialPrivilege.resConsumable, privilege.freeTrialPrivilege.userConsumable, privilege.id, privilege.ignoreCache, privilege.maxBrLevel, privilege.maxbr, privilege.message, privilege.payed, privilege.pl, privilege.plLevel, privilege.plLevels, privilege.playMaxBrLevel, privilege.playMaxbr, privilege.preSell, privilege.rightSource, privilege.rscl, privilege.sp, privilege.st, privilege.subp, privilege.toast, pst, publishTime, resourceState, rt, rtUrl, rtUrls, rtype, rurl, s_id, single, songJumpInfo, sq, sq.br, sq.fid, sq.size, sq.sr, sq.vd, st, t, v, version
+
+疑似「官方/原唱/翻唱」相关字段：['copyright', 'ftype', 'noCopyrightRcmd', 'originCoverType', 'originSongSimpleData', 'originSongSimpleData.albumMeta', 'originSongSimpleData.albumMeta.id', 'originSongSimpleData.albumMeta.name', 'originSongSimpleData.artists', 'originSongSimpleData.artists[].id', 'originSongSimpleData.artists[].name', 'originSongSimpleData.name', 'originSongSimpleData.songId', 'privilege.chargeInfoList[].chargeType', 'privilege.freeTrialPrivilege.freeLimitTagType', 'privilege.freeTrialPrivilege.listenType', 'rtype', 'version']

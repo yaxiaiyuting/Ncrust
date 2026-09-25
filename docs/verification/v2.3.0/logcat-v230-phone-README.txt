@@ -1,0 +1,16 @@
+# 手机（0715f763f54c023a）v2.3.0 release 运行日志说明
+
+该设备在完成本地歌单与搜索验证之后从 USB 掉线（adb devices 不再列出，
+lsusb 仍可见三星 04e8:6860；adb kill-server/start-server 与 adb reconnect 均未恢复），
+所以**无法在掉线后再抓一次完整 logcat**。
+
+掉线前每一轮操作后都做过崩溃检查，命令与结果如下（均为空 = 无崩溃）：
+
+  $ adb -s 0715f763f54c023a logcat -d -v threadtime | grep -iE "FATAL EXCEPTION|ClassFormatError|VerifyError|E AndroidRuntime"
+  (无输出)
+
+  覆盖的操作：冷启动（还原 v2.2.1 数据后）、建本地歌单、加入曲目、移除曲目、
+  强制停止后重启、清空歌单、搜索 Taylor Swift、进入大屏模式、横屏滑动与静置。
+
+平板（WVQ6R22124000968）上的同版本 release 包全量日志见 logcat-v230-tablet.txt，
+其中 FATAL/ClassFormatError/VerifyError 的命中数为 0。

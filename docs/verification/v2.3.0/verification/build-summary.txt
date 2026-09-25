@@ -1,0 +1,26 @@
+# 构建与静态检查（v2.3.0）
+
+命令：JAVA_HOME=/usr/lib/jvm/java-21-openjdk ./gradlew clean testDebugUnitTest lint assembleDebug assembleRelease
+时间：2026-09-25T17:06:28+08:00
+HEAD：67b7bdbddf79f515559997aac97080921cd17f07
+
+## 结果
+BUILD SUCCESSFUL in 3m 4s
+421 actionable tasks: 133 executed, 288 up-to-date
+
+## 单测统计
+tests=825 failures=0 errors=0 skipped=0
+测试类文件数=63
+
+## 新增测试类（v2.3.0）
+  app/src/test/java/com/takahashirinta/ncrust/local/LocalPlaylistSyncTest.kt  (27 个用例)
+  app/src/test/java/com/takahashirinta/ncrust/local/LocalPlaylistCodecTest.kt  (19 个用例)
+  app/src/test/java/com/takahashirinta/ncrust/search/TrackAvailabilityTest.kt  (20 个用例)
+  app/src/test/java/com/takahashirinta/ncrust/ui/components/SongTagsTest.kt  (20 个用例)
+  app/src/test/java/com/takahashirinta/ncrust/ui/player/LyricsAutoCenterTest.kt  (14 个用例)
+  app/src/test/java/com/takahashirinta/ncrust/ui/i18n/StringsConstructorBudgetTest.kt  (5 个用例)
+  app/src/test/java/com/takahashirinta/ncrust/ui/player/LyricsPanelScrollTest.kt  (追加 18 个，含 v2.3.0 新增 6 个)
+  app/src/test/java/com/takahashirinta/ncrust/search/SearchRankingTest.kt  (追加至 19 个)
+  app/src/test/java/com/takahashirinta/ncrust/player/PlaybackGuardTest.kt  (追加至 30 个)
+
+## Lint

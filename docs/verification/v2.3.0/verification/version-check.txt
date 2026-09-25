@@ -1,0 +1,29 @@
+# versionCode 三源交叉校验（v2.3.0）
+
+$ bash tools/next-version.sh   （带 git fetch --all --tags）
+时间：2026-09-25T17:06:50+08:00
+
+== next-version.sh ==
+repo:      /home/duanjb666/deepseek/ncrust-gpl/Ncrust
+dist:      /home/duanjb666/deepseek/ncrust-gpl/dist
+aapt2:     /home/duanjb666/Android/sdk/build-tools/36.0.0//aapt2
+
+-- 最近 5 个 tag --
+v2.2.1-gpl
+v2.2.0-gpl
+v2.1.6-gpl
+v2.1.5-gpl
+v2.1.4-gpl
+
+-- tag 内 build.gradle versionCode 最大值: 38  (v2.2.1-gpl)
+-- 仓库当前 build.gradle: versionCode=38 versionName=2.2.1-gpl
+
+-- dist/*.apk badging（共 62 个） --
+  Ncrust-v1.0.4-gpl-release.apk	7
+  Ncrust-v1.1.0-gpl-debug.apk	8
+  Ncrust-v1.1.0-gpl-release.apk	8
+  Ncrust-v1.1.1-gpl-debug.apk	9
+  Ncrust-v1.1.1-gpl-release.apk	9
+  Ncrust-v1.2.0-gpl-debug.apk	10
+
+结论：三源 max = 38（v2.2.1-gpl）⇒ 下一个可用 versionCode = **39**，versionName = 2.3.0-gpl

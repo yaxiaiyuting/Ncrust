@@ -1,0 +1,26 @@
+# 真机 shared_prefs 清单（0715f763f54c023a，2026-09-26）
+$ adb -s 0715f763f54c023a shell su -c ls /data/data/com.takahashirinta.ncrust/shared_prefs/
+WebViewChromiumPrefs.xml
+ncrust_device.xml
+ncrust_home_cache.xml
+ncrust_library.xml
+ncrust_lyrics_cache.xml
+ncrust_netease_vip.xml
+ncrust_offline.xml
+ncrust_playback_state.xml
+ncrust_prefs.xml
+ncrust_qq_playlists.xml
+ncrust_qq_prefs.xml
+ncrust_settings.xml
+
+# 是否存在任何 local playlist 相关 prefs
+(无)
+
+# ncrust_qq_playlists 的 key（证明 QQ 歌单是只读镜像落盘）
+name="detail:qqmusic:1152921504891728649:8591804616"
+name="list:qqmusic:1152921504891728649"
+name="detail:qqmusic:1152921504891728649:6364233546"
+name="detail_at:qqmusic:1152921504891728649:8591804616"
+name="schema_version"
+name="list_at:qqmusic:1152921504891728649"
+name="detail_at:qqmusic:1152921504891728649:6364233546"

@@ -1,0 +1,96 @@
+==============================================================================
+取样：20 组关键词，每组 30 条
+==============================================================================
+关键词 周杰伦                    命中 30 条，新增 30（累计 30）
+关键词 陈奕迅                    命中 30 条，新增 30（累计 60）
+关键词 五月天                    命中 30 条，新增 30（累计 90）
+关键词 林俊杰                    命中 30 条，新增 30（累计 120）
+关键词 邓紫棋                    命中 30 条，新增 30（累计 150）
+关键词 薛之谦                    命中 30 条，新增 30（累计 180）
+关键词 起风了                    命中 30 条，新增 30（累计 210）
+关键词 晴天                     命中 30 条，新增 28（累计 238）
+关键词 孤勇者                    命中 30 条，新增 29（累计 267）
+关键词 夜空中最亮的星                命中 30 条，新增 30（累计 297）
+关键词 千本樱 伴奏                 命中 30 条，新增 30（累计 327）
+关键词 Taylor Swift           命中 30 条，新增 30（累计 357）
+关键词 Adele                  命中 30 条，新增 30（累计 387）
+关键词 米津玄師                   命中 30 条，新增 30（累计 417）
+关键词 ヨルシカ                   命中 30 条，新增 30（累计 447）
+关键词 钢琴 纯音乐                 命中 30 条，新增 30（累计 477）
+关键词 DJ版                    命中 30 条，新增 30（累计 507）
+关键词 翻唱                     命中 30 条，新增 29（累计 536）
+关键词 remix                  命中 30 条，新增 27（累计 563）
+关键词 伴奏                     命中 30 条，新增 28（累计 591）
+
+样本总量（去重后）= 591
+st 分布 = {"0": 515, "-1": 76}
+(st, pl>0) 联合分布 = {"0/pl=0": 240, "0/pl>0": 275, "-1/pl=0": 76}
+oct 分布 = {"1": 306, "2": 184, "0": 79, "3": 22}
+分层 -1/pl=0      共   76 条，抽 12 条做预检
+分层 0/pl=0       共  240 条，抽 12 条做预检
+分层 0/pl>0       共  275 条，抽 12 条做预检
+
+金标准预检（standard 档位）：36 首
+st | pl | fee | 预测A(st>=0&pl>0) | 预测B(st==0&pl>0) | 预测C(无版权) | 实测可播 | code | level | 耗时
+-1     0        0    False    False    False      True     200  standard   467ms  打ち上げ花火
+-1     0        8    False    False    False      True     200  standard   455ms  千本樱（纯钢琴）
+-1     0        1    False    False    False      False    200  None       473ms  海の幽霊
+-1     0        8    False    False    False      True     200  standard   464ms  雪国
+-1     0        0    False    False    False      True     200  standard   455ms  千本桜 -Remix- Instrumental
+-1     0        1    False    False    False      False    200  None       480ms  パレード
+-1     0        8    False    False    False      True     200  standard   473ms  藍二乗
+-1     0        8    False    False    False      True     200  standard   474ms  左右盲
+-1     0        0    False    False    False      True     200  standard   453ms  負け犬にアンコールはいらない
+-1     0        1    False    False    False      False    200  None       503ms  千本桜
+-1     0        1    False    False    False      False    200  None       476ms  打上花火
+-1     0        1    False    False    False      False    200  None       505ms  IRIS OUT
+0      0        1    False    False    False      False    200  None       492ms  租购
+0      0        1    False    False    False      False    200  None       475ms  刀马旦
+0      0        1    False    False    False      False    200  None       448ms  野心
+0      0        1    False    False    False      False    200  None       470ms  我还想她
+0      0        1    False    False    False      False    200  None       451ms  Pink Clouding
+0      0        1    False    False    False      False    200  None       473ms  透明
+0      0        1    False    False    False      False    200  None       463ms  天份
+0      0        1    False    False    False      False    200  None       1579ms  Hello
+0      0        1    False    False    False      False    200  None       475ms  丑八怪
+0      0        1    False    False    False      False    200  None       486ms  Always Online
+0      0        1    False    False    False      False    200  None       508ms  最佳损友
+0      0        1    False    False    False      False    200  None       456ms  其实
+0      320000   0    True     True     False      True     200  standard   455ms  晴天
+0      320000   0    True     True     False      True     200  standard   479ms  夜空中最亮的星
+0      320000   8    True     True     False      True     200  standard   483ms  孤勇者
+0      320000   8    True     True     False      True     200  standard   462ms  世界赠予我的 钢琴（轻音乐）
+0      320000   8    True     True     False      True     200  standard   469ms  街道
+0      320000   8    True     True     False      True     200  standard   456ms  翻唱
+0      320000   0    True     True     False      True     200  standard   479ms  可不可以（伴奏）
+0      320000   0    True     True     False      True     200  standard   463ms  Rolling In the Deep
+0      320000   8    True     True     False      True     200  standard   494ms  A.I.N.Y. 爱你
+0      320000   0    True     True     False      True     200  standard   515ms  起风了 (完整版）
+0      320000   8    True     True     False      True     200  standard   493ms  偏爱（伴奏）
+0      320000   8    True     True     False      True     200  standard   493ms  願い～あの頃のキミへ～
+
+==============================================================================
+准确率
+==============================================================================
+A: st>=0 且 pl>0 ⇒ 可播               准确率 = 29/36 = 80.6%   （TP=12 FP=0 TN=17 FN=7）
+                                     把「不可播」误判成「可播」= 0 次（假阳性，用户最痛）
+                                     把「可播」误判成「不可播」= 7 次（假阴性，白灰一首歌）
+B: st==0 且 pl>0 ⇒ 可播               准确率 = 29/36 = 80.6%   （TP=12 FP=0 TN=17 FN=7）
+                                     把「不可播」误判成「可播」= 0 次（假阳性，用户最痛）
+                                     把「可播」误判成「不可播」= 7 次（假阴性，白灰一首歌）
+C: st==-200 或 ncr ⇒ 无版权            准确率 = 19/36 = 52.8%   （TP=0 FP=0 TN=19 FN=17）
+                                     把「不可播」误判成「可播」= 0 次（假阳性，用户最痛）
+                                     把「可播」误判成「不可播」= 17 次（假阴性，白灰一首歌）
+
+==============================================================================
+特性 C 的降级判据（只用「显式声明」的字段，不做预测）
+==============================================================================
+整池 591 条里，显式声明「无版权/下架」的 = 2 条 (0.3%)
+  Shake It Off                   st=0      ncr={"typeDesc": "其它版本可播", "type": 2}
+  Back To December               st=0      ncr={"typeDesc": "其它版本可播", "type": 2}
+
+在抽到的 36 首预检样本里：显式无版权 0 条，实测不可播 17 条
+  ┌ 显式无版权 & 实测不可播 = 0（真阳性）
+  ├ 显式无版权 & 实测**可播** = 0（假阳性 —— 会误伤，故此判据只用「-200 / ncr」）
+  ├ 未声明     & 实测不可播 = 17（假阴性 —— 沉默，不标「可播放」）
+  └ 未声明     & 实测可播   = 19

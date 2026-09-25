@@ -1,0 +1,81 @@
+# 搜索界面的音源归属与版权标注（v2.3.0 release 真机实测）
+
+设备 `0715f763f54c023a`（SM-G9209 / Android 7.0 / 360x640dp）。
+查询：`Taylor Swift`（ASCII 输入，adb 无法注入中文，见文末缺口）。
+
+---
+
+## 1. 音源归属：**两源都标**（本版的核心改变）
+
+搜索头部汇总行：`网易云 30 首 · QQ 音乐 30 首`
+（截图 `screenshots/v230-21-search-taylor.png`）。
+
+每一行的副标题末尾现在是 `· 网易云` / `· QQ 音乐` —— v2.1.0 · E 起网易云的行
+是**不标**的（`else -> ""`），所以「聚合列表里分不清哪行是谁的」。
+实测 dump（`v230-24-search-tags-scrolled.xml`）：
+
+```
+Love Story
+  [可播放] [原唱]
+Taylor Swift · Fearless  3:56  · 网易云
+Cruel Summer
+  [可播放] [原唱]
+Taylor Swift · Lover  2:58  · 网易云
+Welcome To New York
+  [可播放] [原唱]
+Taylor Swift · 1989 (Deluxe)  3:32  · 网易云
+Enchanted
+  [可播放] [原唱]
+Taylor Swift · Speak Now (Deluxe Edition)  5:52  · 网易云
+```
+
+## 2. 版权可用性：只在能确证时标
+
+- `可播放` 来自 `privilege.pl > 0`（探针：30/30 命中、假阳性 0）；
+- 判不出来的行（`privilege.st == -1` 那一档）**一个角标都没有** ——
+  实测 dump 里大量行只有 `· 网易云` 而没有任何可用性角标。
+
+## 3. ★ 真机验证中发现并修掉的一个 UI 缺陷（角标被省略号吃掉）
+
+**第一版实现**把角标接在副标题末尾（`artist · album  时长  · 音源 · 可播放 · 原唱`），
+副标题是 `maxLines = 1` + `Ellipsis`，于是在长专辑名上角标被整段省略：
+
+```
+（修复前，`v230-22-search-scrolled.xml`）
+The Fate of Ophelia
+Taylor Swift · The Life of a Showgirl  3:46  · 网易云 · 可播放 · 原   ← 「原唱」被截断
+All Too Well (10 Minute Version) (Taylor's Version) (From Th…
+Taylor Swift · Red (Taylor's Version)  10:13  · 网易云 · 可播放 ·     ← 版本角标整个没了
+```
+
+而这两个角标恰恰是**用户唯一需要一眼看到的信息**（任务书 5.4），
+且任务书 6.3 明确要求「标签位置：歌曲名前面或后面，统一」。
+
+**修法**：角标移到**歌名同一行**（`Row { 歌名(weight) ; SongTagChips }`），
+歌名自己 `weight(1f, fill = false)` + Ellipsis ⇒ 长歌名时**省略歌名**，角标始终在屏上。
+网格形态只显示可用性角标（一格塞三个角标会变成噪音）。
+
+**修复后实测**（`v230-24-search-tags-scrolled.xml`，UI 层级把角标与歌名列在同一 y 带）：
+
+```
+  Love Story        [344,783][644,858]
+  可播放             [688,797][802,844]      ← 紧跟歌名、单独一个节点、不会被截断
+  原唱               [858,797][934,844]
+  Taylor Swift · Fearless  3:56  · 网易云
+```
+
+截图 `screenshots/v230-23-search-tags-fixed.png`、`screenshots/v230-24-search-tags-scrolled.png`。
+
+## 4. 未验证缺口
+
+1. **中文关键词（周杰伦）未在真机上跑**：`adb shell input text` 只支持 ASCII，
+   本机没有可用的 ADB 中文输入法，剪贴板/`service call clipboard` 两条路都没灌进去。
+   验收标准里写的是「搜索周杰伦」，本轮用 `Taylor Swift` 代替 ——
+   **判定逻辑与关键词无关**（同一段代码、同一批字段），但这一条如实记为缺口。
+   中文场景的字段证据来自探针的原始响应（`probe-raw/ne-search-zhoujielun.json` 等）。
+2. **「无版权」角标的真机截图没拿到**：探针测出该角标只在 0.3% 的行上出现
+   （整池 591 条里 2 条：`Shake It Off` / `Back To December`），
+   本轮 `Taylor Swift` 的前 30 条里没有它们。判定逻辑由
+   `TrackAvailabilityTest` / `SongTagsTest` 的单测覆盖（含两条反向断言）。
+3. **QQ 行的可用性角标**：QQ 侧没有可用字段（探针结论），所以 QQ 行只有音源角标
+   与 `会员`（`pay.pay_play == 1`）。本轮 dump 里 QQ 的结果在列表后半段，未逐一截图。

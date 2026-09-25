@@ -1,0 +1,326 @@
+==============================================================================
+Q1/Q2/Q3 采样：8 组关键词 × 每组的字段取值
+==============================================================================
+
+### 关键词 = 晴天 周杰伦   （30 条）
+    name | fee | st | pl | copyright | resourceState | originCoverType | noCopyrightRcmd | originSongSimpleData.name / .artists | version | ftype | rtype
+    晴天(深情版)                      fee=8   st=0      pl=320000   cp=1   rs=True oct=2    ncr=-      oss=晴天/周杰伦               ver=12       ft=0    rt=0   
+    晴天                           fee=8   st=0      pl=320000   cp=0   rs=True oct=0    ncr=-      oss=-                    ver=6        ft=0    rt=0   
+    晴天 (原唱 周杰伦)                  fee=8   st=0      pl=320000   cp=1   rs=True oct=2    ncr=-      oss=晴天/周杰伦               ver=5        ft=0    rt=0   
+    晴天 (女声版))                    fee=8   st=0      pl=320000   cp=1   rs=True oct=2    ncr=-      oss=晴天/周杰伦               ver=8        ft=0    rt=0   
+    晴天                           fee=8   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=5        ft=0    rt=0   
+    晴天 (钢琴版) [原唱: 周杰伦]           fee=1   st=0      pl=0        cp=1   rs=True oct=2    ncr=-      oss=晴天/周杰伦               ver=15       ft=0    rt=0   
+    十年                           fee=1   st=0      pl=0        cp=2   rs=True oct=1    ncr=-      oss=-                    ver=559      ft=0    rt=0   
+    晴天周杰伦(从前从前有个人爱你很久)           fee=8   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=我热你温/任然              ver=12       ft=0    rt=0   
+    晴天(DJ版)                      fee=0   st=0      pl=128000   cp=0   rs=True oct=3    ncr=-      oss=-                    ver=2        ft=0    rt=0   
+    晴天 (钢琴版)                     fee=8   st=0      pl=320000   cp=1   rs=True oct=2    ncr=-      oss=-                    ver=2        ft=0    rt=0   
+    晴天                           fee=8   st=0      pl=320000   cp=1   rs=True oct=1    ncr=-      oss=-                    ver=11       ft=0    rt=0   
+    晴天                           fee=8   st=0      pl=320000   cp=2   rs=True oct=1    ncr=-      oss=-                    ver=13       ft=0    rt=0   
+    江南                           fee=1   st=0      pl=0        cp=1   rs=True oct=1    ncr=-      oss=-                    ver=140      ft=0    rt=0   
+    默 (Live)                     fee=1   st=0      pl=0        cp=0   rs=True oct=2    ncr=-      oss=默/那英                 ver=7        ft=0    rt=0   
+    晴天 (吉他版) (原唱：周杰伦)            fee=1   st=0      pl=0        cp=1   rs=True oct=2    ncr=-      oss=晴天/周杰伦               ver=5        ft=0    rt=0   
+    周杰伦-晴天 (DJ苏天伦版)              fee=0   st=0      pl=128000   cp=0   rs=True oct=3    ncr=-      oss=-                    ver=2        ft=0    rt=0   
+    周杰伦“晴天”PopxTrap Beat         fee=0   st=0      pl=320000   cp=0   rs=True oct=0    ncr=-      oss=-                    ver=4        ft=0    rt=0   
+    晴天                           fee=8   st=0      pl=320000   cp=0   rs=True oct=0    ncr=-      oss=-                    ver=9        ft=0    rt=0   
+    晴天 (R&B版)                    fee=0   st=0      pl=320000   cp=0   rs=True oct=3    ncr=-      oss=-                    ver=2        ft=0    rt=0   
+    温柔                           fee=1   st=0      pl=0        cp=0   rs=True oct=1    ncr=-      oss=-                    ver=81       ft=0    rt=0   
+    可惜不是你                        fee=1   st=0      pl=0        cp=2   rs=True oct=1    ncr=-      oss=-                    ver=161      ft=0    rt=0   
+    周杰伦“晴天”Pop x Trap Beat       fee=0   st=0      pl=320000   cp=0   rs=True oct=0    ncr=-      oss=-                    ver=6        ft=0    rt=0   
+    晴天                           fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=17       ft=0    rt=0   
+    晴天                           fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=晴天/周杰伦               ver=15       ft=0    rt=0   
+    晴天                           fee=8   st=0      pl=320000   cp=0   rs=True oct=0    ncr=-      oss=-                    ver=17       ft=0    rt=0   
+    晴天                           fee=8   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=5        ft=0    rt=0   
+    晴天(钢琴曲)(原唱：周杰伦)              fee=8   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=晴天/周杰伦               ver=4        ft=0    rt=0   
+    我爱你                          fee=8   st=0      pl=320000   cp=0   rs=True oct=0    ncr=-      oss=-                    ver=4        ft=0    rt=0   
+    布拉格广场                        fee=1   st=0      pl=0        cp=1   rs=True oct=1    ncr=-      oss=-                    ver=64       ft=0    rt=0   
+    晴天                           fee=8   st=0      pl=320000   cp=0   rs=True oct=1    ncr=-      oss=-                    ver=14       ft=0    rt=0   
+
+### 关键词 = 晴天 钢琴版   （30 条）
+    name | fee | st | pl | copyright | resourceState | originCoverType | noCopyrightRcmd | originSongSimpleData.name / .artists | version | ftype | rtype
+    晴天 (钢琴版) [原唱: 周杰伦]           fee=1   st=0      pl=0        cp=1   rs=True oct=2    ncr=-      oss=晴天/周杰伦               ver=15       ft=0    rt=0   
+    晴天 (钢琴版)                     fee=8   st=0      pl=320000   cp=1   rs=True oct=2    ncr=-      oss=-                    ver=2        ft=0    rt=0   
+    晴天(钢琴曲)(原唱：周杰伦)              fee=8   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=晴天/周杰伦               ver=4        ft=0    rt=0   
+    晴天(深情版)                      fee=8   st=0      pl=320000   cp=1   rs=True oct=2    ncr=-      oss=晴天/周杰伦               ver=12       ft=0    rt=0   
+    晴天                           fee=8   st=0      pl=320000   cp=0   rs=True oct=0    ncr=-      oss=-                    ver=6        ft=0    rt=0   
+    晴天 (女声版))                    fee=8   st=0      pl=320000   cp=1   rs=True oct=2    ncr=-      oss=晴天/周杰伦               ver=8        ft=0    rt=0   
+    天气之子                         fee=8   st=0      pl=320000   cp=0   rs=True oct=0    ncr=-      oss=-                    ver=6        ft=0    rt=0   
+    晴天 (原唱 周杰伦)                  fee=8   st=0      pl=320000   cp=1   rs=True oct=2    ncr=-      oss=晴天/周杰伦               ver=5        ft=0    rt=0   
+    晴天                           fee=8   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=5        ft=0    rt=0   
+    比起晴天我更需要你 (钢琴版)              fee=0   st=0      pl=320000   cp=0   rs=True oct=3    ncr=-      oss=-                    ver=2        ft=0    rt=0   
+    晴天(钢琴版)                      fee=8   st=0      pl=320000   cp=1   rs=True oct=1    ncr=-      oss=-                    ver=4        ft=0    rt=0   
+    晴天（钢琴版）                      fee=8   st=0      pl=320000   cp=0   rs=True oct=0    ncr=-      oss=-                    ver=5        ft=0    rt=0   
+    朗朗晴天 钢琴版                     fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=ハレハレヤ/羽生まゐご          ver=6        ft=0    rt=0   
+    晴天（Sunny Day）                fee=8   st=0      pl=320000   cp=0   rs=True oct=0    ncr=-      oss=-                    ver=7        ft=0    rt=0   
+    晴天 (吉他版) (原唱：周杰伦)            fee=1   st=0      pl=0        cp=1   rs=True oct=2    ncr=-      oss=晴天/周杰伦               ver=5        ft=0    rt=0   
+    晴天                           fee=8   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=5        ft=0    rt=0   
+    像晴天像雨天 (钢琴版)                 fee=8   st=0      pl=320000   cp=1   rs=True oct=1    ncr=-      oss=-                    ver=3        ft=0    rt=0   
+    像晴天像雨天任性 (钢琴版)               fee=8   st=0      pl=320000   cp=1   rs=True oct=1    ncr=-      oss=-                    ver=6        ft=0    rt=0   
+    晴天                           fee=8   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=3        ft=0    rt=0   
+    晴天                           fee=8   st=0      pl=320000   cp=0   rs=True oct=1    ncr=-      oss=-                    ver=14       ft=0    rt=0   
+    不如在晴天见一面（钢琴版）                fee=8   st=0      pl=320000   cp=1   rs=True oct=0    ncr=-      oss=-                    ver=3        ft=0    rt=0   
+    晴れが来る(Piano)                 fee=8   st=0      pl=320000   cp=0   rs=True oct=0    ncr=-      oss=-                    ver=26       ft=0    rt=0   
+    ハレハレヤ 朗朗晴天 钢琴版               fee=8   st=0      pl=320000   cp=0   rs=True oct=0    ncr=-      oss=-                    ver=18       ft=0    rt=0   
+    朗朗晴天（ハレハレヤ）（钢琴版）             fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=ハレハレヤ/羽生まゐご          ver=7        ft=0    rt=0   
+    一路同行（中青班）钢琴版E调伴奏             fee=0   st=0      pl=320000   cp=0   rs=True oct=0    ncr=-      oss=-                    ver=3        ft=0    rt=0   
+    通往晴天的公交（钢琴版）                 fee=8   st=0      pl=320000   cp=0   rs=True oct=0    ncr=-      oss=-                    ver=2        ft=0    rt=0   
+    晴天陰天雨天 (鋼琴版)                 fee=8   st=0      pl=320000   cp=1   rs=True oct=0    ncr=-      oss=-                    ver=2        ft=0    rt=0   
+    ハレハレヤ（朗朗晴天）（钢琴版）             fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=ハレハレヤ/羽生まゐご,v flower ver=5        ft=0    rt=0   
+    恐龙之舞（钢琴版）                    fee=0   st=0      pl=320000   cp=0   rs=True oct=0    ncr=-      oss=-                    ver=5        ft=0    rt=0   
+    晴天 (钢琴版)                     fee=0   st=-200   pl=0        cp=0   rs=True oct=0    ncr=有      oss=-                    ver=2        ft=0    rt=0   
+
+### 关键词 = 起风了 买辣椒也用券   （30 条）
+    name | fee | st | pl | copyright | resourceState | originCoverType | noCopyrightRcmd | originSongSimpleData.name / .artists | version | ftype | rtype
+    起风了                          fee=8   st=0      pl=320000   cp=0   rs=True oct=1    ncr=-      oss=-                    ver=50       ft=0    rt=0   
+    买辣椒也用券-起风了（小7 remix）         fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=3        ft=0    rt=0   
+    起风了（cover 买辣椒也用券）            fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=18       ft=0    rt=0   
+    起风了 (Acoustic)               fee=8   st=0      pl=320000   cp=0   rs=True oct=1    ncr=-      oss=-                    ver=16       ft=0    rt=0   
+    中长跑进行曲 (泪水打湿碳板鞋，立志成为大迫杰)     fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=3        ft=0    rt=0   
+    起风了（旧版）feat.买辣椒也用券           fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=5        ft=0    rt=0   
+    买辣椒也用券 - 起风了                 fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=起风了/冯沁苑(买辣椒也用券)      ver=4        ft=0    rt=0   
+    起风了钢琴版（翻自 买辣椒也用券）            fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=9        ft=0    rt=0   
+    起风了                          fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=8        ft=0    rt=0   
+    起风了                          fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=5        ft=0    rt=0   
+    起风了（钢琴版）（翻自 买辣椒也用券）          fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=7        ft=0    rt=0   
+    起风了                          fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=6        ft=0    rt=0   
+    起风了（洛天依）（翻自 买辣椒也用券）          fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=8        ft=0    rt=0   
+    起风了(吴青峰 ver.)                fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=10       ft=0    rt=0   
+    起风了（伴奏）（翻自 买辣椒也用券）           fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=9        ft=0    rt=0   
+    周深-起风了（翻自 买辣椒也用券）（看海e remix） fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=9        ft=0    rt=0   
+    起风了                          fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=17       ft=0    rt=0   
+    起风了（cover.买辣椒也用券）（翻自 高橋優）    fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=6        ft=0    rt=0   
+    起风了 钢琴纯音乐（翻自 买辣椒也用券）         fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=8        ft=0    rt=0   
+    起风了（片段）（翻自 买辣椒也用券）           fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=8        ft=0    rt=0   
+    起风了丨piano Ver                fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=12       ft=0    rt=0   
+    起风了指弹（翻自 买辣椒也用券）             fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=3        ft=0    rt=0   
+    起风了（翻自 买辣椒也用券）               fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=8        ft=0    rt=0   
+    买辣椒也用券-起风了（随便 remix）         fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=4        ft=0    rt=0   
+    韩安旭-多幸运                      fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=10       ft=0    rt=0   
+    起风了 (伴奏)                     fee=8   st=0      pl=320000   cp=0   rs=True oct=1    ncr=-      oss=-                    ver=20       ft=0    rt=0   
+    买辣椒也用券-起风了（尹 remix）          fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=14       ft=0    rt=0   
+    起风了(钢琴版)(翻自 买辣椒也用券)          fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=9        ft=0    rt=0   
+    买辣椒也用券-起风了                   fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=8        ft=0    rt=0   
+    起风了(双声版)                     fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=9        ft=0    rt=0   
+
+### 关键词 = 起风了 翻唱   （30 条）
+    name | fee | st | pl | copyright | resourceState | originCoverType | noCopyrightRcmd | originSongSimpleData.name / .artists | version | ftype | rtype
+    起风了                          fee=1   st=0      pl=0        cp=0   rs=True oct=2    ncr=-      oss=起风了/冯沁苑(买辣椒也用券)      ver=17       ft=0    rt=0   
+    起风了(林俊杰)                     fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=起风了/冯沁苑(买辣椒也用券)      ver=9        ft=0    rt=0   
+    起风了（片段版）                     fee=8   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=起风了/猫与少年             ver=10       ft=0    rt=0   
+    起风了                          fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=7        ft=0    rt=0   
+    起风了（温柔女生版）                   fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=9        ft=0    rt=0   
+    起风了                          fee=1   st=0      pl=0        cp=0   rs=True oct=2    ncr=-      oss=-                    ver=10       ft=0    rt=0   
+    起风了 (抖音热搜版)                  fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=4        ft=0    rt=0   
+    起风了（抖音藏语正版）                  fee=1   st=0      pl=0        cp=1   rs=True oct=2    ncr=-      oss=-                    ver=9        ft=0    rt=0   
+    起风了                          fee=8   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=4        ft=0    rt=0   
+    起风了(DJ版)                     fee=8   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=起风了/冯沁苑(买辣椒也用券)      ver=4        ft=0    rt=0   
+    起风了(纯钢琴版)                    fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=13       ft=0    rt=0   
+    起风了（间奏0.8x）                  fee=8   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=10       ft=0    rt=0   
+    起风了                          fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=起风了/冯沁苑(买辣椒也用券)      ver=7        ft=0    rt=0   
+    起风了(落魄谷中寒风吹)                 fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=9        ft=0    rt=0   
+    起风了(校园版)                     fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=5        ft=0    rt=0   
+    起風了 (鋼琴版)                    fee=8   st=0      pl=320000   cp=1   rs=True oct=2    ncr=-      oss=ヤキモチ/高橋優             ver=8        ft=0    rt=0   
+    起风了【某幻君21年生贺】                fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=9        ft=0    rt=0   
+    起风了                          fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=9        ft=0    rt=0   
+    起风了（cover 买辣椒也用券）            fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=18       ft=0    rt=0   
+    起风了                          fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=5        ft=0    rt=0   
+    起风了（伴奏间奏）                    fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=9        ft=0    rt=0   
+    起风了 (Remix)                  fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=4        ft=0    rt=0   
+    起风了 (Live版)                  fee=1   st=0      pl=0        cp=0   rs=True oct=2    ncr=-      oss=起风了/冯沁苑(买辣椒也用券)      ver=9        ft=0    rt=0   
+    起风了                          fee=8   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=15       ft=0    rt=0   
+    起风了                          fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=10       ft=0    rt=0   
+    起风了                          fee=1   st=0      pl=0        cp=0   rs=True oct=2    ncr=-      oss=-                    ver=92       ft=0    rt=0   
+    起风了（吉他版）                     fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=13       ft=0    rt=0   
+    起风了（加长版）                     fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=7        ft=0    rt=0   
+    起风了                          fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=11       ft=0    rt=0   
+    起风了                          fee=1   st=0      pl=0        cp=1   rs=True oct=2    ncr=-      oss=-                    ver=10       ft=0    rt=0   
+
+### 关键词 = 夜空中最亮的星 逃跑计划   （30 条）
+    name | fee | st | pl | copyright | resourceState | originCoverType | noCopyrightRcmd | originSongSimpleData.name / .artists | version | ftype | rtype
+    夜空中最亮的星                      fee=1   st=0      pl=0        cp=1   rs=True oct=1    ncr=-      oss=-                    ver=144      ft=0    rt=0   
+    夜空中最亮的星                      fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=夜空中最亮的星/逃跑计划         ver=4        ft=0    rt=0   
+    夜空中最亮的星                      fee=8   st=0      pl=320000   cp=2   rs=True oct=2    ncr=-      oss=夜空中最亮的星/逃跑计划         ver=829      ft=0    rt=0   
+    你的爱情                         fee=1   st=0      pl=0        cp=0   rs=True oct=1    ncr=-      oss=-                    ver=11       ft=0    rt=0   
+    逃跑计划-夜空中最亮的星 现场版(Remix)      fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=10       ft=0    rt=0   
+    夜空中最亮的星 (DjEwen版)            fee=0   st=0      pl=320000   cp=0   rs=True oct=3    ncr=-      oss=-                    ver=4        ft=0    rt=0   
+    夜空中最亮的星 (Live)               fee=1   st=0      pl=0        cp=0   rs=True oct=2    ncr=-      oss=-                    ver=19       ft=0    rt=0   
+    海鸥                           fee=1   st=0      pl=0        cp=0   rs=True oct=1    ncr=-      oss=-                    ver=10       ft=0    rt=0   
+    一万次悲伤                        fee=1   st=0      pl=0        cp=1   rs=True oct=1    ncr=-      oss=-                    ver=52       ft=0    rt=0   
+    再见,再见                        fee=1   st=0      pl=0        cp=1   rs=True oct=1    ncr=-      oss=-                    ver=50       ft=0    rt=0   
+    结婚                           fee=8   st=0      pl=320000   cp=1   rs=True oct=1    ncr=-      oss=-                    ver=32       ft=0    rt=0   
+    夜空中最亮的星（DJ版）                 fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=4        ft=0    rt=0   
+    夜空中最亮的星（DJ版）                 fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=6        ft=0    rt=0   
+    夜空中最亮的星（DJ版）                 fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=3        ft=0    rt=0   
+    夜空中最亮的星 (DJ版)                fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=3        ft=0    rt=0   
+    夜空中最亮的星                      fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=夜空中最亮的星/逃跑计划         ver=9        ft=0    rt=0   
+    夜空中最亮的星                      fee=8   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=5        ft=0    rt=0   
+    夜空中最亮的星                      fee=8   st=0      pl=320000   cp=1   rs=True oct=2    ncr=-      oss=-                    ver=13       ft=0    rt=0   
+    夜空中最亮的星                      fee=0   st=0      pl=320000   cp=0   rs=True oct=3    ncr=-      oss=-                    ver=3        ft=0    rt=0   
+    再飞行                          fee=1   st=0      pl=0        cp=2   rs=True oct=1    ncr=-      oss=-                    ver=681      ft=0    rt=0   
+    闪光的回忆                        fee=1   st=0      pl=0        cp=2   rs=True oct=1    ncr=-      oss=-                    ver=18       ft=0    rt=0   
+    只是感觉                         fee=1   st=0      pl=0        cp=0   rs=True oct=1    ncr=-      oss=-                    ver=10       ft=0    rt=0   
+    阳光照进回忆里                      fee=1   st=0      pl=0        cp=1   rs=True oct=1    ncr=-      oss=-                    ver=38       ft=0    rt=0   
+    Chemical Bus                 fee=1   st=0      pl=0        cp=1   rs=True oct=1    ncr=-      oss=-                    ver=35       ft=0    rt=0   
+    10th                         fee=1   st=0      pl=0        cp=0   rs=True oct=1    ncr=-      oss=-                    ver=11       ft=0    rt=0   
+    哪里是你的拥抱                      fee=1   st=0      pl=0        cp=1   rs=True oct=1    ncr=-      oss=-                    ver=34       ft=0    rt=0   
+    伟大的友谊                        fee=1   st=0      pl=0        cp=0   rs=True oct=0    ncr=-      oss=-                    ver=12       ft=0    rt=0   
+    梦中的你                         fee=1   st=0      pl=0        cp=0   rs=True oct=1    ncr=-      oss=-                    ver=11       ft=0    rt=0   
+    Like A Bird                  fee=0   st=0      pl=320000   cp=0   rs=True oct=0    ncr=-      oss=-                    ver=20       ft=0    rt=0   
+    琴岛漫步                         fee=1   st=0      pl=0        cp=0   rs=True oct=1    ncr=-      oss=-                    ver=10       ft=0    rt=0   
+
+### 关键词 = 富士山下 陈奕迅   （30 条）
+    name | fee | st | pl | copyright | resourceState | originCoverType | noCopyrightRcmd | originSongSimpleData.name / .artists | version | ftype | rtype
+    富士山下                         fee=1   st=0      pl=0        cp=1   rs=True oct=1    ncr=-      oss=-                    ver=172      ft=0    rt=0   
+    富士山下                         fee=8   st=0      pl=320000   cp=1   rs=True oct=1    ncr=-      oss=-                    ver=7        ft=0    rt=0   
+    富士山下(Live)                   fee=8   st=0      pl=320000   cp=1   rs=True oct=1    ncr=-      oss=-                    ver=92       ft=0    rt=0   
+    富士山下 (Live)                  fee=1   st=0      pl=0        cp=1   rs=True oct=0    ncr=-      oss=-                    ver=62       ft=0    rt=0   
+    富士山下 (2007 Live)             fee=1   st=0      pl=0        cp=1   rs=True oct=1    ncr=-      oss=-                    ver=90       ft=0    rt=0   
+    富士山下                         fee=1   st=0      pl=0        cp=1   rs=True oct=1    ncr=-      oss=-                    ver=6        ft=0    rt=0   
+    富士山下                         fee=1   st=0      pl=0        cp=1   rs=True oct=1    ncr=-      oss=-                    ver=74       ft=0    rt=0   
+    富士山下                         fee=1   st=0      pl=0        cp=1   rs=True oct=0    ncr=-      oss=-                    ver=6        ft=0    rt=0   
+    富士山下                         fee=8   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=8        ft=0    rt=0   
+    陈奕迅-富士山下 (DJ版)               fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=5        ft=0    rt=0   
+    富士山下                         fee=1   st=0      pl=0        cp=1   rs=True oct=0    ncr=-      oss=-                    ver=6        ft=0    rt=0   
+    爱情转移+富士山下（翻自 陈奕迅）            fee=0   st=0      pl=320000   cp=2   rs=True oct=2    ncr=-      oss=-                    ver=28       ft=0    rt=0   
+    富士山下（钢琴纯享）                   fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=9        ft=0    rt=0   
+    富士山下                         fee=8   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=3        ft=0    rt=0   
+    富士山下                         fee=1   st=0      pl=0        cp=1   rs=True oct=1    ncr=-      oss=-                    ver=9        ft=0    rt=0   
+    富士山下（翻唱完整版）                  fee=8   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=富士山下/陈奕迅             ver=5        ft=0    rt=0   
+    富士山下 陈奕迅                     fee=8   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=富士山下/陈奕迅             ver=4        ft=0    rt=0   
+    最佳损友                         fee=1   st=0      pl=0        cp=1   rs=True oct=1    ncr=-      oss=-                    ver=456      ft=0    rt=0   
+    富士山下                         fee=1   st=0      pl=0        cp=1   rs=True oct=1    ncr=-      oss=-                    ver=160      ft=0    rt=0   
+    富士山下 (DJ弹鼓版)                 fee=8   st=0      pl=320000   cp=1   rs=True oct=0    ncr=-      oss=-                    ver=5        ft=0    rt=0   
+    《东京塔下》 （原曲：陈奕迅《富士山下》）        fee=8   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=4        ft=0    rt=0   
+    富士山下                         fee=8   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=富士山下/陈奕迅             ver=4        ft=0    rt=0   
+    富士山下                         fee=1   st=0      pl=0        cp=1   rs=True oct=1    ncr=-      oss=-                    ver=12       ft=0    rt=0   
+    富士山下 (纯净女声版)                 fee=8   st=0      pl=320000   cp=1   rs=True oct=2    ncr=-      oss=爱情转移/陈奕迅             ver=11       ft=0    rt=0   
+    爱情转移                         fee=1   st=0      pl=0        cp=1   rs=True oct=1    ncr=-      oss=-                    ver=85       ft=0    rt=0   
+    富士山下                         fee=1   st=0      pl=0        cp=1   rs=True oct=1    ncr=-      oss=-                    ver=689      ft=0    rt=0   
+    富士山下                         fee=1   st=0      pl=0        cp=1   rs=True oct=1    ncr=-      oss=-                    ver=690      ft=0    rt=0   
+    富士山下                         fee=8   st=0      pl=320000   cp=0   rs=True oct=0    ncr=-      oss=-                    ver=3        ft=0    rt=0   
+    不要说话                         fee=1   st=0      pl=0        cp=1   rs=True oct=1    ncr=-      oss=-                    ver=93       ft=0    rt=0   
+    富士山下（钢琴版）                    fee=8   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=富士山下/陈奕迅             ver=8        ft=0    rt=0   
+
+### 关键词 = 千本樱 伴奏   （30 条）
+    name | fee | st | pl | copyright | resourceState | originCoverType | noCopyrightRcmd | originSongSimpleData.name / .artists | version | ftype | rtype
+    千本桜 (オリジナルカラオケ)              fee=0   st=-1     pl=0        cp=2   rs=True oct=0    ncr=-      oss=-                    ver=42       ft=0    rt=0   
+    千本樱钢琴版伴奏                     fee=0   st=-1     pl=0        cp=2   rs=True oct=0    ncr=-      oss=-                    ver=101      ft=0    rt=0   
+    千本桜                          fee=1   st=-1     pl=0        cp=1   rs=True oct=2    ncr=-      oss=千本桜/黒うさP,初音ミク        ver=6        ft=0    rt=0   
+    千本樱（纯钢琴）                     fee=8   st=-1     pl=0        cp=2   rs=True oct=2    ncr=-      oss=-                    ver=37       ft=0    rt=0   
+    千本桜                          fee=0   st=-1     pl=0        cp=2   rs=True oct=1    ncr=-      oss=-                    ver=34       ft=0    rt=0   
+    千本樱(钢琴柔和伴奏版)（Cover Koma'n）   fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=7        ft=0    rt=0   
+    勿念他归                         fee=0   st=-1     pl=0        cp=2   rs=True oct=1    ncr=-      oss=-                    ver=632      ft=0    rt=0   
+    千本桜 -Remix- Instrumental     fee=0   st=-1     pl=0        cp=2   rs=True oct=0    ncr=-      oss=-                    ver=20       ft=0    rt=0   
+    千本樱 宫调版 伴奏                   fee=0   st=0      pl=320000   cp=0   rs=True oct=0    ncr=-      oss=-                    ver=3        ft=0    rt=0   
+    华春岁 伴奏                       fee=0   st=0      pl=320000   cp=0   rs=True oct=0    ncr=-      oss=-                    ver=6        ft=0    rt=0   
+    千本樱（云曦露） 伴奏                  fee=0   st=0      pl=320000   cp=0   rs=True oct=0    ncr=-      oss=-                    ver=4        ft=0    rt=0   
+    千本樱 (抖音钢琴版)                  fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=12       ft=0    rt=0   
+    千本桜                          fee=1   st=-1     pl=0        cp=2   rs=True oct=1    ncr=-      oss=-                    ver=21       ft=0    rt=0   
+    千本桜                          fee=0   st=-1     pl=0        cp=2   rs=True oct=1    ncr=-      oss=-                    ver=46       ft=0    rt=0   
+    千本桜 (COLORFUL LIVE ver.)     fee=0   st=0      pl=320000   cp=0   rs=True oct=0    ncr=-      oss=-                    ver=3        ft=0    rt=0   
+    千本桜                          fee=0   st=-1     pl=0        cp=2   rs=True oct=1    ncr=-      oss=-                    ver=31       ft=0    rt=0   
+    千本桜                          fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=5        ft=0    rt=0   
+    千本桜                          fee=1   st=-1     pl=0        cp=1   rs=True oct=2    ncr=-      oss=千本桜/黒うさP,初音ミク        ver=14       ft=0    rt=0   
+    千本樱（纯钢）                      fee=8   st=0      pl=320000   cp=0   rs=True oct=0    ncr=-      oss=-                    ver=9        ft=0    rt=0   
+    "千本樱" - SASIOVERLXRD X 日系采样类 fee=0   st=0      pl=320000   cp=0   rs=True oct=0    ncr=-      oss=-                    ver=4        ft=0    rt=0   
+    千本樱beat（痛）                   fee=8   st=0      pl=320000   cp=0   rs=True oct=0    ncr=-      oss=-                    ver=2        ft=0    rt=0   
+    （痛）千本樱-160bpm-bmin-prod.tire fee=0   st=0      pl=320000   cp=0   rs=True oct=0    ncr=-      oss=-                    ver=2        ft=0    rt=0   
+    「免费不可商用！」“千本樱”采样Trap         fee=8   st=0      pl=320000   cp=0   rs=True oct=0    ncr=-      oss=-                    ver=5        ft=0    rt=0   
+    浪漫爱（伴奏）                      fee=0   st=0      pl=320000   cp=0   rs=True oct=0    ncr=-      oss=-                    ver=1        ft=0    rt=0   
+    无间渡（翻唱Cover）伴奏               fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=无间渡/胡彦斌              ver=4        ft=0    rt=0   
+    願い～あの頃のキミへ～                  fee=8   st=0      pl=320000   cp=0   rs=True oct=0    ncr=-      oss=-                    ver=3        ft=0    rt=0   
+    我还在这里「まだ、ここにいる」 伴奏           fee=0   st=0      pl=320000   cp=0   rs=True oct=0    ncr=-      oss=-                    ver=3        ft=0    rt=0   
+    给我多一点时间 伴奏                   fee=0   st=0      pl=320000   cp=0   rs=True oct=0    ncr=-      oss=-                    ver=4        ft=0    rt=0   
+    소원을빌다（许愿） 伴奏                 fee=0   st=0      pl=320000   cp=0   rs=True oct=0    ncr=-      oss=-                    ver=3        ft=0    rt=0   
+    사랑은멜로디처럼                     fee=8   st=0      pl=320000   cp=0   rs=True oct=0    ncr=-      oss=-                    ver=7        ft=0    rt=0   
+
+### 关键词 = 孤勇者 陈奕迅   （30 条）
+    name | fee | st | pl | copyright | resourceState | originCoverType | noCopyrightRcmd | originSongSimpleData.name / .artists | version | ftype | rtype
+    孤勇者                          fee=1   st=0      pl=0        cp=1   rs=True oct=1    ncr=-      oss=-                    ver=37       ft=0    rt=0   
+    孤勇者 (Live版)                  fee=1   st=0      pl=0        cp=1   rs=True oct=0    ncr=-      oss=-                    ver=7        ft=0    rt=0   
+    孤勇者                          fee=0   st=0      pl=128000   cp=0   rs=True oct=3    ncr=-      oss=-                    ver=1        ft=0    rt=0   
+    孤勇者 (Single Version)         fee=0   st=0      pl=128000   cp=0   rs=True oct=3    ncr=-      oss=-                    ver=1        ft=0    rt=0   
+    孤勇者 (童声版)                    fee=1   st=0      pl=0        cp=0   rs=True oct=2    ncr=-      oss=-                    ver=4        ft=0    rt=0   
+    孤勇者 (女声版)                    fee=0   st=0      pl=320000   cp=0   rs=True oct=3    ncr=-      oss=-                    ver=2        ft=0    rt=0   
+    陈奕迅 - 孤勇者(DjAxu Electro Rmx  fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=3        ft=0    rt=0   
+    孤勇者                          fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=2        ft=0    rt=0   
+    孤勇者                          fee=8   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=孤勇者/陈奕迅              ver=6        ft=0    rt=0   
+    孤勇者-陈奕迅（伴奏钢琴版)               fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=9        ft=0    rt=0   
+    孤勇者                          fee=0   st=0      pl=128000   cp=0   rs=True oct=3    ncr=-      oss=-                    ver=1        ft=0    rt=0   
+    孤勇者(DJ版)                     fee=0   st=0      pl=128000   cp=0   rs=True oct=3    ncr=-      oss=-                    ver=3        ft=0    rt=0   
+    陈奕迅 - 孤勇者(DJ版)(DJ版)          fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=5        ft=0    rt=0   
+    孤勇者 (Live)                   fee=1   st=0      pl=0        cp=0   rs=True oct=2    ncr=-      oss=孤勇者/陈奕迅              ver=8        ft=0    rt=0   
+    单车                           fee=1   st=0      pl=0        cp=2   rs=True oct=1    ncr=-      oss=-                    ver=93       ft=0    rt=0   
+    孤勇者 (DJ版)                    fee=8   st=0      pl=320000   cp=1   rs=True oct=3    ncr=-      oss=-                    ver=9        ft=0    rt=0   
+    孤勇者                          fee=8   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=孤勇者/陈奕迅              ver=5        ft=0    rt=0   
+    孤勇者 (Live)                   fee=1   st=0      pl=0        cp=0   rs=True oct=2    ncr=-      oss=孤勇者/陈奕迅              ver=3        ft=0    rt=0   
+    孤勇者 (Live)                   fee=1   st=0      pl=0        cp=0   rs=True oct=2    ncr=-      oss=孤勇者/陈奕迅              ver=3        ft=0    rt=0   
+    孤独患者                         fee=1   st=0      pl=0        cp=1   rs=True oct=1    ncr=-      oss=-                    ver=75       ft=0    rt=0   
+    孤勇者 (Live)-超嗨电音              fee=0   st=0      pl=320000   cp=0   rs=True oct=2    ncr=-      oss=-                    ver=3        ft=0    rt=0   
+    Poem Ensenada（治愈版英文独白）       fee=0   st=0      pl=320000   cp=0   rs=True oct=0    ncr=-      oss=-                    ver=11       ft=0    rt=0   
+    浮夸                           fee=1   st=0      pl=0        cp=1   rs=True oct=1    ncr=-      oss=-                    ver=162      ft=0    rt=0   
+    不要说话                         fee=1   st=0      pl=0        cp=1   rs=True oct=1    ncr=-      oss=-                    ver=93       ft=0    rt=0   
+    陀飞轮                          fee=1   st=0      pl=0        cp=1   rs=True oct=1    ncr=-      oss=-                    ver=68       ft=0    rt=0   
+    好久不见                         fee=1   st=0      pl=0        cp=1   rs=True oct=1    ncr=-      oss=-                    ver=90       ft=0    rt=0   
+    最佳损友                         fee=1   st=0      pl=0        cp=1   rs=True oct=1    ncr=-      oss=-                    ver=456      ft=0    rt=0   
+    富士山下                         fee=1   st=0      pl=0        cp=1   rs=True oct=1    ncr=-      oss=-                    ver=172      ft=0    rt=0   
+    樱路过风居住的街道（治愈版）               fee=0   st=0      pl=320000   cp=0   rs=True oct=0    ncr=-      oss=-                    ver=10       ft=0    rt=0   
+    淘汰                           fee=1   st=0      pl=0        cp=1   rs=True oct=1    ncr=-      oss=-                    ver=89       ft=0    rt=0   
+
+==============================================================================
+汇总
+==============================================================================
+总样本 = 240；privilege 缺失 = 0（→ 每首歌都带 privilege）
+privilege.st 取值分布: {"0": 228, "-200": 1, "-1": 11}
+originCoverType 取值分布: {"2": 123, "0": 46, "1": 59, "3": 12}
+
+noCopyrightRcmd 非空的样本（共 1 条）：
+  晴天 (钢琴版)                     -> {"typeDesc": "其它版本可播", "type": 2}
+
+同 st 下的 name（看 st 是不是「能不能播」的判据）：
+  st=-200     (1 条) 例: 晴天 (钢琴版)
+  st=-1       (11 条) 例: 千本桜 (オリジナルカラオケ), 千本樱钢琴版伴奏, 千本桜, 千本樱（纯钢琴）, 千本桜
+  st=0        (228 条) 例: 晴天(深情版), 晴天, 晴天 (原唱 周杰伦), 晴天 (女声版)), 晴天
+
+originCoverType 与 originSongSimpleData 的联合分布：
+  originCoverType=0     共  46 条，其中带 originSongSimpleData 的   0 条
+      晴天                         fee=8   st=0      oss=/
+      周杰伦“晴天”PopxTrap Beat       fee=0   st=0      oss=/
+      晴天                         fee=8   st=0      oss=/
+      周杰伦“晴天”Pop x Trap Beat     fee=0   st=0      oss=/
+      晴天                         fee=8   st=0      oss=/
+      我爱你                        fee=8   st=0      oss=/
+  originCoverType=1     共  59 条，其中带 originSongSimpleData 的   0 条
+      十年                         fee=1   st=0      oss=/
+      晴天                         fee=8   st=0      oss=/
+      晴天                         fee=8   st=0      oss=/
+      江南                         fee=1   st=0      oss=/
+      温柔                         fee=1   st=0      oss=/
+      可惜不是你                      fee=1   st=0      oss=/
+  originCoverType=2     共 123 条，其中带 originSongSimpleData 的  42 条
+      晴天(深情版)                    fee=8   st=0      oss=晴天/周杰伦
+      晴天 (原唱 周杰伦)                fee=8   st=0      oss=晴天/周杰伦
+      晴天 (女声版))                  fee=8   st=0      oss=晴天/周杰伦
+      晴天                         fee=8   st=0      oss=/
+      晴天 (钢琴版) [原唱: 周杰伦]         fee=1   st=0      oss=晴天/周杰伦
+      晴天周杰伦(从前从前有个人爱你很久)         fee=8   st=0      oss=我热你温/任然
+  originCoverType=3     共  12 条，其中带 originSongSimpleData 的   0 条
+      晴天(DJ版)                    fee=0   st=0      oss=/
+      周杰伦-晴天 (DJ苏天伦版)            fee=0   st=0      oss=/
+      晴天 (R&B版)                  fee=0   st=0      oss=/
+      比起晴天我更需要你 (钢琴版)            fee=0   st=0      oss=/
+      夜空中最亮的星 (DjEwen版)          fee=0   st=0      oss=/
+      夜空中最亮的星                    fee=0   st=0      oss=/
+
+==============================================================================
+Q1 补充：st/pl 与「取链预检」的一致性（金标准对照）
+==============================================================================
+预检样本数 = 7
+  晴天 (钢琴版)                 st=-200   pl=0        预测可播=False 实测可播=False code=200  fee=0    level=None     441ms
+  千本桜 (オリジナルカラオケ)          st=-1     pl=0        预测可播=False 实测可播=True  code=200  fee=0    level=standard 474ms
+  千本樱钢琴版伴奏                 st=-1     pl=0        预测可播=False 实测可播=True  code=200  fee=0    level=standard 473ms
+  千本桜                      st=-1     pl=0        预测可播=False 实测可播=False code=200  fee=1    level=None     518ms
+  晴天(深情版)                  st=0      pl=320000   预测可播=True  实测可播=True  code=200  fee=8    level=standard 476ms
+  晴天                       st=0      pl=320000   预测可播=True  实测可播=True  code=200  fee=8    level=standard 478ms
+  晴天 (原唱 周杰伦)              st=0      pl=320000   预测可播=True  实测可播=True  code=200  fee=8    level=standard 478ms
+
+st/pl 预测 vs 取链预检 一致率 = 5/7

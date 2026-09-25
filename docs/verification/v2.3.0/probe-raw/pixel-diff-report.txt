@@ -1,0 +1,41 @@
+================================================================================
+Pixel-level proof that NOTHING moved during the idle windows (paused trials)
+compare -metric AE  <A.png> <B.png> null:   => number of differing pixels
+md5sum proves byte identity.
+================================================================================
+
+--- PAUSED trial on 'めき煌めきと君も' (song Natsume/imase), exact timing ---
+PAUSED3-A-immediate  screencap +1.64s after swipe
+PAUSED3-B-8s         screencap +8.57s
+PAUSED3-C-20s        screencap +20.61s
+075bccc08a90f61919c45e56efdcd4c2  PAUSED3-A-immediate.png
+985ecce31a2a7326fd0214eda46cfd38  PAUSED3-B-8s.png
+985ecce31a2a7326fd0214eda46cfd38  PAUSED3-C-20s.png
+A vs B: 11813.7 (0.00320467) px
+B vs C: 0 (0) px
+A vs C: 11813.7 (0.00320467) px
+
+--- PAUSED trial on 绝不认输 (down-swipe; actual gap 37.3s > 5s timeout) ---
+71565f9c68516d0723e17fd729225878  06p-paused-after-manual-scroll.png
+3a8a73ede9b553364dc77c344f04b145  07p-paused-after-8s-idle.png
+3a8a73ede9b553364dc77c344f04b145  07p2-paused-after-20s-idle.png
+06p vs 07p  : 12272.3 (0.00332908) px
+07p vs 07p2 : 0 (0) px
+
+--- PAUSED trial on 绝不认输 (up-swipe; actual gap 10.6s > 5s timeout) ---
+2e2821cebf85f24c7290e57bc0f6b556  10p-paused-after-up-scroll.png
+0d6cc9640464057f5518b97cce19d641  11p-paused-after-8s-idle-up.png
+10p vs 11p  : 32609.4 (0.00884587) px
+
+--- QUIESCENCE CONTROL: 3 screencaps 1.5s apart, PAUSED, no touch at all ---
+(proves the screen is a static instrument when paused, so the idle windows above
+ are clean; also proves the karaoke sweep does not advance while paused)
+edb5547f348e739f4cac95d6a2c59e98  /tmp/ctrl/q1.png
+edb5547f348e739f4cac95d6a2c59e98  /tmp/ctrl/q2.png
+edb5547f348e739f4cac95d6a2c59e98  /tmp/ctrl/q3.png
+q1 vs q2: 0 (0) px
+q2 vs q3: 0 (0) px
+
+--- CONTROL that the instrument CAN see movement: baseline vs after-scroll ---
+05b(auto) vs 06p(after swipe): 79347.7 (0.0215244) px
+20-paused3-baseline vs PAUSED3-A: 61031 (0.0165557) px

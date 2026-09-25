@@ -1,0 +1,66 @@
+# 老数据迁移核验（v2.2.1 → v2.3.0，release 包）
+
+方法：手机（`0715f763f54c023a`）卸载 debug 包前把整套 `shared_prefs` 备份到 `/sdcard`，
+装 v2.3.0 release 包后原样还原（模拟「从 v2.2.1 升级上来」），再冷启动读取。
+
+## 1. 老 key 一个没丢
+
+| prefs 文件 | 升级前 | 升级后 | 判据 |
+|---|---|---|---|
+| `ncrust_library.xml` | 33326 B | 33326 B | `liked_ids` / `saved_albums` / `saved_songs` 三个 key 都在；UI 显示「**1066首歌曲**」 |
+| `ncrust_playback_state.xml` | 462631 B | 462631 B | 队列与断点续播恢复；mini bar 显示 `NIGHT DANCER · imase · 网易云` |
+| `ncrust_lyrics_cache.xml` | 158033 B | 158033 B | 字节数一致（歌词缓存没有因为加字段被清） |
+| `ncrust_qq_playlists.xml` | 15864 B | 15864 B | 2 条 detail 缓存可见 |
+| `ncrust_prefs.xml` | 2448 B | 2448 B | `MUSIC_U` 仍在 ⇒ **网易云登录态保留** |
+| `ncrust_qq_prefs.xml` | 803 B | 803 B | `qq_cookie` 仍在 ⇒ **QQ 登录态保留** |
+| `ncrust_settings.xml` | 834 B | 834 B | 主题 / 音质 / 歌词偏好保留 |
+
+截图：`screenshots/v230-01-library.png`（1066 首 + NIGHT DANCER mini bar）。
+
+## 2. 新 key 只在真的写过之后才出现
+
+还原之后、还没建过任何本地歌单时：
+
+```
+$ adb -s … shell "su -c 'ls /data/data/com.takahashirinta.ncrust/shared_prefs/ | grep -c local'"
+0
+```
+
+⇒ 本版**没有**在启动时凭空创建 `ncrust_local_playlists.xml`，
+新存储是**惰性**的（第一次写本地歌单时才出现）。这一条很重要：
+它保证「升级本身不会改变用户的存储状态」。
+
+## 3. 本版唯一的缓存结构演进：`ncrust_local_playlists`（**全新文件，不是改老结构**）
+
+本版**没有修改任何既有缓存结构的字段**，所以没有「老字段缺失」的问题要处理：
+
+| 结构 | 本版动作 |
+|---|---|
+| `ncrust_library` / `ncrust_playback_state` / `ncrust_lyrics_cache` / `ncrust_offline` / `search_history` | **一个字节未动** |
+| `ncrust_qq_playlists`（v2.2.0 的 `PlaylistCacheCodec`） | **一个字节未动** |
+| `ncrust_local_playlists` | **新增**（`LocalPlaylistCodec.SCHEMA_VERSION = 1`） |
+
+新结构的迁移逻辑仍然写了，且有单测（`LocalPlaylistCodecTest`）：
+`tombstoned` 缺字段补 **false** 而不是 true（补 true 会让整张歌单同步不进任何歌），
+且缺字段的条目**不丢弃**（丢弃 = 用户数据静默消失）。两条都是**反向断言**。
+
+## 4. ⚠️ 唯一一个真的迁移风险（本版自己发现并修掉）
+
+第一次 release 验证时读回 `ncrust_local_playlists.xml`，发现落盘 JSON 是
+
+```
+{"a":"netease","b":"local:1790327514802-0","c":"anonymous","d":"v230test","e":...,"f":...}
+```
+
+—— **R8 把 DTO 字段名混淆成了单字母**。同一个 APK 内读写自洽所以不崩，
+但升级到下一个构建时映射一变，老数据就一条都读不出来 ⇒ **本地歌单静默消失**。
+
+- **实测证据（修复前）**：装带 `-keep` 的新包后，旧数据确实读不出来 ——
+  库页「本地歌单」区显示「还没有本地歌单」，`v230test` 不见了
+  （截图 `screenshots/v230-07-old-data-unreadable.png`）。
+- **修法**：`app/proguard-rules.pro` 加 `-keep class com.takahashirinta.ncrust.local.** { *; }`。
+- **实测证据（修复后）**：新建的 `v230fix` 落盘为
+  `{"createdAt":…,"dirId":0,"id":"local:…","lastSyncedAt":0,"name":"v230fix","ownerId":"anonymous","source":"netease","updatedAt":…}`
+  —— 字段名全部可读（截图 `screenshots/v230-08-local-created-fixed.png`）。
+- **回归单测**：`LocalPlaylistCodecTest` 新增 4 条用例，断言编解码产物的**确切 key 名**
+  （字段改名会让用例变红，而不是让用户的数据消失）。

@@ -1,0 +1,294 @@
+================================================================================
+Ncrust v2.2.1-gpl landscape lyric-panel measurements — DEFINITIVE TABLE
+device 0715f763f54c023a (SM-G9209, Android 7.0, 1440x2560, density 640 => 360x640dp)
+landscape app area 2560x1440, rotation 1; lyric panel bounds [1206,96][2480,1024]
+panel height 928px = 232.0dp; LEAD_FRACTION 0.36 => auto item-top y = 430
+frac_itemtop = (node_top - 40px item padding - panel_top) / panel_height
+               ^ this is the quantity directly comparable to LEAD_FRACTION
+frac_center  = (node_centerY - panel_top) / panel_height  (task's formula;
+               NOT a stable invariant - it moves when a line wraps)
+================================================================================
+
+########## 05b-paused-baseline
+  panel y 96..1024 (h=928px = 232.0dp)  | a11y current-line text = '这就是我一个不屈不挠的小人物'
+  purple ink bands (pixel oracle): [(480, 579), (624, 721)]
+  4 lyric text nodes inside panel:
+     '当有很多同行开始把我嫉妒'                     bounds=(1206, 96, 2192, 151) h=55   frac_itemtop=-0.0431 frac_center=0.0296
+     '没错 现实如此残酷'                        bounds=(1206, 250, 2353, 383) h=133  frac_itemtop=+0.1228 frac_center=0.2376
+     '这就是我一个不屈不挠的小人物'                   bounds=(1206, 470, 2480, 741) h=271  frac_itemtop=+0.3599 frac_center=0.5490   <== CONTAINS FIRST PURPLE BAND => CURRENT LINE
+     '当我变卖所有家当来到北京'                     bounds=(1206, 827, 2353, 943) h=116  frac_itemtop=+0.7446 frac_center=0.8502
+  ==> CURRENT LINE = '这就是我一个不屈不挠的小人物'
+      top=470 bottom=741 centerY=605.5  panelTop=96 panelBottom=1024 panelH=928
+      frac_itemtop = 0.3599   (auto target = 0.36)
+      frac_center  = 0.5490
+      displacement from auto item-top: -0.1px = -0.01% of panel height
+
+########## 05c-playing-baseline
+  panel y 96..1024 (h=928px = 232.0dp)  | a11y current-line text = '当我用音乐让他们清醒'
+  purple ink bands (pixel oracle): [(481, 579)]
+  5 lyric text nodes inside panel:
+     '当我变卖所有家当来到北京'                     bounds=(1206, 96, 2192, 170) h=74   frac_itemtop=-0.0431 frac_center=0.0399
+     '当我听到很多DJ说我神经'                     bounds=(1206, 268, 2353, 384) h=116  frac_itemtop=+0.1422 frac_center=0.2478
+     '当我用音乐让他们清醒'                       bounds=(1206, 470, 2480, 598) h=128  frac_itemtop=+0.3599 frac_center=0.4720   <== CONTAINS FIRST PURPLE BAND => CURRENT LINE
+     '告诉他们DJ也会成为明星'                     bounds=(1206, 684, 2353, 800) h=116  frac_itemtop=+0.5905 frac_center=0.6961
+     '这就是我一直坚持的路'                       bounds=(1206, 898, 2251, 1002) h=104  frac_itemtop=+0.8211 frac_center=0.9203
+  ==> CURRENT LINE = '当我用音乐让他们清醒'
+      top=470 bottom=598 centerY=534.0  panelTop=96 panelBottom=1024 panelH=928
+      frac_itemtop = 0.3599   (auto target = 0.36)
+      frac_center  = 0.4720
+      displacement from auto item-top: -0.1px = -0.01% of panel height
+
+########## 04-landscape-playing-a
+  panel y 96..1024 (h=928px = 232.0dp)  | a11y current-line text = '我相信希望就在前方不远处'
+  purple ink bands (pixel oracle): [(480, 579)]
+  5 lyric text nodes inside panel:
+     '我不停走在一条不回头的路'                     bounds=(1206, 96, 2192, 170) h=74   frac_itemtop=-0.0431 frac_center=0.0399
+     '没有走到终点我绝对不认输'                     bounds=(1206, 268, 2353, 384) h=116  frac_itemtop=+0.1422 frac_center=0.2478
+     '我相信希望就在前方不远处'                     bounds=(1206, 470, 2480, 598) h=128  frac_itemtop=+0.3599 frac_center=0.4720   <== CONTAINS FIRST PURPLE BAND => CURRENT LINE
+     '当我决定踏上这征途'                        bounds=(1206, 685, 2353, 818) h=133  frac_itemtop=+0.5916 frac_center=0.7064
+     '绝不认输'                             bounds=(1206, 918, 2251, 1024) h=106  frac_itemtop=+0.8427 frac_center=0.9429
+  ==> CURRENT LINE = '我相信希望就在前方不远处'
+      top=470 bottom=598 centerY=534.0  panelTop=96 panelBottom=1024 panelH=928
+      frac_itemtop = 0.3599   (auto target = 0.36)
+      frac_center  = 0.4720
+      displacement from auto item-top: -0.1px = -0.01% of panel height
+
+########## 05-landscape-playing-b
+  panel y 96..1024 (h=928px = 232.0dp)  | a11y current-line text = '当我决定踏上这征途'
+  purple ink bands (pixel oracle): [(482, 595)]
+  5 lyric text nodes inside panel:
+     '没有走到终点我绝对不认输'                     bounds=(1206, 96, 2192, 170) h=74   frac_itemtop=-0.0431 frac_center=0.0399
+     '我相信希望就在前方不远处'                     bounds=(1206, 268, 2353, 384) h=116  frac_itemtop=+0.1422 frac_center=0.2478
+     '当我决定踏上这征途'                        bounds=(1206, 470, 2480, 617) h=147  frac_itemtop=+0.3599 frac_center=0.4822   <== CONTAINS FIRST PURPLE BAND => CURRENT LINE
+     '绝不认输'                             bounds=(1206, 704, 2353, 837) h=133  frac_itemtop=+0.6121 frac_center=0.7268
+     '绝不认输'                             bounds=(1206, 937, 2251, 1024) h=87   frac_itemtop=+0.8631 frac_center=0.9531
+  ==> CURRENT LINE = '当我决定踏上这征途'
+      top=470 bottom=617 centerY=543.5  panelTop=96 panelBottom=1024 panelH=928
+      frac_itemtop = 0.3599   (auto target = 0.36)
+      frac_center  = 0.4822
+      displacement from auto item-top: -0.1px = -0.01% of panel height
+
+########## 05d-electric-paused
+  panel y 96..1024 (h=928px = 232.0dp)  | a11y current-line text = 'We are electric\n我们是电动'
+  purple ink bands (pixel oracle): [(492, 587), (636, 703)]
+  6 lyric text nodes inside panel:
+     'We are electric'                  bounds=(1206, 155, 2353, 288) h=133  frac_itemtop=+0.0205 frac_center=0.1352
+     '我们是电动'                            bounds=(1206, 295, 2353, 378) h=83   frac_itemtop=+0.1713 frac_center=0.2592
+     'We are electric'                  bounds=(1206, 470, 2480, 617) h=147  frac_itemtop=+0.3599 frac_center=0.4822   <== CONTAINS FIRST PURPLE BAND => CURRENT LINE
+     '我们是电动'                            bounds=(1206, 625, 2480, 717) h=92   frac_itemtop=+0.5269 frac_center=0.6196
+     'We are electric'                  bounds=(1206, 809, 2353, 942) h=133  frac_itemtop=+0.7252 frac_center=0.8400
+     '我们是电动'                            bounds=(1206, 949, 2353, 1024) h=75   frac_itemtop=+0.8761 frac_center=0.9596
+  ==> CURRENT LINE = 'We are electric'
+      top=470 bottom=617 centerY=543.5  panelTop=96 panelBottom=1024 panelH=928
+      frac_itemtop = 0.3599   (auto target = 0.36)
+      frac_center  = 0.4822
+      displacement from auto item-top: -0.1px = -0.01% of panel height
+
+########## 20-paused3-baseline
+  panel y 96..1024 (h=928px = 232.0dp)  | a11y current-line text = '響めき煌めきと君も\n即使你的回声也在闪耀\ndo yo me ki ki ra me ki to ki mi mo'
+  purple ink bands (pixel oracle): [(482, 595), (636, 703), (737, 804)]
+  7 lyric text nodes inside panel:
+     'どうでもいいような夜だけど'                    bounds=(1206, 96, 2192, 217) h=121  frac_itemtop=-0.0431 frac_center=0.0652
+     '虽是个无所谓的夜晚'                        bounds=(1206, 224, 2353, 296) h=72   frac_itemtop=+0.0948 frac_center=0.1767
+     'do u de mo i i yo u na yo ru da ke do' bounds=(1206, 303, 2353, 368) h=65   frac_itemtop=+0.1800 frac_center=0.2581
+     '響めき煌めきと君も'                        bounds=(1206, 470, 2480, 617) h=147  frac_itemtop=+0.3599 frac_center=0.4822   <== CONTAINS FIRST PURPLE BAND => CURRENT LINE
+     '即使你的回声也在闪耀'                       bounds=(1206, 625, 2480, 717) h=92   frac_itemtop=+0.5269 frac_center=0.6196
+     'do yo me ki ki ra me ki to ki mi mo' bounds=(1206, 725, 2480, 807) h=82   frac_itemtop=+0.6347 frac_center=0.7220
+     'まだ止まった刻む針も'                       bounds=(1206, 902, 2353, 1017) h=115  frac_itemtop=+0.8254 frac_center=0.9305
+  ==> CURRENT LINE = '響めき煌めきと君も'
+      top=470 bottom=617 centerY=543.5  panelTop=96 panelBottom=1024 panelH=928
+      frac_itemtop = 0.3599   (auto target = 0.36)
+      frac_center  = 0.4822
+      displacement from auto item-top: -0.1px = -0.01% of panel height
+
+########## PAUSED3-A-immediate
+  panel y 96..1024 (h=928px = 232.0dp)  | a11y current-line text = '響めき煌めきと君も\n即使你的回声也在闪耀\ndo yo me ki ki ra me ki to ki mi mo'
+  purple ink bands (pixel oracle): [(848, 950)]
+  6 lyric text nodes inside panel:
+     '编曲 : ESME MORI'                   bounds=(1206, 105, 2192, 226) h=121  frac_itemtop=-0.0334 frac_center=0.0749
+     'どうでもいいような夜だけど'                    bounds=(1206, 341, 2353, 585) h=244  frac_itemtop=+0.2209 frac_center=0.3955
+     '虽是个无所谓的夜晚'                        bounds=(1206, 592, 2353, 664) h=72   frac_itemtop=+0.4914 frac_center=0.5733
+     'do u de mo i i yo u na yo ru da ke do' bounds=(1206, 671, 2353, 736) h=65   frac_itemtop=+0.5765 frac_center=0.6546
+     '響めき煌めきと君も'                        bounds=(1206, 838, 2480, 985) h=147  frac_itemtop=+0.7565 frac_center=0.8788   <== CONTAINS FIRST PURPLE BAND => CURRENT LINE
+     '即使你的回声也在闪耀'                       bounds=(1206, 993, 2480, 1024) h=31   frac_itemtop=+0.9235 frac_center=0.9833
+  ==> CURRENT LINE = '響めき煌めきと君も'
+      top=838 bottom=985 centerY=911.5  panelTop=96 panelBottom=1024 panelH=928
+      frac_itemtop = 0.7565   (auto target = 0.36)
+      frac_center  = 0.8788
+      displacement from auto item-top: +367.9px = +39.65% of panel height
+
+########## PAUSED3-B-8s
+  panel y 96..1024 (h=928px = 232.0dp)  | a11y current-line text = '響めき煌めきと君も\n即使你的回声也在闪耀\ndo yo me ki ki ra me ki to ki mi mo'
+  purple ink bands (pixel oracle): [(851, 950)]
+  6 lyric text nodes inside panel:
+     '编曲 : ESME MORI'                   bounds=(1206, 105, 2192, 226) h=121  frac_itemtop=-0.0334 frac_center=0.0749
+     'どうでもいいような夜だけど'                    bounds=(1206, 341, 2353, 585) h=244  frac_itemtop=+0.2209 frac_center=0.3955
+     '虽是个无所谓的夜晚'                        bounds=(1206, 592, 2353, 664) h=72   frac_itemtop=+0.4914 frac_center=0.5733
+     'do u de mo i i yo u na yo ru da ke do' bounds=(1206, 671, 2353, 736) h=65   frac_itemtop=+0.5765 frac_center=0.6546
+     '響めき煌めきと君も'                        bounds=(1206, 838, 2480, 985) h=147  frac_itemtop=+0.7565 frac_center=0.8788   <== CONTAINS FIRST PURPLE BAND => CURRENT LINE
+     '即使你的回声也在闪耀'                       bounds=(1206, 993, 2480, 1024) h=31   frac_itemtop=+0.9235 frac_center=0.9833
+  ==> CURRENT LINE = '響めき煌めきと君も'
+      top=838 bottom=985 centerY=911.5  panelTop=96 panelBottom=1024 panelH=928
+      frac_itemtop = 0.7565   (auto target = 0.36)
+      frac_center  = 0.8788
+      displacement from auto item-top: +367.9px = +39.65% of panel height
+
+########## PAUSED3-C-20s
+  panel y 96..1024 (h=928px = 232.0dp)  | a11y current-line text = '響めき煌めきと君も\n即使你的回声也在闪耀\ndo yo me ki ki ra me ki to ki mi mo'
+  purple ink bands (pixel oracle): [(851, 950)]
+  6 lyric text nodes inside panel:
+     '编曲 : ESME MORI'                   bounds=(1206, 105, 2192, 226) h=121  frac_itemtop=-0.0334 frac_center=0.0749
+     'どうでもいいような夜だけど'                    bounds=(1206, 341, 2353, 585) h=244  frac_itemtop=+0.2209 frac_center=0.3955
+     '虽是个无所谓的夜晚'                        bounds=(1206, 592, 2353, 664) h=72   frac_itemtop=+0.4914 frac_center=0.5733
+     'do u de mo i i yo u na yo ru da ke do' bounds=(1206, 671, 2353, 736) h=65   frac_itemtop=+0.5765 frac_center=0.6546
+     '響めき煌めきと君も'                        bounds=(1206, 838, 2480, 985) h=147  frac_itemtop=+0.7565 frac_center=0.8788   <== CONTAINS FIRST PURPLE BAND => CURRENT LINE
+     '即使你的回声也在闪耀'                       bounds=(1206, 993, 2480, 1024) h=31   frac_itemtop=+0.9235 frac_center=0.9833
+  ==> CURRENT LINE = '響めき煌めきと君も'
+      top=838 bottom=985 centerY=911.5  panelTop=96 panelBottom=1024 panelH=928
+      frac_itemtop = 0.7565   (auto target = 0.36)
+      frac_center  = 0.8788
+      displacement from auto item-top: +367.9px = +39.65% of panel height
+
+########## 06p-paused-after-manual-scroll
+  panel y 96..1024 (h=928px = 232.0dp)  | a11y current-line text = '这就是我一个不屈不挠的小人物'
+  purple ink bands (pixel oracle): [(845, 942)]
+  4 lyric text nodes inside panel:
+     '当有很多人说我的舞曲很酷'                     bounds=(1206, 205, 2251, 309) h=104  frac_itemtop=+0.0744 frac_center=0.1735
+     '当有很多同行开始把我嫉妒'                     bounds=(1206, 413, 2251, 517) h=104  frac_itemtop=+0.2985 frac_center=0.3976
+     '没错 现实如此残酷'                        bounds=(1206, 616, 2353, 749) h=133  frac_itemtop=+0.5172 frac_center=0.6320
+     '这就是我一个不屈不挠的小人物'                   bounds=(1206, 836, 2480, 1024) h=188  frac_itemtop=+0.7543 frac_center=0.8987   <== CONTAINS FIRST PURPLE BAND => CURRENT LINE
+  ==> CURRENT LINE = '这就是我一个不屈不挠的小人物'
+      top=836 bottom=1024 centerY=930.0  panelTop=96 panelBottom=1024 panelH=928
+      frac_itemtop = 0.7543   (auto target = 0.36)
+      frac_center  = 0.8987
+      displacement from auto item-top: +365.9px = +39.43% of panel height
+
+########## 07p-paused-after-8s-idle
+  panel y 96..1024 (h=928px = 232.0dp)  | a11y current-line text = '这就是我一个不屈不挠的小人物'
+  purple ink bands (pixel oracle): [(847, 944)]
+  4 lyric text nodes inside panel:
+     '当有很多人说我的舞曲很酷'                     bounds=(1206, 205, 2251, 309) h=104  frac_itemtop=+0.0744 frac_center=0.1735
+     '当有很多同行开始把我嫉妒'                     bounds=(1206, 413, 2251, 517) h=104  frac_itemtop=+0.2985 frac_center=0.3976
+     '没错 现实如此残酷'                        bounds=(1206, 616, 2353, 749) h=133  frac_itemtop=+0.5172 frac_center=0.6320
+     '这就是我一个不屈不挠的小人物'                   bounds=(1206, 836, 2480, 1024) h=188  frac_itemtop=+0.7543 frac_center=0.8987   <== CONTAINS FIRST PURPLE BAND => CURRENT LINE
+  ==> CURRENT LINE = '这就是我一个不屈不挠的小人物'
+      top=836 bottom=1024 centerY=930.0  panelTop=96 panelBottom=1024 panelH=928
+      frac_itemtop = 0.7543   (auto target = 0.36)
+      frac_center  = 0.8987
+      displacement from auto item-top: +365.9px = +39.43% of panel height
+
+########## 07p2-paused-after-20s-idle
+  panel y 96..1024 (h=928px = 232.0dp)  | a11y current-line text = '这就是我一个不屈不挠的小人物'
+  purple ink bands (pixel oracle): [(847, 944)]
+  4 lyric text nodes inside panel:
+     '当有很多人说我的舞曲很酷'                     bounds=(1206, 205, 2251, 309) h=104  frac_itemtop=+0.0744 frac_center=0.1735
+     '当有很多同行开始把我嫉妒'                     bounds=(1206, 413, 2251, 517) h=104  frac_itemtop=+0.2985 frac_center=0.3976
+     '没错 现实如此残酷'                        bounds=(1206, 616, 2353, 749) h=133  frac_itemtop=+0.5172 frac_center=0.6320
+     '这就是我一个不屈不挠的小人物'                   bounds=(1206, 836, 2480, 1024) h=188  frac_itemtop=+0.7543 frac_center=0.8987   <== CONTAINS FIRST PURPLE BAND => CURRENT LINE
+  ==> CURRENT LINE = '这就是我一个不屈不挠的小人物'
+      top=836 bottom=1024 centerY=930.0  panelTop=96 panelBottom=1024 panelH=928
+      frac_itemtop = 0.7543   (auto target = 0.36)
+      frac_center  = 0.8987
+      displacement from auto item-top: +365.9px = +39.43% of panel height
+
+########## 10p-paused-after-up-scroll
+  panel y 96..1024 (h=928px = 232.0dp)  | a11y current-line text = '这就是我一个不屈不挠的小人物'
+  purple ink bands (pixel oracle): [(313, 412), (457, 554)]
+  4 lyric text nodes inside panel:
+     '没错 现实如此残酷'                        bounds=(1206, 96, 2192, 202) h=106  frac_itemtop=-0.0431 frac_center=0.0571
+     '这就是我一个不屈不挠的小人物'                   bounds=(1206, 289, 2480, 560) h=271  frac_itemtop=+0.1649 frac_center=0.3540   <== CONTAINS FIRST PURPLE BAND => CURRENT LINE
+     '当我变卖所有家当来到北京'                     bounds=(1206, 646, 2353, 762) h=116  frac_itemtop=+0.5496 frac_center=0.6552
+     '当我听到很多DJ说我神经'                     bounds=(1206, 860, 2251, 964) h=104  frac_itemtop=+0.7802 frac_center=0.8793
+  ==> CURRENT LINE = '这就是我一个不屈不挠的小人物'
+      top=289 bottom=560 centerY=424.5  panelTop=96 panelBottom=1024 panelH=928
+      frac_itemtop = 0.1649   (auto target = 0.36)
+      frac_center  = 0.3540
+      displacement from auto item-top: -181.1px = -19.51% of panel height
+
+########## 11p-paused-after-8s-idle-up
+  panel y 96..1024 (h=928px = 232.0dp)  | a11y current-line text = '这就是我一个不屈不挠的小人物'
+  purple ink bands (pixel oracle): [(299, 398), (443, 540)]
+  4 lyric text nodes inside panel:
+     '没错 现实如此残酷'                        bounds=(1206, 96, 2192, 202) h=106  frac_itemtop=-0.0431 frac_center=0.0571
+     '这就是我一个不屈不挠的小人物'                   bounds=(1206, 289, 2480, 560) h=271  frac_itemtop=+0.1649 frac_center=0.3540   <== CONTAINS FIRST PURPLE BAND => CURRENT LINE
+     '当我变卖所有家当来到北京'                     bounds=(1206, 646, 2353, 762) h=116  frac_itemtop=+0.5496 frac_center=0.6552
+     '当我听到很多DJ说我神经'                     bounds=(1206, 860, 2251, 964) h=104  frac_itemtop=+0.7802 frac_center=0.8793
+  ==> CURRENT LINE = '这就是我一个不屈不挠的小人物'
+      top=289 bottom=560 centerY=424.5  panelTop=96 panelBottom=1024 panelH=928
+      frac_itemtop = 0.1649   (auto target = 0.36)
+      frac_center  = 0.3540
+      displacement from auto item-top: -181.1px = -19.51% of panel height
+
+########## 06-after-manual-scroll
+  (missing dump/screenshot)
+
+########## 07-after-8s-idle
+  (missing dump/screenshot)
+
+########## PLAYING-A-immediate
+  panel y 96..1024 (h=928px = 232.0dp)  | a11y current-line text = 'Just move your body again\n再一次摆动你的身体'
+  purple ink bands (pixel oracle): [(854, 941)]
+  5 lyric text nodes inside panel:
+     'We are at breaking generation of electric change' bounds=(1206, 96, 2251, 281) h=185  frac_itemtop=-0.0431 frac_center=0.0997
+     '我们在打破一代关于电动的转变'                   bounds=(1206, 288, 2251, 343) h=55   frac_itemtop=+0.1638 frac_center=0.2365
+     'Every time would scrap ahead every time in your mind' bounds=(1206, 479, 2251, 668) h=189  frac_itemtop=+0.3696 frac_center=0.5145
+     '脑海中的每一次都领先于打斗'                    bounds=(1206, 675, 2251, 730) h=55   frac_itemtop=+0.5808 frac_center=0.6536
+     "What you're proving to yourself and never losing control" bounds=(1206, 859, 2353, 1024) h=165  frac_itemtop=+0.7791 frac_center=0.9111
+  ==> purple ink exists but matches no lyric node (edge clip)
+
+########## PLAYING-B-8s
+  panel y 96..1024 (h=928px = 232.0dp)  | a11y current-line text = 'We are electric\n我们是电动'
+  purple ink bands (pixel oracle): NONE -> current line is OFF-SCREEN
+  6 lyric text nodes inside panel:
+     'Electric'                         bounds=(1206, 155, 2353, 288) h=133  frac_itemtop=+0.0205 frac_center=0.1352
+     '电动'                               bounds=(1206, 295, 2353, 378) h=83   frac_itemtop=+0.1713 frac_center=0.2592
+     'We are electric'                  bounds=(1206, 470, 2480, 617) h=147  frac_itemtop=+0.3599 frac_center=0.4822
+     '我们是电动'                            bounds=(1206, 625, 2480, 717) h=92   frac_itemtop=+0.5269 frac_center=0.6196
+     'We are electric'                  bounds=(1206, 809, 2353, 942) h=133  frac_itemtop=+0.7252 frac_center=0.8400
+     '我们是电动'                            bounds=(1206, 949, 2353, 1024) h=75   frac_itemtop=+0.8761 frac_center=0.9596
+  ==> CURRENT LINE IS OFF-SCREEN: no purple ink anywhere in the panel,
+      so the user's scroll left the current line outside the viewport entirely.
+
+########## PLAYING-C-20s
+  panel y 96..1024 (h=928px = 232.0dp)  | a11y current-line text = 'We are electric\n我们是电动'
+  purple ink bands (pixel oracle): [(492, 587), (636, 703)]
+  6 lyric text nodes inside panel:
+     'We are electric'                  bounds=(1206, 155, 2353, 288) h=133  frac_itemtop=+0.0205 frac_center=0.1352
+     '我们是电动'                            bounds=(1206, 295, 2353, 378) h=83   frac_itemtop=+0.1713 frac_center=0.2592
+     'We are electric'                  bounds=(1206, 470, 2480, 617) h=147  frac_itemtop=+0.3599 frac_center=0.4822   <== CONTAINS FIRST PURPLE BAND => CURRENT LINE
+     '我们是电动'                            bounds=(1206, 625, 2480, 717) h=92   frac_itemtop=+0.5269 frac_center=0.6196
+     "Don't stop"                       bounds=(1206, 809, 2353, 942) h=133  frac_itemtop=+0.7252 frac_center=0.8400
+     '别停下来'                             bounds=(1206, 949, 2353, 1024) h=75   frac_itemtop=+0.8761 frac_center=0.9596
+  ==> CURRENT LINE = 'We are electric'
+      top=470 bottom=617 centerY=543.5  panelTop=96 panelBottom=1024 panelH=928
+      frac_itemtop = 0.3599   (auto target = 0.36)
+      frac_center  = 0.4822
+      displacement from auto item-top: -0.1px = -0.01% of panel height
+
+########## 12-t4-paused-scrolled-away
+  panel y 96..1024 (h=928px = 232.0dp)  | a11y current-line text = 'We are electric\n我们是电动'
+  purple ink bands (pixel oracle): [(856, 950)]
+  6 lyric text nodes inside panel:
+     'Electric'                         bounds=(1206, 206, 2251, 327) h=121  frac_itemtop=+0.0754 frac_center=0.1837
+     '电动'                               bounds=(1206, 333, 2251, 409) h=76   frac_itemtop=+0.2123 frac_center=0.2963
+     'We are electric'                  bounds=(1206, 523, 2353, 656) h=133  frac_itemtop=+0.4170 frac_center=0.5318
+     '我们是电动'                            bounds=(1206, 663, 2353, 746) h=83   frac_itemtop=+0.5679 frac_center=0.6557
+     'We are electric'                  bounds=(1206, 838, 2480, 985) h=147  frac_itemtop=+0.7565 frac_center=0.8788   <== CONTAINS FIRST PURPLE BAND => CURRENT LINE
+     '我们是电动'                            bounds=(1206, 993, 2480, 1024) h=31   frac_itemtop=+0.9235 frac_center=0.9833
+  ==> CURRENT LINE = 'We are electric'
+      top=838 bottom=985 centerY=911.5  panelTop=96 panelBottom=1024 panelH=928
+      frac_itemtop = 0.7565   (auto target = 0.36)
+      frac_center  = 0.8788
+      displacement from auto item-top: +367.9px = +39.65% of panel height
+
+########## 13-t4b-paused-scrolled
+  panel y 96..1024 (h=928px = 232.0dp)  | a11y current-line text = 'Move your body and soul\n动起来！你的灵与肉'
+  purple ink bands (pixel oracle): NONE -> current line is OFF-SCREEN
+  5 lyric text nodes inside panel:
+     "What you're proving to yourself and never losing control" bounds=(1206, 96, 2251, 330) h=234  frac_itemtop=-0.0431 frac_center=0.1261
+     '你正在向自我证明，绝不会失控'                   bounds=(1206, 337, 2251, 392) h=55   frac_itemtop=+0.2166 frac_center=0.2893
+     'Just move your body again'        bounds=(1206, 529, 2353, 773) h=244  frac_itemtop=+0.4235 frac_center=0.5981
+     '再一次摆动你的身体'                        bounds=(1206, 780, 2353, 852) h=72   frac_itemtop=+0.6940 frac_center=0.7759
+     'Move your body and soul'          bounds=(1206, 950, 2480, 1024) h=74   frac_itemtop=+0.8772 frac_center=0.9601
+  ==> CURRENT LINE IS OFF-SCREEN: no purple ink anywhere in the panel,
+      so the user's scroll left the current line outside the viewport entirely.

@@ -1,0 +1,119 @@
+# 本地歌单：7 条规则的真机复现（v2.3.0 release，手机 0715f763f54c023a）
+
+> 全部数据来自 release 包（versionCode 39）上的真实操作 + `su -c cat` 读回落盘的
+> `ncrust_local_playlists.xml`。时间：2026-09-25 17:11 ~ 17:20。
+
+## 0. 落盘结构（`tracks:netease:anonymous:local:1790327679284-0`）
+
+```json
+{
+ "schemaVersion": 1,
+ "tracks": [
+  {
+   "addedAt": 1790327888404,
+   "origin": "LOCAL",
+   "song": "{\"al\":{...},\"ar\":[{\"id\":59765555,\"name\":\"DJ R4\"}],\"dt\":231304,\"id\":3342301115,\"name\":\"67\"}",
+   "source": "netease",
+   "tombstoned": false,
+   "trackId": 3342301115
+  }
+ ]
+}
+```
+
+歌单元数据（同一个文件）：
+
+```json
+[{"createdAt":1790327679284,"dirId":0,"id":"local:1790327679284-0",
+  "lastSyncedAt":0,"name":"v230fix","ownerId":"anonymous",
+  "source":"netease","updatedAt":1790327888404}]
+```
+
+- **key 形状** `tracks:<source>:<ownerId>:<playlistId>`（= `PlaylistKey.tag`，ownerId 必进 key）；
+- **身份** 只有 `source` + `trackId`（`TrackKey` 判等只看这两个，载荷 `sourceId`/`mediaId` 不参与）；
+- **载荷** `song` 是整首 `SongItem` 的 JSON（列表渲染与取链要用）；
+- **`updatedAt` 在写入时被推进**（`1790327888404` > `createdAt`）。
+
+## 1. 规则 5：本地手动新增 → origin = LOCAL，同步时永远保留
+
+入口：单曲列表长按 → 「加入本地歌单」（`MainActivity.showSongMenu`，全 Screen 唯一入口）
+→ 选择器里点 `v230fix`。
+
+```
+$ adb shell su -c cat …/ncrust_local_playlists.xml
+  trackId=3342301115 origin=LOCAL tombstoned=False addedAt=1790327888404
+```
+
+UI：本地歌单格子出现在「本地歌单」区，副标题「手动添加」（= 没有远程来源）。
+截图 `screenshots/v230-12-added.png`、选择器 `screenshots/v230-11-local-picker.png`。
+
+## 2. 规则 6：手动删除 → 只打 tombstone，**不物理删除**
+
+操作：进入本地歌单 → 长按曲目 → 「从歌单移除」。
+
+```
+$ … cat
+  trackId=3342301115 origin=LOCAL tombstoned=True addedAt=1790327888404   ← 条目仍在，只是被标记
+```
+
+UI：`0 首` + 空态「这个歌单还没有歌」。
+截图 `screenshots/v230-15-after-remove.png`。
+
+## 3. ★ tombstone 持久化：重启后仍生效
+
+```
+$ adb shell am force-stop com.takahashirinta.ncrust
+$ adb shell am start -n com.takahashirinta.ncrust/.MainActivity
+$ … cat
+  重启后: [(3342301115, 'LOCAL', True)]      ← 仍然是 True
+```
+
+这一条是任务书 4.6 的硬要求（「tombstone 必须持久化，否则重启失效」）的真机落点。
+
+## 4. 规则 7：手动重新添加同一首 → 清除 tombstone，**且不产生重复条目**
+
+再次长按同一首 → 「加入本地歌单」→ 选 `v230fix`：
+
+```
+  重新添加后: 条数=1
+    trackId=3342301115 origin=LOCAL tombstoned=False addedAt=1790327888404
+```
+
+三个要点一次到位：
+- `条数=1` ⇒ 去重按 `(source, id)` 生效（没有追加第二条）；
+- `tombstoned=False` ⇒ 删除意图被撤销；
+- `addedAt` **没变**（还是最初那个时间戳）⇒ **位置保持**，没有整体重排（任务书 4.4）。
+
+## 5. 清空歌单 → **连 tombstone 一起清**
+
+先删一次造出 tombstone，再点「清空歌单」（二次确认文案里明说了后果）：
+
+```
+清空前: [(3342301115, True)]
+清空后: schemaVersion=1 tracks=[]          ← tombstone 也没了
+```
+
+UI：`0 首` + 「这个歌单还没有歌」。
+确认框原文（截图 `screenshots/v230-17-clear-confirm.png`）：
+「确定清空「v230fix」？删除记录也会一并清除，同步后已删除的歌会重新出现。」
+
+## 6. 规则 1~4（远程同步）：单测覆盖 + 未能在真机上复现的原因
+
+规则 1~4 需要「一个绑定了远程来源的本地歌单」。本版提供了入口
+（QQ 歌单详情页的「转存为本地歌单」，会立刻同步一次），但**本轮真机没有跑这条路径**：
+手机在完成上面 1~5 之后从 USB 掉线（`adb devices` 不再列出，`lsusb` 仍可见三星设备
+`04e8:6860`），未能恢复。**如实记录为未在真机验证的缺口。**
+
+规则 1~4 的覆盖情况：
+
+| 规则 | 单测（`LocalPlaylistSyncTest`） | 真机 |
+|---|---|---|
+| 1 远程有 + 本地无 + 不在 tombstone → 追加 REMOTE | ✅ `rule1 远程有 本地无 不在 tombstone 时追加为 REMOTE` | ❌ |
+| 2 远程有 + 本地有 → 保留不动 | ✅ `rule2 …原样保留 不改 origin addedAt 与下标` | ❌ |
+| 3 远程无 + 本地有 → 保留 | ✅ 两条（含「远程整体消失时一首都不删」） | ❌ |
+| 4 远程有 + 在 tombstone → 跳过 | ✅ 三条（含连续两次同步的幂等性） | ❌ 间接：规则 6/7 的真机行为与它共用同一份状态 |
+
+## 7. 去重 key 的源隔离
+
+单测 `去重按 source 加 id 隔离 网易云 123 与 QQ 123 是两首歌` 覆盖；
+真机上的间接证据是上面的 `条数=1`（同一首歌重复添加没有产生第二条）。

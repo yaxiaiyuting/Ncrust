@@ -2882,3 +2882,95 @@ media3 的 `ChannelMixingMatrix` 只实现 `N→N / 1→2 / 2→1`，**6→1 抛
   且 10s 内不重复自动重取。
 - 判定「焦点有没有被反复抢」的现场手段：`adb shell dumpsys audio` 的
   `Audio Focus stack entries` + `dumpsys media_session` 的 `state=` 变化次数。
+
+## v2.3.0 新增（本 fork · 库界面重构 / 本地歌单 / 音源与版权标注 / 横屏歌词自动居中）
+
+> **发布说明**：`docs/verification/v2.3.0/CHANGELOG-v2.3.0.md`。
+> **探针**：`docs/verification/v2.3.0/PROBE-SUMMARY.md` + 五份 `probe-*.md` + `probe-raw/`。
+> **真机证据**：`docs/verification/v2.3.0/verification/` 与 `screenshots/`。
+
+### 六条新规则（本版起是硬约束）
+
+1. **`Strings` 的构造参数上限是 245，不是「余量 ~9」。**
+   真实算式：`this(1) + N + 默认值 mask ceil(N/32) + DefaultConstructorMarker(1) <= 255`。
+   N=245（v2.2.1 的真实值）**刚好用满**；N=246 会在**类加载期**抛
+   `ClassFormatError: Too many arguments in method signature` ——
+   **编译全绿，真机启动即崩**。新文案只能进嵌套组，而且**拆组前必须先腾出位置**。
+   本版为此把 `networkOfflineTitle` / `networkOfflineHint` 搬进 `OfflineStrings`
+   （语义上本来就属于它），用转发属性保住调用点。
+   回归保护：`StringsConstructorBudgetTest`（显式加载 `Strings` 并断言参数不超预算）。
+2. **凡是落盘/落网的结构，字段名与泛型签名都是对外契约，不能交给 R8 决定。**
+   本版第一次 release 验证时读回 `ncrust_local_playlists.xml`，发现 JSON 是
+   `{"a":"netease","b":"…"}` —— DTO 字段名被 R8 混淆成单字母。**同一 APK 内自洽所以不崩**，
+   但下一次构建的映射一变，老数据一条都读不出来 ⇒ 用户数据静默消失。
+   修法是 `-keep class …ncrust.local.** { *; }`；**回归保护是断言「落盘 key 名」的单测**
+   （字段改名让用例变红，而不是让用户的数据消失）。
+   这与 v2.2.0 那次「R8 丢掉泛型签名 ⇒ Gson 产出 LinkedTreeMap」是同一类问题的两个面。
+3. **「只加不减」必须有 tombstone，而且 tombstone 必须留在列表里。**
+   规则 4（远程有 + 在 tombstone ⇒ 跳过）之所以成立，**唯一原因**是 `remove` 只把
+   `tombstoned` 置 true、**没有把条目从列表里拿掉**。谁在那里顺手加一句 `filterNot`，
+   删掉的歌下一次同步就复活。`LocalPlaylistSync.remove` 的 KDoc 写明，
+   `LocalPlaylistSyncTest` 有三条用例从不同角度钉住。
+4. **迁移的默认值要选「不会丢数据、也不会误判意图」的那一侧。**
+   v2.2.0 对缺 `ownerId` 的老条目选择**丢弃**（补账号很危险）；
+   本版对缺 `tombstoned` 选择补 **`false`** —— 两个可能的默认值都有害：
+   补 `true` 会让用户从没删过的歌全被当成「已删」（整张歌单同步不进任何歌），
+   丢弃会让用户数据静默消失。**两个反向断言各钉一条。**
+5. **能在搜索阶段确证的才标，判不出来就留白。**
+   实测判据（匿名、分层抽样）：`privilege.pl > 0` ⇒ 可播放（30/30，**假阳性 0**）；
+   `st == 0 && pl == 0 && fee ∈ {1,4}` ⇒ 需会员（30/30 不可播）；
+   `st == -200` 或 `noCopyrightRcmd` ⇒ 无版权（零假阳性，但覆盖率只有 0.3%）。
+   **`st == -1` 绝不可当判据**（30 首里 15 可播 / 15 不可播）。
+   `originCoverType ∈ {1,2}` 的原唱/翻唱自洽率 96.7%（60 条抽查，剩余 3.3% 落在
+   「无信息」而不是「说反了」）。反例：`晴天 (原唱 周杰伦)` 标题自称原唱而
+   `originCoverType == 2` —— **字符串关键字判断会 100% 判反**。
+6. **「居中」与「回正」是两个动作，别只做一半。**
+   v2.2.1 的 5s 超时分支只有 `userScrolling = false; lastAutoScrolledIndex = -1`
+   **没有滚动调用**，而唯一的跟随路径 `LaunchedEffect(currentIndex)` 只在换行时跑 ⇒
+   暂停 / 间奏 / 长句时永久停在用户放手的位置。真机实测：静置 8.57s 与 20.61s
+   两张截图 **md5 相同**。修法是把「计时」与「回正」绑在同一次用户交互上
+   （世代号 + `pointerDown` 检查），并保持有界（一个世代只 delay 一次；
+   世代号回绕到 **1** 而不是 0，否则计时器永远不再安排 ⇒ 功能静默失效）。
+
+### 本版的关键取舍（有意为之，不是遗漏）
+
+| 取舍 | 理由 |
+|---|---|
+| 任务书 5.3「同一首歌两源都有 ⇒ 优先展示有版权的音源」**没有照做** | 探针证明**前提不成立**：接口里没有任何跨源标识（无 ISRC、无指纹），程序上配不成对。退而求其次时**也不能**按可播放性全量重排 —— 搜「周杰伦」会把一堆翻唱/Live 顶到最精确匹配前面。只把服务端**显式声明无版权**的 0.3% 行稳定沉底 |
+| QQ 侧不标「可播放 / 无版权 / 原唱」 | 一个可用字段都没有：`action.switch` 的 bit0 在 130/130 条上恒为 1（零区分度），`action.alert` 语义无权威定义且本轮没有金标准可验证 |
+| 播放失败**不自动切源** | 那需要在失败路径里再搜一次、判定是不是同一首 —— 三点都不可靠，而且是在失败路径里插网络请求（v2.2.1 那场 P0 级联的形状）。只给一条**有节流**的提示 |
+| 播放/暂停/seek **不**重置 5s 计时 | 探针实测三者对现有实现没有任何影响。seek 已有自己的两条重定位路径；把播放/暂停算作交互会让「暂停后翻看歌词」这个最需要回正的场景永远等不到回正 |
+| 横屏目标从 0.36 改成 **0.5** | 探针证明 0.36 的自动定位**本身是精确的**（6 次基线全部 0.3599），所以这不是修错数，是「横屏 3 行视口下 36% 视觉偏上」。竖屏一个像素未动 |
+| 删除 `QqPlaylistScreen` 与其路由 | 歌单列表平铺进库页之后它没有入口了，留一条死路由没有意义 |
+
+### 本版新增的存储
+
+| prefs 文件 | 内容 | 容量 |
+|---|---|---|
+| **`ncrust_local_playlists`** | `playlists`（歌单元数据数组）+ `tracks:<source>:<ownerId>:<playlistId>`（每张歌单一张曲目表，带版本信封） | 单表 ≤ 2000 条、≤ 100 张；超限**只丢最旧的 tombstone**，绝不丢活动条目 |
+
+- **本版没有修改任何既有缓存结构的字段**（`ncrust_library` / `ncrust_playback_state` /
+  `ncrust_lyrics_cache` / `ncrust_offline` / `ncrust_qq_playlists` 一个字节未动），
+  所以「加字段 = 加迁移逻辑」这条规矩本版只落在**新**结构上；
+- 新结构仍然写了迁移（`LocalPlaylistCodec.SCHEMA_VERSION = 1`），
+  因为 `tombstoned` 的默认值语义是结构性的；
+- 新存储是**惰性**的：启动时不会凭空创建这个文件（真机验证过）。
+
+### 本版新增的文件与约定
+
+| 文件 | 作用 |
+|---|---|
+| `search/TrackAvailability.kt` | 版权可用性（4 值）+ 版本性质（3 值）的**判据唯一落点**，纯逻辑 |
+| `ui/components/SongTags.kt` | 列表行角标的装配（含「什么时候什么都不显示」），纯逻辑 |
+| `local/LocalPlaylistModels.kt` | 本地歌单模型 + **七条同步规则**的纯函数 |
+| `local/LocalPlaylistCodec.kt` | 落盘 DTO + schema 迁移（`tombstoned` 缺字段补 false） |
+| `local/LocalPlaylistStore.kt` | `ncrust_local_playlists` 读写 + 容量裁剪；写入用 `commit()` 而不是 `apply()`（删除意图必须落盘，不能等异步） |
+| `local/LocalPlaylistRepository.kt` | 同步编排 + 编辑入口。**依赖里没有任何远程写接口**（铁律 3 的结构性保证） |
+| `ui/player/LyricsAutoCenter.kt` | 「5s 无触碰回正」的纯判定 |
+| `ui/components/PullToRefreshBox.kt` | 把 v2.2.0 已有的 `PullToRefresh` 纯阈值逻辑接到真实手势（`nestedScroll`，**一个像素都不消费**） |
+| `ui/screen/LibraryPlaylistsTab.kt` | 库页「歌单」tab 的三个按源分区 |
+| `ui/screen/LocalPlaylistDetailScreen.kt` | 本地歌单编辑页 |
+
+`DetailScaffold` 多了两个**可选**参数（`listState` / `contentModifier`），默认值让既有调用点零改动。
+`PlayerCard` 在 `usesSideCover` 为真时给歌词面板传 `centeredLayout = true`。
+`NewPlaylistGridItem` 多了一个**可选**的 `label`。

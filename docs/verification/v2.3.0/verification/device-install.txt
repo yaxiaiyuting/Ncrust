@@ -1,0 +1,84 @@
+# release 包真机安装与版本核验（v2.3.0）
+时间：2026-09-25 17:09 ~ 17:30
+
+## 设备
+
+| | |
+|---|---|
+| 手机 | serial `0715f763f54c023a` · SM-G9209 · Android 7.0 · 1440x2560 · density 640（360x640dp）· **已 root（Magisk）** |
+| 平板 | serial `WVQ6R22124000968` · WGR-W09 · Android 12 · 2560x1600（override 1600x2560）· density 320 · 无 root |
+
+## 安装
+
+### 平板（就地升级，数据保留）—— 走的是**真实用户的升级路径**
+
+```
+$ adb -s WVQ6R22124000968 install -r dist/Ncrust-v2.3.0-gpl-release.apk
+Performing Streamed Install
+Success
+
+$ adb -s WVQ6R22124000968 shell dumpsys package com.takahashirinta.ncrust | grep -E 'versionName|versionCode|lastUpdateTime'
+    versionCode=39 minSdk=24 targetSdk=36
+    versionName=2.3.0-gpl
+    lastUpdateTime=2026-09-25 17:09:36
+```
+
+平板此前装的是 **release 签名的 v2.2.1**（`firstInstallTime=2026-09-24 23:10:33`），
+所以 `install -r` 直接成功 ⇒ **release→release 就地升级可用、数据未丢**。
+（这台平板随后被系统锁屏挡住，无法继续自动化操作；其后续验证改在手机上完成。）
+
+### 手机 —— 第一次尝试**失败**，原因如实记录
+
+```
+$ adb -s 0715f763f54c023a install -r dist/Ncrust-v2.3.0-gpl-release.apk
+Failure [INSTALL_FAILED_UPDATE_INCOMPATIBLE: Package com.takahashirinta.ncrust
+         signatures do not match the previously installed version; ignoring!]
+```
+
+**这不是项目缺陷**：这台手机上装的是 **debug 包**
+（`/data/app/…/base.apk` 大小 30418227 = `dist/Ncrust-v2.2.1-gpl-debug.apk`，
+签名者 `CN=Android Debug`），而 release 包用的是项目自有签名：
+
+```
+$ apksigner verify --print-certs dist/Ncrust-v2.3.0-gpl-release.apk
+Signer #1 certificate DN: CN=Ncrust GPL Fork, OU=Personal, O=yaxiaiyuting, L=Unknown, ST=Unknown, C=CN
+Signer #1 certificate SHA-256 digest: e75af3ffbcf76a36a567188d88d132adf3c7484c53c20a3a083cb1d222025511
+```
+
+它与**上一个正式发布的包** `dist/Ncrust-v2.2.1-gpl-release.apk` 的签名
+**SHA-256 完全相同**（`e75af3ff…5511`）⇒ 真实用户从 release 版升级不会有这个问题。
+
+### 手机 —— 采用「备份 → 卸载 debug → 装 release → 还原数据」的路线
+
+```
+# 1) 卸载前把整套 SharedPreferences 备份到 /sdcard（12 个文件）
+$ adb -s …0715f763f54c023a shell "su -c 'cp -r /data/data/com.takahashirinta.ncrust/shared_prefs /sdcard/ncrust-v230-backup/'"
+# 2) 卸载 debug 包
+$ adb -s … uninstall com.takahashirinta.ncrust
+Success
+# 3) 装 release 包
+$ adb -s … install dist/Ncrust-v2.3.0-gpl-release.apk
+Success
+$ adb -s … shell "dumpsys package com.takahashirinta.ncrust | grep -E 'versionName|versionCode|signatures'"
+    versionCode=39 minSdk=24 targetSdk=36
+    versionName=2.3.0-gpl
+    signatures=PackageSignatures{c6f6457 [1f4a9edc]}
+# 4) 冷启一次建出数据目录，然后 force-stop，把备份的 prefs 还原回去
+$ adb -s … shell "su -c 'cp /sdcard/ncrust-v230-backup/shared_prefs/*.xml \
+      /data/data/com.takahashirinta.ncrust/shared_prefs/ && \
+      chown 10189:10189 …/*.xml && chmod 660 …/*.xml && restorecon -R …'"
+```
+
+⚠️ **第一次还原时 chown 用错了 uid**（脚本里 `UID` 是 bash 只读变量 = 1000，不是 app 的
+`u0_a189`=10189），文件属主变成 `system:system`。已用 `stat -c %u /data/data/…` 取到真实 uid
+后重新 chown 修正 —— 这一步如实记录，因为「属主不对会让 prefs 读不出来」本身就是一个容易踩的点。
+
+## 结论
+
+| 项 | 结果 |
+|---|---|
+| 平板 release→release 就地升级 | ✅ 成功，versionCode 39 |
+| 手机 debug→release 覆盖安装 | ❌ 签名不符（**预期行为**，非缺陷） |
+| 手机 release 全新安装 + 还原 v2.2.1 数据 | ✅ 成功，versionCode 39 |
+| release 包签名与上一版一致 | ✅ SHA-256 完全相同 |
+| release 包冷启动崩溃（R8 相关问题） | ✅ 无（见 `logcat-v230-*.txt`） |

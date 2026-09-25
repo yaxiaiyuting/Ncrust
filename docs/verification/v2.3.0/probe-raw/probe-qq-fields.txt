@@ -1,0 +1,131 @@
+==============================================================================
+QQ 音乐 GET client_search_cp （App 主通道）字段普查
+==============================================================================
+
+### 关键词 = 周杰伦              code=0 totalnum=999 本页 30 条
+    单曲 key: act, action, album, bpm, content, desc, desc_hilight, docid, eq, es, file, fnote, genre, grp, href3, id, index_album, index_cd, interval, isonly, ksong, label, language, lyric, lyric_hilight, mid, mv, name, newStatus, ov, pay, protect, sa, singer, status, subtitle, tag, tid, time_public, title, title_hilight, type, url, version, volume
+
+### 关键词 = 晴天               code=0 totalnum=995 本页 30 条
+    单曲 key: act, action, album, bpm, content, desc, desc_hilight, docid, eq, es, file, fnote, genre, grp, href3, id, index_album, index_cd, interval, isonly, ksong, label, language, lyric, lyric_hilight, mid, mv, name, newStatus, ov, pay, protect, sa, singer, status, subtitle, tag, tid, time_public, title, title_hilight, type, url, version, volume
+
+### 关键词 = 孤勇者              code=0 totalnum=989 本页 30 条
+    单曲 key: act, action, album, bpm, content, desc, desc_hilight, docid, eq, es, file, fnote, genre, grp, href3, id, index_album, index_cd, interval, isonly, ksong, label, language, lyric, lyric_hilight, mid, mv, name, newStatus, ov, pay, protect, sa, singer, status, subtitle, tag, tid, time_public, title, title_hilight, type, url, version, volume
+
+### 关键词 = 起风了              code=0 totalnum=993 本页 30 条
+    单曲 key: act, action, album, bpm, content, desc, desc_hilight, docid, eq, es, file, fnote, genre, grp, href3, id, index_album, index_cd, interval, isonly, ksong, label, language, lyric, lyric_hilight, mid, mv, name, newStatus, ov, pay, protect, sa, singer, status, subtitle, tag, tid, time_public, title, title_hilight, type, url, version, volume
+
+### 关键词 = 夜空中最亮的星          code=0 totalnum=999 本页 30 条
+    单曲 key: act, action, album, bpm, content, desc, desc_hilight, docid, eq, es, file, fnote, genre, grp, href3, id, index_album, index_cd, interval, isonly, ksong, label, language, lyric, lyric_hilight, mid, mv, name, newStatus, ov, pay, protect, sa, singer, status, subtitle, tag, tid, time_public, title, title_hilight, type, url, version, volume
+
+### 关键词 = Taylor Swift     code=0 totalnum=1015 本页 30 条
+    单曲 key: act, action, album, bpm, content, desc, desc_hilight, docid, eq, es, file, fnote, genre, grp, href3, id, index_album, index_cd, interval, isonly, ksong, label, language, lyric, lyric_hilight, mid, mv, name, newStatus, ov, pay, protect, sa, singer, status, subtitle, tag, tid, time_public, title, title_hilight, type, url, version, volume
+
+==============================================================================
+Q2：QQ 有没有「能不能播」的字段？
+==============================================================================
+全部字段（去重，含嵌套）：
+  act, action, action.alert, action.icons, action.msgdown, action.msgfav, action.msgid, action.msgpay, action.msgshare, action.switch, album, album.id, album.mid, album.name, album.pmid, album.subtitle, album.time_public, album.title, album.title_highlight, bpm, content, desc, desc_hilight, docid, eq, es, file, file.b_30s, file.e_30s, file.hires_bitdepth, file.hires_sample, file.media_mid, file.size_128, file.size_128mp3, file.size_192aac, file.size_192ogg, file.size_24aac, file.size_320, file.size_320mp3, file.size_48aac, file.size_96aac, file.size_96ogg, file.size_aac, file.size_ape, file.size_dts, file.size_flac, file.size_hires, file.size_ogg, file.size_try, file.strMediaMid, file.try_begin, file.try_end, file.url, fnote, genre, grp, href3, id, index_album, index_cd, interval, isonly, ksong, ksong.id, ksong.mid, label, language, lyric, lyric_hilight, mid, mv, mv.id, mv.name, mv.title, mv.vid, mv.vt, name, newStatus, ov, pay, pay.pay_down, pay.pay_month, pay.pay_play, pay.pay_status, pay.price_album, pay.price_track, pay.time_free, protect, sa, singer, singer[].id, singer[].mid, singer[].name, singer[].pmid, singer[].title, singer[].title_highlight, singer[].type, singer[].uin, status, subtitle, tag, tid, time_public, title, title_hilight, type, url, version, volume, volume.gain, volume.lra, volume.peak
+
+逐曲 pay / action / file / lyric 明细（前 40 条）：
+  name | pay.pay_play | pay.pay_download | pay.pay_status | pay.price_track | action.switch | action.alert | action.msgid | action.msg | file.media_mid | size_128mp3
+  晴天                           pp=1   pd=None ps=0   pt=200  sw=16881409     alert=41     msgid=15     mid=003Qui1q2u1Zho   sz128=4317292
+  红尘客栈                         pp=1   pd=None ps=0   pt=200  sw=16881409     alert=41     msgid=15     mid=000d5VXa1mFK4G   sz128=4386261
+  搁浅                           pp=1   pd=None ps=0   pt=200  sw=16881409     alert=41     msgid=15     mid=004UlK9x0jeuow   sz128=3843167
+  青花瓷                          pp=1   pd=None ps=0   pt=200  sw=16881409     alert=41     msgid=15     mid=0015zR8B3gjJLl   sz128=3830789
+  发如雪                          pp=1   pd=None ps=0   pt=200  sw=16881409     alert=41     msgid=15     mid=002A6j2q1tdUUP   sz128=4789176
+  枫                            pp=1   pd=None ps=0   pt=200  sw=16881409     alert=41     msgid=15     mid=0044M6Un0RXph2   sz128=4411755
+  稻香                           pp=1   pd=None ps=0   pt=200  sw=16881409     alert=41     msgid=15     mid=0020wJDo3cx0j3   sz128=3576668
+  一路向北                         pp=1   pd=None ps=0   pt=200  sw=16881409     alert=41     msgid=15     mid=003jT4SU22clE5   sz128=4708950
+  七里香                          pp=1   pd=None ps=0   pt=200  sw=16881409     alert=41     msgid=15     mid=0012Ez0a1tFcOI   sz128=4788294
+  夜曲                           pp=1   pd=None ps=0   pt=200  sw=16881409     alert=41     msgid=15     mid=0024jrso28p8VA   sz128=3630591
+  告白气球                         pp=1   pd=None ps=0   pt=400  sw=16881409     alert=41     msgid=15     mid=003gbY6c0g1L4Q   sz128=3450877
+  半岛铁盒                         pp=1   pd=None ps=0   pt=200  sw=16881409     alert=41     msgid=15     mid=0019GXTz1OM6Wu   sz128=5111838
+  花海                           pp=1   pd=None ps=0   pt=200  sw=16881409     alert=41     msgid=15     mid=003okWvo1qZu9c   sz128=4234954
+  兰亭序                          pp=1   pd=None ps=0   pt=200  sw=16881409     alert=41     msgid=15     mid=003VLsik0ztbIb   sz128=4064429
+  退后                           pp=1   pd=None ps=0   pt=200  sw=16881409     alert=41     msgid=15     mid=003mWw430UgYke   sz128=4184803
+  说好的幸福呢                       pp=1   pd=None ps=0   pt=200  sw=16881409     alert=41     msgid=15     mid=001a8tgu4DggDy   sz128=4108738
+  手写的从前                        pp=1   pd=None ps=0   pt=200  sw=16881409     alert=41     msgid=15     mid=003O7E1P146WIF   sz128=4762431
+  明明就                          pp=1   pd=None ps=0   pt=200  sw=16881409     alert=41     msgid=15     mid=001mxHU44PEhTP   sz128=4167249
+  爱在西元前                        pp=1   pd=None ps=0   pt=200  sw=16881409     alert=41     msgid=15     mid=004I6V6C3OjmqV   sz128=3749291
+  烟花易冷                         pp=1   pd=None ps=0   pt=200  sw=16881409     alert=41     msgid=15     mid=004O8FM52iGQnX   sz128=4215314
+  蒲公英的约定                       pp=1   pd=None ps=0   pt=200  sw=16881409     alert=41     msgid=15     mid=00140o6q3Jvfzr   sz128=3956601
+  等你下课 (with 杨瑞代)              pp=1   pd=None ps=0   pt=400  sw=16881409     alert=41     msgid=15     mid=004CGU9O0GidGz   sz128=4321082
+  不能说的秘密                       pp=1   pd=None ps=0   pt=200  sw=16881409     alert=41     msgid=15     mid=000cZNr42YkLl1   sz128=4745726
+  那天下雨了                        pp=1   pd=None ps=0   pt=400  sw=16881409     alert=41     msgid=15     mid=0044SaFh0apuR2   sz128=3574593
+  我落泪情绪零碎                      pp=1   pd=None ps=0   pt=200  sw=16881409     alert=41     msgid=15     mid=001Zeo1P4a5j0v   sz128=4127549
+  说了再见                         pp=1   pd=None ps=0   pt=200  sw=16881409     alert=41     msgid=15     mid=0031mygQ27fzdS   sz128=4526276
+  给我一首歌的时间                     pp=1   pd=None ps=0   pt=200  sw=16881409     alert=41     msgid=15     mid=000uSJdv1nG6w2   sz128=4058169
+  最长的电影                        pp=1   pd=None ps=0   pt=200  sw=16881409     alert=41     msgid=15     mid=001y7CaR29k6YP   sz128=3774787
+  开不了口                         pp=1   pd=None ps=0   pt=200  sw=16881409     alert=41     msgid=15     mid=002Eu4VK1vXkuf   sz128=4560966
+  说好不哭 (with 五月天阿信)            pp=1   pd=None ps=0   pt=400  sw=16881409     alert=41     msgid=15     mid=000XyvDi3asi7v   sz128=3558752
+  晴天                           pp=1   pd=None ps=0   pt=200  sw=16881409     alert=41     msgid=15     mid=003Qui1q2u1Zho   sz128=4317292
+  晴天                           pp=0   pd=None ps=0   pt=200  sw=81719        alert=11     msgid=0      mid=0042rlGx2WHBrG   sz128=4464862
+  搁浅                           pp=1   pd=None ps=0   pt=200  sw=16881409     alert=41     msgid=15     mid=004UlK9x0jeuow   sz128=3843167
+  晴天                           pp=1   pd=None ps=0   pt=200  sw=16881409     alert=2      msgid=15     mid=002DMfDx1macLz   sz128=3997575
+  晴天                           pp=0   pd=None ps=0   pt=200  sw=16889603     alert=2      msgid=16     mid=001LcPEv1TEenh   sz128=4294730
+  晴天                           pp=1   pd=None ps=0   pt=200  sw=16881409     alert=42     msgid=15     mid=001lkR2X1ZQg8b   sz128=4577271
+  晴                            pp=1   pd=None ps=0   pt=200  sw=16881409     alert=2      msgid=15     mid=002GSaqZ4Y1iBN   sz128=4016361
+  晴天                           pp=1   pd=None ps=0   pt=200  sw=16881409     alert=42     msgid=15     mid=003TtLEa1F5EHc   sz128=3707925
+  晴天                           pp=0   pd=None ps=0   pt=0    sw=1            alert=50     msgid=0      mid=004MA5TJ0Gwa5n   sz128=2662198
+  晴天                           pp=0   pd=None ps=0   pt=200  sw=16889603     alert=2      msgid=16     mid=000vdtpk24wGR8   sz128=1386996
+
+pay.pay_play 分布: {"1": 36, "0": 4}
+action.switch 分布: {"16881409": 36, "81719": 1, "16889603": 2, "1": 1}
+
+==============================================================================
+Q3：QQ 有没有「官方 / 原唱 / 翻唱」的字段？
+==============================================================================
+疑似相关字段：['label', 'singer[].type', 'tag', 'type', 'version']
+
+逐曲：name | songtype | type | ov | album.name | album.id | singer[].name | singer[].id | time_public | label
+  晴天                         songtype=None type=0    ov=0    alb=叶惠美                    albid=8220         singer=周杰伦                    pub=2003-07-31   label=0
+  红尘客栈                       songtype=None type=0    ov=0    alb=十二新作                   albid=194021       singer=周杰伦                    pub=2012-12-28   label=0
+  搁浅                         songtype=None type=0    ov=0    alb=七里香                    albid=20612        singer=周杰伦                    pub=2004-08-03   label=0
+  青花瓷                        songtype=None type=0    ov=0    alb=我很忙                    albid=33021        singer=周杰伦                    pub=2007-11-02   label=0
+  发如雪                        songtype=None type=0    ov=0    alb=十一月的萧邦                 albid=60671        singer=周杰伦                    pub=2005-11-01   label=0
+  枫                          songtype=None type=0    ov=0    alb=十一月的萧邦                 albid=60671        singer=周杰伦                    pub=2005-11-01   label=0
+  稻香                         songtype=None type=0    ov=0    alb=魔杰座                    albid=36062        singer=周杰伦                    pub=2008-10-15   label=0
+  一路向北                       songtype=None type=0    ov=0    alb=J III MP3 Player       albid=14311        singer=周杰伦                    pub=2005-06-24   label=0
+  七里香                        songtype=None type=0    ov=0    alb=七里香                    albid=20612        singer=周杰伦                    pub=2004-08-03   label=0
+  夜曲                         songtype=None type=0    ov=0    alb=十一月的萧邦                 albid=60671        singer=周杰伦                    pub=2005-11-01   label=0
+  告白气球                       songtype=None type=0    ov=0    alb=周杰伦的床边故事               albid=1458791      singer=周杰伦                    pub=2016-06-24   label=0
+  半岛铁盒                       songtype=None type=0    ov=0    alb=八度空间                   albid=8219         singer=周杰伦                    pub=2002-07-18   label=0
+  花海                         songtype=None type=0    ov=0    alb=魔杰座                    albid=36062        singer=周杰伦                    pub=2008-10-15   label=0
+  兰亭序                        songtype=None type=0    ov=0    alb=魔杰座                    albid=36062        singer=周杰伦                    pub=2008-10-15   label=0
+  退后                         songtype=None type=0    ov=0    alb=依然范特西                  albid=13004        singer=周杰伦                    pub=2006-09-05   label=0
+  说好的幸福呢                     songtype=None type=0    ov=0    alb=魔杰座                    albid=36062        singer=周杰伦                    pub=2008-10-15   label=0
+  手写的从前                      songtype=None type=0    ov=0    alb=哎呦，不错哦                 albid=852856       singer=周杰伦                    pub=2014-12-26   label=0
+  明明就                        songtype=None type=0    ov=0    alb=十二新作                   albid=194021       singer=周杰伦                    pub=2012-12-28   label=0
+  爱在西元前                      songtype=None type=0    ov=0    alb=范特西                    albid=8217         singer=周杰伦                    pub=2001-09-14   label=0
+  烟花易冷                       songtype=None type=0    ov=0    alb=跨时代                    albid=56705        singer=周杰伦                    pub=2010-05-18   label=0
+  蒲公英的约定                     songtype=None type=0    ov=0    alb=我很忙                    albid=33021        singer=周杰伦                    pub=2007-11-02   label=0
+  等你下课 (with 杨瑞代)            songtype=None type=0    ov=0    alb=等你下课                   albid=3883404      singer=周杰伦                    pub=2018-01-18   label=0
+  不能说的秘密                     songtype=None type=0    ov=0    alb=不能说的秘密 电影原声带           albid=32611        singer=周杰伦                    pub=2007-08-13   label=0
+  那天下雨了                      songtype=None type=0    ov=0    alb=太阳之子                   albid=87495226     singer=周杰伦                    pub=2026-03-25   label=0
+  我落泪情绪零碎                    songtype=None type=0    ov=0    alb=跨时代                    albid=56705        singer=周杰伦                    pub=2010-05-18   label=0
+  说了再见                       songtype=None type=0    ov=0    alb=跨时代                    albid=56705        singer=周杰伦                    pub=2010-05-18   label=0
+  给我一首歌的时间                   songtype=None type=0    ov=0    alb=魔杰座                    albid=36062        singer=周杰伦                    pub=2008-10-15   label=0
+  最长的电影                      songtype=None type=0    ov=0    alb=我很忙                    albid=33021        singer=周杰伦                    pub=2007-11-02   label=0
+  开不了口                       songtype=None type=0    ov=0    alb=范特西                    albid=8217         singer=周杰伦                    pub=2001-09-14   label=0
+  说好不哭 (with 五月天阿信)          songtype=None type=0    ov=0    alb=说好不哭（with 五月天阿信）       albid=7876962      singer=周杰伦                    pub=2019-09-16   label=0
+  晴天                         songtype=None type=0    ov=0    alb=叶惠美                    albid=8220         singer=周杰伦                    pub=2003-07-31   label=0
+  晴天                         songtype=None type=0    ov=0    alb=晴天 (深情版)               albid=59229569     singer=Lucky小爱                pub=2024-12-02   label=0
+  搁浅                         songtype=None type=0    ov=0    alb=七里香                    albid=20612        singer=周杰伦                    pub=2004-08-03   label=0
+  晴天                         songtype=None type=0    ov=0    alb=周杰伦地表最强世界巡回演唱会         albid=9040723      singer=周杰伦                    pub=2019-11-01   label=0
+  晴天                         songtype=None type=0    ov=0    alb=晴天 (独唱版)               albid=23491221     singer=梅菜扣肉肉                  pub=2024-12-02   label=0
+  晴天                         songtype=None type=0    ov=0    alb=再次寻找周杰伦                albid=933770       singer=刘瑞琦                    pub=2017-01-18   label=0
+  晴                          songtype=None type=0    ov=0    alb=传世乐章                   albid=543749       singer=汪苏泷                    pub=2014-06-25   label=0
+  晴天                         songtype=None type=0    ov=0    alb=中国好声音第四季 第4期           albid=1060096      singer=关诗敏                    pub=2015-08-07   label=0
+  晴天                         songtype=None type=0    ov=0    alb=0-6个月智慧伴听课程|早教儿歌|智力开发  albid=15303285     singer=启蒙动画精选                 pub=2017-05-05   label=0
+  晴天                         songtype=None type=0    ov=0    alb=Sky Mourn              albid=97903251     singer=Missy                  pub=2026-07-20   label=0
+
+==============================================================================
+Q1：两源同时命中的样本（用于特性 C 的「同一首歌两源都有」）
+==============================================================================
+QQ 侧去重后曲名 84 个；网易云侧见 probe-copyright-*.txt
+  QQ 命中「晴天」: mid=00083kc41YcFuR media_mid=00083kc41YcFuR album=哄你入睡的流行钢琴曲 pay_play=0
+  QQ 命中「孤勇者」: mid=001SpZRE2QP7bA media_mid=004OEkZI1SCkcC album= pay_play=0
+  QQ 命中「起风了」: mid=003tb5RI3soOv6 media_mid=003tb5RI3soOv6 album=起风了 (旧版) pay_play=1
+  QQ 命中「夜空中最亮的星」: mid=002SSfZb3tBy0w media_mid=002SSfZb3tBy0w album= pay_play=0
+  QQ 命中「七里香」: mid=004Z8Ihr0JIu5s media_mid=0012Ez0a1tFcOI album=七里香 pay_play=1
+  QQ 命中「稻香」: mid=003aAYrm3GE0Ac media_mid=0020wJDo3cx0j3 album=魔杰座 pay_play=1

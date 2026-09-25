@@ -1,0 +1,223 @@
+================================================================================
+Ncrust v2.2.1-gpl (versionCode 38) — REAL DEVICE lyric-panel scroll probe
+Raw run log. Every line below was produced by an adb command in this session;
+the referenced dump/screenshot files are the backing evidence.
+================================================================================
+
+DEVICE
+  serial        : 0715f763f54c023a
+  model         : SM-G9209 (zerofltectc), Android 7.0
+  wm size       : Physical size: 1440x2560
+  wm density    : Physical density: 640   => 1dp = 4px, logical 360x640 dp
+  app           : com.takahashirinta.ncrust versionName=2.2.1-gpl versionCode=38
+  rooted        : yes (per task brief)
+
+SESSION START 2026-09-25 16:46 local
+  adb -s <D> logcat -c                      -> cleared (exit 0)
+  adb -s <D> shell am start -n com.takahashirinta.ncrust/.MainActivity
+  focus after 6s: mCurrentFocus=Window{67eae3bd0 u0
+                  com.takahashirinta.ncrust/com.takahashirinta.ncrust.MainActivity}
+  screenshot -> screenshots/01-launch-portrait.png (1440x2560 PNG, 489520 B)
+  dump       -> ui-01-launch.xml
+
+  NO settings / SharedPreferences were written, no data cleared, no uninstall.
+
+--------------------------------------------------------------------------------
+T1 step 4/5 — FULL PLAYER OPENED (portrait)
+--------------------------------------------------------------------------------
+  mini player bar node (ui-01-launch.xml): View bounds=[0,2016][1440,2240] clickable
+      -> tapped centre-left (600,2128) to avoid the play/next buttons
+         at [1056,2032][1248,2224] and [1248,2032][1440,2224]
+  dump -> ui-02-player.xml ; screenshot -> screenshots/02-player-portrait.png
+  Full player present: content-desc 歌词 / 队列 / 加入库 / 大屏幕模式 / 收起,
+      lyric panel + transport all found.
+
+  PORTRAIT LYRIC PANEL GEOMETRY (from ui-02-player.xml)
+    scrollable lyric panel node : bounds=[80,320][1360,1136]
+      top=320 bottom=1136 height=816px  = 204.0dp
+      width 1280px = 320.0dp
+    lyric text nodes (density 640 => 10dp item padding = 40px):
+      line0 '我不停走在一条不回头的路'  [80,653][1360,781]  h=128  centerY=717.0
+      line1 '没有走到终点我绝对不认输'  [80,867][1232,983]  h=116  centerY=925.0
+      line2 '我相信希望就在前方不远处'  [80,1081][1130,1136] h=55 (clipped by panel bottom)
+
+  VALIDATION OF THE MEASUREMENT MODEL (important — this is what makes the
+  T2/T3 numbers trustworthy):
+    NcrustLyricsPanel.kt:376  each lyric item = Box(...).padding(vertical = 10.dp)
+    NcrustLyricsPanel.kt:159  inactiveScale = 0.82f
+    NcrustLyricsPanel.kt:385  scale = lerp(1f, inactiveScale, (dist/1.8).coerceIn(0,1))
+        => current line (dist=0) renders at scale = 1.00 (bounds NOT scaled)
+        => neighbour line (dist=1) renders at lerp(1,0.82,0.556) = 0.900
+        => measured neighbour/current height ratio = 116/128 = 0.906  OK
+    LyricsPanelScroll.kt:84  leadOffsetPx(vh) = -(vh * 0.36)
+    Therefore the app's own invariant is: CURRENT LINE ITEM TOP
+        = panel_top + 0.36 * panel_height
+    Check against the portrait dump:
+        expected y = 320 + 0.36*816 = 320 + 293.76 = 613.76
+        measured   = line0 text top 653 - 40 (10dp padding) = 613
+        => fraction (653-40-320)/816 = 0.3591  vs LEAD_FRACTION 0.36  => MATCH
+    So for the CURRENT line (scale=1) the reported uiautomator bounds ARE the
+    unscaled layout bounds and the fraction is directly comparable to 0.36.
+
+  NOTE (applies to this whole report): the panel viewport on this device is only
+  204dp tall in portrait (360x640dp phone, full transport below). LyricsPanelScroll
+  clamps the top spacer to min(200dp, 0.36*vh) = min(200dp, 73.4dp) = 73.4dp, i.e.
+  this phone is ALREADY in the clamped regime in portrait, not the ~700dp regime
+  the code comments assume.
+
+  PLAYBACK STATE AT THIS POINT: paused, position 0:00 / 0:00, transport button
+  content-desc = 播放. Current line = line0 per the scale rule; panel root a11y
+  text attribute was empty ('') which is consistent with currentIndex == -1
+  (a11yText is only set for idx >= 0). No lyrics had been reached yet.
+
+  -> Started playback for the T1 step 8 / T2 / T3 tests (this is a transport
+     action, not a settings change):
+        adb -s <D> shell input tap 720 1880      # content-desc 播放 centre
+      verified 4 s later: position TextView = 0:04, duration = 3:19,
+      transport content-desc = 暂停  => song playing.
+
+--------------------------------------------------------------------------------
+LANDSCAPE / BIG-SCREEN MODE (T1 step 6-8)
+--------------------------------------------------------------------------------
+  adb -s <D> shell input tap 997 2224     # content-desc 大屏幕模式 node centre,
+                                          # bounds=[933,2160][1061,2288] in ui-02
+  screencap after rotation -> screenshots/03-player-landscape.png, 2560x1440  => rotated
+  adb -s <D> shell dumpsys window | grep -E "mCurrentFocus|mRotation"
+      -> prints ONLY mCurrentFocus (this Android 7 Samsung ROM has no mRotation key
+         in dumpsys window).  Equivalent evidence used instead:
+      adb -s <D> shell dumpsys display | grep mOverrideDisplayInfo
+      -> DisplayInfo{"内置屏幕", ... app 2560 x 1440, real 2560 x 1440, ...
+                     rotation 1, density 640 ...}          => ROTATION_90 / landscape
+  app-side confirmation in logcat:
+      16:47:45.002 31101 I NcrustBigScreen: big screen: manual enter, holding landscape (auto-rotate off)
+      16:47:45.501 31101 I NcrustBigScreen: immersive: status bar hidden
+
+  LANDSCAPE LYRIC PANEL GEOMETRY (ui-03-landscape.xml and all later dumps)
+    scrollable lyric panel : bounds=[1206,96][2480,1024]
+      x 1206..2480 (1274px = 318.5dp) ; y 96..1024 (928px = 232.0dp)
+      on-screen y-extent of the panel = 96 .. 1024 (screen height 1440)
+    second scrollable node [96,671][2464,1440] is the page behind the player card.
+    top spacer = min(200dp, 0.36*232.0dp = 83.5dp) = 83.5dp = 334px
+    => auto item-top y = 96 + 334 = 430  (frac 0.36)
+
+--------------------------------------------------------------------------------
+MEASUREMENT METHOD (what makes the numbers below trustworthy)
+--------------------------------------------------------------------------------
+  The current line is identified by TWO independent signals that always agreed:
+    (1) the a11y liveRegion text on the panel root node
+        (ui dump `text` attribute of the node whose bounds == the panel rect;
+         NcrustLyricsPanel.kt:327-330)
+    (2) a PIXEL oracle on the screenshot: the current line is the only text drawn
+        in theme primary #8B5CF6 = (139,92,246) (LyricsView.kt:335-336 make past
+        lines 60% white and future lines 40% white).  Verified: for the current
+        line 99.9% of ink pixels are purple and the brightest pixel is exactly
+        (139,92,246).
+  Signal (2) is required because a repetitive song lists the same string several
+  times (e.g. 'We are electric' 3x visible at once); pure text matching picks the
+  wrong occurrence.  With the oracle the correct occurrence is chosen.
+  Geometry comes from the uiautomator integer bounds; the quantity compared with
+  LyricsPanelScroll.LEAD_FRACTION = 0.36 is
+      frac_itemtop = (node_top - 40px - panel_top) / panel_height
+  where 40px = the 10dp vertical padding of each lyric item at density 640
+  (NcrustLyricsPanel.kt:376), and node_top is the *text* top from the dump.
+  Validation in PORTRAIT: predicted 320+0.36*816 = 613.76, measured 653-40 = 613
+  => 0.3591 vs 0.36.  The current line renders at scale 1.00 exactly
+  (inactiveScale 0.82, NcrustLyricsPanel.kt:159/385), so its reported bounds are
+  NOT scaled and this arithmetic is exact for it.
+
+  THE TASK'S frac_center FORMULA IS NOT A STABLE INVARIANT:
+  (node_centerY - panelTop)/panelHeight changes whenever the current line wraps
+  onto two rows: measured 0.4720 (1 row) vs 0.5490 (2 rows) at the SAME auto
+  position.  frac_itemtop was 0.3599 in every one of the 6 baselines.
+  >>> On the up-swipe trial frac_center = 0.3540, i.e. it would LOOK like "still
+      at ~0.36 / no bug", while frac_itemtop = 0.1649 proves the panel was moved.
+
+--------------------------------------------------------------------------------
+TRIALS — exact offsets measured in-process with time.time()
+--------------------------------------------------------------------------------
+  PAUSED3 (song with Japanese lyrics, paused at 0:11; down-swipe):
+      t=+1.64s / +8.57s / +20.61s   -> PAUSED3-A-immediate / -B-8s / -C-20s
+  PLAYING (We Are Electric, playing; down-swipe):
+      t=+1.80s / +8.62s / +20.68s   -> PLAYING-A-immediate / -B-8s / -C-20s
+  NOTE 1: an earlier playing-variant capture was written under the names
+  06-after-manual-scroll / 07-after-8s-idle but the PNG mtimes show a gap of only
+  2.4s (< the 5s timeout) — it could not test the idle behaviour, so it was
+  quarantined to probe-raw/invalid-timing/ and redone with the exact timing above.
+  NOTE 2: in the PAUSED trials the screenshot and the XML dump are the same
+  instant in effect, because the screen is proven static when paused (quiescence
+  control: 3 screencaps 1.5s apart, untouched, md5-identical).  In the PLAYING
+  variant the screenshot is taken first and the dump ~1.9s later, and lines change
+  every 2-3s, so screenshot and XML must NOT be combined into one fraction there.
+  The app's own  NcrustLyricNotify: re-post on lyric line change: <text>  log line
+  is the authoritative record of when lines changed.
+
+--------------------------------------------------------------------------------
+RESULTS
+--------------------------------------------------------------------------------
+  AUTO POSITION (no user scroll) — 6 independent baselines, all identical:
+      current-line item top = 430px, frac_itemtop = 0.3599  (target 0.36)
+      observed frac_center ranged 0.4720..0.5490 (wrapped lines only)
+      songs: 绝不认输 (playing 1:11, 1:18, 2:04 / paused 1:56),
+             We Are Electric (paused 0:08), Japanese track (paused 0:11)
+
+  PAUSED3 down-swipe, current line unchanged throughout ('めき煌めきと君も'):
+      before scroll   node[1206,470][2480,617]  frac_itemtop 0.3599  frac_center 0.4822
+      +1.64s          node[1206,838][2480,985]  frac_itemtop 0.7565  frac_center 0.8788  (+367.9px = +39.65%)
+      +8.57s          node[1206,838][2480,985]  frac_itemtop 0.7565   <-- UNCHANGED
+      +20.61s         node[1206,838][2480,985]  frac_itemtop 0.7565   <-- UNCHANGED (md5 == +8.57s)
+  PAUSED down-swipe (绝不认输, paused; actual gap 37.3s):
+      before 0.3599 -> after 0.7543 -> +37.3s 0.7543 (md5-identical at +51.9s)
+  PAUSED up-swipe (绝不认输, paused; actual gap 10.6s):
+      before 0.3599 -> after 0.1649 -> +10.6s 0.1649 (node bounds identical)
+  PLAYING down-swipe (We Are Electric):
+      +1.80s  purple current line at ink rows 854..941, i.e. at the BOTTOM of the
+              panel and running into the bottom fade band (displaced);
+              same label's XML (dumped 1.9s later) puts that line at
+              [1206,859][2353,1024] frac_itemtop 0.7791
+      +8.62s  NO purple ink anywhere in the panel -> the current line was outside
+              the visible viewport entirely; the XML from this label (dumped 1.9s
+              later) shows the list back on the canonical auto slots
+      +20.68s the XML shows the current line back at frac_itemtop 0.3599
+      => while playing, the app's own log shows a line change at 16:56:58.082
+         (= +6.8s, i.e. just AFTER the 5s timeout expired) and the panel then
+         re-centred.  The playing variant therefore does not stay displaced,
+         because a line change eventually re-positions it.
+
+--------------------------------------------------------------------------------
+T4 — do play / pause / seek reset the timer?
+--------------------------------------------------------------------------------
+  (a) PLAY, panel first scrolled away while paused:
+      paused at 0:08, current line 'We are electric' displaced to frac_itemtop
+      0.4170 (node top 523; auto would be 470).  Pressed play.
+        +2.0s (pos 0:10) still 'We are electric' 0.4170   -> NOT re-centred
+        +5.6s (pos 0:13) line changed to 'Three'  0.3599   -> re-centred HERE
+        +9.3s,+12.8s,+16.4s,+19.9s (pos 0:17..0:28) 0.3599
+      => play does not reset/re-trigger; the line change did it.
+  (b) SEEK (tap a lyric line) while paused and scrolled away, 13-t4b:
+      paused at 0:45, scrolled so current line 'Move your body and soul' sat at
+      frac_itemtop 0.8772.  Tapped the lyric line at (1843,560).
+      The seek DID happen: position 0:45 -> 0:40 (frozen there, transport 播放).
+      Current line became 'Just move your body again', frac_itemtop 0.4041, and
+      it stayed 0.4041 for all 7 samples from +1.8s to +23.8s.
+      => seek does not reset/re-trigger either; nothing re-centred in 24s.
+  (c) control that the ONLY trigger is a line change:
+      from that displaced 0.4041 state, pressed play after the 5s timeout had
+      long expired:  +1.9s (0:41) 0.4041 unchanged
+                     +5.4s (0:45) line changed -> 0.3599 exactly
+                     +8.9s..+26.2s (0:49..1:06) 0.3599
+      => re-centring happens exclusively on a lyric line change.
+
+--------------------------------------------------------------------------------
+LOGCAT
+--------------------------------------------------------------------------------
+  logcat cleared at session start; captured after all trials.
+  logcat-landscape-baseline.txt : 12758 lines, spans 16:46:12 .. 16:59:29
+  logcat-landscape-filtered.txt : 1235 lines,
+        grep -iE "ncrust|lyric|choreographer|skipped"
+  app tags seen from pid 31101: NcrustLyricNotify, NcrustMediaPanel,
+        NcrustBigScreen, NcrustTrack, PlayerViewModel, PlaybackService
+  jank: exactly one app-side Choreographer warning, at startup:
+        16:46:13.500 31101 I Choreographer: Skipped 48 frames!
+      (the other 5 "Skipped" lines are AudioPolicyIntefaceImpl 'Skipped to add
+       effects on session 1601' from the audio HAL, not the UI)
+      No Choreographer warning coincides with any of the swipes or idle windows.
