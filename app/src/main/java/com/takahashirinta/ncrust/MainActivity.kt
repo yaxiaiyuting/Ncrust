@@ -39,6 +39,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LibraryMusic
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PlaylistAdd
+import androidx.compose.material.icons.filled.PlaylistPlay
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.ui.viewinterop.AndroidView
@@ -85,7 +86,10 @@ import io.github.takahashirinta.kanesumi.structure.bottomnav.MetroBottomNavItem
 import io.github.takahashirinta.kanesumi.structure.sidebar.MetroSidebar
 import io.github.takahashirinta.kanesumi.structure.sidebar.MetroSidebarItem
 import com.takahashirinta.ncrust.ui.components.AddToPlaylistResult
+import com.takahashirinta.ncrust.local.LocalPlaylistRepository
+import com.takahashirinta.ncrust.local.LocalPlaylistStore
 import com.takahashirinta.ncrust.ui.components.AddToPlaylistSheet
+import com.takahashirinta.ncrust.ui.components.LocalPlaylistPickerDialog
 import com.takahashirinta.ncrust.ui.components.CreatePlaylistDialog
 import com.takahashirinta.ncrust.ui.components.PlaylistCreateOutcome
 import com.takahashirinta.ncrust.ui.components.SongMenuAction
@@ -868,6 +872,10 @@ fun MainScreen(
     // v1.3.0 · B3：加入歌单。pendingAddSongs = 走「新建歌单」时创建成功后要补加的歌曲。
     var showAddToPlaylist by remember { mutableStateOf(false) }
     var pendingAddSongs by remember { mutableStateOf<List<Long>>(emptyList()) }
+    // v2.3.0 · B：「加入本地歌单」选择器是否打开（与云端的 showAddToPlaylist 分开）。
+    var showAddToLocalPlaylist by remember { mutableStateOf(false) }
+    // 本地歌单列表的快照：对话框打开时读一次，选完即失效。
+    var localPickerList by remember { mutableStateOf<List<com.takahashirinta.ncrust.local.LocalPlaylist>>(emptyList()) }
 
     // 打开歌曲长按菜单的唯一入口：所有 Screen 共用，菜单关闭时把歌单相关状态一并清掉，
     // 避免上一次的待加歌曲泄漏到下一次「加入歌单」。
@@ -875,6 +883,7 @@ fun MainScreen(
         menuSong = song
         menuSongActions = actions
         showAddToPlaylist = false
+        showAddToLocalPlaylist = false
         pendingAddSongs = emptyList()
     }
 
@@ -2005,7 +2014,17 @@ fun MainScreen(
                                 navController.navigate(NavRoutes.playlist(pl.id, pl.name, pl.coverImgUrl))
                             },
                             onPlayPlaylist = { playlistId -> playPlaylistNow(playlistId) },
-                            onOpenQqPlaylists = { navController.navigate(NavRoutes.QQ_PLAYLISTS) },
+                            // v2.3.0 · A：QQ 歌单在「歌单」tab 里直接平铺，点击进入它的
+                            // **只读**详情页（v2.2.0 既有页面，语义未变）。
+                            onQqPlaylistClick = { pl ->
+                                navController.navigate(
+                                    NavRoutes.qqPlaylistDetail(pl.key.id, pl.key.ownerId, pl.dirId, pl.name)
+                                )
+                            },
+                            // v2.3.0 · B：本地歌单 → 可编辑详情页。
+                            onLocalPlaylistClick = { key ->
+                                navController.navigate(NavRoutes.localPlaylist(key.source.key, key.ownerId, key.id))
+                            },
                             // 收藏单曲「播放全部」：**先播、后补**。
                             // 用本地已加载的收藏单曲立即开播（点击即出声、有反馈），剩余详情在
                             // 后台补齐后按红心顺序追加到队尾，避免为了"共 N 首"空等数秒网络。
@@ -2183,6 +2202,17 @@ fun MainScreen(
                             pendingAddSongs = listOf(song.id)
                             showAddToPlaylist = true
                         },
+                        // v2.3.0 · B：**本地**歌单。与上一项并列放在这里，是因为
+                        // 「加入歌单」对用户是一件事的两个去向（云端 / 本地），
+                        // 而本仓库的这条菜单是所有 Screen 唯一的歌曲入口（全屏覆盖）。
+                        SongMenuAction(
+                            Icons.Default.PlaylistPlay,
+                            LocalStrings.current.localPlaylistAddTrack,
+                        ) {
+                            pendingAddSongs = listOf(song.id)
+                            localPickerList = LocalPlaylistStore.readPlaylists(context)
+                            showAddToLocalPlaylist = true
+                        },
                     ) + menuSongActions + listOf(
                         SongMenuAction(Icons.Default.Person, LocalStrings.current.actionGoToArtist) {
                             resolveAndNavigate(song, toArtist = true)
@@ -2241,6 +2271,29 @@ fun MainScreen(
                         }
                     }
                 }
+            )
+        }
+
+        // v2.3.0 · B：加入**本地**歌单。列出现有本地歌单 + 一个「新建」出口；
+        // 选择后走 LocalPlaylistRepository.addTrack（规则 5/7：origin=LOCAL，
+        // 若这首曾被移除过则**清除 tombstone** —— 用户的重新添加就是撤销删除意图）。
+        if (showAddToLocalPlaylist && menuSong != null) {
+            val pickStrings = LocalStrings.current
+            val pickSong = menuSong!!
+            LocalPlaylistPickerDialog(
+                playlists = localPickerList,
+                onDismiss = { showAddToLocalPlaylist = false },
+                onPick = { pl ->
+                    LocalPlaylistRepository.addTrack(context, pl.key, pickSong)
+                    showAddToLocalPlaylist = false
+                    Toast.makeText(context, pickStrings.localPlaylistAdded, Toast.LENGTH_SHORT).show()
+                },
+                onCreateNew = { name ->
+                    val created = LocalPlaylistRepository.createLocalOnly(context, name)
+                    LocalPlaylistRepository.addTrack(context, created.key, pickSong)
+                    showAddToLocalPlaylist = false
+                    Toast.makeText(context, pickStrings.localPlaylistAdded, Toast.LENGTH_SHORT).show()
+                },
             )
         }
 

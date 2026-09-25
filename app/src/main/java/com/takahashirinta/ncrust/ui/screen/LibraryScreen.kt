@@ -45,6 +45,8 @@ import com.takahashirinta.ncrust.auth.CookieManager
 import com.takahashirinta.ncrust.defaultPlaylistName
 import com.takahashirinta.ncrust.library.AlbumInfo
 import com.takahashirinta.ncrust.library.LibraryManager
+import com.takahashirinta.ncrust.local.LocalPlaylistRepository
+import com.takahashirinta.ncrust.local.LocalPlaylistStore
 import com.takahashirinta.ncrust.network.PlaylistApi
 import com.takahashirinta.ncrust.network.PlaylistEditApi
 import com.takahashirinta.ncrust.network.PlaylistWriteResult
@@ -83,9 +85,11 @@ fun LibraryScreen(
     onSongInsertNext: (SongItem) -> Unit = {},
     onSongAppendToQueue: (SongItem) -> Unit = {},
     onShowSongMenu: (SongItem, List<SongMenuAction>) -> Unit = { _, _ -> },
-    // v2.2.0：QQ 音乐歌单入口。**默认空实现**，所以既有调用点不受影响；
-    // 点进去是只含 QQ 歌单的独立页面，不与下面的网易云网格合并。
-    onOpenQqPlaylists: () -> Unit = {},
+    // v2.3.0 · A：QQ 歌单**不再走二级入口**，列表直接平铺在「歌单」tab 里。
+    // 这个回调改成「点了某一张 QQ 歌单」。
+    onQqPlaylistClick: (com.takahashirinta.ncrust.source.Playlist) -> Unit = {},
+    // v2.3.0 · B：进入某个本地歌单（可编辑）。
+    onLocalPlaylistClick: (com.takahashirinta.ncrust.source.PlaylistKey) -> Unit = {},
     refreshTrigger: Int = 0
 ) {
     val context = LocalContext.current
@@ -97,11 +101,19 @@ fun LibraryScreen(
     // 红心歌单总数（含尚未分页加载的部分），供「播放全部」入口显示规模。
     var likedTotal by remember { mutableIntStateOf(LibraryManager.getLikedSongIds(context).size) }
     var selectedCategory by remember { mutableIntStateOf(0) }
-    val categories = listOf(strings.categoryTracks, strings.categoryAlbums, strings.categoryPlaylists)
+    // v2.3.0 · A：**分类顺序改成 单曲 / 歌单 / 专辑**（用户拍板，任务书 3.2）。
+    // v2.2.1 及以前是 单曲 / 专辑 / 歌单。改顺序不是「换个 position」那么简单：
+    // 下面所有 `selectedCategory == N` 的判定都必须跟着换（本版一次性改完，
+    // 并在 LibraryPlaylistsTab 的 KDoc 里记下三个下标）。
+    val categories = listOf(strings.categoryTracks, strings.categoryPlaylists, strings.categoryAlbums)
 
     var playlists by remember { mutableStateOf<List<PlaylistApi.PlaylistInfo>>(emptyList()) }
     var isLoadingPlaylists by remember { mutableStateOf(false) }
     var playlistError by remember { mutableStateOf<String?>(null) }
+    // v2.3.0 · B：本地歌单（可编辑、只加不减 + tombstone）。它**不依赖任何网络状态** ——
+    // 本地歌单存在的意义之一就是「网易云/QQ 都挂了也能看到自己的歌单」。
+    var localPlaylists by remember { mutableStateOf(LocalPlaylistStore.readPlaylists(context)) }
+    var showCreateLocal by remember { mutableStateOf(false) }
     // v1.3.0 · B4：收藏页的「新建歌单」入口（建空歌单），与全屏播放器的「保存队列为歌单」共用对话框。
     var showCreatePlaylist by remember { mutableStateOf(false) }
     fun loadPlaylists() {
@@ -130,11 +142,13 @@ fun LibraryScreen(
         savedSongs = LibraryManager.getSavedSongs(context)
         savedAlbums = LibraryManager.getSavedAlbums(context)
         likedTotal = LibraryManager.getLikedSongIds(context).size
+        localPlaylists = LocalPlaylistStore.readPlaylists(context)
     }
 
     LaunchedEffect(selectedCategory) {
         reloadLocal()
-        if (selectedCategory == 2 && playlists.isEmpty() && !isLoadingPlaylists) {
+        // 歌单 tab 现在是下标 1（v2.3.0 · A 的顺序调整）。
+        if (selectedCategory == 1 && playlists.isEmpty() && !isLoadingPlaylists) {
             loadPlaylists()
         }
     }
@@ -191,6 +205,21 @@ fun LibraryScreen(
                         else -> PlaylistCreateOutcome.FAILED
                     }
                 }
+            }
+        )
+    }
+
+    // v2.3.0 · B：新建**本地**歌单。与「新建网易云歌单」是两个不同的对话框 ——
+    // 前者只写本地 prefs，后者会发远程写请求（`PlaylistEditApi.createPlaylist`）。
+    // 按钮文案与落点都不同，合成一个对话框会让用户以为是同一件事。
+    if (showCreateLocal) {
+        LocalPlaylistCreateDialog(
+            onDismiss = { showCreateLocal = false },
+            onCreate = { name ->
+                LocalPlaylistRepository.createLocalOnly(context, name)
+                localPlaylists = LocalPlaylistStore.readPlaylists(context)
+                showCreateLocal = false
+                Toast.makeText(context, strings.localPlaylistCreated(name), Toast.LENGTH_SHORT).show()
             }
         )
     }
@@ -302,6 +331,23 @@ fun LibraryScreen(
                 }
 
                 1 -> {
+                    // v2.3.0 · A：歌单 tab —— **单曲 / 歌单 / 专辑** 里的第二个。
+                    // v2.2.1 及以前它在下标 2（顺序是 单曲/专辑/歌单）。
+                    LibraryPlaylistsTab(
+                        localPlaylists = localPlaylists,
+                        neteasePlaylists = playlists,
+                        isLoadingNetease = isLoadingPlaylists,
+                        neteaseError = playlistError,
+                        onRetryNetease = { loadPlaylists() },
+                        onCreateNetease = { showCreatePlaylist = true },
+                        onNeteaseClick = onPlaylistClick,
+                        onPlayNetease = onPlayPlaylist,
+                        onLocalClick = { pl -> onLocalPlaylistClick(pl.key) },
+                        onCreateLocal = { showCreateLocal = true },
+                        onQqClick = onQqPlaylistClick,
+                    )
+                }
+                2 -> {
                     if (savedAlbums.isEmpty()) {
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                             MetroText(strings.noSavedAlbums, color = LocalMetroColors.current.onSurfaceVariant, style = LocalMetroTypography.current.bodyLarge)
@@ -331,82 +377,7 @@ fun LibraryScreen(
                         }
                     }
                 }
-
-                2 -> {
-                    // v2.2.0：QQ 歌单入口**提到 when 之外**。
-                    //
-                    // 原来它作为网格的第一格，只在「网易云歌单已加载且非空」这一支里渲染 ⇒
-                    // 网易云在转圈 / 报错 / 空列表时，用户**根本点不到 QQ 歌单**
-                    // （PCL110 实测：网易云歌单加载卡住 10s+，QQ 入口整个不可见）。
-                    // QQ 音乐是独立音源，它的入口不该被另一个音源的加载状态绑架。
-                    Column(modifier = Modifier.fillMaxSize()) {
-                    QqPlaylistEntryRow(onClick = onOpenQqPlaylists)
-                    Box(modifier = Modifier.weight(1f)) {
-                    when {
-                        isLoadingPlaylists -> {
-                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                MetroProgressIndicator(color = LocalMetroColors.current.primary)
-                            }
-                        }
-                        playlistError != null -> {
-                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                    MetroText(playlistError!!, color = Color.Red, style = LocalMetroTypography.current.bodyMedium)
-                                    Spacer(Modifier.height(8.dp))
-                                    Box(
-                                        modifier = Modifier
-                                            .clickable(onClick = { loadPlaylists() })
-                                            .padding(horizontal = 12.dp, vertical = 8.dp),
-                                    ) {
-                                        MetroText(strings.retry, color = LocalMetroColors.current.primary)
-                                    }
-                                }
-                            }
-                        }
-                        playlists.isEmpty() -> {
-                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                MetroText(strings.noPlaylists, color = LocalMetroColors.current.onSurfaceVariant, style = LocalMetroTypography.current.bodyLarge)
-                            }
-                        }
-                        else -> {
-                            LazyVerticalGrid(
-                                columns = GridCells.Adaptive(minSize = 160.dp),
-                                modifier = Modifier.fillMaxSize(),
-                                horizontalArrangement = Arrangement.spacedBy(2.dp),
-                                verticalArrangement = Arrangement.spacedBy(2.dp),
-                                contentPadding = PaddingValues(bottom = BottomOverlayInsetDp),
-                                flingBehavior = rememberMetroFlingBehavior()
-                            ) {
-                                // B4：「新建歌单」作为网格第一格 —— 建空歌单的唯一入口。
-                                item(key = "create") {
-                                    NewPlaylistGridItem(
-                                        modifier = Modifier.fillMaxWidth().animateItem(
-                                            fadeInSpec = tween(150, easing = MetroDefault),
-                                            placementSpec = tween(220, easing = MetroDefault),
-                                            fadeOutSpec = tween(120, easing = MetroDefault)
-                                        ),
-                                        onClick = { showCreatePlaylist = true }
-                                    )
-                                }
-                                items(playlists, key = { it.id }) { pl ->
-                                    PlaylistGridItem(
-                                        playlist = pl,
-                                        modifier = Modifier.fillMaxWidth().animateItem(
-                                            fadeInSpec = tween(150, easing = MetroDefault),
-                                            placementSpec = tween(220, easing = MetroDefault),
-                                            fadeOutSpec = tween(120, easing = MetroDefault)
-                                        ),
-                                        onClick = { onPlaylistClick(pl) },
-                                        onPlayAll = { onPlayPlaylist(pl.id) }
-                                    )
-                                }
-                            }
-                        }
-                    }
-                    }   // Box(weight) —— QQ 入口之下的剩余空间
-                    }   // Column —— QQ 入口 + 网易云歌单区
-                }
-            } }
+            } }   // when (category) + AnimatedContent 的 lambda
         }
     }
 
@@ -417,7 +388,10 @@ fun LibraryScreen(
 @Composable
 fun NewPlaylistGridItem(
     modifier: Modifier = Modifier,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    // v2.3.0 · A/B：同一个「＋」格子被三处复用（新建网易云歌单 / 新建本地歌单），
+    // 文案必须能改 —— 默认值保持既有调用点的行为不变。
+    label: String? = null,
 ) {
     val strings = LocalStrings.current
     Column(modifier = modifier.clickable { onClick() }) {
@@ -437,7 +411,7 @@ fun NewPlaylistGridItem(
         }
         Spacer(Modifier.height(6.dp))
         MetroText(
-            strings.playlistNew,
+            label ?: strings.playlistNew,
             color = LocalMetroColors.current.onBackground,
             style = LocalMetroTypography.current.bodyMedium,
             maxLines = 1,
