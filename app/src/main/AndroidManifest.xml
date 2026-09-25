@@ -74,5 +74,54 @@
                 android:name="androidx.car.app.launchable"
                 android:value="true" />
         </service>
+
+        <!--
+            v2.1.5 · 让系统把本应用识别为「媒体应用」（华为控件的 media white list 入口）。
+
+            ## 真机实测的机制（华为 WGR-W09 / HarmonyOS 4.2 / EMUI 14.2.0 / Android 12）
+
+            华为的 HwMediaSessionServiceInner 维护一份媒体应用白名单；不在其中的包会被打到：
+
+                V HwMediaSessionServiceInner: this app is not in media white list,
+                                             pkgName: com.takahashirinta.ncrust
+
+            后果是控制中心的媒体卡对它显示「未在播放」。同一台设备上的 A/B 对照
+            （三行分别是：应用 / 清单里是否声明 MEDIA_BUTTON / ROM 的 media_button_receiver
+            注册表里在不在 / 控制中心卡片）：
+
+                官方网易云     声明（MediaButtonEventReceiver，priority MAX）  在    正常显示歌名艺人
+                华为音乐       声明（MediaButtonIntentReceiver）              在    正常显示
+                Ncrust 修复前  未声明（清单里一个 receiver 都没有）             不在  未在播放
+
+            对照证据（adb shell settings list global | grep media_button_receiver，实测原文）：
+
+                media_button_receiver=com.netease.cloudmusic/MediaButtonEventReceiver,0,1
+                ，com.huawei.music/MediaButtonIntentReceiver,0,1
+                ，com.netease.cloudmusic/WebMediaButtonReceiver,0,1
+
+            ## 为什么这是「正规声明」而不是「伪装」
+
+            用 MediaSession / MediaSessionService 放音乐的应用本来就应该声明媒体按键接收器：
+            这是平台把「谁是媒体应用」变成可发现事实的官方途径，也是 media3 文档的要求。
+            没有它，会话未激活时媒体按键无处可去，系统也无从知道这个包会放音乐。
+            本版补的就是这个声明，用 media3 自带的 MediaButtonReceiver，
+            没有改包名、没有冒用别人的身份、没有蹭别家的会话标识。
+
+            ## 它同时要修的问题
+
+            补上之后 ROM 才有一个稳定的「本应用是媒体应用」判据。修复前实测到两条会话
+            （legacy NcrustSession 与 media3 androidx.media3.session.id.）在 media button
+            session 上反复互相顶替，日志形如：
+
+                I MediaSessionService: Media button session is changed to .../androidx.media3.session.id.
+                I MediaSessionService: Media button session is changed to .../NcrustSession
+        -->
+        <receiver
+            android:name="androidx.media3.session.MediaButtonReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>

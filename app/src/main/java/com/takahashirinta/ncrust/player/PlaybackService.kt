@@ -786,10 +786,58 @@ class PlaybackService : MediaLibraryService() {
         // 手动切歌会顶掉无缝队列, 预载的下一首封面作废, 一并清掉
         pendingNextArtworkBitmap = null
         artworkPreloadGeneration++
-        val mediaItem = androidx.media3.common.MediaItem.fromUri(url)
+        val mediaItem = buildCurrentMediaItem(url)
         player.setMediaItem(mediaItem, startPositionMs.coerceAtLeast(0L))
         player.prepare()
         player.playWhenReady = true
+    }
+
+    /**
+     * 当前播放项的构造（v2.1.5 · 媒体面板修复）。
+     *
+     * ## 为什么原来的 `MediaItem.fromUri(url)` 是错的
+     *
+     * 这个应用有**两条**向系统暴露的媒体身份，而它们的信息来源不同：
+     *
+     * | 身份 | 标题来源 | 谁在用 |
+     * |---|---|---|
+     * | legacy `MediaSessionCompat`（`NcrustSession`） | 应用自己的 [mediaTitle] / [mediaArtist] 字段 | 通知栏、锁屏 |
+     * | media3 `MediaLibrarySession`（`androidx.media3.session.id.`） | **ExoPlayer 当前 MediaItem 的 metadata** | 车机、以及**部分 ROM 的控制中心** |
+     *
+     * 旧实现用 `MediaItem.fromUri(url)` 建项 —— **没有 metadata**。于是第二条身份对系统讲的是
+     * 「有一首歌，但它没有名字」。真机实测（华为 WGR-W09 / HarmonyOS 4.2）：
+     *
+     * ```
+     * NcrustSession                metadata: size=5, description=闪闪星光, 紫荆花盛开 · 李荣浩/梁咏琪
+     * androidx.media3.session.id.  metadata: size=3, description=null,  null, null      ← 空
+     * ```
+     *
+     * 而华为控制中心的媒体卡对**官方网易云**（第三方应用）与自带华为音乐都正常显示，
+     * 唯独 Ncrust 显示「未在播放」—— 说明这不是 ROM 能力边界，是应用讲了两套不一致的话。
+     *
+     * 顺带：预载项（[buildPreloadMediaItem]）一直是带 metadata 的，所以「无缝接续过来的那首歌」
+     * 在 media3 会话里有名字、「手动点的这首歌」没有 —— 同一个应用内部都不自洽。
+     * 现在两者共用同一套构造规则。
+     *
+     * @see buildPreloadMediaItem
+     */
+    private fun buildCurrentMediaItem(url: String): androidx.media3.common.MediaItem {
+        val builder = androidx.media3.common.MediaItem.Builder().setUri(url)
+        // mediaId 与预载项同形（`song:123` / `song:qqmusic:456`），车机与 ROM 才能把
+        // 「当前项」和「待播项」认成同一套身份。取不到身份时不设，绝不编一个假的。
+        mediaSongId?.takeIf { it > 0L }?.let { id ->
+            com.takahashirinta.ncrust.source.SourceIds
+                .mediaId(MusicSource.fromKey(mediaSourceKey), id)
+                ?.let { builder.setMediaId(it) }
+        }
+        val meta = MediaMetadata.Builder()
+        // mediaTitle 的哨兵值是 "Ncrust"（服务未起播时的默认值）—— 那不是歌名，不要写进去。
+        mediaTitle.takeIf { it.isNotBlank() && it != "Ncrust" }?.let { meta.setTitle(it) }
+        mediaArtist.takeIf { it.isNotBlank() }?.let { meta.setArtist(it) }
+        currentArtworkUrl?.takeIf { it.isNotBlank() }?.let { art ->
+            CoverUrls.large(art)?.let { meta.setArtworkUri(Uri.parse(it)) }
+        }
+        return builder.setMediaMetadata(meta.build()).build()
     }
 
     /**

@@ -1,117 +1,111 @@
-# P1 结论：控制中心媒体面板的歌词能力边界（v2.1.5）
+# P1 结论（**已修正**）：华为控制中心媒体面板 —— 是应用侧的缺陷，不是 ROM 能力边界
 
-> 本文件是**决策记录**。原始证据在 `p1-baseline/`（三台设备的 dumpsys + 能力矩阵 + 逐条命令），
-> 探针代码在 `PlaybackService.logMediaPanelSnapshot()`（tag `NcrustMediaPanel`，仅 debug 包）。
+> ## ⚠️ 本文件推翻了本目录先前版本（以及 v2.1.5 release notes 初稿）的结论
+>
+> 先前写的是「应用已经发布、ROM 已经消费，平台上不存在专门的歌词 key，屏幕侧无法判定，
+> 因此是能力边界」。**那个结论是错的**，错在拿「`dumpsys` 里有数据」当成了「面板会显示」。
+>
+> 用户反馈「华为设备还是不行」后，我按他说的**真的去截了屏**，并用同一台设备做了 A/B，
+> 结论被推翻。错误与纠正过程保留在 §5 —— 它与 `../dex-check.txt` §4 是同一类教训：
+> **代理指标（dumpsys 里有数据）不能替代端到端观测（屏幕上有没有）。**
 
 ---
 
-## 1. 问题
+## 1. 决定性证据：同一张卡，别人行、Ncrust 不行
 
-用户报「华为 wgrw09 平板（以及部分手机）的控制中心媒体面板里，歌词不实时更新」。
+设备：WGR-W09（华为平板，HarmonyOS 4.2 / EMUI 14.2.0 / Android 12 / API 31）。
+方法：`uiautomator dump` 读控制中心那张媒体卡的**文本节点**（不靠肉眼猜模糊截图）。
 
-这句话里其实混了两个完全不同的问题，必须先拆开：
-
-| 子问题 | 判据 | 本版结论 |
+| 正在播放的应用 | 卡片的 `content-desc` | 判定 |
 |---|---|---|
-| A. 应用有没有把当前歌词行发布到 MediaSession？ | 探针 + 代码 | **有**。`METADATA_KEY_TITLE` = 当前歌词行，2Hz 采样、跨行重 post |
-| B. ROM 有没有消费这份 metadata？ | `dumpsys activity service SystemUIService` | **有**。华为 SystemUI 的 `MediaDataManager` 已经把它解析成了自己的数据模型 |
-| C. 控制中心的**卡片上肉眼**是否显示、是否实时？ | 只能看屏幕 | **adb 无法判定** —— 本版不声称已修复 |
+| **官方网易云音乐**（第三方！） | `The Final Countdown Europe` | ✅ 正常显示歌名 + 艺人 |
+| **华为音乐**（系统应用） | `喜欢你 BEYOND` | ✅ 正常显示 |
+| **Ncrust**（v2.1.5，确实在播 `state=3`，歌词行在更新） | `未在播放` | ❌ 空卡片 |
 
----
+⇒ 「华为控制中心不认第三方应用」**不成立**。官方网易云就是第三方，它正常。
+所以这是**应用侧的问题**。
 
-## 2. 实测证据（v2.1.4-gpl 原样，只读探针）
+原始证据：`EVIDENCE.md`、`ui-dump-*.xml`、`01-ncrust-playing-card-says-not-playing.png`。
 
-### 2.1 应用侧的发布事实
+## 2. 应用侧的两个确凿缺陷
 
-`dumpsys media_session` / `dumpsys notification --noredact`：
+### 2.1 两条 MediaSession 在互相顶替（实测日志）
 
-| 设备 | 会话数 | legacy metadata | 通知正文 |
-|---|---|---|---|
-| WGR-W09（华为平板 / Android 12 / API 31） | 2（`NcrustSession` + media3） | `size=5`；title=`像一幅画`、artist=`紫荆花盛开 · 李荣浩/梁咏琪` | `android.title=像一幅画`、`android.text=紫荆花盛开 · 李荣浩/梁咏琪` |
-| PLC110（一加 / ColorOS 系 / Android 16 / API 36） | 2 | `size=5`；title=`我一定让自己让自己坚定`、artist=`爱笑的眼睛 · 林俊杰` | 同上两行 |
-| SM-G9209（三星 / Android 7.0 / API 24） | **0** | 无会话可观测 | 应用未 post（仅在 archive） |
-
-两台活着的设备上，title 都是**歌词行**（不是歌名）、artist 都是 `歌名 · 艺人`
-—— 正是 v1.6.0 与用户约定的排布。所以「应用没发布」这个假设**被证伪**。
-
-### 2.2 ROM 侧的消费事实（关键）
-
-华为设备上 `dumpsys activity service SystemUIService` 暴露了 AOSP 的
-`com.android.systemui.media.MediaDataManager`，其中**已经**有 Ncrust 的条目：
+Ncrust 同时暴露两条会话：
 
 ```
-mediaEntries: {0|com.takahashirinta.ncrust|1|null|10274=MediaData(
-    artist=紫荆花盛开 · 李荣浩/梁咏琪, song=像一幅画,
-    artwork=Icon(typ=BITMAP size=512x512), ... active=false ...)}
+NcrustSession                com.takahashirinta.ncrust/NcrustSession
+androidx.media3.session.id.  com.takahashirinta.ncrust/androidx.media3.session.id.
 ```
 
-`MediaDataManager` 是 SystemUI 媒体卡的数据源 —— 也就是说华为**确实读了**我们发布的
-TITLE / ARTIST / ART。媒体控制 UI 的宿主是 `com.android.systemui` 与
-`com.huawei.mediacontroller`（`/system/priv-app/MediaPlaybackController/`，
-持有 `com.huawei.intent.action.MEDIA_CONTROLLER_CENTER`）。
+而 ROM 的 media button session 在两者之间**反复跳**：
 
-### 2.3 为什么不能"换一个专门的歌词 key"
+```
+I MediaSessionService: Media button session is changed to …/androidx.media3.session.id.
+I MediaSessionService: Media button session is changed to …/NcrustSession
+```
 
-任务书列了四个候选 key。逐个查证（含正向对照，方法学与原始扫描见
-`p1-baseline/LOCAL_LIBRARY_lyrics_key_evidence.txt` 与 `..._positive_control.txt`）：
+对照：官方网易云 `com.netease.cloudmusic/MediaSession` **只有一条**；华为音乐
+`com.android.mediacenter.mediasession` **也只有一条**。Ncrust 是唯一一个让系统在两个
+「当前播放器」之间摇摆的。
 
-| 候选 | 结论 |
+### 2.2 应用没有向系统声明自己是媒体应用
+
+华为 ROM 里两处判定都在明确拒绝：
+
+```
+V HwMediaSessionServiceInner: this app is not in media white list, pkgName: com.takahashirinta.ncrust
+V MediaControlUtils:          this app is not in media white list, pkgName: com.takahashirinta.ncrust
+```
+
+清单层面的差集（`aapt2 dump xmltree` + `dumpsys package` 实测）：
+
+| 应用 | 是否声明 `android.intent.action.MEDIA_BUTTON` 接收器 | 控制中心卡片 |
+|---|---|---|
+| 官方网易云 | 是（`MediaButtonEventReceiver`，`mPriority=2147483647`） | ✅ |
+| 华为音乐 | 是（`MediaButtonIntentReceiver`） | ✅ |
+| **Ncrust（v2.1.4/2.1.5 修复前）** | **否 —— 清单里 `<receiver>` 数量为 0** | ❌ |
+
+即：用户说的「**感觉可能是没被当成音乐软件**」是准确的。
+
+## 3. 本版已改的两处（其中一处已验证、一处未验证）
+
+| 改动 | 状态 |
 |---|---|
-| `METADATA_KEY_DISPLAY_DESCRIPTION` | 平台有，但语义是"描述"，华为侧未见消费；不是歌词位 |
-| `METADATA_KEY_DISPLAY_SUBTITLE` | 平台有。应用**显式清空**它 —— 因为 v1.6.0 起歌词已经在 TITLE，再写一遍会在支持三行的车机上重复显示 |
-| 自定义 `"android.media.metadata.LYRICS"` | **平台不存在这个 key**。华为 SystemUI.apk 与 media3-session 1.5.0 里的键集都是同 31 个 `android.media.metadata.*`，无 LYRICS |
-| media3 `MediaMetadata.Builder.setLyrics()` | **本仓库锁定的 media3 1.5.0 没有这个方法**（1.5.0 的 `MediaMetadata` 是 35 个 `FIELD_*` 常量，无 lyric；`setLyrics()` 是更高版本才有的 API） |
+| `PlaybackService.buildCurrentMediaItem()`：当前播放项带上 `title/artist/artworkUri/mediaId`（旧代码是 `MediaItem.fromUri(url)`，**没有任何 metadata**） | ✅ **已验证**：media3 会话从 `size=3, description=null` 变成 `size=10, 修炼爱情, 林俊杰`。两条会话终于对系统讲同一件事 |
+| 清单补 `androidx.media3.session.MediaButtonReceiver`（`MEDIA_BUTTON`） | ⚠️ **未验证有效**：已进包（`aapt2 xmltree` 可见）、已安装、已重启设备，但 **ROM 仍然打 `not in media white list`，卡片仍是「未在播放」** |
 
-`androidx.media:media:1.7.0` 的 `MediaMetadataCompat` 里 226 个 class 全扫，
-`METADATA_KEY_*` 共 31 个，**0 个**与 lyric 相关。
+**结论：卡片问题尚未解决。** v2.1.5 不能声称修好了它。
 
-⇒ **不存在一个"正确的歌词 key"可以换。** 把歌词放进 TITLE 不是权宜之计，而是这个
-平台版本上**唯一可行**的通道 —— 而它已经在工作（§2.1/§2.2）。
+## 4. 下一步（v2.1.6）
 
-### 2.4 华为另有一套私有的歌词通道（不在 MediaSession 里）
+按证据排序：
 
-华为侧还存在基于**文件**的歌词能力：`LyricUtil` / `LyricStateData` /
-`getContentFromLyricFile` / `writeToLyricFile` / `getLocalLyricImg` /
-`jumpLyricPermission` / `isAppOpAllowed` / `updateMediaCommand(LYRIC_STATE)` /
-`LYRICS_DISPLAY|HIDE|UNLOOK`。它**不是** MediaSession metadata，
-Ncrust 源码里对它的引用数为 **0**。
+1. **把两条会话合成一条**（最可能的真因）。media3 的 `MediaSession` 提供
+   `sessionCompatToken`，可以让 MediaStyle 通知引用 media3 那一条，从而不再需要独立的
+   legacy `MediaSessionCompat`。这样系统只会看到一个「当前播放器」。
+   **风险**：通知/媒体按键路径是 v2.0.2 刚稳定下来的承重结构，必须成组回归
+   （通知正文随歌词行刷新、锁屏、蓝牙 AVRCP、车机、耳机按键）。
+2. **查清华为 `media white list` 的准入判据。** 已知它在 system_server 的
+   `HwMediaSessionServiceInner` / `MediaControlUtils` 里，但列表来源未定位
+   （ROM 内可能是硬编码数组或签名白名单）。若判据是「华为应用市场签名」，
+   那对这一侧的缺口就是**真正的能力边界** —— 但那是**第二个**问题，不能拿来解释第一个，
+   因为官方网易云证明这张卡对普通第三方应用是可用的。
+3. 就「歌词行显示在卡片上」这件事：先让卡片**能用**（第 1 条），再谈把歌词推上去。
 
-它是否对第三方应用可达（权限 / 文件路径 / AIDL 契约）**未验证** —— 这是一条
-可能的 v2.1.6 方向，但需要真机 + 屏幕才能判断收益。
+## 5. 我错在哪（保留记录）
 
----
+- **错在把代理指标当成了结论。** `dumpsys activity service SystemUIService` 里
+  `MediaDataManager` 有一条 `active=true, song=<歌词行>` 的 Ncrust 记录 —— 我据此写成
+  「ROM 确实消费了」。但**那条记录与用户看到的那张卡不是同一个东西**：
+  华为音乐在卡片上正常显示时，`MediaDataManager` 里**根本没有**它的条目。
+  两个组件、两套数据源，我拿 A 的观测去证明了 B 的结论。
+- **错在没有做端到端观测就写「无法判定」。** 我当时写「adb 无法判定屏幕侧」，
+  但 `uiautomator dump` 就能把卡片上的文字**读出来**，而且同设备换个应用就能做 A/B。
+  工具一直在手里，缺的是「先验证观测手段本身是否够用」。
+- **用户的直觉两次都比我的推断准**：第一次是「没被当成音乐软件」（命中
+  `media white list` 与缺 `MEDIA_BUTTON` 声明），第二次是「qq音乐和网易云都是正常的」
+  （直接证伪了我的「ROM 不认第三方」假设）。
 
-## 3. 本版的决定
-
-1. **不改媒体面板的发布方式。** 它已经在正确的通道上、发布了正确的内容，
-   而且 ROM 已经消费 —— 没有可修的 bug。
-2. **不动 v2.0.2 刚稳定的通知重 post 路径。** 那条路径（跨行重 post + `LyricNotifyGate`
-   限流/延后）是本仓库花了两版真机排查才立住的，而 P1 在**没有屏幕上证据**的前提下
-   改它（例如把行节流从 250ms 放宽到 500ms、加 seek/播放态事件分类）属于
-   用风险换一个无法验证的收益 —— 不做。拆分到 v2.1.6，等有屏幕侧验证手段再说。
-3. **交付探针 + 证据 + 降级说明**（任务书 §3.5 明确允许的路径）：
-   - 探针：`NcrustMediaPanel` 每次 setMetadata 后打印
-     `keys[] / title / artist / displaySubtitle / line / lastAt /
-     gate[post,defer,same,notStarted] / notifyBuilds`。
-     它把「应用发布了什么」变成可 grep 的事实，与 `dumpsys` 的「系统收到什么」互为独立证据。
-   - 证据：`p1-baseline/`。
-   - 降级说明：**应用内歌词（SweepTrack 逐字渐变）与自定义通知栏歌词是可靠的**；
-     控制中心面板**能否**显示歌词、以整行还是逐字、以什么频率刷新，取决于 ROM，
-     应用只保证「按平台唯一可行的通道，把正在唱的那一行持续发布出去」。
-
-## 4. 对用户的降级说明（可直接引用）
-
-> 控制中心的媒体卡片由系统（华为的 `com.android.systemui` / `com.huawei.mediacontroller`）绘制。
-> 应用能做的只有把歌词发布到系统媒体会话里 —— 这一点已经做到，并且系统确实收到了。
-> 卡片上是否把这一行显示出来、多久刷新一次，由 ROM 决定。
-> 如果控制中心看不到歌词，请使用**应用内歌词**或**通知栏歌词**，那两条路径不经过 ROM 的媒体卡片。
-
-## 5. 仍未验证（不得当作已验证）
-
-- 华为控制中心卡片**肉眼**是否显示歌词、是否实时 —— adb 无法判定，本版不做任何声称。
-- 华为那套私有歌词协议对第三方应用是否可达。
-- API 24（三星 S6）上的媒体会话行为 —— `dumpsys` 里根本没有 Ncrust 会话，
-  这是**测量缺口**而不是负面结论（该机的会话只在真正播放时才建立）。
-- `dumpsys` 只打印 `metadata:size=N` 与 title/artist/album，**拿不到 key 的身份列表**；
-  `size=5` 与代码里写的 5 个 key 是**吻合**，不是枚举证明。key 身份的证明来自
-  源码 + 探针，不来自 dumpsys。
+**固化成规则**：只要结论是「ROM/平台不支持」，必须先给出**同一设备上另一个应用正常**的
+反例搜索记录；没有做这个搜索，就不许写「能力边界」。
