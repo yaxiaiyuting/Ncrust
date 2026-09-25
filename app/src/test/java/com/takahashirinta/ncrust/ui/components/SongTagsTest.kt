@@ -1,0 +1,221 @@
+/*
+ * Ncrust —— 网易云音乐第三方客户端
+ * 原始代码 Copyright (c) 2026 Takahashi_Rinta，以 MIT 许可发布（全文见仓库根目录 LICENSE-MIT）。
+ *
+ * 本文件属于本 Fork（https://github.com/yaxiaiyuting/Ncrust）的修改部分，
+ * Copyright (c) 2026 yaxiaiyuting，以 GPLv3 许可分发；本 Fork 整体以 GPLv3 分发。
+ *
+ * v2.3.0 · C/D 单元测试：列表行的角标装配（音源归属 + 版权可用性 + 原唱/翻唱）。
+ *
+ * 这一组用例存在的理由：**「什么时候什么都不显示」是最容易在 UI 里被顺手写成
+ * 「显示一个默认值」的地方**，而那正好是任务书 5.2 明令禁止的
+ * 「在搜索阶段就假设某源可播」。把装配抽成纯函数之后，这些「不显示」都能被断言。
+ */
+
+package com.takahashirinta.ncrust.ui.components
+
+import com.takahashirinta.ncrust.network.NoCopyrightRecommendation
+import com.takahashirinta.ncrust.network.OriginSongRef
+import com.takahashirinta.ncrust.network.SongItem
+import com.takahashirinta.ncrust.network.SongPrivilege
+import com.takahashirinta.ncrust.network.model.ArtistItem
+import com.takahashirinta.ncrust.source.MusicSource
+import com.takahashirinta.ncrust.ui.i18n.zhCN
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
+import org.junit.Test
+
+class SongTagsTest {
+
+    private val strings = zhCN
+
+    private fun ne(
+        id: Long = 1L,
+        fee: Int? = null,
+        st: Int? = null,
+        pl: Int? = null,
+        noCopyright: Boolean = false,
+        oct: Int? = null,
+        originSong: OriginSongRef? = null,
+    ) = SongItem(
+        id = id,
+        name = "晴天",
+        artists = null,
+        album = null,
+        duration = null,
+        fee = fee,
+        privilege = if (st == null && pl == null) null else SongPrivilege(st, pl),
+        noCopyright = if (noCopyright) NoCopyrightRecommendation("其它版本可播", 2) else null,
+        originCoverType = oct,
+        originSong = originSong,
+    )
+
+    private fun qq(memberOnly: Boolean? = null) = SongItem(
+        id = 2L,
+        name = "晴天",
+        artists = null,
+        album = null,
+        duration = null,
+        source = MusicSource.QQMUSIC.key,
+        sourceId = "00083kc41YcFuR",
+        memberOnly = memberOnly,
+    )
+
+    // ------------------------------------------------ 音源归属：两源都标 ----
+
+    @Test
+    fun `网易云的行也标音源（v230 的改变）`() {
+        // 用一个**判不出可用性**的曲目，把音源角标单独隔离出来看。
+        val tags = SongTags.of(ne(st = -1, pl = 0, fee = 0), strings)
+        assertEquals(1, tags.size)
+        assertEquals(SongTagKind.SOURCE, tags[0].kind)
+        assertEquals(strings.sourceNetease, tags[0].text)
+        // 可播放时它会多出一个可用性角标，但音源仍是第一个。
+        val playable = SongTags.of(ne(st = 0, pl = 320000), strings)
+        assertEquals(2, playable.size)
+        assertEquals(strings.sourceNetease, playable[0].text)
+    }
+
+    @Test
+    fun `QQ 的行标 QQ 音乐`() {
+        val tags = SongTags.of(qq(), strings)
+        assertEquals(strings.sourceQqMusic, tags.single().text)
+        assertEquals(SongTagKind.SOURCE, tags.single().kind)
+    }
+
+    @Test
+    fun `同名不同源的两行角标不同 这正是聚合搜索的歧义来源`() {
+        val a = SongTags.of(ne(st = 0, pl = 320000), strings).first().text
+        val b = SongTags.of(qq(), strings).first().text
+        assertFalse(a == b)
+    }
+
+    @Test
+    fun `音源角标永远排第一`() {
+        val tags = SongTags.of(ne(st = 0, pl = 320000, oct = 1), strings)
+        assertEquals(SongTagKind.SOURCE, tags.first().kind)
+    }
+
+    // ------------------------------------------------ 版权可用性 ----
+
+    @Test
+    fun `可播放角标在 pl 大于 0 时出现`() {
+        val tags = SongTags.of(ne(st = 0, pl = 320000), strings)
+        assertTrue(tags.any { it.kind == SongTagKind.AVAILABILITY && it.text == strings.tagPlayable })
+    }
+
+    @Test
+    fun `需会员角标在 st 为 0 且 pl 为 0 且 fee 为 1 时出现`() {
+        val tags = SongTags.of(ne(fee = 1, st = 0, pl = 0), strings)
+        assertTrue(tags.any { it.kind == SongTagKind.AVAILABILITY && it.text == strings.tagMemberOnly })
+    }
+
+    @Test
+    fun `无版权角标在服务端显式声明时出现`() {
+        val tags = SongTags.of(ne(fee = 1, st = 0, pl = 0, noCopyright = true), strings)
+        assertTrue(tags.any { it.kind == SongTagKind.AVAILABILITY && it.text == strings.tagNoCopyright })
+    }
+
+    @Test
+    fun `判不出来时一个可用性角标都不显示（不许假设某源可播）`() {
+        // st == -1：实测 15/30 能播 —— 必须沉默
+        val tags = SongTags.of(ne(fee = 1, st = -1, pl = 0), strings)
+        assertFalse(tags.any { it.kind == SongTagKind.AVAILABILITY })
+        // 完全没有 privilege（老数据）
+        val legacy = SongTags.of(ne(), strings)
+        assertFalse(legacy.any { it.kind == SongTagKind.AVAILABILITY })
+    }
+
+    @Test
+    fun `QQ 侧永远没有可用性角标（除了会员）`() {
+        assertFalse(SongTags.of(qq(memberOnly = false), strings).any { it.kind == SongTagKind.AVAILABILITY })
+        assertTrue(
+            SongTags.of(qq(memberOnly = true), strings)
+                .any { it.kind == SongTagKind.AVAILABILITY && it.text == strings.tagMemberOnly },
+        )
+    }
+
+    // ------------------------------------------------ 原唱 / 翻唱 ----
+
+    @Test
+    fun `原唱角标只在 originCoverType 为 1 时出现`() {
+        val tags = SongTags.of(ne(oct = 1), strings)
+        assertTrue(tags.any { it.kind == SongTagKind.VERSION && it.text == strings.tagOriginal })
+    }
+
+    @Test
+    fun `翻唱角标只在 originCoverType 为 2 时出现`() {
+        val tags = SongTags.of(ne(oct = 2), strings)
+        assertTrue(tags.any { it.kind == SongTagKind.VERSION && it.text == strings.tagCover })
+    }
+
+    @Test
+    fun `originCoverType 为 0 或 3 时不显示版本角标`() {
+        assertFalse(SongTags.of(ne(oct = 0), strings).any { it.kind == SongTagKind.VERSION })
+        assertFalse(SongTags.of(ne(oct = 3), strings).any { it.kind == SongTagKind.VERSION })
+        assertFalse(SongTags.of(qq(), strings).any { it.kind == SongTagKind.VERSION })
+    }
+
+    @Test
+    fun `标题里自称原唱但服务端标注翻唱时 以服务端为准`() {
+        // 真实样本：`晴天 (原唱 周杰伦)` 的 originCoverType == 2 —— 它是翻唱。
+        val song = SongItem(
+            id = 3L, name = "晴天 (原唱 周杰伦)", artists = null, album = null, duration = null,
+            originCoverType = 2,
+            originSong = OriginSongRef(186016L, "晴天", listOf(ArtistItem(6452L, "周杰伦"))),
+        )
+        assertTrue(SongTags.of(song, strings).any { it.text == strings.tagCover })
+    }
+
+    // ------------------------------------------------ 翻唱的原曲副标题 ----
+
+    @Test
+    fun `翻唱且有原曲信息时给出原唱行`() {
+        val song = ne(oct = 2, originSong = OriginSongRef(186016L, "晴天", listOf(ArtistItem(6452L, "周杰伦"))))
+        val line = SongTags.coverOriginLine(song, strings)
+        assertEquals(strings.tagCoverOrigin("周杰伦", "晴天"), line)
+    }
+
+    @Test
+    fun `翻唱但服务端没给原曲信息时不给原唱行（不猜）`() {
+        assertNull(SongTags.coverOriginLine(ne(oct = 2), strings))
+    }
+
+    @Test
+    fun `不是翻唱时不给原唱行`() {
+        val song = ne(oct = 1, originSong = OriginSongRef(1L, "x", null))
+        assertNull(SongTags.coverOriginLine(song, strings))
+    }
+
+    @Test
+    fun `原曲艺人为空时只显示曲名 不编一个未知歌手`() {
+        val song = ne(oct = 2, originSong = OriginSongRef(1L, "原曲", null))
+        assertEquals(strings.tagCoverOrigin(strings.unknownArtist, "原曲"), SongTags.coverOriginLine(song, strings))
+    }
+
+    @Test
+    fun `原曲名为空时不给原唱行`() {
+        val song = ne(oct = 2, originSong = OriginSongRef(1L, "   ", listOf(ArtistItem(1L, "A"))))
+        assertNull(SongTags.coverOriginLine(song, strings))
+    }
+
+    // ------------------------------------------------ 组合 ----
+
+    @Test
+    fun `三个角标同时存在时顺序是 音源 可用性 版本`() {
+        val tags = SongTags.of(ne(st = 0, pl = 320000, oct = 1), strings)
+        assertEquals(
+            listOf(SongTagKind.SOURCE, SongTagKind.AVAILABILITY, SongTagKind.VERSION),
+            tags.map { it.kind },
+        )
+    }
+
+    @Test
+    fun `最坏情况（QQ 且什么都不知道）只有音源一个角标`() {
+        val tags = SongTags.of(qq(memberOnly = null), strings)
+        assertEquals(1, tags.size)
+        assertEquals(SongTagKind.SOURCE, tags.single().kind)
+    }
+}

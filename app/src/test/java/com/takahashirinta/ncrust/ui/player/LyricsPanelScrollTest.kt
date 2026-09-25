@@ -133,4 +133,63 @@ class LyricsPanelScrollTest {
         assertEquals(0, LyricsPanelScroll.targetItemIndex(-1, 0))
         assertEquals(0, LyricsPanelScroll.targetItemIndex(3, 0))
     }
+
+    // ================================================================ v2.3.0 · E
+    // 横屏 / 大屏右栏的定位目标：视口**正中**（0.5），而不是竖屏的 0.36。
+    // 探针（docs/verification/v2.3.0/probe-lyric-landscape.md）给的是几何事实：
+    // 大屏右栏面板约 280dp 高 ⇒ 0.36 × 280 ≈ 100dp，当前行几乎贴着顶部渐隐带。
+
+    @Test
+    fun `横屏目标比例是视口正中`() {
+        assertEquals(0.5f, LyricsPanelScroll.CENTER_FRACTION, 1e-6f)
+    }
+
+    @Test
+    fun `竖屏目标比例仍是 0_36（一个像素都不动）`() {
+        assertEquals(0.36f, LyricsPanelScroll.LEAD_FRACTION, 1e-6f)
+    }
+
+    @Test
+    fun `横屏定位 offset 落在视口一半处`() {
+        val vh = (280 * d).toInt()
+        assertEquals(-(vh * 0.5f).toInt(), LyricsPanelScroll.leadOffsetPx(vh, LyricsPanelScroll.CENTER_FRACTION))
+    }
+
+    @Test
+    fun `横屏顶部留白与竖屏一样被夹取 且等于定位点`() {
+        val vh = (280 * d).toInt()
+        val spacer = LyricsPanelScroll.topSpacerHeightPx(vh, 200f * d, LyricsPanelScroll.CENTER_FRACTION)
+        // 不变量 1：留白 <= CENTER_FRACTION × 视口 ⇒「回顶」与「首句落在正中」是同一个位置
+        assertTrue(spacer <= vh * LyricsPanelScroll.CENTER_FRACTION + 1f)
+        assertEquals(vh * LyricsPanelScroll.CENTER_FRACTION, spacer, 1f)
+    }
+
+    @Test
+    fun `横屏留白仍在顶部渐隐带之下（0_30 小于 0_5）`() {
+        // LyricsView 的渐隐高 = min(100dp, 30% 视口)，所以首句必须落在 30% 以下。
+        assertTrue(LyricsPanelScroll.CENTER_FRACTION > 0.30f)
+        assertTrue(LyricsPanelScroll.LEAD_FRACTION > 0.30f)
+    }
+
+    @Test
+    fun `默认参数等价于竖屏行为（既有调用点零改动）`() {
+        val vh = (700 * d).toInt()
+        assertEquals(
+            LyricsPanelScroll.leadOffsetPx(vh, LyricsPanelScroll.LEAD_FRACTION),
+            LyricsPanelScroll.leadOffsetPx(vh),
+        )
+        assertEquals(
+            LyricsPanelScroll.topSpacerHeightPx(vh, 200f * d, LyricsPanelScroll.LEAD_FRACTION),
+            LyricsPanelScroll.topSpacerHeightPx(vh, 200f * d),
+        )
+    }
+
+    @Test
+    fun `横屏短视口下正中比 36 百分比更靠下（这就是修的位置）`() {
+        val vh = (280 * d).toInt()
+        val center = -LyricsPanelScroll.leadOffsetPx(vh, LyricsPanelScroll.CENTER_FRACTION)
+        val lead = -LyricsPanelScroll.leadOffsetPx(vh, LyricsPanelScroll.LEAD_FRACTION)
+        assertTrue(center > lead)
+        assertEquals((center - lead).toFloat(), vh * 0.14f, 2f)
+    }
 }

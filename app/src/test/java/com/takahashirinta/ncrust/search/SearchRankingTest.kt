@@ -159,4 +159,87 @@ class SearchRankingTest {
         assertEquals(true, TrackAccess.MEMBER_ONLY.isGated)
         assertEquals(false, TrackAccess.FREE.isGated)
     }
+
+    // ================================================================ v2.3.0 · C
+    // `order` = v2.1.4 的 `rank` + 把「服务端显式声明无版权」的行沉底。
+    // 探针结论（probe-source-attribution.md §1）：跨源同一性不存在，所以任务书 5.3 的
+    // 「同一首歌两源都有时优先展示有版权的音源」**没有可执行的落点**；
+    // 能做的只有「把确证无版权的行沉底」——下面把这条边界也钉住。
+
+    private fun na(id: String, access: TrackAccess, availability: TrackAvailability) =
+        RankedSong("n$id", access, availability)
+
+    private fun qa(id: String, access: TrackAccess, availability: TrackAvailability) =
+        RankedSong("q$id", access, availability)
+
+    @Test
+    fun `order 在没有无版权行时与 rank 逐项相同（零行为变化）`() {
+        val netease = listOf(
+            na("1", TrackAccess.MEMBER_ONLY, TrackAvailability.MEMBER_ONLY),
+            na("2", TrackAccess.FREE, TrackAvailability.PLAYABLE),
+        )
+        val qq = listOf(
+            qa("1", TrackAccess.MEMBER_ONLY, TrackAvailability.MEMBER_ONLY),
+            qa("2", TrackAccess.FREE, TrackAvailability.UNKNOWN),
+        )
+        val ranked = SearchRanking.rank(netease, qq, neteaseVip = true, qqVip = true)
+        val ordered = SearchRanking.order(netease, qq, neteaseVip = true, qqVip = true)
+        assertEquals(ranked.keys(), ordered.keys())
+    }
+
+    @Test
+    fun `order 把无版权的行沉到整张表末尾`() {
+        val netease = listOf(
+            na("1", TrackAccess.FREE, TrackAvailability.NO_COPYRIGHT),
+            na("2", TrackAccess.FREE, TrackAvailability.PLAYABLE),
+            na("3", TrackAccess.FREE, TrackAvailability.UNKNOWN),
+        )
+        val out = SearchRanking.order(netease, emptyList(), neteaseVip = false, qqVip = false)
+        assertEquals(listOf("n2", "n3", "n1"), out.keys())
+    }
+
+    @Test
+    fun `order 是稳定分区——非无版权行的相对顺序一个字节不改`() {
+        val netease = listOf(
+            na("1", TrackAccess.FREE, TrackAvailability.PLAYABLE),
+            na("2", TrackAccess.FREE, TrackAvailability.NO_COPYRIGHT),
+            na("3", TrackAccess.FREE, TrackAvailability.MEMBER_ONLY),
+            na("4", TrackAccess.FREE, TrackAvailability.NO_COPYRIGHT),
+            na("5", TrackAccess.FREE, TrackAvailability.UNKNOWN),
+        )
+        val out = SearchRanking.order(netease, emptyList(), neteaseVip = false, qqVip = false)
+        assertEquals(listOf("n1", "n3", "n5", "n2", "n4"), out.keys())
+    }
+
+    @Test
+    fun `order 刻意不按可播放性重排（那会洗掉相关性排序）`() {
+        // 反向断言：全部行都是「不知道」或「需会员」时，顺序必须原样。
+        // 如果实现改成按 rankGroup 排序，这个用例会红。
+        val netease = listOf(
+            na("1", TrackAccess.UNKNOWN, TrackAvailability.UNKNOWN),
+            na("2", TrackAccess.FREE, TrackAvailability.PLAYABLE),
+            na("3", TrackAccess.MEMBER_ONLY, TrackAvailability.MEMBER_ONLY),
+        )
+        val out = SearchRanking.order(netease, emptyList(), neteaseVip = false, qqVip = false)
+        assertEquals(listOf("n1", "n2", "n3"), out.keys())
+    }
+
+    @Test
+    fun `order 不与会员交错打架——会员曲仍排在另一家的普通曲之前`() {
+        val netease = listOf(
+            na("1", TrackAccess.MEMBER_ONLY, TrackAvailability.MEMBER_ONLY),
+            na("2", TrackAccess.FREE, TrackAvailability.NO_COPYRIGHT),
+        )
+        val qq = listOf(qa("1", TrackAccess.FREE, TrackAvailability.PLAYABLE))
+        val out = SearchRanking.order(netease, qq, neteaseVip = true, qqVip = false)
+        // n1（会员，本家 vip 优先）在最前；n2 无版权沉底；q1 落在中间
+        assertEquals(listOf("n1", "q1", "n2"), out.keys())
+    }
+
+    @Test
+    fun `demoteNoCopyright 对已经合规的输入原样返回同一个实例`() {
+        val group = listOf(na("1", TrackAccess.FREE, TrackAvailability.PLAYABLE))
+        val out = SearchRanking.demoteNoCopyright(group)
+        assertEquals(group, out)
+    }
 }

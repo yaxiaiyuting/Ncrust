@@ -14,6 +14,7 @@
 
 package com.takahashirinta.ncrust.player
 
+import com.takahashirinta.ncrust.source.MusicSource
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals
@@ -326,5 +327,68 @@ class PlaybackGuardTest {
             ceiling.remember("song:$it", "hires", nowMs = it.toLong())
         }
         assertEquals(QualityCeilingMemory.MAX_ENTRIES, ceiling.snapshot(nowMs = 10_000).size)
+    }
+
+    // ================================================================ v2.3.0 · C
+    // 「此源无版权，可切另一源」提示的节流闸。它挂在「取链彻底失败 ⇒ 即将自动跳歌」
+    // 这条**本来就会连续触发**的路径上，所以自己必须也有界（铁律 8）。
+
+    @Test
+    fun `提示闸第一次一定放行`() {
+        val gate = SourceFallbackHintGate()
+        assertTrue(gate.shouldHint(1_000L))
+    }
+
+    @Test
+    fun `提示闸在时间窗内只放行一次`() {
+        val gate = SourceFallbackHintGate(minIntervalMs = 20_000L)
+        assertTrue(gate.shouldHint(0L))
+        assertFalse(gate.shouldHint(1L))
+        assertFalse(gate.shouldHint(19_999L))
+        assertTrue(gate.shouldHint(20_000L))
+    }
+
+    @Test
+    fun `连续失败不会弹出一串提示（最多 5 次自动跳歌就有界了）`() {
+        val gate = SourceFallbackHintGate(minIntervalMs = 20_000L)
+        var shown = 0
+        // 模拟 v2.2.1 那场级联：2 秒内连续 5 次取链失败
+        for (i in 0 until 5) {
+            if (gate.shouldHint(i * 400L)) shown++
+        }
+        assertEquals(1, shown)
+    }
+
+    @Test
+    fun `reset 之后下一次失败立刻能提示`() {
+        val gate = SourceFallbackHintGate(minIntervalMs = 20_000L)
+        assertTrue(gate.shouldHint(0L))
+        assertFalse(gate.shouldHint(1L))
+        gate.reset()
+        assertTrue(gate.shouldHint(2L))
+    }
+
+    @Test
+    fun `第一次一定放行——哨兵比较不能写成减法（会溢出成相反方向）`() {
+        // 反向断言：如果实现写成 `nowMs - lastShownAtMs < minIntervalMs`，
+        // lastShownAtMs 的初值 Long.MIN_VALUE 会让第一次减出一个正的大数以外的结果……
+        // 具体地，nowMs - Long.MIN_VALUE 在 nowMs 较小时溢出为负数 ⇒ 第一次被误判成
+        // 「刚提示过」⇒ 提示永远不出现。这个用例把那条路钉死。
+        val gate = SourceFallbackHintGate(minIntervalMs = 20_000L)
+        assertTrue(gate.shouldHint(0L))
+    }
+
+    @Test
+    fun `时钟被往回拨时放行——不因为时钟问题让用户永远看不到出口`() {
+        val gate = SourceFallbackHintGate(minIntervalMs = 20_000L)
+        assertTrue(gate.shouldHint(1_000_000L))
+        // 系统时间被调回到更早
+        assertTrue(gate.shouldHint(500_000L))
+    }
+
+    @Test
+    fun `另一个音源的判定只用结构性事实`() {
+        assertEquals(MusicSource.QQMUSIC, MusicSource.otherThan(MusicSource.NETEASE))
+        assertEquals(MusicSource.NETEASE, MusicSource.otherThan(MusicSource.QQMUSIC))
     }
 }
