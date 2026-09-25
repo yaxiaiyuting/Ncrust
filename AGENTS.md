@@ -2751,3 +2751,69 @@ PHASE0 报告 §2.3：「**已登录时追加** `comm.uin=<musicid>`、`comm.aut
 6. **`lintDebug` 在 HEAD 上本来就是红的**（57 error，全是依赖版本/opt-in 类既有问题，
    留档 `docs/verification/v2.1.5/lint-report-HEAD-unmodified.txt`）。本版引入
    `app/lint-baseline.xml` 让它通过；基线里**没有**本次新增的文件，所以新引入的问题仍会被拦下。
+
+## v2.2.0 新增（本 fork · QQ 音乐歌单与用户信息同步，**只读**）
+
+**基线 = v2.1.6**（不是 v2.1.5）。`versionCode = 37`，`versionName = "2.2.0-gpl"`。
+决策与自证见 `docs/verification/v2.2.0/VERSION-DECISION.md`。
+
+### 为什么是独立 v2.2.0
+
+`v2.1.6-gpl` 的 tag 已存在并已推送、draft release 已成稿（且后来被发布为 Latest），
+并入需移动 tag；它的内容又是华为白名单专项（任务书要求不碰、不扩散）。
+**更关键的是基线**：若从 v2.1.5 发布 v2.2.0(37)，装到 v2.1.6(36) 之上会把
+MediaSession 合并等修复**静默回退** —— 5 个功能提交因此 `git rebase v2.1.6-gpl`。
+
+### 探针先行（`docs/verification/v2.2.0/qq-playlist-probe/`）
+
+四轮真机实测、148 次请求、**写接口零调用**。三条最该记住的：
+
+1. **同一份数据两套命名**：`GetPlaylistByUin` 是 camelCase（`dirId`/`dirName`/`songNum`/`tid`），
+   而 `CgiGetDiss` 的 `dirinfo` 是下划线（`dirid`/`songnum`/`encrypt_uin`）。
+   第 1 轮照抄参考实现（pydantic `AliasChoices` 把两套名字都吃掉）的别名，
+   在真实响应上**全部拿到 null**；现场保留在 `round1/`。
+2. **歌曲身份两个 mid**：`songlist[].mid`（vkey 的 `songmid`）与 `file.media_mid`
+   （vkey 的 `filename`）。实测 10 首里 **6 首不同** —— v2.1.0 教训的复现。
+   顶层**没有** `media_mid`/`strMediaMid`。映射**复用 `QqSongMapper.fromSongObject`**，未另起一套。
+3. **`GetPlaylistByUin` 不是登录接口**：它「按 uin 公开可读」——票据改坏、甚至不带 cookie
+   都照样返回 `code=0` + 数据（非法 uin 白名单实测全部 `80030`）。
+   **判登录态只能用 `GetLoginUserInfo`**（无 cookie ⇒ `code=1000`）。
+   「我喜欢」是固定 `dirId=201`，且本就在列表里；`dirId=202/203` 语义未确认，不实现。
+   最近播放 15 个候选接口全部不存在 ⇒ 不实现。
+
+### 真机上才暴露的三个问题（都已修）
+
+1. **release-only R8 崩溃**：`playlist.**` 没有 proguard keep 规则时，R8 丢掉 DTO 字段的
+   **泛型签名 attribute** ⇒ Gson 把 `List<PlaylistDto>` 当裸 `List` ⇒ 元素变 `LinkedTreeMap`
+   ⇒ `ClassCastException`（retrace 后定位 `PlaylistCacheCodec.decodeList`）。**debug 完全正常**。
+   修法是把内层数组**存成字符串**、用编译期捕获的 `TypeToken` 解析（不依赖字段泛型签名），
+   并补 `-keep class ...playlist.**`。**新增单测钉住这个形状** —— 谁改回泛型 List 立刻红。
+   > 一般化：**持久化结构里不要出现「靠字段泛型签名才能解析」的嵌套泛型集合**，
+   > 除非那个包在 proguard 里有 keep。
+2. **登录过期永远不会出现**：只有 `GetLoginUserInfo` 能判失效，而原实现只映射
+   `fetchOwnedPlaylists` 的 `1000`（那条分支永远走不到）。现在**联网前先验一次登录态**；
+   缓存新鲜时仍不发请求。
+3. **QQ 入口被网易云加载状态绑架**（入口原本是网易云网格第一格）⇒ 提到 `when` 之外。
+   顺带修了 `DetailScaffold(title=...)` 的坑：**该参数已弃用**，标题要由 header 自己渲染，
+   并用 `top = 56.dp` 让开顶部 scrim，否则会被返回箭头压住。
+
+### 新增文件与约定
+
+- `source/PlaylistModels.kt`：`PlaylistKey(source,id,ownerId)` / `Playlist` / `PlaylistTrack`（复用 `TrackKey`）
+  + `groupPlaylistsBySource`（**不跨源合并**是结构性的，不是「碰巧只请求了 QQ」）。
+  `id` 用全局唯一的 `tid`，**不是 `dirId`**（后者是账号内编号，当 key 会串号）；
+- `playlist/PlaylistLoadCoordinator.kt`：`generation + ownerId + key` 三重判据
+  （比歌词系统多一条 `ownerId` —— 列表页 key 为 null，只比 key 会让两个账号互相覆盖）；
+- `playlist/PlaylistCacheCodec.kt`：缓存 **key = `source + ownerId + playlistId`**，
+  带 schema 版本与迁移（v1→v2 是**丢弃**而不是补默认账号：把「不知道属于谁」断言成
+  「属于当前账号」会让 A 的歌单在 B 下显示），读侧再校验一次 `ownerId`；
+- `qq/QqPlaylist{Api,Parser,Repository,Store}.kt`、`ui/screen/QqPlaylist{,Detail}Screen.kt`；
+- 文案走**嵌套的 `PlaylistsStrings` 组**，不是摊平成 `Strings` 的构造参数 ——
+  v2.0.0 · HF1 的 dex 单方法 255 参数寄存器上限教训，8 个语言文件都要补齐。
+
+### 未验证项（如实）
+
+500+ 歌单端到端分页（本账号最大 22 首、榜单最大 300 首，造 500+ 属写操作）、
+两个真实 QQ 账号互切（两台设备同一账号）、S6(API 24) 界面渲染（设备掉线）、
+release APK 在 API 24 安装（S6 原装 debug 签名，卸载会清登录态）、收藏歌单非空列表（收藏数为 0）。
+详见 `docs/verification/v2.2.0/VERIFICATION.md`。
