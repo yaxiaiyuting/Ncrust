@@ -164,8 +164,30 @@ android {
         //   脚本输出：`MAX versionCode (所有来源) = 40 [Ncrust-v2.4.0-gpl-debug.apk]` ⇒ 下一个可用 **41**。
         //   实测记录：docs/verification/v2.5.0/verification/version-check.txt
         //   打 tag 前会用 `git show v2.5.0-gpl:app/build.gradle.kts | grep version` 再自证一次。
-        versionCode = 41
-        versionName = "2.5.0-gpl"
+        //
+        // v2.5.1（本版）：页面切换动效**用户可配（默认启用）** + 关闭 v2.5.0 的四项遗留验证缺口。
+        //
+        // **为什么另起 v2.5.1 而不是重打 v2.5.0 的 tag**（刻意的决定，不是惯性）：
+        //   任务书 §5.1 允许「仅补验证 + 设置项 + 单测」时并入 v2.5.0 draft 并重打 tag
+        //   （v2.5.0-gpl 至今仍是 **Draft**，技术上可移动）。**不采纳**，两条理由：
+        //   ① 本仓库自己的先例：v2.1.1-gpl / v2.1.2-gpl 的 tag 同样只对应 draft（release 已删），
+        //      AGENTS.md 记的处置是「按本项目纪律不移动已发布的 tag，所以另起一版而不是改它」——
+        //      tag 一旦推上去就算「已发布」，跟着 draft 状态走会让这条纪律变成可协商的。
+        //   ② v2.5.0 的 draft release 里**已经上传了两个已签名 APK**（sha256 记在 v2.5.0/EVIDENCE.md），
+        //      重打 tag 就要用**同一个 versionCode 41** 换掉它们 —— 于是「41」这一个号对应两份不同的
+        //      产物，而「versionCode ↔ 产物」一一对应正是 versioning 纪律存在的意义。
+        //   代价如实体现在这里：多占一个版本号，且 v2.5.0 的 draft 需要人工删除（见 release notes）。
+        //
+        // versionCode 出处：`tools/next-version.sh`（**带 fetch**）三源交叉验证 ——
+        //   ① 最近 5 个 tag 内 build.gradle 最大值 = 41（v2.5.0-gpl）；
+        //   ② `dist/*.apk` 的 aapt2 dump badging（唯一可信的「这个号已经发布出去了」来源，
+        //      本次实测 v2.5.0-gpl 的 debug 与 release 两个包都是 41）；
+        //   ③ 仓库当前 build.gradle = 41。
+        //   脚本输出：`MAX versionCode (所有来源) = 41 [Ncrust-v2.5.0-gpl-debug.apk]` ⇒ 下一个可用 **42**。
+        //   实测记录：docs/verification/v2.5.1/verification/version-check.txt
+        //   打 tag 前会用 `git show v2.5.1-gpl:app/build.gradle.kts | grep version` 再自证一次。
+        versionCode = 42
+        versionName = "2.5.1-gpl"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
