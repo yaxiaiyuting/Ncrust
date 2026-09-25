@@ -117,7 +117,14 @@ fun SongMenuSheet(
         // 保证「信息区 + 列表 + 安全区」一定放得下。用 `heightIn(max=)` 而不是固定高度，
         // 所以内容本来就放得下时（平板 / 横屏 / 条目少）**行为与改动前逐字节一致**，
         // 不会平白多出一个滚动容器。
-        val maxActionsHeight = (LocalConfiguration.current.screenHeightDp - 176).coerceAtLeast(160).dp
+        //
+        // v2.5.1：这段算术搬进了纯逻辑对象 [SongMenuSheetLayout]，并由
+        // `SongMenuSheetLayoutTest` 在 JVM 上钉住「S6 竖屏 10 条必须可滚」与
+        // 「1000dp 高 10 条不许平白多出滚动容器」两条 —— 本版补的是**回归单测**，
+        // 修法本身一字未动（v2.5.0 的真机验证已经证明修法有效）。
+        val maxActionsHeight = SongMenuSheetLayout.maxActionsHeightDp(
+            LocalConfiguration.current.screenHeightDp
+        ).dp
         Column(
             modifier = Modifier
                 .heightIn(max = maxActionsHeight)

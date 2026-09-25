@@ -64,6 +64,12 @@ class StringsConstructorBudgetTest {
      * 同时新增 `queue` 这**一个**参数 —— **腾 2 花 1**，所以构造参数现在是 **244**，
      * 只剩 **1 个空位**。下一个要加文案的人**必须先腾出一个位置**（把一条既有文案搬进某个嵌套组），
      * 不能顺手再加第二条：245 就是 255 个槽正好用满的那一点，246 就是真机启动即崩。
+     *
+     * ⚠️⚠️ **v2.5.1 · F 之后余量是 0。** `motion: MotionStrings` 用掉了那最后一个空位
+     * （v1.9.0 的歌词页 `LyricsDisplayPrefs` 风格：给 `Strings` 只加**一个**参数、
+     * 两条文案进组）。构造参数回到 **245 = 天花板**，`this + 245 + 8 mask + marker = 255` 正好用满。
+     * **下一个要加文案的人必须先把一条既有文案搬进语义相符的嵌套组**（并在类体里留转发属性保住调用点），
+     * 然后才能加 —— 下面第二条用例会挡住越界的那一次。
      */
     private val maxConstructorParams = 245
 
@@ -104,6 +110,7 @@ class StringsConstructorBudgetTest {
             "com.takahashirinta.ncrust.ui.i18n.TagsStrings",
             "com.takahashirinta.ncrust.ui.i18n.LocalPlaylistStrings",
             "com.takahashirinta.ncrust.ui.i18n.QueueStrings",
+            "com.takahashirinta.ncrust.ui.i18n.MotionStrings",
         )
         groups.forEach { name ->
             val clazz = Class.forName(name)
@@ -174,5 +181,24 @@ class StringsConstructorBudgetTest {
                 s.actionAddToNext != s.actionInsertNext,
             )
         }
+    }
+
+    @Test
+    fun `v2_5_1 的页面转场文案组在 8 种语言里都非空且不撞词`() {
+        val presetList = listOf(zhCN, zhTW, en, jpJP, jpMY, koNK, deDE, ruRU)
+        val labels = mutableSetOf<String>()
+        presetList.forEach { s ->
+            assertTrue("pageTransitionLabel 为空", s.motion.pageTransitionLabel.isNotBlank())
+            assertTrue("pageTransitionDescription 为空", s.motion.pageTransitionDescription.isNotBlank())
+            // ★ 标题不许与说明写成同一句：设置页里它们是上下两行，
+            //   一样的话用户会看到重复的一行字（v2.1.3「跨功能文案不要复用」的同类要求）。
+            assertTrue(
+                "pageTransitionLabel 与 pageTransitionDescription 撞词了：${s.motion.pageTransitionLabel}",
+                s.motion.pageTransitionLabel != s.motion.pageTransitionDescription,
+            )
+            labels.add(s.motion.pageTransitionLabel)
+        }
+        // 8 种语言必须给出 8 个不同的标题 —— 有两条一样说明有人只改了文件名没改内容。
+        assertEquals("8 种语言的 pageTransitionLabel 应当互不相同", 8, labels.size)
     }
 }
