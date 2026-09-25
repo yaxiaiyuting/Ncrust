@@ -1,0 +1,56 @@
+{
+ "_meta": {
+  "seq": 50,
+  "name": "p8-auth-E",
+  "note": "登录态/切号响应形状：E uin=0 但带 cookie",
+  "module": "music.musicasset.PlaylistBaseRead",
+  "method": "GetPlaylistByUin",
+  "param": {
+   "uin": "<redacted:1>"
+  },
+  "http_status": 200,
+  "elapsed_ms": 368,
+  "req_code": 80030,
+  "subcode": null,
+  "error": null,
+  "identity": {
+   "uin_present": true,
+   "uin_len": 19,
+   "authst_present": true,
+   "cookie": true,
+   "authst_override": false,
+   "uin_override": true
+  },
+  "redaction": "uin/nick/avatar/playlist-name/song-name masked; catalog ids (songid/songmid/dirid) kept"
+ },
+ "raw": {
+  "code": 0,
+  "ts": 1790314484504,
+  "start_ts": 1790314484497,
+  "traceid": "26fdd22dced7e2e0",
+  "req": {
+   "code": 80030,
+   "data": {
+    "total": 0,
+    "v_playlist": [],
+    "v_delTid": [],
+    "bFinish": false
+   }
+  }
+ },
+ "shape": {
+  "code": "int",
+  "ts": "int",
+  "start_ts": "int",
+  "traceid": "str(16)",
+  "req": {
+   "code": "int",
+   "data": {
+    "total": "int",
+    "v_playlist": "[]",
+    "v_delTid": "[]",
+    "bFinish": "bool"
+   }
+  }
+ }
+}

@@ -1,0 +1,64 @@
+{
+ "_meta": {
+  "seq": 12,
+  "name": "p3-fav-rawuin",
+  "note": "对照：uin 传裸 uin（round1 实测 80050）",
+  "module": "music.musicasset.PlaylistFavRead",
+  "method": "CgiGetPlaylistFavInfo",
+  "param": {
+   "uin": "<redacted:19>",
+   "offset": 0,
+   "size": 20
+  },
+  "http_status": 200,
+  "elapsed_ms": 315,
+  "req_code": 80050,
+  "subcode": null,
+  "error": null,
+  "identity": {
+   "uin_present": true,
+   "uin_len": 19,
+   "authst_present": true,
+   "cookie": true,
+   "authst_override": false,
+   "uin_override": false
+  },
+  "redaction": "uin/nick/avatar/playlist-name/song-name masked; catalog ids (songid/songmid/dirid) kept"
+ },
+ "raw": {
+  "code": 0,
+  "ts": 1790314467281,
+  "start_ts": 1790314467273,
+  "traceid": "5dfead883566330d",
+  "req": {
+   "code": 80050,
+   "data": {
+    "number": 0,
+    "hasmore": 0,
+    "v_list": null,
+    "v_failTids": null,
+    "v_delTids": null,
+    "total": 0,
+    "hide": false
+   }
+  }
+ },
+ "shape": {
+  "code": "int",
+  "ts": "int",
+  "start_ts": "int",
+  "traceid": "str(16)",
+  "req": {
+   "code": "int",
+   "data": {
+    "number": "int",
+    "hasmore": "int",
+    "v_list": "null",
+    "v_failTids": "null",
+    "v_delTids": "null",
+    "total": "int",
+    "hide": "bool"
+   }
+  }
+ }
+}

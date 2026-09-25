@@ -1,0 +1,152 @@
+{
+ "_meta": {
+  "seq": 7,
+  "name": "p2-created",
+  "note": "自建歌单列表 [sample 1/2]",
+  "module": "music.musicasset.PlaylistBaseRead",
+  "method": "GetPlaylistByUin",
+  "param": {
+   "uin": "<redacted:19>"
+  },
+  "http_status": 200,
+  "elapsed_ms": 363,
+  "req_code": 0,
+  "subcode": null,
+  "error": null,
+  "identity": {
+   "uin_present": true,
+   "uin_len": 19,
+   "authst_present": true,
+   "cookie": true,
+   "authst_override": false,
+   "uin_override": false
+  },
+  "redaction": "uin/nick/avatar/playlist-name/song-name masked; catalog ids (songid/songmid/dirid) kept"
+ },
+ "raw": {
+  "code": 0,
+  "ts": 1790314393627,
+  "start_ts": 1790314393594,
+  "traceid": "02d346fa091b93b2",
+  "req": {
+   "code": 0,
+   "data": {
+    "total": 2,
+    "v_playlist": [
+     {
+      "dirId": 201,
+      "dirName": "我喜欢",
+      "tid": 6364233546,
+      "opType": 5,
+      "songNum": 1,
+      "createTime": 1790314393,
+      "updateTime": 1618134646,
+      "dirShow": 1,
+      "status": 11,
+      "picUrl": "http://y.gtimg.cn/<4 segs:10,1,3,18>",
+      "bigpicUrl": "http://y.gtimg.cn/<4 segs:10,1,3,18>",
+      "uin": "<redacted:19>",
+      "sortWeight": 0,
+      "strTagIdList": "",
+      "invalid": false,
+      "nick": "<text:0>",
+      "albumPicUrl": "",
+      "desc": "<text:0>",
+      "avatar": "",
+      "identIcon": "",
+      "layerUrl": "",
+      "ext1": "",
+      "ext2": "",
+      "tagNameList": "",
+      "ext": null,
+      "fav_cnt": 0,
+      "play_cnt": 0,
+      "comment_cnt": 0,
+      "avatar_null": ""
+     },
+     {
+      "dirId": 1,
+      "dirName": "新建歌单1",
+      "tid": 8591804616,
+      "opType": 5,
+      "songNum": 22,
+      "createTime": 1660772575,
+      "updateTime": 1660772594,
+      "dirShow": 1,
+      "status": 11,
+      "picUrl": "http://y.gtimg.cn/<3 segs:5,9,38>",
+      "bigpicUrl": "http://y.gtimg.cn/<3 segs:5,9,38>",
+      "uin": "<redacted:19>",
+      "sortWeight": 10001,
+      "strTagIdList": "",
+      "invalid": false,
+      "nick": "<text:0>",
+      "albumPicUrl": "",
+      "desc": "<text:0>",
+      "avatar": "",
+      "identIcon": "",
+      "layerUrl": "",
+      "ext1": "",
+      "ext2": "",
+      "tagNameList": "",
+      "ext": null,
+      "fav_cnt": 0,
+      "play_cnt": 0,
+      "comment_cnt": 0,
+      "avatar_null": ""
+     }
+    ],
+    "v_delTid": [],
+    "bFinish": true
+   }
+  }
+ },
+ "shape": {
+  "code": "int",
+  "ts": "int",
+  "start_ts": "int",
+  "traceid": "str(16)",
+  "req": {
+   "code": "int",
+   "data": {
+    "total": "int",
+    "v_playlist": [
+     {
+      "dirId": "int",
+      "dirName": "str(3)",
+      "tid": "int",
+      "opType": "int",
+      "songNum": "int",
+      "createTime": "int",
+      "updateTime": "int",
+      "dirShow": "int",
+      "status": "int",
+      "picUrl": "str(53)",
+      "bigpicUrl": "str(53)",
+      "uin": "str(19)",
+      "sortWeight": "int",
+      "strTagIdList": "str(0)",
+      "invalid": "bool",
+      "nick": "str(0)",
+      "albumPicUrl": "str(0)",
+      "desc": "str(0)",
+      "avatar": "str(0)",
+      "identIcon": "str(0)",
+      "layerUrl": "str(0)",
+      "ext1": "str(0)",
+      "ext2": "str(0)",
+      "tagNameList": "str(0)",
+      "ext": "null",
+      "fav_cnt": "int",
+      "play_cnt": "int",
+      "comment_cnt": "int",
+      "avatar_null": "str(0)"
+     },
+     "len=2"
+    ],
+    "v_delTid": "[]",
+    "bFinish": "bool"
+   }
+  }
+ }
+}

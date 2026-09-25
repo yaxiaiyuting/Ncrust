@@ -1,0 +1,167 @@
+==============================================================================
+Ncrust v2.2.0 探针 · QQ 音乐用户歌单（只读）
+时间: 2026-09-25 13:34:22
+设备: {"serial": "3B15CD00GB700000", "model": "PLC110", "release": "16", "sdk": "36", "abi": "arm64-v8a"}
+输出: /home/duanjb666/deepseek/ncrust-gpl/Ncrust/docs/verification/v2.2.0/qq-playlist-probe
+==============================================================================
+cookie 字段: psrf_musickey_createtime,qm_keyst,qqmusic_key,qqmusic_uin,uin（值不打印）
+uin 长度=19  票据长度=163（都不打印值）
+
+==============================================================================
+P0 · 登录态自证（GetLoginUserInfo）
+==============================================================================
+  req.code=0  http=200  423ms
+  req.code=0  http=200  408ms
+
+==============================================================================
+P1 · 用户信息
+==============================================================================
+  顶层字段：aiLogoPortal,banner,celebrityInfo,dynamicLogoPortal,errMsg,identify,identifyHintMsg,identifyHintURL,info,pendantInfo
+  data.info 字段（32）：alterTs,area,bgPic,birthday,birthdayEx,city,country,detailLoc,dynamicLogoId,email,extra,gender,hasUnuditLogo,identify,ifpicurl,intro,isAiLogo,logo,logos,metaData,nick,notAlterable,phone,province,registerDate,registerIP,relSingerIDs,retCode,school,singerID,status,types
+    nick           <str len=6>
+    logo           <str len=154>
+    logos          None
+    bgPic          ''
+    ifpicurl       ''
+    identify       0
+    registerDate   0
+  ⇒ 昵称 = data.info.nick；头像 = data.info.logo；**uin 不在此接口，来自 cookie**
+  vip_login_base.identity 字段（90）：AILMEffectEndTs,AILMEffectLeft,AILMEffectRt,AILMEffectUsed,AdActiveFlag,AdSigned,AdVipFlag,CPLoverEnd,CPLoverFlag,CPLoverStart,ChildVip,CustomEffectEndTs,CustomEffectLeft,CustomEffectRt,CustomEffectUsed,DayCard,DbySoundLeft,DbySoundRt,DbySoundUsed,DtsSoundEndTs,DtsSoundLeft,DtsSoundRt,DtsSoundUsed,E
+    identity.vip              = 1
+    identity.yearflag         = 0
+    identity.HugeVip          = 0
+    identity.HugeYearFlag     = 0
+    identity.overdate         = '2026-10-02 03:03:34'
+    identity.MstSndLeft       = 0
+    identity.DbySoundLeft     = 0
+
+==============================================================================
+P2 · 用户歌单列表（PlaylistBaseRead.GetPlaylistByUin）
+==============================================================================
+  req.code=0  v_playlist=2  total=2  bFinish=True  v_delTid=[]
+  单条字段（29）：albumPicUrl,avatar,avatar_null,bigpicUrl,comment_cnt,createTime,desc,dirId,dirName,dirShow,ext,ext1,ext2,fav_cnt,identIcon,invalid,layerUrl,nick,opType,picUrl,play_cnt,songNum,sortWeight,status,strTagIdList,tagNameList,tid,uin,updateTime
+  dirId    tid            songNum  createTime   updateTime   opType dirShow
+  201      6364233546     1        1790314465   1618134646   5      1      
+  1        8591804616     22       1660772575   1660772594   5      1      
+  ⇒ **dirId 是本账号内的目录号（201 恒为「我喜欢」），tid 是全局歌单 id**
+
+==============================================================================
+P3 · 收藏歌单列表（PlaylistFavRead.CgiGetPlaylistFavInfo）
+==============================================================================
+  从 dirinfo.encrypt_uin 取到加密账号：len=28
+  req.code=0  v_list=0  total=0  hasmore=0  hide=False  v_delTids=[] v_failTids=[]
+  对照 · uin 传裸 uin：req.code=80050  ⇒ 必须用 encrypt_uin
+
+==============================================================================
+P4 · 歌单详情与分页（srfDissInfo.DissInfo.CgiGetDiss）
+==============================================================================
+  目标自建歌单：dirId=1 tid=8591804616 songNum=22（名字已脱敏）
+
+  -- 寻址方式 A/B：dirid 寻址 vs disstid(tid) 寻址 --
+  dirid 寻址(disstid=0)        code=0      songlist=5   total=22    dirinfo.id=8591804616     dirinfo.dirid=1
+  disstid 寻址(dirid=1)        code=0      songlist=5   total=22    dirinfo.id=8591804616     dirinfo.dirid=1
+
+  req.code=0  songlist_size=10  total_song_num=22  hasmore=1
+  dirinfo 关键字段：id=8591804616 dirid=1 songnum=22 encrypt_uin(len)=28 host_uin(len)=19
+
+  #### 歌曲身份字段（探针重点 2.2）####
+  song 对象字段（42）：action,album,bf,bpm,data_type,es,file,fnote,genre,id,index_album,index_cd,interval,isonly,ksong,ktag,label,language,mid,mv,name,new_icon,ov,pay,pingpong,sa,singer,songtype,status,subtitle,team,tid,time_public,title,trace,type,url,version,vf,vi,volume,vs
+  id         mid(=songMid)      file.media_mid     type     songtype
+  263167477  002n3u4D2u8DLn     002n3u4D2u8DLn     1        13      
+  102792543  0036avMK009ptj     002OVQbr00xbs6     1        13      
+  109200888  000WSotS3LnGHf     0022g3hT3Oa0Nh     1        13      
+  102793018  002gzBYN1Bvidu     000q72xu3gNJcz     1        13      
+  257214928  002ERy7k3ouIq1     002ERy7k3ouIq1     1        13      
+  317199253  003Ug3lO02lFZN     003Ug3lO02lFZN     1        13      
+  231626112  003PzRim0oA5mf     0013gdd73ook5y     1        13      
+  263212244  002FBa2X4Yda23     002FBa2X4Yda23     1        13      
+  127713528  000NSB7M2txqKN     000qFMoW3FdXxB     1        13      
+  4829638    0020stYG1RLye8     00255E8Q0w5m3l     1        13      
+  ⇒ 本页 10 首中 **mid != file.media_mid 的有 6 首**
+  ⇒ 顶层**没有** media_mid / strMediaMid；媒体 mid 只在 file.media_mid
+  ⇒ vs 高档位表存在：True（len=39）
+
+  -- 与播放身份的映射（vkey 需要 songmid+songtype，filename 需要 media_mid）--
+    songId=263167477  songmid=002n3u4D2u8DLn     mediaMid=002n3u4D2u8DLn     => filename 候选 002n3u4D2u8DLn.mp3
+    songId=102792543  songmid=0036avMK009ptj     mediaMid=002OVQbr00xbs6     => filename 候选 002OVQbr00xbs6.mp3
+    songId=109200888  songmid=000WSotS3LnGHf     mediaMid=0022g3hT3Oa0Nh     => filename 候选 0022g3hT3Oa0Nh.mp3
+    songId=102793018  songmid=002gzBYN1Bvidu     mediaMid=000q72xu3gNJcz     => filename 候选 000q72xu3gNJcz.mp3
+    songId=257214928  songmid=002ERy7k3ouIq1     mediaMid=002ERy7k3ouIq1     => filename 候选 002ERy7k3ouIq1.mp3
+
+  -- 分页边界（total=22）--
+  第2页(begin=10,num=10)         code=0      返回 10   首  hasmore=1   total=22
+  大页(num=500)                  code=0      返回 22   首  hasmore=0   total=22
+  num=1000                     code=0      返回 22   首  hasmore=0   total=22
+  越界(begin=total+100)          code=0      返回 0    首  hasmore=0   total=22
+  末页(begin=total-5,num=10)     code=0      返回 5    首  hasmore=0   total=22
+
+==============================================================================
+P5 · 特殊 dirId 语义（「我喜欢」是否独立 dirId）
+==============================================================================
+  账号自己的 dirId 集合：[1, 201]
+  dirid=201   code=0       songlist=1   total=1     dirinfo.id=6364233546     名字长度=3
+  dirid=1     code=0       songlist=3   total=22    dirinfo.id=8591804616     名字长度=5
+  dirid=2     code=10004   songlist=0   total=0     dirinfo.id=0              名字长度=0
+  dirid=3     code=10004   songlist=0   total=0     dirinfo.id=0              名字长度=0
+  dirid=5     code=10004   songlist=0   total=0     dirinfo.id=0              名字长度=0
+  dirid=6     code=10004   songlist=0   total=0     dirinfo.id=0              名字长度=0
+  dirid=7     code=10004   songlist=0   total=0     dirinfo.id=0              名字长度=0
+  dirid=8     code=10004   songlist=0   total=0     dirinfo.id=0              名字长度=0
+  dirid=202   code=0       songlist=3   total=30    dirinfo.id=6878446074     名字长度=6
+  dirid=200   code=10004   songlist=0   total=0     dirinfo.id=0              名字长度=0
+  ⇒ code=0 的 dirId 才是「本账号存在该目录」；201 = 我喜欢（独立 dirId，已证实）
+
+==============================================================================
+P6 · 最近播放接口存在性（40000=方法不存在 / 500003=module 不存在）
+==============================================================================
+  music.musicasset.PlayHistoryRead           GetPlayHistory       code=500003   module 不存在
+  music.musicasset.PlayHistoryRead           CgiGetPlayHistory    code=500003   module 不存在
+  music.playhistory.PlayHistory              GetPlayHistory       code=500003   module 不存在
+  music.UserInfo.PlayHistory                 GetPlayHistory       code=500003   module 不存在
+  music.musicasset.PlayHistoryWrite          GetPlayHistory       code=500003   module 不存在
+  music.recommend.PlayHistorySrv             GetPlayHistory       code=500003   module 不存在
+  music.musicasset.PlayHistoryRead           GetHistory           code=500003   module 不存在
+  music.homepage.PlayHistory                 GetPlayHistory       code=500003   module 不存在
+  music.musicasset.PlayHistoryRead           GetPlayHistoryList   code=500003   module 不存在
+  music.musicasset.PlayHistorySrv            GetPlayHistory       code=500003   module 不存在
+  music.srfDissInfo.DissInfo                 CgiGetPlayHistory    code=40000    方法不存在
+  music.musicasset.RecentPlayRead            GetRecentPlay        code=500003   module 不存在
+  music.musicasset.PlayHistoryRead           GetRecentPlay        code=500003   module 不存在
+  music.recent.RecentPlay                    GetRecentPlay        code=500003   module 不存在
+  music.musicasset.PlayHistoryRead           GetSongHistory       code=500003   module 不存在
+  ⇒ 实测结论：**本批候选中没有任何一个可用的最近播放接口**
+
+==============================================================================
+P7 · 歌单增删改接口（**本脚本不调用任何写接口**，仅按参考实现登记）
+==============================================================================
+  创建歌单           music.musicasset.PlaylistBaseWrite         AddPlaylist        [未调用 · 只读纪律]
+  删除歌单           music.musicasset.PlaylistBaseWrite         DelPlaylist        [未调用 · 只读纪律]
+  歌单加歌           music.musicasset.PlaylistDetailWrite       AddSonglist        [未调用 · 只读纪律]
+  歌单删歌           music.musicasset.PlaylistDetailWrite       DelSonglist        [未调用 · 只读纪律]
+  收藏歌单           music.musicasset.PlaylistFavWrite          FavPlaylist        [未调用 · 只读纪律]
+  取消收藏歌单         music.musicasset.PlaylistFavWrite          CancelFavPlaylist  [未调用 · 只读纪律]
+  依据：_qqmusic_ref/QQMusicApi/qqmusic_api/modules/songlist.py 与 user.py
+
+==============================================================================
+P8 · 登录态过期与账号切换的响应（A/B 对照）
+==============================================================================
+  A 完整登录态（基线）                        req.code=0        v_playlist=2
+  B 票据损坏                             req.code=0        v_playlist=2
+  C 票据清空                             req.code=0        v_playlist=2
+  D uin 与 cookie 不一致                 req.code=0        v_playlist=2
+  E uin=0 但带 cookie                  req.code=80030    v_playlist=0
+  F 完全匿名（无 cookie，uin=0）             req.code=80030    v_playlist=0
+  G **真·票据失效**（真 uin，无 cookie）       req.code=0        v_playlist=2
+  H 详情接口·未登录                         req.code=10004    （详情接口的未登录码）
+  ⇒ 读接口的「登录态失效」判据见 PROBE.md（80030 家族）
+
+==============================================================================
+P9 · 大歌单分页（500+）—— 本账号没有 500+ 歌单，用公开榜单做替身
+==============================================================================
+  GetAll req.code=0 顶层字段=abt,group,location,refreshInterval
+  !! 榜单接口没有返回可识别的列表，如实记录（不编造 500+ 结论）
+
+==============================================================================
+共 54 次请求；台账 -> calls-20260925-133422.json
+req.code==0 的请求: 28
+==============================================================================

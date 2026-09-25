@@ -1,0 +1,61 @@
+==============================================================================
+Ncrust v2.2.0 探针 · 第 4 轮（收口）  2026-09-25 13:36:17
+==============================================================================
+uin 长度=19 票据长度=163
+登录态基线 code=0
+
+==============================================================================
+S1 · GetPlaylistByUin 的 uin 语义（只用非法 uin 白名单）
+==============================================================================
+  白名单: ['1', '0', '99999999999999999999', '-1']（都不可能映射到真实账号）
+  uin=1                      无 cookie -> code=80030    v_playlist=0
+  uin=0                      无 cookie -> code=80030    v_playlist=0
+  uin=99999999999999999999   无 cookie -> code=80030    v_playlist=0
+  uin=-1                     无 cookie -> code=80030    v_playlist=0
+  uin=99999999999999999999   有 cookie -> code=80030    v_playlist=0
+  ⇒ 判读：非法 uin + 无 cookie 若返回 0 条，则 uin 是查询主体；
+          若仍返回 N 条，则服务端忽略了 param.uin、用的是别的身份。
+
+==============================================================================
+S2 · 500+ 大歌单分页（榜单当作大歌单替身）
+==============================================================================
+  GetAll code=0 groups=5 toplists=46
+  条目字段(56)：AdShareContent,abt,adID,adJumpUrl,bannerText,cityId,cityName,cornerMark,frontPicUrl,groupType,h5JumpUrl,headPicUrl,history,icon,intro,listenNum,logoImgURL,logoImgURL2,logoImgURLHm,magicColor,mbFrontLogoUrl,mbFrontLogoUrl2,mbFrontPicUrl,mbHeadLogoUrl,mbHeadPicUrl,mbIntroWebUrl,mbLogoUrl,musichallPicUrl,musichallSubtitle,musichallTitle,pcSubTopIds,pcSubTopTitles,period,provId,recType,rt,sinceCV,song,specialScheme,subTopIds,title,titleDetail,titleShare,titleSub,tjreport,topAlbumURL,topId,topType,toplistCardStyle,toplistNamePicUrl,totalNum,updateTime,updateTips,updateType,url_key,url_params
+    topId=135    totalNum=300    listenNum=424740     名字长度=5
+    topId=26     totalNum=300    listenNum=19400000   名字长度=3
+    topId=133    totalNum=300    listenNum=1756380    名字长度=5
+    topId=607    totalNum=299    listenNum=158415     名字长度=5
+    topId=503    totalNum=200    listenNum=243093     名字长度=6
+    topId=73     totalNum=110    listenNum=442496     名字长度=5
+  选中 topId=135 totalNum=300
+  -- 用 CgiGetDiss 分页读这个 topId（与自建歌单同接口同形状）--
+  begin=0     num=100   code=0     返回 0    首  total=0      hasmore=0
+  begin=100   num=100   code=0     返回 0    首  total=0      hasmore=0
+  begin=0     num=500   code=0     返回 0    首  total=0      hasmore=0
+  begin=0     num=1000  code=0     返回 0    首  total=0      hasmore=0
+  begin=0    -> 0 首（到头）累计 0
+  ⇒ 逐页累计 **0 首**，重叠页 0
+
+==============================================================================
+S3 · dirId 200..215 特殊目录表
+==============================================================================
+  dirId  code     dirtype   disstype  dirinfo.id     songnum owndir   
+  200    10004    1         0         0              0       1        
+  201    0        1         0         6364233546     1       1        
+  202    0        1         2         6878446074     30      1        
+  203    0        1         2         6462177000     30      1        
+  204    10004    1         0         0              0       1        
+  205    10004    1         0         0              0       1        
+  206    10004    1         0         0              0       1        
+  207    10004    1         0         0              0       1        
+  208    10004    1         0         0              0       1        
+  209    10004    1         0         0              0       1        
+  210    10004    1         0         0              0       1        
+  211    10004    1         0         0              0       1        
+  212    10004    1         0         0              0       1        
+  213    10004    1         0         0              0       1        
+  214    10004    1         0         0              0       1        
+  215    10004    1         0         0              0       1        
+  ⇒ 只有 code=0 的才算「该目录存在」；disstype=2 与自建(dirtype=1,disstype=0)不同类
+
+共 28 次请求；台账 calls-r4-20260925-133617.json

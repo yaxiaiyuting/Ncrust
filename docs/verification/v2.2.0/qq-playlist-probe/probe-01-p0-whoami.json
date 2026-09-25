@@ -1,0 +1,262 @@
+{
+ "_meta": {
+  "seq": 1,
+  "name": "p0-whoami",
+  "note": "登录态基线：code=0 说明这份 cookie 服务端认 [sample 1/2]",
+  "module": "music.UserInfo.userInfoServer",
+  "method": "GetLoginUserInfo",
+  "param": {},
+  "http_status": 200,
+  "elapsed_ms": 423,
+  "req_code": 0,
+  "subcode": null,
+  "error": null,
+  "identity": {
+   "uin_present": true,
+   "uin_len": 19,
+   "authst_present": true,
+   "cookie": true,
+   "authst_override": false,
+   "uin_override": false
+  },
+  "redaction": "uin/nick/avatar/playlist-name/song-name masked; catalog ids (songid/songmid/dirid) kept"
+ },
+ "raw": {
+  "code": 0,
+  "ts": 1790314463080,
+  "start_ts": 1790314463013,
+  "traceid": "5d5d27a9a90ed394",
+  "req": {
+   "code": 0,
+   "data": {
+    "errMsg": "OK",
+    "identify": 0,
+    "identifyHintURL": "",
+    "identifyHintMsg": "",
+    "info": {
+     "nick": "<text:6>",
+     "logo": "https://thirdwx.qlogo.cn/<4 segs:6,5,112,3>",
+     "hasUnuditLogo": 0,
+     "gender": 0,
+     "birthday": 0,
+     "country": "",
+     "province": "",
+     "city": "",
+     "area": "",
+     "detailLoc": "",
+     "phone": "",
+     "email": "",
+     "school": "",
+     "intro": "",
+     "alterTs": 0,
+     "registerIP": "",
+     "registerDate": 0,
+     "metaData": "",
+     "status": null,
+     "retCode": 0,
+     "singerID": 0,
+     "identify": 0,
+     "types": null,
+     "ifpicurl": "",
+     "extra": "",
+     "relSingerIDs": null,
+     "logos": null,
+     "birthdayEx": {
+      "date": 0,
+      "from": 0,
+      "update": 0,
+      "count": 0,
+      "intervalSec": 0,
+      "hint": "",
+      "canAlter": 0
+     },
+     "isAiLogo": false,
+     "dynamicLogoId": 0,
+     "notAlterable": 0,
+     "bgPic": ""
+    },
+    "celebrityInfo": {
+     "uin": "<redacted:1>",
+     "name": "<text:0>",
+     "pic": "",
+     "vec_identify": null,
+     "vec_type": null,
+     "desc": "<text:0>",
+     "phonenum": "",
+     "extra": "",
+     "status": 0,
+     "singerid": 0,
+     "ifpicurl": "",
+     "write_article": "",
+     "create_radio": "",
+     "radio_broadcast": "",
+     "video_broadcast": "",
+     "top_comment": "",
+     "video_check_later": "",
+     "vec_rel_singer_id": null,
+     "retCode": 0,
+     "pendantInfo": {
+      "staticImg": "",
+      "dynamicImg": "",
+      "status": 0,
+      "id": 0
+     },
+     "gender": 0,
+     "logos": null,
+     "birthday": {
+      "date": 0,
+      "from": 0,
+      "update": 0,
+      "count": 0,
+      "intervalSec": 0,
+      "hint": "",
+      "canAlter": 0
+     }
+    },
+    "pendantInfo": {
+     "staticImg": "",
+     "dynamicImg": "",
+     "status": 0,
+     "id": 0
+    },
+    "aiLogoPortal": {
+     "isShow": true,
+     "icon": "https://music-file6.y.qq.com/ocs/903a1e_ztDy0xsv/7tflta5dc5c.png",
+     "text": "设置魔法百变头像",
+     "link": "https://static.weiban.qq.com/tmegames/qimiaoCamera/index.html?from=QQMusic"
+    },
+    "banner": {
+     "isShow": true,
+     "picOfBanner": "https://music-file6.y.qq.com/ocs/9039f9_fETQbsxe/h0rx4u5x4nl.png",
+     "link": "https://static.weiban.qq.com/tmegames/qimiaoCamera/index.html?from=QQMusic"
+    },
+    "dynamicLogoPortal": {
+     "isShow": true,
+     "icon": "https://y.qq.com/music/common/upload/ocs/497899db46b3a5d3e05e62011b5296a9.gif",
+     "text": "使用动态头像",
+     "link": "https://i2.y.qq.com/n3/cm/pages/vip/themev2/home/index.html?_miniplayer=1&_hidehd=1&type=dynamicavatar&cate=20000&sonic_remain_params=type&ADTAG=grzytx",
+     "asText": "使用动态头像"
+    }
+   }
+  }
+ },
+ "shape": {
+  "code": "int",
+  "ts": "int",
+  "start_ts": "int",
+  "traceid": "str(16)",
+  "req": {
+   "code": "int",
+   "data": {
+    "errMsg": "str(2)",
+    "identify": "int",
+    "identifyHintURL": "str(0)",
+    "identifyHintMsg": "str(0)",
+    "info": {
+     "nick": "str(6)",
+     "logo": "str(154)",
+     "hasUnuditLogo": "int",
+     "gender": "int",
+     "birthday": "int",
+     "country": "str(0)",
+     "province": "str(0)",
+     "city": "str(0)",
+     "area": "str(0)",
+     "detailLoc": "str(0)",
+     "phone": "str(0)",
+     "email": "str(0)",
+     "school": "str(0)",
+     "intro": "str(0)",
+     "alterTs": "int",
+     "registerIP": "str(0)",
+     "registerDate": "int",
+     "metaData": "str(0)",
+     "status": "null",
+     "retCode": "int",
+     "singerID": "int",
+     "identify": "int",
+     "types": "null",
+     "ifpicurl": "str(0)",
+     "extra": "str(0)",
+     "relSingerIDs": "null",
+     "logos": "null",
+     "birthdayEx": {
+      "date": "int",
+      "from": "int",
+      "update": "int",
+      "count": "int",
+      "intervalSec": "int",
+      "hint": "str(0)",
+      "canAlter": "int"
+     },
+     "isAiLogo": "bool",
+     "dynamicLogoId": "int",
+     "notAlterable": "int",
+     "bgPic": "str(0)"
+    },
+    "celebrityInfo": {
+     "uin": "int",
+     "name": "str(0)",
+     "pic": "str(0)",
+     "vec_identify": "null",
+     "vec_type": "null",
+     "desc": "str(0)",
+     "phonenum": "str(0)",
+     "extra": "str(0)",
+     "status": "int",
+     "singerid": "int",
+     "ifpicurl": "str(0)",
+     "write_article": "str(0)",
+     "create_radio": "str(0)",
+     "radio_broadcast": "str(0)",
+     "video_broadcast": "str(0)",
+     "top_comment": "str(0)",
+     "video_check_later": "str(0)",
+     "vec_rel_singer_id": "null",
+     "retCode": "int",
+     "pendantInfo": {
+      "staticImg": "str(0)",
+      "dynamicImg": "str(0)",
+      "status": "int",
+      "id": "int"
+     },
+     "gender": "int",
+     "logos": "null",
+     "birthday": {
+      "date": "int",
+      "from": "int",
+      "update": "int",
+      "count": "int",
+      "intervalSec": "int",
+      "hint": "str(0)",
+      "canAlter": "int"
+     }
+    },
+    "pendantInfo": {
+     "staticImg": "str(0)",
+     "dynamicImg": "str(0)",
+     "status": "int",
+     "id": "int"
+    },
+    "aiLogoPortal": {
+     "isShow": "bool",
+     "icon": "str(64)",
+     "text": "str(8)",
+     "link": "str(74)"
+    },
+    "banner": {
+     "isShow": "bool",
+     "picOfBanner": "str(64)",
+     "link": "str(74)"
+    },
+    "dynamicLogoPortal": {
+     "isShow": "bool",
+     "icon": "str(77)",
+     "text": "str(6)",
+     "link": "str(151)",
+     "asText": "str(6)"
+    }
+   }
+  }
+ }
+}
