@@ -1,0 +1,12 @@
+  Ncrust-v2.3.0-gpl-release.apk	39
+  Ncrust-v2.4.0-gpl-debug.apk	40
+  Ncrust-v2.4.0-gpl-release.apk	40
+  Ncrust-v2.5.0-gpl-debug.apk	41
+  Ncrust-v2.5.0-gpl-release.apk	41
+  Ncrust-v2.5.1-gpl-debug.apk	42
+  Ncrust-v2.5.1-gpl-release.apk	42
+
+==========================================
+  MAX versionCode (所有来源) = 42   [Ncrust-v2.5.1-gpl-debug.apk]
+  下一个可用 versionCode     = 43
+==========================================
