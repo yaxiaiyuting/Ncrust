@@ -100,8 +100,12 @@ android {
         // 决定性的华为白名单证据（third_app_filter.xml 是硬编码包名表）见
         // docs/verification/v2.1.6/。versionCode 出处：tools/next-version.sh 三源交叉
         // 验证最大值为 35（dist/Ncrust-v2.1.5-gpl-*.apk）⇒ 本版 36。
-        versionCode = 36
-        versionName = "2.1.6-gpl"
+        // ⚠️ v2.2.1 起这里**只保留一处赋值**：v2.2.0 时同时留着 2.1.6 与 2.2.0 两段
+        // `versionCode = …`（后写者生效 = 37），但 `tools/next-version.sh` 按行取值，
+        // 于是它把「仓库当前」读成 36，与 APK badging 的 37 自相矛盾 —— 三源交叉校验
+        // 的价值就在于三源互证，其中一源被自己的写法读错等于白做。历史值留在注释里。
+        //   v2.1.6 ⇒ versionCode 36 / versionName "2.1.6-gpl"（历史，勿再写回）
+        //
         // v2.2.0：QQ 音乐用户歌单/信息**只读**同步（探针先行）。
         // 新增：QQ 歌单列表 + 详情（分页）+「我喜欢」（dirId=201）+ 收藏歌单；
         // 本地缓存按 source+ownerId+playlistId 隔离并带 schema 迁移；离线可看、手动刷新；
@@ -123,8 +127,20 @@ android {
         //
         // 版本线选择依据（为何独立 v2.2.0、不并入 v2.1.6）见
         // docs/verification/v2.2.0/VERSION-DECISION.md。
-        versionCode = 37
-        versionName = "2.2.0-gpl"
+        // v2.2.1：P0 级联故障修复（QQ 音源循环切音质 / 自动切歌 / 音频焦点抢占）。
+        // 根因 = 可视化 tee 把输出声明成单声道，而 QQ「臻品音质」档回的是 6 声道 FLAC，
+        // media3 没有 6→1 的混音系数 ⇒ UnsupportedOperationException ⇒ AudioSink 不可恢复
+        // ⇒ 之后每一档都失败 ⇒ 无上限降档 + 无熔断跳歌把故障放大成整条队列。
+        // 探针、根因链、版本回溯与真机 A/B 见 docs/verification/v2.2.1/p0-quality-loop/。
+        //
+        // versionCode 出处：`tools/next-version.sh`（**带 fetch**）三源交叉验证
+        //   ① 最近 5 个 tag 指向的 build.gradle 最大值 = 36
+        //      （脚本按行取第一处赋值；v2.2.0 的 tag 里有 36/37 两处，下一行 ② 补上）
+        //   ② dist/*.apk 的 aapt2 dump badging 最大值 = **37**（Ncrust-v2.2.0-gpl-release.apk）
+        //   ③ 工作区 build.gradle（本版已收敛成单处赋值）= 37
+        //   ⇒ max = 37 ⇒ 本版 **38**（取 max+1 是硬纪律：撞号会导致无法覆盖安装）。
+        versionCode = 38
+        versionName = "2.2.1-gpl"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
