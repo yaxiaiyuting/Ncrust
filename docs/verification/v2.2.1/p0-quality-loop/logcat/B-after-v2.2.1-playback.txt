@@ -1,0 +1,25 @@
+09-25 15:13:15.873  8176  8176 I NcrustTrack: restore -> track=qqmusic:4611686018427589359 mid=none media=none (sourceKey=inferred)
+09-25 15:13:57.762  8176  8176 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 15:13:58.330  8176 11411 W QqApi   : no playable url for qqmusic:4611686018690555381 at level=dolby
+09-25 15:13:58.346  8176 11412 W QqApi   : no playable url for qqmusic:4611686018727083242 at level=dolby
+09-25 15:13:58.346  8176 11412 I PlayerViewModel: offline cache hit songId=4611686018727083242 key=song:4611686018727083242:dolby
+09-25 15:13:58.347  8176  8176 I PlayerViewModel: quality verdict requested=dolby granted=dolby br=0 type= songMax=null -> displayIdx=7 status=NORMAL
+09-25 15:13:58.424  8176  8176 D PlaybackService: Playing: https://ws.stream.qqmusic.qq.com/Q001001GZ6wJ0gJaEG.flac?guid=6253254210&vkey=EBB669C17C779D7B0238DB0309409B84C17D5B8AB58BA75838AB3F54B9F9E38B58968331BAB62A91E5B249676FBD2D135AD4ABF8C9D9601B__v2b9aacd2&uin=1152921504891728649&redirect=1&ncrustkey=song:4611686018727083242:dolby startPositionMs=25055
+09-25 15:14:02.878  8176  8176 I PlayerViewModel: quality verdict requested=dolby granted=dolby br=0 type= songMax=null -> displayIdx=7 status=NORMAL
+09-25 15:14:02.878  8176  8176 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 15:14:03.075  8176 11411 W QqApi   : no playable url for qqmusic:4611686018727083242 at level=jyeffect
+09-25 15:14:03.076  8176 11411 I PlayerViewModel: offline cache hit songId=4611686018727083242 key=song:4611686018727083242:jyeffect
+09-25 15:14:03.087  8176  8176 I PlayerViewModel: quality verdict requested=jyeffect granted=jyeffect br=0 type= songMax=null -> displayIdx=5 status=NORMAL
+09-25 15:14:03.102  8176  8176 D PlaybackService: Playing: https://ws.stream.qqmusic.qq.com/Q000001GZ6wJ0gJaEG.flac?guid=6253254210&vkey=4DF2A1519D8143D8A6CC4C8057FA613C6CA11004758D8D9A9FCEBC2492700B797F75CA8C6E4122FA2DE615C15951A4CF2534C66BE05A3203__v2b9ab1c2&uin=1152921504891728649&redirect=1&ncrustkey=song:4611686018727083242:jyeffect startPositionMs=25055
+09-25 15:14:04.071  8176  8176 I PlayerViewModel: quality verdict requested=jyeffect granted=jyeffect br=0 type= songMax=null -> displayIdx=5 status=NORMAL
+09-25 15:14:04.071  8176  8176 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 15:14:04.247  8176 11387 W QqApi   : no playable url for qqmusic:4611686018727083242 at level=jymaster
+09-25 15:14:04.248  8176 11387 I PlayerViewModel: offline cache hit songId=4611686018727083242 key=song:4611686018727083242:hires
+09-25 15:14:04.259  8176  8176 I PlayerViewModel: quality verdict requested=jymaster granted=hires br=0 type= songMax=null -> displayIdx=4 status=DOWNGRADED
+09-25 15:14:04.274  8176  8176 D PlaybackService: Playing: https://ws.stream.qqmusic.qq.com/RS01000zwUDf0KftQv.flac?guid=6253254210&vkey=D79ECB7CBC3AA390D9535D04321B8AF36FC00442BE6676F1DCFDCDDE2E10361EFE33B096496860D14F195744FEF43AD765C1B827122EA564__v21e2a1605&uin=1152921504891728649&redirect=1&ncrustkey=song:4611686018727083242:hires startPositionMs=25055
+09-25 15:14:05.557  8176  8176 I PlayerViewModel: quality verdict requested=jymaster granted=hires br=0 type= songMax=null -> displayIdx=4 status=DOWNGRADED
+09-25 15:14:05.557  8176  8176 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 15:14:05.726  8176 11387 W QqApi   : no playable url for qqmusic:4611686018727083242 at level=dolby
+09-25 15:14:05.727  8176 11387 I PlayerViewModel: offline cache hit songId=4611686018727083242 key=song:4611686018727083242:dolby
+09-25 15:14:05.737  8176  8176 I PlayerViewModel: quality verdict requested=dolby granted=dolby br=0 type= songMax=null -> displayIdx=7 status=NORMAL
+09-25 15:14:05.752  8176  8176 D PlaybackService: Playing: https://ws.stream.qqmusic.qq.com/Q001001GZ6wJ0gJaEG.flac?guid=6253254210&vkey=EBB669C17C779D7B0238DB0309409B84C17D5B8AB58BA75838AB3F54B9F9E38B58968331BAB62A91E5B249676FBD2D135AD4ABF8C9D9601B__v2b9aacd2&uin=1152921504891728649&redirect=1&ncrustkey=song:4611686018727083242:dolby startPositionMs=25055
