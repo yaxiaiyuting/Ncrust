@@ -75,6 +75,7 @@ import com.takahashirinta.ncrust.network.SongItem
 import com.takahashirinta.ncrust.network.model.AlbumItem
 import com.takahashirinta.ncrust.network.model.ArtistItem
 import com.takahashirinta.ncrust.reco.ArtistReco
+import com.takahashirinta.ncrust.player.PlayOrigin
 import com.takahashirinta.ncrust.player.PlaybackStateManager
 import com.takahashirinta.ncrust.player.ShuffleRound
 import com.takahashirinta.ncrust.power.BackgroundActivity
@@ -969,6 +970,20 @@ fun MainScreen(
             if (playMode == QueueModes.SHUFFLE) {
                 generateShuffledIndices()
             }
+            // v2.2.1 · P0：把**队列里那一份**身份补给正在播的这首。
+            //
+            // 落盘的单曲状态只有 id + 音源（`getState()` 的既定契约），而 QQ 取链
+            // 必须要 songmid / media_mid —— 它们只存在于队列的 SongItem 里。
+            // 少这一步的实测表现：冷启动后 `SourceRouter: unresolvable song
+            // source=qqmusic id=… (missing sourceId)`，QQ 曲目只能吃离线缓存里
+            // **另一个档位**的旧 URL（选了母带播出来是无损），并可能引发循环重试。
+            playbackQueue.getOrNull(currentQueueIndex)?.let { current ->
+                if (current.id == playerViewModel.currentSongId.value) {
+                    playerViewModel.adoptTrackIdentity(
+                        current.source, current.id, current.sourceId, current.mediaId,
+                    )
+                }
+            }
         }
     }
 
@@ -1006,7 +1021,15 @@ fun MainScreen(
         PlaybackStateManager.saveQueue(context, playbackQueue, currentQueueIndex)
     }
 
-    fun playFromQueue(index: Int) {
+    /**
+     * @param origin v2.2.1 · P0：这次开播是不是**用户手点**的。
+     *
+     * 自动接续（`playNext()` / `onUnplayableCallback` / `songEnded`）必须传
+     * [PlayOrigin.AUTO_NEXT]，否则播放器侧的「连续自动跳歌」计数会被每条路径上的
+     * `playSong(origin=USER)` 冲掉，熔断永远不生效 —— 而这正是用户报的
+     * 「不关应用就一直切」。默认 USER 保证既有调用点零改动。
+     */
+    fun playFromQueue(index: Int, origin: PlayOrigin = PlayOrigin.USER) {
         if (index in playbackQueue.indices) {
             currentQueueIndex = index
             // v2.0.0 · T1-C：乱序游标必须跟着走。从队列面板手动点歌原先只改 currentQueueIndex，
@@ -1025,6 +1048,7 @@ fun MainScreen(
                 sourceKey = song.source,
                 sourceId = song.sourceId,
                 mediaId = song.mediaId,
+                origin = origin,
             )
             PlaybackStateManager.saveQueue(context, playbackQueue, currentQueueIndex)
 
@@ -1109,7 +1133,11 @@ fun MainScreen(
         }
     }
 
-    fun playNext() {
+    /**
+     * @param origin v2.2.1 · P0：用户按「下一首」= [PlayOrigin.USER]（并**清零**连续自动跳歌计数）；
+     *   曲终接续 / 「取不到链」触发的跳歌 = [PlayOrigin.AUTO_NEXT]（计入熔断）。
+     */
+    fun playNext(origin: PlayOrigin = PlayOrigin.USER) {
         if (playbackQueue.isEmpty()) return
         when (playMode) {
             QueueModes.SINGLE -> playerViewModel.seekTo(0)
@@ -1126,16 +1154,16 @@ fun MainScreen(
                     shuffledIndices = fresh
                     shuffledPosition = if (fresh.size > 1) 1 else 0
                     pendingRound = null
-                    playFromQueue(fresh.getOrElse(shuffledPosition) { 0 })
+                    playFromQueue(fresh.getOrElse(shuffledPosition) { 0 }, origin)
                 } else {
                     shuffledPosition++
-                    playFromQueue(shuffledIndices[shuffledPosition])
+                    playFromQueue(shuffledIndices[shuffledPosition], origin)
                 }
             }
             QueueModes.LINE -> {
                 // 顺序线性：队列尾自然结束后不再循环, 定位到首曲(不自动续播)
                 if (currentQueueIndex < playbackQueue.size - 1) {
-                    playFromQueue(currentQueueIndex + 1)
+                    playFromQueue(currentQueueIndex + 1, origin)
                 } else {
                     currentQueueIndex = 0
                     currentSong = playbackQueue.firstOrNull()
@@ -1146,16 +1174,16 @@ fun MainScreen(
             QueueModes.INFINITY -> {
                 // 队列尾 → FM 电台式相似歌曲续播
                 if (currentQueueIndex < playbackQueue.size - 1) {
-                    playFromQueue(currentQueueIndex + 1)
+                    playFromQueue(currentQueueIndex + 1, origin)
                 } else {
                     launchInfinity()
                 }
             }
             else -> { // CYCLE
                 if (currentQueueIndex < playbackQueue.size - 1) {
-                    playFromQueue(currentQueueIndex + 1)
+                    playFromQueue(currentQueueIndex + 1, origin)
                 } else {
-                    playFromQueue(0)
+                    playFromQueue(0, origin)
                 }
             }
         }
@@ -1184,7 +1212,9 @@ fun MainScreen(
         playerViewModel.setOnSongPreviousCallback { playPrevious() }
         playerViewModel.setOnSongEndedCallback { songEnded = true }
         playerViewModel.setOnSongTransitionedCallback { songTransitioned = true }
-        playerViewModel.setOnUnplayableCallback { playNext() }
+        // v2.2.1 · P0：这条回调是「这首歌确实取不到链」的自动跳歌入口，
+        // 必须带 AUTO_NEXT，否则 5 次上限永远数不到（用户报的「一直切」）。
+        playerViewModel.setOnUnplayableCallback { playNext(PlayOrigin.AUTO_NEXT) }
     }
 
     // 无缝播放：当进入当前歌曲的最后 20 秒时，预取下一首的 URL 并加入 ExoPlayer 队列。
@@ -1339,7 +1369,8 @@ fun MainScreen(
         if (songEnded) {
             songEnded = false
             if (playbackQueue.isNotEmpty()) {
-                playNext()
+                // v2.2.1 · P0：曲终接续属于**自动**跳歌，必须计入熔断。
+                playNext(PlayOrigin.AUTO_NEXT)
             }
         }
     }

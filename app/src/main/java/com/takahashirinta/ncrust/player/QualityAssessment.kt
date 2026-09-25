@@ -126,6 +126,8 @@ object QualityAssessment {
      * @param granted 服务端返回的 level 字符串（只是标签，可能与实际文件不符）
      * @param br / [type] 实际文件参数
      * @param songMaxLevel 该曲 privilege.maxBrLevel；拿不到传 null
+     * @param levelFromFile v2.2.1：`granted` 是不是**由实际文件反推**出来的（QQ 前缀 / 离线 key），
+     *   而不是服务端标签。只有它是 true 时，才允许在拿不到 br/type 的情况下断言「降级了」。
      */
     fun assess(
         requested: String,
@@ -133,6 +135,7 @@ object QualityAssessment {
         br: Long,
         type: String,
         songMaxLevel: String?,
+        levelFromFile: Boolean = false,
     ): QualityVerdict {
         val levels = QualityLadder.LEVELS
         val requestedIdx = levels.indexOf(requested).takeIf { it >= 0 } ?: 0
@@ -175,8 +178,20 @@ object QualityAssessment {
         }
 
         val status = when {
-            // 拿不到实际文件参数：不妄下结论，保持安静
-            measuredIdx < 0 -> QualityStatus.NORMAL
+            // 拿不到实际文件参数：不妄下结论，保持安静 —— **除非**档位本身就是从文件反推的。
+            //
+            // v2.2.1 · P0：QQ 的档位来自**真正取回的文件名前缀**（`RS01…flac` → hires），
+            // 它自己就是证据，不是「服务端说它给了什么」。而 QQ 的 FLAC 档没有 br 字段
+            // （编一个数字会污染 measuredLevel，见 QqQuality.knownBitrateOf），
+            // 于是旧规则下「请求超清母带、实际 Hi-Res」落在这一支：既不是降级、也没有提示。
+            // 实测用户报障原话就是「开了母带只能出极高，和免费用户没区别」—— 沉默同样是在撒谎。
+            measuredIdx < 0 -> {
+                if (levelFromFile && grantedIdx >= 0 && grantedIdx < requestedIdx) {
+                    QualityStatus.DOWNGRADED
+                } else {
+                    QualityStatus.NORMAL
+                }
+            }
             // 实际文件不低于请求档位（含"标签写低了、文件其实是高解析"）
             measuredIdx >= requestedIdx -> QualityStatus.NORMAL
             // 沉浸声换格式：请求杜比/环绕，实际拿到 >= 无损的沉浸声文件，不算降级

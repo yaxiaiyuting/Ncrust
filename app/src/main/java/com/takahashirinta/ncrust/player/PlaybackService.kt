@@ -178,7 +178,14 @@ class PlaybackService : MediaLibraryService() {
         // Fired on the main thread when ExoPlayer reports a playback error (decode/source
         // failure). Carries the song id ExoPlayer was on; the ViewModel downgrades quality
         // and retries, so a device that can't decode e.g. 24-bit FLAC still gets sound.
-        var onPlaybackError: ((Long) -> Unit)? = null
+        //
+        // v2.2.1 · P0：回调**多带一份失败描述**（errorCode + cause 类名/消息）。
+        // 起因：实测那次致命失败的 errorCode 是 `ERROR_CODE_UNSPECIFIED`（最没用的一档），
+        // 真正原因只在 cause 里（`UnsupportedOperationException: Default channel mixing
+        // coefficients for 6->1 …`）。只看 errorCode 的话无法把它分类成「输出链故障」，
+        // 于是会在一个已经坏掉的 AudioSink 上继续重试 8 次 —— 那正是用户看到的
+        // 「循环切音质 + 反复抢音频焦点」。见 [PlaybackFailure]。
+        var onPlaybackError: ((Long, PlaybackFailure) -> Unit)? = null
         // Fired on the main thread when ExoPlayer auto-transitions to a preloaded next item.
         var onSongTransitioned: (() -> Unit)? = null
         /**
@@ -415,12 +422,27 @@ class PlaybackService : MediaLibraryService() {
                 // 之前完全没有错误处理:解码/取流失败后播放器静默停在 IDLE,
                 // UI 还显示"在播",实际既没声音也不跳歌。现在上报给 ViewModel
                 // 降档重试,最低档仍失败则由 ViewModel 跳歌。
+                val failure = failureOf(error)
                 Log.e(
                     "PlaybackService",
-                    "Playback error for songId=$mediaSongId code=${error.errorCodeName}: ${error.message}",
+                    "Playback error for songId=$mediaSongId code=${error.errorCodeName}" +
+                        " cause=${failure.causeClass}: ${failure.causeMessage}",
                     error
                 )
-                onPlaybackError?.invoke(mediaSongId ?: -1L)
+                // v2.2.1 · P0：**先把播放器拉回干净状态再上报**。
+                //
+                // 为什么顺序不能反：致命错误（实测是 AudioSink 的声道矩阵异常）会让
+                // ExoPlayer 的音频输出链进入不可恢复状态 —— 之后同一个实例上**任何**档位
+                // 都播不出来（logcat 里连 128k mp3 都报同一个错）。而 `stop()` 是 media3
+                // 唯一会「reset AudioSink + abandonAudioFocus」的入口：
+                //   * reset 让 sink 有机会回到可配置状态；
+                //   * abandon 让**音频焦点立刻释放**，用户正在看的视频不会一直被我们攥着。
+                // 旧实现什么都不做，于是重试必然失败、而且每次重试都重新抢一次焦点。
+                runCatching {
+                    player.stop()
+                    player.clearMediaItems()
+                }.onFailure { Log.w("PlaybackService", "stop after error failed", it) }
+                onPlaybackError?.invoke(mediaSongId ?: -1L, failure)
             }
             override fun onMediaItemTransition(
                 mediaItem: androidx.media3.common.MediaItem?,
@@ -525,7 +547,12 @@ class PlaybackService : MediaLibraryService() {
                 audioSinkError: Exception
             ) {
                 Log.e("PlaybackService", "AudioSink error: ${audioSinkError.message}", audioSinkError)
-                onPlaybackError?.invoke(mediaSongId ?: -1L)
+                // v2.2.1 · P0：输出链故障同样先 stop（reset sink + 释放音频焦点）再上报。
+                runCatching {
+                    player.stop()
+                    player.clearMediaItems()
+                }
+                onPlaybackError?.invoke(mediaSongId ?: -1L, failureOf(audioSinkError))
             }
         })
         createNotificationChannel()
@@ -661,7 +688,21 @@ class PlaybackService : MediaLibraryService() {
         }
 
         if (url != null) {
-            PlaybackStateManager.saveState(this, songId, mediaTitle, mediaArtist, currentArtworkUrl ?: "", true)
+            // v2.2.1 · P0：**必须把音源身份一起落盘**。
+            //
+            // 旧代码只传前五个参数，而 `PlaybackStateManager.saveState` 对 sourceKey/sourceId/
+            // mediaId 用的是 `putString(key, null)` —— SharedPreferences 的语义是**删除该键**，
+            // 于是「每次开始播放」都会把上一处（PlayerViewModel 好好写进去的）QQ songmid /
+            // media_mid 抹掉。冷启动后 `MainActivity` 再读 `getSourceId()` 拿到 null，
+            // QQ 曲目就再也取不到链，只能吃离线缓存里那条**别的档位**的旧 URL ——
+            // 用户看到的就是「选了母带，播出来是无损」以及随后的循环重试。
+            // 与 `mediaSourceKey/mediaSourceId/mediaMediaId` 同源，直接用这三个字段。
+            PlaybackStateManager.saveState(
+                this, songId, mediaTitle, mediaArtist, currentArtworkUrl ?: "", true,
+                sourceKey = mediaSourceKey,
+                sourceId = mediaSourceId,
+                mediaId = mediaMediaId,
+            )
             playUrl(url, startPositionMs)
         } else if (!isServiceStarted && mediaTitle != "Ncrust") {
             updateNotify()
@@ -827,6 +868,36 @@ class PlaybackService : MediaLibraryService() {
      * 后者会先按位置 0 解码并回调一次进度，歌词面板可能闪一下第一行再跳走。
      * 直接带起播位置能让 position 从第一帧起就是正确值，歌词首帧即对齐。
      */
+    /**
+     * v2.2.1 · P0：把 ExoPlayer 的 `PlaybackException` 压成可判定的 [PlaybackFailure]。
+     *
+     * **必须一路走到 cause 链**：实测那次致命失败的 `errorCode` 是 `ERROR_CODE_UNSPECIFIED`，
+     * 而真正原因（`UnsupportedOperationException: Default channel mixing coefficients for 6->1`）
+     * 只在 cause 里。少了 cause，分类函数只能给 UNKNOWN，重试策略就退化成"继续瞎试"。
+     */
+    private fun failureOf(error: PlaybackException): PlaybackFailure {
+        val root = generateSequence(error as Throwable) { it.cause }
+            .lastOrNull { it.cause == null } ?: error
+        return PlaybackFailure(
+            errorCode = error.errorCode,
+            errorCodeName = error.errorCodeName,
+            causeClass = root.javaClass.name,
+            causeMessage = root.message,
+        )
+    }
+
+    /** 同上，用于 `onAudioSinkError` 那条路径（拿到的是裸 Exception）。 */
+    private fun failureOf(error: Exception): PlaybackFailure {
+        val root = generateSequence(error as Throwable) { it.cause }
+            .lastOrNull { it.cause == null } ?: error
+        return PlaybackFailure(
+            errorCode = PlaybackException.ERROR_CODE_UNSPECIFIED,
+            errorCodeName = "AUDIO_SINK_ERROR",
+            causeClass = root.javaClass.name,
+            causeMessage = root.message,
+        )
+    }
+
     private fun playUrl(url: String, startPositionMs: Long = 0L) {
         Log.d("PlaybackService", "Playing: $url startPositionMs=$startPositionMs")
         // v1.6.0 · D1：记下这首歌「最后一次成功播放的 URL」。断网时客户端必须先有一个 URL

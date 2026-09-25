@@ -1,0 +1,400 @@
+09-25 14:37:06.750 14525 14525 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 cacheKey=null
+09-25 14:37:06.760 14525 16251 W SourceRouter: unresolvable song source=qqmusic id=4611686018727083242 (missing sourceId)
+09-25 14:37:06.760 14525 16251 I PlayerViewModel: offline cache hit songId=4611686018727083242 key=song:4611686018727083242:lossless
+09-25 14:37:06.787 14525 14525 I PlayerViewModel: quality verdict requested=jymaster granted=lossless br=0 type= songMax=null -> displayIdx=3 status=NORMAL
+09-25 14:38:16.790 14525 14525 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 14:38:17.216 14525 16258 I QqApi   : vkey ok: requested=jymaster actual=hires prefix=RS01 mid=000zwUDf0KftQv
+09-25 14:38:17.219 14525 14525 I PlayerViewModel: quality verdict requested=jymaster granted=hires br=0 type=flac songMax=null -> displayIdx=4 status=NORMAL
+09-25 14:38:45.408 14525 16281 E SongUrlFetcher: no playable url for songId=186005 at any level
+09-25 14:39:43.596 15570 15570 I NcrustTrack: playSong -> currentTrack=netease:1965392316 cacheKey=1965392316
+09-25 14:39:43.836 15570 15570 I PlayerViewModel: quality verdict requested=jymaster granted=jymaster br=4628468 type=flac songMax=null -> displayIdx=6 status=NORMAL
+09-25 14:39:44.346 15570 24329 E SongUrlFetcher: no playable url for songId=186005 at any level
+09-25 14:40:22.736 15570 24327 E SongUrlFetcher: no playable url for songId=186005 at any level
+09-25 14:40:33.640 15570 15570 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018427589359 mid=003L8Oq94De6Fy media=003u4H921sRR6B cacheKey=null
+09-25 14:40:33.825 15570 24333 I QqApi   : vkey ok: requested=jymaster actual=jymaster prefix=AI00 mid=003u4H921sRR6B
+09-25 14:40:33.837 15570 15570 I PlayerViewModel: quality verdict requested=jymaster granted=jymaster br=0 type=flac songMax=null -> displayIdx=6 status=NORMAL
+09-25 14:40:34.293 15570 24372 E SongUrlFetcher: no playable url for songId=186005 at any level
+09-25 14:40:41.046 15570 15570 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018530180922 mid=002gzBYN1Bvidu media=000q72xu3gNJcz cacheKey=null
+09-25 14:40:41.209 15570 24332 I QqApi   : vkey ok: requested=jymaster actual=jymaster prefix=AI00 mid=000q72xu3gNJcz
+09-25 14:40:41.222 15570 15570 I PlayerViewModel: quality verdict requested=jymaster granted=jymaster br=0 type=flac songMax=null -> displayIdx=6 status=NORMAL
+09-25 14:40:41.743 15570 24333 E SongUrlFetcher: no playable url for songId=186005 at any level
+09-25 14:40:43.375 15570 15570 I PlayerViewModel: quality verdict requested=jymaster granted=jymaster br=0 type=flac songMax=null -> displayIdx=6 status=NORMAL
+09-25 14:40:44.366 15570 15570 I PlayerViewModel: quality verdict requested=jymaster granted=jymaster br=0 type=flac songMax=null -> displayIdx=6 status=NORMAL
+09-25 14:41:17.666 16343 16343 I NcrustTrack: playSong -> currentTrack=netease:3342301115 cacheKey=3342301115
+09-25 14:41:26.756 16343 16343 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018690600148 mid=002FBa2X4Yda23 media=002FBa2X4Yda23 cacheKey=null
+09-25 14:41:27.297 16343 28726 I QqApi   : vkey ok: requested=jymaster actual=jymaster prefix=AI00 mid=002FBa2X4Yda23
+09-25 14:41:27.298 16343 16343 I PlayerViewModel: quality verdict requested=jymaster granted=jymaster br=0 type=flac songMax=null -> displayIdx=6 status=NORMAL
+09-25 14:41:28.599 16343 16343 I PlayerViewModel: quality verdict requested=jymaster granted=jymaster br=0 type=flac songMax=null -> displayIdx=6 status=NORMAL
+09-25 14:41:28.599 16343 16343 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018690600148 mid=002FBa2X4Yda23 media=002FBa2X4Yda23 cacheKey=null
+09-25 14:41:28.769 16343 28729 I QqApi   : vkey ok: requested=dolby actual=dolby prefix=Q001 mid=002FBa2X4Yda23
+09-25 14:41:28.782 16343 16343 I PlayerViewModel: quality verdict requested=dolby granted=dolby br=0 type=flac songMax=null -> displayIdx=7 status=NORMAL
+09-25 14:41:29.761 16343 16343 I PlayerViewModel: quality verdict requested=dolby granted=dolby br=0 type=flac songMax=null -> displayIdx=7 status=NORMAL
+09-25 14:41:29.762 16343 16343 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018690600148 mid=002FBa2X4Yda23 media=002FBa2X4Yda23 cacheKey=null
+09-25 14:41:29.933 16343 28726 I QqApi   : vkey ok: requested=jyeffect actual=jyeffect prefix=Q000 mid=002FBa2X4Yda23
+09-25 14:41:29.941 16343 16343 I PlayerViewModel: quality verdict requested=jyeffect granted=jyeffect br=0 type=flac songMax=null -> displayIdx=5 status=NORMAL
+09-25 14:41:30.811 16343 16343 I PlayerViewModel: quality verdict requested=jyeffect granted=jyeffect br=0 type=flac songMax=null -> displayIdx=5 status=NORMAL
+09-25 14:41:30.811 16343 16343 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018690600148 mid=002FBa2X4Yda23 media=002FBa2X4Yda23 cacheKey=null
+09-25 14:41:30.981 16343 28726 I QqApi   : vkey ok: requested=jymaster actual=jymaster prefix=AI00 mid=002FBa2X4Yda23
+09-25 14:41:30.994 16343 16343 I PlayerViewModel: quality verdict requested=jymaster granted=jymaster br=0 type=flac songMax=null -> displayIdx=6 status=NORMAL
+09-25 14:44:16.902 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018427589359 mid=003L8Oq94De6Fy media=003u4H921sRR6B cacheKey=null
+09-25 14:44:17.458 28837 31990 I QqApi   : vkey ok: requested=jymaster actual=hires prefix=RS01 mid=000zwUDf0KftQv
+09-25 14:44:17.476 28837 32014 I QqApi   : vkey ok: requested=jymaster actual=jymaster prefix=AI00 mid=003u4H921sRR6B
+09-25 14:44:17.541 28837 28837 I PlayerViewModel: quality verdict requested=jymaster granted=jymaster br=0 type=flac songMax=null -> displayIdx=6 status=NORMAL
+09-25 14:44:21.386 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018690555381 mid=002n3u4D2u8DLn media=002n3u4D2u8DLn cacheKey=null
+09-25 14:44:21.555 28837 32016 I QqApi   : vkey ok: requested=jymaster actual=standard prefix=M500 mid=002n3u4D2u8DLn
+09-25 14:44:21.556 28837 28837 I PlayerViewModel: quality verdict requested=jymaster granted=standard br=128000 type=mp3 songMax=null -> displayIdx=0 status=DOWNGRADED
+09-25 14:44:23.505 28837 28837 I PlayerViewModel: quality verdict requested=jymaster granted=standard br=128000 type=mp3 songMax=null -> displayIdx=0 status=DOWNGRADED
+09-25 14:44:24.409 28837 28837 I PlayerViewModel: quality verdict requested=jymaster granted=standard br=128000 type=mp3 songMax=null -> displayIdx=0 status=DOWNGRADED
+09-25 14:44:24.409 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018690555381 mid=002n3u4D2u8DLn media=002n3u4D2u8DLn cacheKey=null
+09-25 14:44:24.582 28837 32016 I QqApi   : vkey ok: requested=jyeffect actual=standard prefix=M500 mid=002n3u4D2u8DLn
+09-25 14:44:24.583 28837 28837 I PlayerViewModel: quality verdict requested=jyeffect granted=standard br=128000 type=mp3 songMax=null -> displayIdx=0 status=DOWNGRADED
+09-25 14:44:25.424 28837 28837 I PlayerViewModel: quality verdict requested=jyeffect granted=standard br=128000 type=mp3 songMax=null -> displayIdx=0 status=DOWNGRADED
+09-25 14:44:25.424 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018690555381 mid=002n3u4D2u8DLn media=002n3u4D2u8DLn cacheKey=null
+09-25 14:44:25.578 28837 32016 I QqApi   : vkey ok: requested=hires actual=standard prefix=M500 mid=002n3u4D2u8DLn
+09-25 14:44:25.578 28837 28837 I PlayerViewModel: quality verdict requested=hires granted=standard br=128000 type=mp3 songMax=null -> displayIdx=0 status=DOWNGRADED
+09-25 14:44:26.642 28837 28837 I PlayerViewModel: quality verdict requested=hires granted=standard br=128000 type=mp3 songMax=null -> displayIdx=0 status=DOWNGRADED
+09-25 14:44:26.642 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018690555381 mid=002n3u4D2u8DLn media=002n3u4D2u8DLn cacheKey=null
+09-25 14:44:26.809 28837 31986 I QqApi   : vkey ok: requested=lossless actual=standard prefix=M500 mid=002n3u4D2u8DLn
+09-25 14:44:26.810 28837 28837 I PlayerViewModel: quality verdict requested=lossless granted=standard br=128000 type=mp3 songMax=null -> displayIdx=0 status=DOWNGRADED
+09-25 14:44:27.597 28837 28837 I PlayerViewModel: quality verdict requested=lossless granted=standard br=128000 type=mp3 songMax=null -> displayIdx=0 status=DOWNGRADED
+09-25 14:44:27.597 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018690555381 mid=002n3u4D2u8DLn media=002n3u4D2u8DLn cacheKey=null
+09-25 14:44:27.751 28837 31986 I QqApi   : vkey ok: requested=jyeffect actual=standard prefix=M500 mid=002n3u4D2u8DLn
+09-25 14:44:27.752 28837 28837 I PlayerViewModel: quality verdict requested=jyeffect granted=standard br=128000 type=mp3 songMax=null -> displayIdx=0 status=DOWNGRADED
+09-25 14:44:28.986 28837 28837 I PlayerViewModel: quality verdict requested=jyeffect granted=standard br=128000 type=mp3 songMax=null -> displayIdx=0 status=DOWNGRADED
+09-25 14:44:28.986 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018690555381 mid=002n3u4D2u8DLn media=002n3u4D2u8DLn cacheKey=null
+09-25 14:44:29.144 28837 32002 I QqApi   : vkey ok: requested=jymaster actual=standard prefix=M500 mid=002n3u4D2u8DLn
+09-25 14:44:29.144 28837 28837 I PlayerViewModel: quality verdict requested=jymaster granted=standard br=128000 type=mp3 songMax=null -> displayIdx=0 status=DOWNGRADED
+09-25 14:44:30.304 28837 28837 I PlayerViewModel: quality verdict requested=jymaster granted=standard br=128000 type=mp3 songMax=null -> displayIdx=0 status=DOWNGRADED
+09-25 14:44:30.304 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018690555381 mid=002n3u4D2u8DLn media=002n3u4D2u8DLn cacheKey=null
+09-25 14:44:30.456 28837 32002 I QqApi   : vkey ok: requested=jyeffect actual=standard prefix=M500 mid=002n3u4D2u8DLn
+09-25 14:44:30.457 28837 28837 I PlayerViewModel: quality verdict requested=jyeffect granted=standard br=128000 type=mp3 songMax=null -> displayIdx=0 status=DOWNGRADED
+09-25 14:44:43.410 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018536588792 mid=000WSotS3LnGHf media=0022g3hT3Oa0Nh cacheKey=null
+09-25 14:44:43.575 28837 31988 W QqApi   : no playable url for qqmusic:4611686018536588792 at level=jyeffect
+09-25 14:44:43.576 28837 31988 W PlayerViewModel: no playable url for songId=4611686018536588792, skipping
+09-25 14:44:43.576 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 14:44:43.769 28837 32002 I QqApi   : vkey ok: requested=jyeffect actual=jyeffect prefix=Q000 mid=000zwUDf0KftQv
+09-25 14:44:43.769 28837 28837 I PlayerViewModel: quality verdict requested=jyeffect granted=jyeffect br=0 type=flac songMax=null -> displayIdx=5 status=NORMAL
+09-25 14:44:43.798 28837 31990 I QqApi   : vkey ok: requested=jyeffect actual=jyeffect prefix=Q000 mid=003u4H921sRR6B
+09-25 14:44:46.052 28837 28837 I PlayerViewModel: quality verdict requested=jyeffect granted=jyeffect br=0 type=flac songMax=null -> displayIdx=5 status=NORMAL
+09-25 14:44:46.052 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 14:44:46.052 28837 28837 I PlayerViewModel: quality verdict requested=jymaster granted=hires br=0 type=flac songMax=null -> displayIdx=4 status=NORMAL
+09-25 14:44:47.475 28837 28837 I PlayerViewModel: quality verdict requested=jymaster granted=hires br=0 type=flac songMax=null -> displayIdx=4 status=NORMAL
+09-25 14:44:48.361 28837 28837 I PlayerViewModel: quality verdict requested=jymaster granted=hires br=0 type=flac songMax=null -> displayIdx=4 status=NORMAL
+09-25 14:44:48.361 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 14:44:48.518 28837 31989 I QqApi   : vkey ok: requested=jyeffect actual=jyeffect prefix=Q000 mid=000zwUDf0KftQv
+09-25 14:44:48.529 28837 28837 I PlayerViewModel: quality verdict requested=jyeffect granted=jyeffect br=0 type=flac songMax=null -> displayIdx=5 status=NORMAL
+09-25 14:44:49.641 28837 28837 I PlayerViewModel: quality verdict requested=jyeffect granted=jyeffect br=0 type=flac songMax=null -> displayIdx=5 status=NORMAL
+09-25 14:44:50.622 28837 28837 I PlayerViewModel: quality verdict requested=jyeffect granted=jyeffect br=0 type=flac songMax=null -> displayIdx=5 status=NORMAL
+09-25 14:44:50.622 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 14:44:50.766 28837 31989 I QqApi   : vkey ok: requested=dolby actual=dolby prefix=Q001 mid=000zwUDf0KftQv
+09-25 14:44:50.779 28837 28837 I PlayerViewModel: quality verdict requested=dolby granted=dolby br=0 type=flac songMax=null -> displayIdx=7 status=NORMAL
+09-25 14:44:51.117 28837 28837 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:44:51.117 28837 28837 W PlayerViewModel: playback error at level=dolby for songId=4611686018727083242, retrying at jyeffect
+09-25 14:44:51.117 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 14:44:51.280 28837 31989 I QqApi   : vkey ok: requested=jyeffect actual=jyeffect prefix=Q000 mid=000zwUDf0KftQv
+09-25 14:44:51.317 28837 28837 I PlayerViewModel: quality verdict requested=jyeffect granted=jyeffect br=0 type=flac songMax=null -> displayIdx=5 status=NORMAL
+09-25 14:44:51.366 28837 28837 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:44:51.366 28837 28837 W PlayerViewModel: playback error at level=jyeffect for songId=4611686018727083242, retrying at hires
+09-25 14:44:51.366 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 14:44:51.551 28837 32014 I QqApi   : vkey ok: requested=hires actual=hires prefix=RS01 mid=000zwUDf0KftQv
+09-25 14:44:51.553 28837 28837 I PlayerViewModel: quality verdict requested=hires granted=hires br=0 type=flac songMax=null -> displayIdx=4 status=NORMAL
+09-25 14:44:51.580 28837 28837 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:44:51.580 28837 28837 W PlayerViewModel: playback error at level=hires for songId=4611686018727083242, retrying at lossless
+09-25 14:44:51.580 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 14:44:51.752 28837 28837 I PlayerViewModel: quality verdict requested=hires granted=hires br=0 type=flac songMax=null -> displayIdx=4 status=NORMAL
+09-25 14:44:51.752 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 14:44:51.791 28837 31989 I PlayerViewModel: offline cache hit songId=4611686018727083242 key=song:4611686018727083242:dolby
+09-25 14:44:51.915 28837 32002 I QqApi   : vkey ok: requested=jyeffect actual=jyeffect prefix=Q000 mid=000zwUDf0KftQv
+09-25 14:44:51.916 28837 28837 I PlayerViewModel: quality verdict requested=jyeffect granted=jyeffect br=0 type=flac songMax=null -> displayIdx=5 status=NORMAL
+09-25 14:44:51.950 28837 28837 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:44:51.950 28837 28837 W PlayerViewModel: playback error at level=jyeffect for songId=4611686018727083242, retrying at hires
+09-25 14:44:51.951 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 14:44:52.171 28837 32014 I QqApi   : vkey ok: requested=hires actual=hires prefix=RS01 mid=000zwUDf0KftQv
+09-25 14:44:52.171 28837 28837 I PlayerViewModel: quality verdict requested=hires granted=hires br=0 type=flac songMax=null -> displayIdx=4 status=NORMAL
+09-25 14:44:52.204 28837 28837 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:44:52.204 28837 28837 W PlayerViewModel: playback error at level=hires for songId=4611686018727083242, retrying at lossless
+09-25 14:44:52.204 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 14:44:52.407 28837 31992 I QqApi   : vkey ok: requested=lossless actual=lossless prefix=F000 mid=000zwUDf0KftQv
+09-25 14:44:52.408 28837 28837 I PlayerViewModel: quality verdict requested=lossless granted=lossless br=0 type=flac songMax=null -> displayIdx=3 status=NORMAL
+09-25 14:44:52.608 28837 28837 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:44:52.608 28837 28837 W PlayerViewModel: playback error at level=lossless for songId=4611686018727083242, retrying at exhigh
+09-25 14:44:52.608 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 14:44:52.752 28837 31992 I QqApi   : vkey ok: requested=exhigh actual=exhigh prefix=C400 mid=000zwUDf0KftQv
+09-25 14:44:52.753 28837 28837 I PlayerViewModel: quality verdict requested=exhigh granted=exhigh br=96000 type=m4a songMax=null -> displayIdx=2 status=NORMAL
+09-25 14:44:52.949 28837 28837 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:44:52.949 28837 28837 W PlayerViewModel: playback error at level=exhigh for songId=4611686018727083242, retrying at higher
+09-25 14:44:52.949 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 14:44:53.097 28837 31992 I QqApi   : vkey ok: requested=higher actual=higher prefix=M800 mid=000zwUDf0KftQv
+09-25 14:44:53.098 28837 28837 I PlayerViewModel: quality verdict requested=higher granted=higher br=320000 type=mp3 songMax=null -> displayIdx=2 status=NORMAL
+09-25 14:44:53.333 28837 28837 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:44:53.333 28837 28837 W PlayerViewModel: playback error at level=higher for songId=4611686018727083242, retrying at standard
+09-25 14:44:53.333 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 14:44:53.502 28837 31992 I QqApi   : vkey ok: requested=standard actual=standard prefix=M500 mid=000zwUDf0KftQv
+09-25 14:44:53.516 28837 28837 I PlayerViewModel: quality verdict requested=standard granted=standard br=128000 type=mp3 songMax=null -> displayIdx=0 status=NORMAL
+09-25 14:44:54.038 28837 28837 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:44:54.038 28837 28837 W PlayerViewModel: lowest tier also failed for songId=4611686018727083242, skipping
+09-25 14:44:54.038 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018427589359 mid=003L8Oq94De6Fy media=003u4H921sRR6B cacheKey=null
+09-25 14:44:54.039 28837 28837 I PlayerViewModel: quality verdict requested=jyeffect granted=jyeffect br=0 type=flac songMax=null -> displayIdx=5 status=NORMAL
+09-25 14:44:54.289 28837 32002 I QqApi   : vkey ok: requested=jyeffect actual=standard prefix=M500 mid=002n3u4D2u8DLn
+09-25 14:44:54.372 28837 28837 E PlaybackService: Playback error for songId=4611686018427589359 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:44:54.372 28837 28837 W PlayerViewModel: playback error at level=jyeffect for songId=4611686018427589359, retrying at hires
+09-25 14:44:54.372 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018427589359 mid=003L8Oq94De6Fy media=003u4H921sRR6B cacheKey=null
+09-25 14:44:54.515 28837 31992 I QqApi   : vkey ok: requested=hires actual=hires prefix=RS01 mid=003u4H921sRR6B
+09-25 14:44:54.520 28837 28837 I PlayerViewModel: quality verdict requested=hires granted=hires br=0 type=flac songMax=null -> displayIdx=4 status=NORMAL
+09-25 14:44:58.551 28837 28837 E PlaybackService: Playback error for songId=4611686018427589359 code=ERROR_CODE_IO_BAD_HTTP_STATUS: Source error
+09-25 14:44:58.552 28837 28837 W PlayerViewModel: playback error at level=hires for songId=4611686018427589359, retrying at lossless
+09-25 14:44:58.552 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018427589359 mid=003L8Oq94De6Fy media=003u4H921sRR6B cacheKey=null
+09-25 14:44:58.720 28837 31992 I QqApi   : vkey ok: requested=lossless actual=lossless prefix=F000 mid=003u4H921sRR6B
+09-25 14:44:58.737 28837 28837 I PlayerViewModel: quality verdict requested=lossless granted=lossless br=0 type=flac songMax=null -> displayIdx=3 status=NORMAL
+09-25 14:44:58.837 28837 28837 E PlaybackService: Playback error for songId=4611686018427589359 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:44:58.837 28837 28837 W PlayerViewModel: playback error at level=lossless for songId=4611686018427589359, retrying at exhigh
+09-25 14:44:58.837 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018427589359 mid=003L8Oq94De6Fy media=003u4H921sRR6B cacheKey=null
+09-25 14:44:58.977 28837 32002 I QqApi   : vkey ok: requested=exhigh actual=exhigh prefix=C400 mid=003u4H921sRR6B
+09-25 14:44:58.978 28837 28837 I PlayerViewModel: quality verdict requested=exhigh granted=exhigh br=96000 type=m4a songMax=null -> displayIdx=2 status=NORMAL
+09-25 14:44:59.312 28837 28837 E PlaybackService: Playback error for songId=4611686018427589359 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:44:59.312 28837 28837 W PlayerViewModel: playback error at level=exhigh for songId=4611686018427589359, retrying at higher
+09-25 14:44:59.313 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018427589359 mid=003L8Oq94De6Fy media=003u4H921sRR6B cacheKey=null
+09-25 14:44:59.451 28837 32002 I QqApi   : vkey ok: requested=higher actual=higher prefix=M800 mid=003u4H921sRR6B
+09-25 14:44:59.467 28837 28837 I PlayerViewModel: quality verdict requested=higher granted=higher br=320000 type=mp3 songMax=null -> displayIdx=2 status=NORMAL
+09-25 14:44:59.721 28837 28837 E PlaybackService: Playback error for songId=4611686018427589359 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:44:59.721 28837 28837 W PlayerViewModel: playback error at level=higher for songId=4611686018427589359, retrying at standard
+09-25 14:44:59.721 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018427589359 mid=003L8Oq94De6Fy media=003u4H921sRR6B cacheKey=null
+09-25 14:44:59.885 28837 32002 I QqApi   : vkey ok: requested=standard actual=standard prefix=M500 mid=003u4H921sRR6B
+09-25 14:44:59.886 28837 28837 I PlayerViewModel: quality verdict requested=standard granted=standard br=128000 type=mp3 songMax=null -> displayIdx=0 status=NORMAL
+09-25 14:45:00.183 28837 28837 E PlaybackService: Playback error for songId=4611686018427589359 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:45:00.183 28837 28837 W PlayerViewModel: lowest tier also failed for songId=4611686018427589359, skipping
+09-25 14:45:00.183 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018690555381 mid=002n3u4D2u8DLn media=002n3u4D2u8DLn cacheKey=null
+09-25 14:45:00.184 28837 28837 I PlayerViewModel: quality verdict requested=jyeffect granted=standard br=128000 type=mp3 songMax=null -> displayIdx=0 status=DOWNGRADED
+09-25 14:45:00.396 28837 28837 E PlaybackService: Playback error for songId=4611686018690555381 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:45:00.396 28837 28837 W PlayerViewModel: lowest tier also failed for songId=4611686018690555381, skipping
+09-25 14:45:00.396 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018536588792 mid=000WSotS3LnGHf media=0022g3hT3Oa0Nh cacheKey=null
+09-25 14:45:00.547 28837 32002 W QqApi   : no playable url for qqmusic:4611686018536588792 at level=jyeffect
+09-25 14:45:00.547 28837 32002 W PlayerViewModel: no playable url for songId=4611686018536588792, skipping
+09-25 14:45:00.547 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 14:45:00.635 28837 32014 I PlayerViewModel: offline cache hit songId=4611686018727083242 key=song:4611686018727083242:jyeffect
+09-25 14:45:00.706 28837 31990 I QqApi   : vkey ok: requested=jyeffect actual=jyeffect prefix=Q000 mid=000zwUDf0KftQv
+09-25 14:45:00.706 28837 28837 I PlayerViewModel: quality verdict requested=jyeffect granted=jyeffect br=0 type=flac songMax=null -> displayIdx=5 status=NORMAL
+09-25 14:45:00.761 28837 28837 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:45:00.761 28837 28837 W PlayerViewModel: playback error at level=jyeffect for songId=4611686018727083242, retrying at hires
+09-25 14:45:00.761 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 14:45:00.924 28837 32017 I QqApi   : vkey ok: requested=hires actual=hires prefix=RS01 mid=000zwUDf0KftQv
+09-25 14:45:00.925 28837 28837 I PlayerViewModel: quality verdict requested=hires granted=hires br=0 type=flac songMax=null -> displayIdx=4 status=NORMAL
+09-25 14:45:00.956 28837 28837 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:45:00.956 28837 28837 W PlayerViewModel: playback error at level=hires for songId=4611686018727083242, retrying at lossless
+09-25 14:45:00.957 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 14:45:01.165 28837 31990 I QqApi   : vkey ok: requested=lossless actual=lossless prefix=F000 mid=000zwUDf0KftQv
+09-25 14:45:01.167 28837 28837 I PlayerViewModel: quality verdict requested=lossless granted=lossless br=0 type=flac songMax=null -> displayIdx=3 status=NORMAL
+09-25 14:45:01.210 28837 28837 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:45:01.210 28837 28837 W PlayerViewModel: playback error at level=lossless for songId=4611686018727083242, retrying at exhigh
+09-25 14:45:01.210 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 14:45:01.413 28837 31992 I QqApi   : vkey ok: requested=exhigh actual=exhigh prefix=C400 mid=000zwUDf0KftQv
+09-25 14:45:01.414 28837 28837 I PlayerViewModel: quality verdict requested=exhigh granted=exhigh br=96000 type=m4a songMax=null -> displayIdx=2 status=NORMAL
+09-25 14:45:01.452 28837 28837 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:45:01.452 28837 28837 W PlayerViewModel: playback error at level=exhigh for songId=4611686018727083242, retrying at higher
+09-25 14:45:01.453 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 14:45:01.690 28837 32017 I QqApi   : vkey ok: requested=higher actual=higher prefix=M800 mid=000zwUDf0KftQv
+09-25 14:45:01.691 28837 28837 I PlayerViewModel: quality verdict requested=higher granted=higher br=320000 type=mp3 songMax=null -> displayIdx=2 status=NORMAL
+09-25 14:45:01.728 28837 28837 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:45:01.728 28837 28837 W PlayerViewModel: playback error at level=higher for songId=4611686018727083242, retrying at standard
+09-25 14:45:01.728 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 14:45:01.924 28837 31990 I QqApi   : vkey ok: requested=standard actual=standard prefix=M500 mid=000zwUDf0KftQv
+09-25 14:45:01.925 28837 28837 I PlayerViewModel: quality verdict requested=standard granted=standard br=128000 type=mp3 songMax=null -> displayIdx=0 status=NORMAL
+09-25 14:45:01.964 28837 28837 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:45:01.964 28837 28837 W PlayerViewModel: lowest tier also failed for songId=4611686018727083242, skipping
+09-25 14:45:01.964 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018427589359 mid=003L8Oq94De6Fy media=003u4H921sRR6B cacheKey=null
+09-25 14:45:01.965 28837 28837 I PlayerViewModel: quality verdict requested=jyeffect granted=jyeffect br=0 type=flac songMax=null -> displayIdx=5 status=NORMAL
+09-25 14:45:02.058 28837 28837 E PlaybackService: Playback error for songId=4611686018427589359 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:45:02.058 28837 28837 W PlayerViewModel: playback error at level=jyeffect for songId=4611686018427589359, retrying at hires
+09-25 14:45:02.058 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018427589359 mid=003L8Oq94De6Fy media=003u4H921sRR6B cacheKey=null
+09-25 14:45:02.225 28837 32014 I QqApi   : vkey ok: requested=hires actual=hires prefix=RS01 mid=003u4H921sRR6B
+09-25 14:45:02.226 28837 28837 I PlayerViewModel: quality verdict requested=hires granted=hires br=0 type=flac songMax=null -> displayIdx=4 status=NORMAL
+09-25 14:45:06.316 28837 28837 E PlaybackService: Playback error for songId=4611686018427589359 code=ERROR_CODE_IO_BAD_HTTP_STATUS: Source error
+09-25 14:45:06.316 28837 28837 W PlayerViewModel: playback error at level=hires for songId=4611686018427589359, retrying at lossless
+09-25 14:45:06.316 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018427589359 mid=003L8Oq94De6Fy media=003u4H921sRR6B cacheKey=null
+09-25 14:45:06.465 28837 32027 I QqApi   : vkey ok: requested=lossless actual=lossless prefix=F000 mid=003u4H921sRR6B
+09-25 14:45:06.475 28837 28837 I PlayerViewModel: quality verdict requested=lossless granted=lossless br=0 type=flac songMax=null -> displayIdx=3 status=NORMAL
+09-25 14:45:06.535 28837 28837 E PlaybackService: Playback error for songId=4611686018427589359 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:45:06.535 28837 28837 W PlayerViewModel: playback error at level=lossless for songId=4611686018427589359, retrying at exhigh
+09-25 14:45:06.535 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018427589359 mid=003L8Oq94De6Fy media=003u4H921sRR6B cacheKey=null
+09-25 14:45:06.700 28837 31985 I QqApi   : vkey ok: requested=exhigh actual=exhigh prefix=C400 mid=003u4H921sRR6B
+09-25 14:45:06.701 28837 28837 I PlayerViewModel: quality verdict requested=exhigh granted=exhigh br=96000 type=m4a songMax=null -> displayIdx=2 status=NORMAL
+09-25 14:45:06.753 28837 28837 E PlaybackService: Playback error for songId=4611686018427589359 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:45:06.753 28837 28837 W PlayerViewModel: playback error at level=exhigh for songId=4611686018427589359, retrying at higher
+09-25 14:45:06.754 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018427589359 mid=003L8Oq94De6Fy media=003u4H921sRR6B cacheKey=null
+09-25 14:45:06.916 28837 32345 I QqApi   : vkey ok: requested=higher actual=higher prefix=M800 mid=003u4H921sRR6B
+09-25 14:45:06.917 28837 28837 I PlayerViewModel: quality verdict requested=higher granted=higher br=320000 type=mp3 songMax=null -> displayIdx=2 status=NORMAL
+09-25 14:45:06.952 28837 28837 E PlaybackService: Playback error for songId=4611686018427589359 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:45:06.952 28837 28837 W PlayerViewModel: playback error at level=higher for songId=4611686018427589359, retrying at standard
+09-25 14:45:06.952 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018427589359 mid=003L8Oq94De6Fy media=003u4H921sRR6B cacheKey=null
+09-25 14:45:07.148 28837 32027 I QqApi   : vkey ok: requested=standard actual=standard prefix=M500 mid=003u4H921sRR6B
+09-25 14:45:07.148 28837 28837 I PlayerViewModel: quality verdict requested=standard granted=standard br=128000 type=mp3 songMax=null -> displayIdx=0 status=NORMAL
+09-25 14:45:07.174 28837 28837 E PlaybackService: Playback error for songId=4611686018427589359 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:45:07.174 28837 28837 W PlayerViewModel: lowest tier also failed for songId=4611686018427589359, skipping
+09-25 14:45:07.174 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018690555381 mid=002n3u4D2u8DLn media=002n3u4D2u8DLn cacheKey=null
+09-25 14:45:07.175 28837 28837 I PlayerViewModel: quality verdict requested=jyeffect granted=standard br=128000 type=mp3 songMax=null -> displayIdx=0 status=DOWNGRADED
+09-25 14:45:07.239 28837 28837 E PlaybackService: Playback error for songId=4611686018690555381 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:45:07.239 28837 28837 W PlayerViewModel: lowest tier also failed for songId=4611686018690555381, skipping
+09-25 14:45:07.240 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018536588792 mid=000WSotS3LnGHf media=0022g3hT3Oa0Nh cacheKey=null
+09-25 14:45:07.391 28837 31990 W QqApi   : no playable url for qqmusic:4611686018536588792 at level=jyeffect
+09-25 14:45:07.391 28837 31990 W PlayerViewModel: no playable url for songId=4611686018536588792, skipping
+09-25 14:45:07.391 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 14:45:07.436 28837 32015 I PlayerViewModel: offline cache hit songId=4611686018727083242 key=song:4611686018727083242:jyeffect
+09-25 14:45:07.554 28837 31990 I QqApi   : vkey ok: requested=jyeffect actual=jyeffect prefix=Q000 mid=000zwUDf0KftQv
+09-25 14:45:07.555 28837 28837 I PlayerViewModel: quality verdict requested=jyeffect granted=jyeffect br=0 type=flac songMax=null -> displayIdx=5 status=NORMAL
+09-25 14:45:07.626 28837 28837 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:45:07.626 28837 28837 W PlayerViewModel: playback error at level=jyeffect for songId=4611686018727083242, retrying at hires
+09-25 14:45:07.626 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 14:45:07.788 28837 31992 I QqApi   : vkey ok: requested=hires actual=hires prefix=RS01 mid=000zwUDf0KftQv
+09-25 14:45:07.789 28837 28837 I PlayerViewModel: quality verdict requested=hires granted=hires br=0 type=flac songMax=null -> displayIdx=4 status=NORMAL
+09-25 14:45:07.818 28837 28837 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:45:07.818 28837 28837 W PlayerViewModel: playback error at level=hires for songId=4611686018727083242, retrying at lossless
+09-25 14:45:07.818 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 14:45:07.998 28837 32015 I QqApi   : vkey ok: requested=lossless actual=lossless prefix=F000 mid=000zwUDf0KftQv
+09-25 14:45:08.000 28837 28837 I PlayerViewModel: quality verdict requested=lossless granted=lossless br=0 type=flac songMax=null -> displayIdx=3 status=NORMAL
+09-25 14:45:08.038 28837 28837 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:45:08.038 28837 28837 W PlayerViewModel: playback error at level=lossless for songId=4611686018727083242, retrying at exhigh
+09-25 14:45:08.038 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 14:45:08.238 28837 31992 I QqApi   : vkey ok: requested=exhigh actual=exhigh prefix=C400 mid=000zwUDf0KftQv
+09-25 14:45:08.239 28837 28837 I PlayerViewModel: quality verdict requested=exhigh granted=exhigh br=96000 type=m4a songMax=null -> displayIdx=2 status=NORMAL
+09-25 14:45:08.272 28837 28837 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:45:08.273 28837 28837 W PlayerViewModel: playback error at level=exhigh for songId=4611686018727083242, retrying at higher
+09-25 14:45:08.273 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 14:45:08.459 28837 31990 I QqApi   : vkey ok: requested=higher actual=higher prefix=M800 mid=000zwUDf0KftQv
+09-25 14:45:08.460 28837 28837 I PlayerViewModel: quality verdict requested=higher granted=higher br=320000 type=mp3 songMax=null -> displayIdx=2 status=NORMAL
+09-25 14:45:08.499 28837 28837 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:45:08.499 28837 28837 W PlayerViewModel: playback error at level=higher for songId=4611686018727083242, retrying at standard
+09-25 14:45:08.499 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 14:45:08.685 28837 31992 I QqApi   : vkey ok: requested=standard actual=standard prefix=M500 mid=000zwUDf0KftQv
+09-25 14:45:08.686 28837 28837 I PlayerViewModel: quality verdict requested=standard granted=standard br=128000 type=mp3 songMax=null -> displayIdx=0 status=NORMAL
+09-25 14:45:08.715 28837 28837 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:45:08.715 28837 28837 W PlayerViewModel: lowest tier also failed for songId=4611686018727083242, skipping
+09-25 14:45:08.715 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018427589359 mid=003L8Oq94De6Fy media=003u4H921sRR6B cacheKey=null
+09-25 14:45:08.716 28837 28837 I PlayerViewModel: quality verdict requested=jyeffect granted=jyeffect br=0 type=flac songMax=null -> displayIdx=5 status=NORMAL
+09-25 14:45:08.772 28837 28837 E PlaybackService: Playback error for songId=4611686018427589359 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:45:08.772 28837 28837 W PlayerViewModel: playback error at level=jyeffect for songId=4611686018427589359, retrying at hires
+09-25 14:45:08.772 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018427589359 mid=003L8Oq94De6Fy media=003u4H921sRR6B cacheKey=null
+09-25 14:45:08.999 28837 31990 I QqApi   : vkey ok: requested=hires actual=hires prefix=RS01 mid=003u4H921sRR6B
+09-25 14:45:09.001 28837 28837 I PlayerViewModel: quality verdict requested=hires granted=hires br=0 type=flac songMax=null -> displayIdx=4 status=NORMAL
+09-25 14:45:12.347 28837 28837 E PlaybackService: Playback error for songId=4611686018427589359 code=ERROR_CODE_IO_BAD_HTTP_STATUS: Source error
+09-25 14:45:12.347 28837 28837 W PlayerViewModel: playback error at level=hires for songId=4611686018427589359, retrying at lossless
+09-25 14:45:12.347 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018427589359 mid=003L8Oq94De6Fy media=003u4H921sRR6B cacheKey=null
+09-25 14:45:12.496 28837 32015 I QqApi   : vkey ok: requested=lossless actual=lossless prefix=F000 mid=003u4H921sRR6B
+09-25 14:45:12.503 28837 28837 I PlayerViewModel: quality verdict requested=lossless granted=lossless br=0 type=flac songMax=null -> displayIdx=3 status=NORMAL
+09-25 14:45:12.546 28837 28837 E PlaybackService: Playback error for songId=4611686018427589359 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:45:12.546 28837 28837 W PlayerViewModel: playback error at level=lossless for songId=4611686018427589359, retrying at exhigh
+09-25 14:45:12.546 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018427589359 mid=003L8Oq94De6Fy media=003u4H921sRR6B cacheKey=null
+09-25 14:45:12.743 28837 31992 I QqApi   : vkey ok: requested=exhigh actual=exhigh prefix=C400 mid=003u4H921sRR6B
+09-25 14:45:12.745 28837 28837 I PlayerViewModel: quality verdict requested=exhigh granted=exhigh br=96000 type=m4a songMax=null -> displayIdx=2 status=NORMAL
+09-25 14:45:12.778 28837 28837 E PlaybackService: Playback error for songId=4611686018427589359 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:45:12.778 28837 28837 W PlayerViewModel: playback error at level=exhigh for songId=4611686018427589359, retrying at higher
+09-25 14:45:12.778 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018427589359 mid=003L8Oq94De6Fy media=003u4H921sRR6B cacheKey=null
+09-25 14:45:12.973 28837 31990 I QqApi   : vkey ok: requested=higher actual=higher prefix=M800 mid=003u4H921sRR6B
+09-25 14:45:12.974 28837 28837 I PlayerViewModel: quality verdict requested=higher granted=higher br=320000 type=mp3 songMax=null -> displayIdx=2 status=NORMAL
+09-25 14:45:13.023 28837 28837 E PlaybackService: Playback error for songId=4611686018427589359 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:45:13.023 28837 28837 W PlayerViewModel: playback error at level=higher for songId=4611686018427589359, retrying at standard
+09-25 14:45:13.024 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018427589359 mid=003L8Oq94De6Fy media=003u4H921sRR6B cacheKey=null
+09-25 14:45:13.214 28837 31992 I QqApi   : vkey ok: requested=standard actual=standard prefix=M500 mid=003u4H921sRR6B
+09-25 14:45:13.215 28837 28837 I PlayerViewModel: quality verdict requested=standard granted=standard br=128000 type=mp3 songMax=null -> displayIdx=0 status=NORMAL
+09-25 14:45:13.251 28837 28837 E PlaybackService: Playback error for songId=4611686018427589359 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:45:13.251 28837 28837 W PlayerViewModel: lowest tier also failed for songId=4611686018427589359, skipping
+09-25 14:45:13.251 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018690555381 mid=002n3u4D2u8DLn media=002n3u4D2u8DLn cacheKey=null
+09-25 14:45:13.252 28837 28837 I PlayerViewModel: quality verdict requested=jyeffect granted=standard br=128000 type=mp3 songMax=null -> displayIdx=0 status=DOWNGRADED
+09-25 14:45:13.342 28837 28837 E PlaybackService: Playback error for songId=4611686018690555381 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:45:13.342 28837 28837 W PlayerViewModel: lowest tier also failed for songId=4611686018690555381, skipping
+09-25 14:45:13.342 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018536588792 mid=000WSotS3LnGHf media=0022g3hT3Oa0Nh cacheKey=null
+09-25 14:45:13.490 28837 32346 I QqApi   : vkey ok: requested=jyeffect actual=jyeffect prefix=Q000 mid=000zwUDf0KftQv
+09-25 14:45:13.544 28837 32345 W QqApi   : no playable url for qqmusic:4611686018536588792 at level=jyeffect
+09-25 14:45:13.544 28837 32345 W PlayerViewModel: no playable url for songId=4611686018536588792, skipping
+09-25 14:45:13.544 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 14:45:13.545 28837 28837 I PlayerViewModel: quality verdict requested=jyeffect granted=jyeffect br=0 type=flac songMax=null -> displayIdx=5 status=NORMAL
+09-25 14:45:13.604 28837 28837 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:45:13.604 28837 28837 W PlayerViewModel: playback error at level=jyeffect for songId=4611686018727083242, retrying at hires
+09-25 14:45:13.604 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 14:45:13.821 28837 32345 I QqApi   : vkey ok: requested=hires actual=hires prefix=RS01 mid=000zwUDf0KftQv
+09-25 14:45:13.822 28837 28837 I PlayerViewModel: quality verdict requested=hires granted=hires br=0 type=flac songMax=null -> displayIdx=4 status=NORMAL
+09-25 14:45:13.860 28837 28837 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:45:13.860 28837 28837 W PlayerViewModel: playback error at level=hires for songId=4611686018727083242, retrying at lossless
+09-25 14:45:13.860 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 14:45:14.053 28837 31988 I QqApi   : vkey ok: requested=lossless actual=lossless prefix=F000 mid=000zwUDf0KftQv
+09-25 14:45:14.054 28837 28837 I PlayerViewModel: quality verdict requested=lossless granted=lossless br=0 type=flac songMax=null -> displayIdx=3 status=NORMAL
+09-25 14:45:14.107 28837 28837 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:45:14.108 28837 28837 W PlayerViewModel: playback error at level=lossless for songId=4611686018727083242, retrying at exhigh
+09-25 14:45:14.108 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 14:45:14.284 28837 32345 I QqApi   : vkey ok: requested=exhigh actual=exhigh prefix=C400 mid=000zwUDf0KftQv
+09-25 14:45:14.285 28837 28837 I PlayerViewModel: quality verdict requested=exhigh granted=exhigh br=96000 type=m4a songMax=null -> displayIdx=2 status=NORMAL
+09-25 14:45:14.316 28837 28837 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:45:14.316 28837 28837 W PlayerViewModel: playback error at level=exhigh for songId=4611686018727083242, retrying at higher
+09-25 14:45:14.316 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 14:45:14.519 28837 32027 I QqApi   : vkey ok: requested=higher actual=higher prefix=M800 mid=000zwUDf0KftQv
+09-25 14:45:14.520 28837 28837 I PlayerViewModel: quality verdict requested=higher granted=higher br=320000 type=mp3 songMax=null -> displayIdx=2 status=NORMAL
+09-25 14:45:14.551 28837 28837 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:45:14.551 28837 28837 W PlayerViewModel: playback error at level=higher for songId=4611686018727083242, retrying at standard
+09-25 14:45:14.551 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 14:45:14.770 28837 31988 I QqApi   : vkey ok: requested=standard actual=standard prefix=M500 mid=000zwUDf0KftQv
+09-25 14:45:14.771 28837 28837 I PlayerViewModel: quality verdict requested=standard granted=standard br=128000 type=mp3 songMax=null -> displayIdx=0 status=NORMAL
+09-25 14:45:14.793 28837 28837 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:45:14.793 28837 28837 W PlayerViewModel: lowest tier also failed for songId=4611686018727083242, skipping
+09-25 14:45:14.793 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018427589359 mid=003L8Oq94De6Fy media=003u4H921sRR6B cacheKey=null
+09-25 14:45:14.794 28837 28837 I PlayerViewModel: quality verdict requested=jyeffect granted=jyeffect br=0 type=flac songMax=null -> displayIdx=5 status=NORMAL
+09-25 14:45:14.868 28837 28837 E PlaybackService: Playback error for songId=4611686018427589359 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:45:14.868 28837 28837 W PlayerViewModel: playback error at level=jyeffect for songId=4611686018427589359, retrying at hires
+09-25 14:45:14.868 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018427589359 mid=003L8Oq94De6Fy media=003u4H921sRR6B cacheKey=null
+09-25 14:45:15.055 28837 31992 I QqApi   : vkey ok: requested=hires actual=hires prefix=RS01 mid=003u4H921sRR6B
+09-25 14:45:15.056 28837 28837 I PlayerViewModel: quality verdict requested=hires granted=hires br=0 type=flac songMax=null -> displayIdx=4 status=NORMAL
+09-25 14:45:19.094 28837 28837 E PlaybackService: Playback error for songId=4611686018427589359 code=ERROR_CODE_IO_BAD_HTTP_STATUS: Source error
+09-25 14:45:19.094 28837 28837 W PlayerViewModel: playback error at level=hires for songId=4611686018427589359, retrying at lossless
+09-25 14:45:19.094 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018427589359 mid=003L8Oq94De6Fy media=003u4H921sRR6B cacheKey=null
+09-25 14:45:19.251 28837 32017 I QqApi   : vkey ok: requested=lossless actual=lossless prefix=F000 mid=003u4H921sRR6B
+09-25 14:45:19.261 28837 28837 I PlayerViewModel: quality verdict requested=lossless granted=lossless br=0 type=flac songMax=null -> displayIdx=3 status=NORMAL
+09-25 14:45:19.310 28837 28837 E PlaybackService: Playback error for songId=4611686018427589359 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:45:19.310 28837 28837 W PlayerViewModel: playback error at level=lossless for songId=4611686018427589359, retrying at exhigh
+09-25 14:45:19.310 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018427589359 mid=003L8Oq94De6Fy media=003u4H921sRR6B cacheKey=null
+09-25 14:45:19.476 28837 31990 I QqApi   : vkey ok: requested=exhigh actual=exhigh prefix=C400 mid=003u4H921sRR6B
+09-25 14:45:19.476 28837 28837 I PlayerViewModel: quality verdict requested=exhigh granted=exhigh br=96000 type=m4a songMax=null -> displayIdx=2 status=NORMAL
+09-25 14:45:19.508 28837 28837 E PlaybackService: Playback error for songId=4611686018427589359 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:45:19.508 28837 28837 W PlayerViewModel: playback error at level=exhigh for songId=4611686018427589359, retrying at higher
+09-25 14:45:19.508 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018427589359 mid=003L8Oq94De6Fy media=003u4H921sRR6B cacheKey=null
+09-25 14:45:19.721 28837 31989 I QqApi   : vkey ok: requested=higher actual=higher prefix=M800 mid=003u4H921sRR6B
+09-25 14:45:19.722 28837 28837 I PlayerViewModel: quality verdict requested=higher granted=higher br=320000 type=mp3 songMax=null -> displayIdx=2 status=NORMAL
+09-25 14:45:19.766 28837 28837 E PlaybackService: Playback error for songId=4611686018427589359 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:45:19.766 28837 28837 W PlayerViewModel: playback error at level=higher for songId=4611686018427589359, retrying at standard
+09-25 14:45:19.766 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018427589359 mid=003L8Oq94De6Fy media=003u4H921sRR6B cacheKey=null
+09-25 14:45:19.952 28837 32017 I QqApi   : vkey ok: requested=standard actual=standard prefix=M500 mid=003u4H921sRR6B
+09-25 14:45:19.952 28837 28837 I PlayerViewModel: quality verdict requested=standard granted=standard br=128000 type=mp3 songMax=null -> displayIdx=0 status=NORMAL
+09-25 14:45:19.986 28837 28837 E PlaybackService: Playback error for songId=4611686018427589359 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:45:19.986 28837 28837 W PlayerViewModel: lowest tier also failed for songId=4611686018427589359, skipping
+09-25 14:45:19.986 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018690555381 mid=002n3u4D2u8DLn media=002n3u4D2u8DLn cacheKey=null
+09-25 14:45:19.988 28837 28837 I PlayerViewModel: quality verdict requested=jyeffect granted=standard br=128000 type=mp3 songMax=null -> displayIdx=0 status=DOWNGRADED
+09-25 14:45:20.059 28837 28837 E PlaybackService: Playback error for songId=4611686018690555381 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:45:20.059 28837 28837 W PlayerViewModel: lowest tier also failed for songId=4611686018690555381, skipping
+09-25 14:45:20.059 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018536588792 mid=000WSotS3LnGHf media=0022g3hT3Oa0Nh cacheKey=null
+09-25 14:45:20.234 28837 32015 W QqApi   : no playable url for qqmusic:4611686018536588792 at level=jyeffect
+09-25 14:45:20.234 28837 32015 W PlayerViewModel: no playable url for songId=4611686018536588792, skipping
+09-25 14:45:20.235 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 14:45:20.236 28837 28837 I PlayerViewModel: quality verdict requested=jyeffect granted=jyeffect br=0 type=flac songMax=null -> displayIdx=5 status=NORMAL
+09-25 14:45:20.278 28837 28837 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:45:20.278 28837 28837 W PlayerViewModel: playback error at level=jyeffect for songId=4611686018727083242, retrying at hires
+09-25 14:45:20.278 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 14:45:20.472 28837 31990 I QqApi   : vkey ok: requested=hires actual=hires prefix=RS01 mid=000zwUDf0KftQv
+09-25 14:45:20.472 28837 28837 I PlayerViewModel: quality verdict requested=hires granted=hires br=0 type=flac songMax=null -> displayIdx=4 status=NORMAL
+09-25 14:45:20.506 28837 28837 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:45:20.506 28837 28837 W PlayerViewModel: playback error at level=hires for songId=4611686018727083242, retrying at lossless
+09-25 14:45:20.506 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 14:45:20.708 28837 31987 I QqApi   : vkey ok: requested=lossless actual=lossless prefix=F000 mid=000zwUDf0KftQv
+09-25 14:45:20.709 28837 28837 I PlayerViewModel: quality verdict requested=lossless granted=lossless br=0 type=flac songMax=null -> displayIdx=3 status=NORMAL
+09-25 14:45:20.742 28837 28837 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:45:20.742 28837 28837 W PlayerViewModel: playback error at level=lossless for songId=4611686018727083242, retrying at exhigh
+09-25 14:45:20.742 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 14:45:20.937 28837 32345 I QqApi   : vkey ok: requested=exhigh actual=exhigh prefix=C400 mid=000zwUDf0KftQv
+09-25 14:45:20.938 28837 28837 I PlayerViewModel: quality verdict requested=exhigh granted=exhigh br=96000 type=m4a songMax=null -> displayIdx=2 status=NORMAL
+09-25 14:45:20.977 28837 28837 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:45:20.977 28837 28837 W PlayerViewModel: playback error at level=exhigh for songId=4611686018727083242, retrying at higher
+09-25 14:45:20.977 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 14:45:21.191 28837 31987 I QqApi   : vkey ok: requested=higher actual=higher prefix=M800 mid=000zwUDf0KftQv
+09-25 14:45:21.192 28837 28837 I PlayerViewModel: quality verdict requested=higher granted=higher br=320000 type=mp3 songMax=null -> displayIdx=2 status=NORMAL
+09-25 14:45:21.220 28837 28837 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 14:45:21.220 28837 28837 W PlayerViewModel: playback error at level=higher for songId=4611686018727083242, retrying at standard
+09-25 14:45:21.220 28837 28837 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 14:45:21.421 28837 32345 I QqApi   : vkey ok: requested=standard actual=standard prefix=M500 mid=000zwUDf0KftQv
+09-25 14:45:21.421 28837 28837 I PlayerViewModel: quality verdict requested=standard granted=standard br=128000 type=mp3 songMax=null -> displayIdx=0 status=NORMAL
+09-25 14:45:21.467 28837 28837 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error

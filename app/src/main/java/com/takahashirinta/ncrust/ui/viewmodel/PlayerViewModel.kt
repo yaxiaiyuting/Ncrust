@@ -58,7 +58,16 @@ import com.takahashirinta.ncrust.source.SourceRouter
 import com.takahashirinta.ncrust.source.TrackKey
 import com.takahashirinta.ncrust.source.isResolvable
 import com.takahashirinta.ncrust.source.songRefOf
+import com.takahashirinta.ncrust.player.AutoSkipGuard
+import com.takahashirinta.ncrust.player.FailureKind
+import com.takahashirinta.ncrust.player.GuardAction
+import com.takahashirinta.ncrust.player.PlayOrigin
+import com.takahashirinta.ncrust.player.PlaybackFailure
 import com.takahashirinta.ncrust.player.PlaybackService
+import com.takahashirinta.ncrust.player.QualityCeilingMemory
+import com.takahashirinta.ncrust.player.QualityRetryGuard
+import com.takahashirinta.ncrust.player.classifyFailure
+import com.takahashirinta.ncrust.player.maySkipOnUrlFailure
 import com.takahashirinta.ncrust.player.PlaybackStateManager
 import com.takahashirinta.ncrust.player.PlayReporter
 import com.takahashirinta.ncrust.player.SongUrlFetcher
@@ -253,9 +262,50 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
 
     // 播放出错(如设备解码不了 24-bit FLAC / 高采样率)时自动降档重试的阶梯。
     // 每出错一次降一档,到 standard 仍失败才跳歌:保证「有声音,或跳歌」,绝不静默卡住。
+    //
+    // v2.2.1 · P0：**阶梯本身没变，变的是谁能走几步**。
+    // 旧实现让失败处理沿这条 8 档阶梯一路走到底，而实测（PCL110 / QQ《One Last Kiss》）
+    // 走到底是这样的：dolby(Q001=6 声道 FLAC) 把 AudioSink 打坏 → 之后**每一档**都失败
+    // → 8 次 setMediaItem/play = 8 次抢音频焦点 → 跳歌 → 下一首继续。
+    // 现在由 [qualityRetryGuard] 限成最多 3 次、单调降档、且两次之间至少隔 10s。
     private val qualityRetryLadder = listOf(
         "jymaster", "dolby", "jyeffect", "hires", "lossless", "exhigh", "higher", "standard",
     )
+
+    /** v2.2.1 · P0：降档重试熔断（单调 + 去重 + 上限 + 节流）。纯逻辑，见 PlaybackGuard.kt。 */
+    private val qualityRetryGuard = QualityRetryGuard()
+
+    /**
+     * v2.2.1 · P0：本曲实测能拿到的最高档位（降级状态持久化）。
+     *
+     * 用户报障的一半是「重进页面又触发升级」：自动接续 / 预载每次都拿全局偏好去请求，
+     * 而权益是按曲的。这里把「这首歌实际只能到哪一档」记下来（24h TTL），
+     * **只约束自动路径** —— 用户手动切档位一律照请求走，并清掉该曲上限。
+     */
+    private val qualityCeiling = QualityCeilingMemory()
+
+    /** v2.2.1 · P0：自动跳歌熔断（连续 5 次即停）。纯逻辑，见 PlaybackGuard.kt。 */
+    private val autoSkipGuard = AutoSkipGuard()
+
+    /**
+     * v2.2.1 · P0：本会话内**已经证明播不出来**的 URL（离线缓存 key）。
+     *
+     * 存在的理由：离线兜底会「退化成这首歌的任意档位」，于是把一条坏链反复喂回播放器
+     * （实测固定点：请求 exhigh → 兜底给 lossless 的旧链 → 失败 → 又请求 exhigh → 又是同一条）。
+     * 一个 URL 失败过就不再进第二次，是这条环路的最后一道闸。
+     */
+    private val failedUrlKeys = mutableSetOf<String>()
+
+    /** v2.2.1 · P0：本次开播请求的来源。决定失败时是「重试 / 停下」还是「跳歌」。 */
+    private var lastPlayOrigin: PlayOrigin = PlayOrigin.USER
+
+    /**
+     * v2.2.1 · P0：本会话里已经播成功过的最高档位（这首歌）。
+     * 手动切音质失败时回退到这里继续播，而不是跳歌 —— 见 [handlePlaybackError]。
+     */
+    private var lastGoodLevel = ""
+
+
     // 上一次交给 PlaybackService 的 URL 的实际档位(fetch 内部可能已降级)。
     private var lastPlayedLevel = ""
     // A3：最近一次取链的输入，供偏好变化后重算状态（不重新取链）。
@@ -438,6 +488,13 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
             duration.value = dur
             progress.value = if (dur > 0) pos.toFloat() / dur.toFloat() else 0f
 
+            // v2.2.1 · P0：「确实播出声了」是自动跳歌熔断的**唯一**清零条件。
+            // 不能拿「起播成功」当清零条件 —— 起播即失败的那些歌会把计数冲掉，
+            // 5 次上限就永远数不到（实测那轮级联就是这么绕过一切防线的）。
+            if (currentSongId.value != null && pos >= AutoSkipGuard.PROGRESS_CONFIRM_MS) {
+                autoSkipGuard.onProgressConfirmed()
+            }
+
             // 播放行为上报: 进度达 80% 视为"听完",每首歌只上报一次。
             val sid = currentSongId.value ?: -1L
             if (sid > 0 && sid != lastReportedSongId && PlayReporter.reachedCompletion(pos, dur)) {
@@ -476,7 +533,12 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         // B2-C：封面 Palette 提取出的主题色（null = 无封面 / 提取失败 → UI 回落预设色）。
         PlaybackService.onCoverAccent = { rgb -> coverAccentRgb.value = rgb }
         // ExoPlayer 主线程回调。播放失败 → 降档重试,而不是无声地停在 IDLE。
-        PlaybackService.onPlaybackError = { sid -> handlePlaybackError(sid) }
+        // v2.2.1 · P0：回调现在带失败描述（errorCode + cause），重试策略由
+        // [QualityRetryGuard] 决定 —— 单调、去重、有上限、带音频焦点节流。
+        // 回调在 ExoPlayer 主线程；重试里要做「音频焦点节流」的 delay()，所以丢进 viewModelScope。
+        PlaybackService.onPlaybackError = { sid, failure ->
+            viewModelScope.launch { handlePlaybackError(sid, failure) }
+        }
 
         // Called on the main thread by ExoPlayer's onMediaItemTransition (AUTO reason).
         // v2.1.5：先接身份、再切状态。顺序不能反 —— 取词的路由依据就是这里的身份。
@@ -532,9 +594,23 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
             // v2.1.5：续播状态里只存得下裸 id，而 QQ 的 id 带 bit62 标志位 ——
             // [TrackKey.of] 会据此把音源判成 QQ 音乐，不会再拿一个 2^62 的 id
             // 去问网易云的歌词接口（那必然查不到，表现是「恢复 QQ 歌曲永远没歌词」）。
-            // 代价：songmid 仍然缺（它只在队列的 SongItem 里），QQ 取词会失败 ——
-            // 这是既有缺口，已在 release notes 的未验证/已知问题里写明。
-            currentTrack = TrackKey.of(null, savedState.songId)
+            //
+            // v2.2.1 · P0：**光有 bit62 不够 —— 取链要的是 songmid，不是音源名。**
+            // 旧实现在这里写死 `TrackKey.of(null, savedState.songId)`，即使
+            // `PlaybackStateManager` 里存着 songmid / media_mid 也**从不读**，
+            // 于是冷启动后任何一次重取链（点播放 / 切音质 / 降档重试）对 QQ 曲目都是
+            // `SourceRouter: unresolvable song source=qqmusic (missing sourceId)`，
+            // 只能吃离线缓存里**另一个档位**的旧 URL。
+            // 现在优先用落盘的身份；落盘没有时才退回 bit62 推断（老数据自愈路径）。
+            val savedSourceKey = PlaybackStateManager.getSourceKey(getApplication())
+            val savedSourceId = PlaybackStateManager.getSourceId(getApplication())
+            val savedMediaId = PlaybackStateManager.getMediaId(getApplication())
+            currentTrack = TrackKey.of(savedSourceKey, savedState.songId, savedSourceId, savedMediaId)
+            Log.i(
+                TAG_TRACK,
+                "restore -> track=$currentTrack mid=${savedSourceId ?: "none"} " +
+                    "media=${savedMediaId ?: "none"} (sourceKey=${savedSourceKey ?: "inferred"})",
+            )
             currentSongId.value = savedState.songId
             currentSongName.value = savedState.songName
             currentSongArtist.value = savedState.songArtist
@@ -566,6 +642,34 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                 currentTrack?.let { t -> viewModelScope.launch { fetchLyrics(t) } }
             }
         }
+    }
+
+    /**
+     * v2.2.1 · P0：用**队列里那一份**曲目身份补齐当前曲目缺的 songmid / media_mid。
+     *
+     * 为什么需要：歌曲身份有两个来源 —— ① 落盘的单曲状态（只有 id + 音源，见
+     * [PlaybackStateManager]）；② 队列里的 `SongItem`（**带** `mid` / `media_id`）。
+     * 冷启动时 ① 是权威但信息少，而队列随后才恢复。旧代码在 ① 上就停住了，
+     * 于是 QQ 曲目永远缺 songmid ⇒ 取不到链 ⇒ 只能吃离线缓存里别的档位的旧 URL。
+     *
+     * 本方法由 `MainScreen` 在恢复完队列后调用一次：只在**确实更全**时才覆盖，
+     * 绝不把已有的 songmid 冲成 null。
+     */
+    fun adoptTrackIdentity(sourceKey: String?, songId: Long, sourceId: String?, mediaId: String?) {
+        if (songId <= 0L || songId != currentSongId.value) return
+        if (sourceId.isNullOrEmpty() && mediaId.isNullOrEmpty()) return
+        val merged = TrackKey.of(
+            sourceKey ?: currentTrack?.source?.key,
+            songId,
+            sourceId ?: currentTrack?.sourceId,
+            mediaId ?: currentTrack?.mediaId,
+        )
+        if (merged == currentTrack) return
+        Log.i(TAG_TRACK, "identity backfilled from queue -> $merged")
+        currentTrack = merged
+        lyricCoordinator.onTrackChanged(merged)
+        // 身份变全了，歌词也值得重取一次（QQ 取词同样需要 songmid）。
+        viewModelScope.launch { fetchLyrics(merged) }
     }
 
     fun setOnSongEndedCallback(callback: () -> Unit) { onSongEndedCallback = callback }
@@ -762,7 +866,18 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
             br = result.br,
             type = result.type,
             songMaxLevel = result.songMaxLevel,
+            // v2.2.1 · P0：QQ 前缀 / 离线 key 反推出的档位是**证据**，允许它触发诚实的「已降级」。
+            levelFromFile = result.levelFromFile,
         )
+        // v2.2.1 · P0：记下这条链上确实取到过 URL 的档位，供「音质路径取不到链」时回退。
+        if (result.levelFromFile) lastGoodLevel = result.actualLevel
+        // v2.2.1 · P0：降级状态持久化 —— 只记「确实低于请求档位」的情况，
+        // 不记等于请求的情况（否则一次成功就会把上限钉死在当前档位）。
+        val reqIdx = qualityApiLevels.indexOf(requested)
+        val gotIdx = qualityApiLevels.indexOf(result.actualLevel)
+        if (reqIdx >= 0 && gotIdx >= 0 && gotIdx < reqIdx) {
+            qualityCeiling.remember(currentTrack?.toString() ?: "", result.actualLevel, System.currentTimeMillis())
+        }
         currentQualityIndex.value = verdict.displayIndex
         qualityStatus.value = verdict.status
         // v2.1.4 · 诊断：把「这一次到底拿到了什么」打成一行。
@@ -809,6 +924,9 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
             sourceKey = currentSongSourceKey,
             sourceId = currentSongSourceId,
             mediaId = currentSongMediaId,
+            // v2.2.1 · P0：用户手动切档 —— 清零重试额度（用户有权重新试探），
+            // 且这条路径上的取链失败**不得**触发跳歌。
+            origin = PlayOrigin.QUALITY_SWITCH,
         )
     }
 
@@ -874,6 +992,10 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
 
     fun setQualityPreference(index: Int) {
         if (index !in qualityApiLevels.indices) return
+        // v2.2.1 · P0：用户手动选档位 = 重新试探 ⇒ 清掉本曲的降级上限与重试计数。
+        qualityCeiling.clear(currentTrack?.toString() ?: "")
+        qualityRetryGuard.resetAll()
+        autoSkipGuard.onUserAction()
         val prefs = getApplication<Application>().getSharedPreferences("ncrust_settings", 0)
         prefs.edit()
             .putInt(if (isOnWifi()) "wifi_quality" else "mobile_quality", index)
@@ -902,10 +1024,24 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         // 显式传值的唯一场景是「播放失败降档重试」—— 那时必须沿用**当前**进度，
         // 不能退回记录里的旧位置，否则听感上会倒退一截。
         startPositionMs: Long = -1L,
+        // v2.2.1 · P0：本次开播的**来源**。默认 USER 让所有既有调用点零改动，
+        // 而失败处理据此把「音质问题」与「播放问题」分开（见 [handlePlaybackError]）。
+        origin: PlayOrigin = PlayOrigin.USER,
     ) {
         songPlayVersion++
         val fetchVersion = songPlayVersion
         latestPlaySongId = songId
+        lastPlayOrigin = origin
+        // 计数清零条件（写死在这里，别处不许发明）：
+        //  · 用户手动点播 / 手动切歌 → 自动跳歌计数清零；
+        //  · 用户手动改音质        → 重试额度与「试过的档位」清零（用户有权重新试探）。
+        when (origin) {
+            PlayOrigin.USER -> autoSkipGuard.onUserAction()
+            PlayOrigin.QUALITY_SWITCH -> qualityRetryGuard.resetAll()
+            else -> Unit
+        }
+        // 换歌（含用户手点）时忘掉上一首的「最后成功档位」。
+        if (origin != PlayOrigin.QUALITY_RETRY) lastGoodLevel = ""
         // v2.1.0 · C：记住当前歌的音源身份 —— 取链、歌词、媒体通知都要用它路由。
         // v2.1.5：只此一处写 [currentTrack]，三个音源字段都是它的只读派生值。
         val track = TrackKey.of(sourceKey, songId, sourceId, mediaId)
@@ -920,7 +1056,25 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         refreshGaplessSetting()
 
         val prefs = getApplication<Application>().getSharedPreferences("ncrust_settings", 0)
-        val selectedQuality = if (quality.isNotEmpty()) quality else effectivePreferredLevel(prefs)
+        val requestedQuality = if (quality.isNotEmpty()) quality else effectivePreferredLevel(prefs)
+        // v2.2.1 · P0：**自动路径不得自己升回原档位**。
+        // 只有用户在列表/队列里点播（USER）与手动切档（QUALITY_SWITCH）才照请求走；
+        // 自动接续 / 降档重试 / 预载接管一律不超过本曲记住的上限。
+        val selectedQuality = when (origin) {
+            PlayOrigin.USER, PlayOrigin.QUALITY_SWITCH -> requestedQuality
+            else -> qualityCeiling.effectiveRequest(
+                preferred = requestedQuality,
+                key = track.toString(),
+                ladderLowToHigh = qualityApiLevels,
+                nowMs = System.currentTimeMillis(),
+            )
+        }
+        if (selectedQuality != requestedQuality) {
+            Log.i(
+                "PlayerViewModel",
+                "quality ceiling applied: preferred=$requestedQuality -> $selectedQuality (origin=$origin)",
+            )
+        }
         val qIdx = qualityApiLevels.indexOf(selectedQuality).coerceAtLeast(0)
         lastRequestedLevel = selectedQuality
 
@@ -997,8 +1151,12 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                     // 该歌在所有音质档位都取不到可播放的 URL（无版权 / 需会员且当前无订阅）。
                     // 前一个版本会兜底喂给 ExoPlayer 一个 404 的 HTML 链接导致无限缓冲"卡住"，
                     // 现在改成交由 MainScreen 跳下一首，绝不播放坏链接。
-                    Log.w("PlayerViewModel", "no playable url for songId=$songId, skipping")
-                    withContext(Dispatchers.Main) { onUnplayableCallback?.invoke() }
+                    //
+                    // v2.2.1 · P0：**取不到链 ≠ 可以跳歌**。这里必须按来源分流：
+                    //  · 音质切换 / 降档重试取不到链 —— 那是音质问题，跳歌等于把用户的
+                    //    「换一档听听」变成「这首歌被跳过了」，而且会把整条队列一起带走；
+                    //  · 自动接续取不到链 —— 才是真的「这首放不了」，而且还要过跳歌熔断。
+                    withContext(Dispatchers.Main) { onUrlUnavailable(songId, selectedQuality, origin) }
                     return@launch
                 }
                 // 取链期间若有更新的 playSong / 预载接管发生(版本号已前进),
@@ -1063,8 +1221,28 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         val app = getApplication<Application>()
         val hit = OfflineUrlStore.recall(app, songId, listOf(level)) ?: return null
         if (!OfflineAudioCache.contains(app, hit.first)) return null
+        // v2.2.1 · P0：本会话里已经证明播不出来的那条链，不再喂第二次。
+        //
+        // 这一条是那个**固定点**的最后一道闸：离线清单会「退化成这首歌的任意档位」，
+        // 于是「请求 exhigh → 兜底给 lossless 的旧链 → 失败 → 又请求 exhigh → 又是同一条」
+        // 可以永远转下去（实测 logcat 里连续十几轮）。去掉重放之后，环必然会被打破。
+        if (hit.first in failedUrlKeys) {
+            Log.w("PlayerViewModel", "offline cache hit but already failed this session: ${hit.first}")
+            return null
+        }
         Log.i("PlayerViewModel", "offline cache hit songId=$songId key=" + hit.first)
-        return SongUrlResult(hit.second, OfflineKeys.levelOf(hit.first) ?: level, 0L, "", null)
+        // v2.2.1 · P0：离线兜底拿到的档位**不一定等于请求档位**（recall 会退化成任意档位）。
+        // 把这个事实如实带出去：levelFromFile=true 表示这个档位是从离线 key 反推的、
+        // 不是服务端标签，QualityAssessment 据此可以给出诚实的「已降级」而不是沉默。
+        return SongUrlResult(
+            url = hit.second,
+            actualLevel = OfflineKeys.levelOf(hit.first) ?: level,
+            br = 0L,
+            type = "",
+            songMaxLevel = null,
+            levelFromFile = true,
+            fallbackFromLevel = level.takeIf { OfflineKeys.levelOf(hit.first) != level },
+        )
     }
 
     /**
@@ -1093,48 +1271,180 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     /**
-     * 播放出错(如设备解码器不认 24-bit FLAC / 高采样率,或拿到坏链接)时的降档重试。
-     * ExoPlayer 主线程回调;每出错一次沿 qualityRetryLadder 降一档重新取链播放,
-     * 到 standard 仍失败才交由 MainScreen 跳歌。同一 (songId@level) 3 秒内只处理一次,
-     * 防止解码器反复报错触发重试风暴。
+     * v2.2.1 · P0：取链彻底失败（所有档位都没有可播放 URL）时的分流。
+     *
+     * 这是「**音质切换失败 ≠ 播放失败**」这条铁律的落点，也是自动跳歌熔断的唯一入口。
+     * 旧实现在这里无条件 `onUnplayableCallback()`（= 跳下一首），于是：
+     *  · 用户切一下音质、恰好那一档取不到链 → 这首歌被跳过；
+     *  · 整条队列都取不到链 → 5 首/秒 的无限跳歌（用户报的「不关应用就一直切」）。
      */
-    private fun handlePlaybackError(songId: Long) {
-        if (songId <= 0 || songId != currentSongId.value) return
-        val level = lastPlayedLevel.ifEmpty {
-            qualityApiLevels.getOrElse(currentQualityIndex.value) { "lossless" }
+    private fun onUrlUnavailable(songId: Long, requested: String, origin: PlayOrigin) {
+        Log.w(
+            "PlayerViewModel",
+            "no playable url songId=$songId requested=$requested origin=$origin " +
+                "(retryAttempts=${qualityRetryGuard.attemptsForCurrentSong()})",
+        )
+        // 判据抽在 PlaybackGuard.kt 里（纯函数 + 单测），这里只消费它 ——
+        // 「哪些来源可以跳歌」这件事本身是被测过的，不是散在各处的 if。
+        if (!maySkipOnUrlFailure(origin)) {
+                // 音质路径：回退到本会话里最后一个确实取到过链的档位继续播；
+                // 没有可回退的档位就停下等用户 —— **绝不跳歌**。
+                val fallback = lastGoodLevel.takeIf { it.isNotEmpty() && it != requested }
+                if (fallback != null) {
+                    Log.w("PlayerViewModel", "quality path has no url at $requested, falling back to $fallback")
+                    playSong(
+                        songId,
+                        title = currentSongName.value ?: "",
+                        artist = currentSongArtist.value ?: "",
+                        artworkUrl = currentSongArtwork.value ?: "",
+                        quality = fallback,
+                        startPositionMs = currentPosition.value,
+                        sourceKey = currentSongSourceKey,
+                        sourceId = currentSongSourceId,
+                        mediaId = currentSongMediaId,
+                        origin = PlayOrigin.QUALITY_RETRY,
+                    )
+                } else {
+                    stopForQualityFailure(songId, "请求档位 $requested 取不到可播放链接")
+                }
+        } else {
+            // 播放路径：这才是「这首放不了」。仍然要过连续跳歌熔断。
+            if (autoSkipGuard.requestAutoSkip()) {
+                    Log.w(
+                        "PlayerViewModel",
+                        "auto skip #${autoSkipGuard.consecutiveSkips} for songId=$songId",
+                    )
+                    onUnplayableCallback?.invoke()
+            } else {
+                stopForQualityFailure(
+                    songId,
+                    "连续自动跳歌已达上限 ${AutoSkipGuard.MAX_CONSECUTIVE_AUTO_SKIPS} 次",
+                )
+            }
         }
-        val key = "${songId}@$level"
+    }
+
+    /**
+     * 播放出错（设备解码不了 24-bit FLAC / 6 声道 FLAC / 坏链接）时的降档重试。
+     *
+     * ## v2.2.1 · P0 重写（旧实现是那次级联故障的放大器，逐条对照）
+     *
+     * | 旧行为 | 后果 | 现在 |
+     * |---|---|---|
+     * | 下一档由 `lastPlayedLevel`（**实际**档位）算 | 实际档位不随请求变化时形成固定点，永不收敛 | 由 [QualityRetryGuard.decide] 取 `min(请求, 实际)` 再严格降一档，并记住**试过哪些**，绝不重复 |
+     * | 无次数上限 | 一首歌能重取 8 次 = 抢 8 次音频焦点 | 单曲上限 3 次（[QualityRetryGuard.MAX_ATTEMPTS_PER_SONG]） |
+     * | 不看失败原因 | 输出链已经坏了还在同一实例上重试，必然全败 | [classifyFailure] 分类；SINK 类先把该档标成不可用，并依赖 Service 已 `stop()`（reset sink + 释放焦点） |
+     * | 无节流 | 每次重试立刻 `play()` ⇒ 视频被反复打断 | 两次自动重取之间至少 [QualityRetryGuard.MIN_RESTART_INTERVAL_MS] |
+     * | 最低档失败 ⇒ `onUnplayable` ⇒ 跳歌 | **音质问题被当成播放问题**，整条队列无限跳 | 自动重试路径**永不跳歌**：熔断后进「暂停 + 错误态」等用户手动操作 |
+     */
+    private suspend fun handlePlaybackError(songId: Long, failure: PlaybackFailure) {
+        if (songId <= 0 || songId != currentSongId.value) return
+        val kind = classifyFailure(failure)
         val now = System.currentTimeMillis()
-        if (key == lastErrorKey && now - lastErrorHandledAt < 3_000L) return
-        lastErrorKey = key
+
+        // 同一首歌的自动重试计数（换歌才清零）。
+        qualityRetryGuard.onNewSong(currentTrack?.toString() ?: songId.toString())
+        qualityRetryGuard.onFailure(now)
+
+        // 同一 (歌 @ 档位) 在 1.5s 内的重复错误视为同一次故障 —— ExoPlayer 在拆链时
+        // 可能连报几次（onPlayerError + onAudioSinkError），不能各算一次重试额度。
+        val dedupeKey = "$songId@${lastRequestedLevel.ifEmpty { lastPlayedLevel }}"
+        if (dedupeKey == lastErrorKey && now - lastErrorHandledAt < 1_500L) return
+        lastErrorKey = dedupeKey
         lastErrorHandledAt = now
 
-        val idx = qualityRetryLadder.indexOf(level)
-        val nextLevel = when {
-            idx in 0 until qualityRetryLadder.size - 1 -> qualityRetryLadder[idx + 1]
-            // 服务端可能返回阶梯之外的档位(如 sky/jymaster),从无损起往下试,不能直接跳歌。
-            idx < 0 -> "lossless"
-            else -> null // 已是 standard,无档可降
+        // 本会话内不再重放这条链：离线兜底会「退化成这首歌的任意档位」，
+        // 不记住失败的话，坏链会被反复喂回播放器（实测的固定点就是这么来的）。
+        if (songId > 0 && lastPlayedLevel.isNotEmpty()) {
+            failedUrlKeys.add(OfflineKeys.key(songId, lastPlayedLevel))
+            if (failedUrlKeys.size > 128) failedUrlKeys.clear()
         }
-        if (nextLevel == null) {
-            Log.w("PlayerViewModel", "lowest tier also failed for songId=$songId, skipping")
-            onUnplayableCallback?.invoke()
-            return
+
+        // 输出链故障：本档已经被证明会打坏 AudioSink，本首歌内不要再碰它。
+        // 实测触发者是 QQ 的「臻品音质」档（Q001 = 6 声道 FLAC）：media3 的
+        // ChannelMixingMatrix 没有 6→1 的系数，抛异常后 sink 不可恢复。
+        if (kind == FailureKind.SINK) {
+            qualityRetryGuard.markUnusable(lastPlayedLevel.ifEmpty { lastRequestedLevel })
         }
-        Log.w("PlayerViewModel", "playback error at level=$level for songId=$songId, retrying at $nextLevel")
-        playSong(
-            songId,
-            title = currentSongName.value ?: "",
-            artist = currentSongArtist.value ?: "",
-            artworkUrl = currentSongArtwork.value ?: "",
-            quality = nextLevel,
-            // 降档重试必须从**当前**进度接着播，不能读进度记录（那是上一次退出的位置）。
-            startPositionMs = currentPosition.value,
-            // v2.1.0 · C：降档重试同属「重播当前歌」，音源必须原样带着。
-            sourceKey = currentSongSourceKey,
-            sourceId = currentSongSourceId,
-            mediaId = currentSongMediaId,
+
+        val decision = qualityRetryGuard.decide(
+            requested = lastRequestedLevel.ifEmpty { lastPlayedLevel },
+            actual = lastPlayedLevel,
+            ladder = qualityRetryLadder,
+            nowMs = now,
         )
+        Log.w(
+            "PlayerViewModel",
+            "playback error songId=$songId level=$lastPlayedLevel kind=$kind " +
+                "cause=${failure.causeClass}: ${failure.causeMessage} -> ${decision.action} " +
+                "${decision.nextLevel ?: ""} (${decision.reason})",
+        )
+
+        when (decision.action) {
+            GuardAction.RETRY -> {
+                // 音频焦点节流：不足 10s 就先等，绝不立刻再 play() 一次。
+                if (decision.delayMs > 0) delay(decision.delayMs)
+                qualityRetryGuard.onRetryStarted(System.currentTimeMillis())
+                playSong(
+                    songId,
+                    title = currentSongName.value ?: "",
+                    artist = currentSongArtist.value ?: "",
+                    artworkUrl = currentSongArtwork.value ?: "",
+                    quality = decision.nextLevel ?: return,
+                    // 降档重试必须从**当前**进度接着播，不能读进度记录（那是上一次退出的位置）。
+                    startPositionMs = currentPosition.value,
+                    // v2.1.0 · C：降档重试同属「重播当前歌」，音源必须原样带着。
+                    sourceKey = currentSongSourceKey,
+                    sourceId = currentSongSourceId,
+                    mediaId = currentSongMediaId,
+                    origin = PlayOrigin.QUALITY_RETRY,
+                )
+            }
+
+            GuardAction.STOP_AND_WAIT, GuardAction.SKIP_ALLOWED -> {
+                // 退无可退：**不跳歌**。回到本条链路上最后一个确实播出过声的档位接着播；
+                // 连那个都没有，就停下来进错误态，等用户手动操作。
+                val fallback = lastGoodLevel.takeIf { it.isNotEmpty() && it != lastPlayedLevel }
+                if (fallback != null && lastPlayOrigin == PlayOrigin.QUALITY_RETRY) {
+                    Log.w("PlayerViewModel", "quality retry exhausted, falling back to last good level=$fallback")
+                    playSong(
+                        songId,
+                        title = currentSongName.value ?: "",
+                        artist = currentSongArtist.value ?: "",
+                        artworkUrl = currentSongArtwork.value ?: "",
+                        quality = fallback,
+                        startPositionMs = currentPosition.value,
+                        sourceKey = currentSongSourceKey,
+                        sourceId = currentSongSourceId,
+                        mediaId = currentSongMediaId,
+                        origin = PlayOrigin.QUALITY_RETRY,
+                    )
+                } else {
+                    stopForQualityFailure(songId, decision.reason)
+                }
+            }
+        }
+    }
+
+    /**
+     * v2.2.1 · P0：**有界失败的终点** —— 暂停 + 错误态，等用户手动操作。
+     *
+     * 这是「禁止无限循环」这条铁律的落点：无论失败多少次，最终一定走到这里，
+     * 而不是继续重试、更不是跳到下一首。暂停同时让 media3 释放它持有的音频焦点，
+     * 用户正在看的视频不再被打断。
+     */
+    private fun stopForQualityFailure(songId: Long, reason: String) {
+        Log.w(
+            "PlayerViewModel",
+            "quality pipeline gave up for songId=$songId: $reason — pausing for user action",
+        )
+        isPlaying.value = false
+        qualityStatus.value = QualityStatus.DOWNGRADED
+        // 静音停下（保留当前歌与队列，用户点一下就能重来）。
+        val intent = Intent(getApplication(), PlaybackService::class.java).apply {
+            putExtra("action", "pause")
+        }
+        runCatching { getApplication<Application>().startService(intent) }
     }
 
     /**

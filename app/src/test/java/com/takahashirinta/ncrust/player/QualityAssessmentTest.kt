@@ -259,4 +259,57 @@ class QualityAssessmentTest {
         )
         assertEquals(idx("hires"), v.displayIndex)
     }
+
+    // ------------------------------------------------------------------
+    // v2.2.1 · P0：QQ 那条路拿不到 br（FLAC 档没有码率字段），但它的档位是**从真正
+    // 取回的文件名前缀反推**的 —— 那本身就是证据。以前这类情况一律「保持安静」，
+    // 于是「请求超清母带、实际 Hi-Res」在界面上既不是降级也没有任何提示。
+    // ------------------------------------------------------------------
+
+    /** 降级不得回显虚高：请求母带、QQ 只给 RS01 ⇒ 显示 hires（不是 jymaster），并标注已降级。 */
+    @Test
+    fun `qq trusted level downgrade shows the actual level and flags it`() {
+        val v = QualityAssessment.assess(
+            requested = "jymaster", granted = "hires",
+            br = 0L, type = "flac", songMaxLevel = null,
+            levelFromFile = true,
+        )
+        assertEquals(idx("hires"), v.displayIndex)
+        assertEquals(QualityStatus.DOWNGRADED, v.status)
+    }
+
+    /** 反过来：档位是服务端**标签**（QQ 之外那条路）时不许下结论，行为与 v2.1.4 逐字一致。 */
+    @Test
+    fun `untrusted level stays silent when file params are unknown`() {
+        val v = QualityAssessment.assess(
+            requested = "jymaster", granted = "hires",
+            br = 0L, type = "", songMaxLevel = null,
+            levelFromFile = false,
+        )
+        assertEquals(idx("hires"), v.displayIndex)
+        assertEquals(QualityStatus.NORMAL, v.status)
+    }
+
+    /** 档位是实测反推的、且不低于请求 ⇒ 仍然 NORMAL（不能把正常播放误报成降级）。 */
+    @Test
+    fun `trusted level at or above request is normal`() {
+        val v = QualityAssessment.assess(
+            requested = "hires", granted = "hires",
+            br = 0L, type = "flac", songMaxLevel = null,
+            levelFromFile = true,
+        )
+        assertEquals(idx("hires"), v.displayIndex)
+        assertEquals(QualityStatus.NORMAL, v.status)
+    }
+
+    /** 有实测参数时，实测优先的老规则一字未动。 */
+    @Test
+    fun `measured params still win over trusted level string`() {
+        val v = QualityAssessment.assess(
+            requested = "jymaster", granted = "standard",
+            br = 5_000_000L, type = "flac", songMaxLevel = null,
+            levelFromFile = true,
+        )
+        assertEquals(idx("jymaster"), v.displayIndex)
+    }
 }

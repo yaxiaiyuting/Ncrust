@@ -1,0 +1,190 @@
+09-25 15:01:27.831  4445  4445 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 cacheKey=null
+09-25 15:01:27.966  4445  4445 D PlaybackService: Playing: https://ws.stream.qqmusic.qq.com/F000000zwUDf0KftQv.flac?guid=6253254210&vkey=B0EF3A7418B98FFADDA50D63BD3B3BDD31444F3D966A6E240515DF558F956282E664846FB9E8EE4551AB7CC4CB3798ECDF3DF009FB8631C2__v2b9ab047&uin=1152921504891728649&redirect=1&ncrustkey=song:4611686018727083242:lossless startPositionMs=0
+09-25 15:01:56.264  4445  4445 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 15:01:56.815  4445  8073 I QqApi   : vkey ok: requested=dolby actual=dolby prefix=Q001 mid=000zwUDf0KftQv
+09-25 15:01:56.831  4445  4445 D PlaybackService: Playing: https://ws.stream.qqmusic.qq.com/Q001001GZ6wJ0gJaEG.flac?guid=6253254210&vkey=EBB669C17C779D7B0238DB0309409B84C17D5B8AB58BA75838AB3F54B9F9E38B58968331BAB62A91E5B249676FBD2D135AD4ABF8C9D9601B__v2b9aacd2&uin=1152921504891728649&redirect=1&ncrustkey=song:4611686018727083242:dolby startPositionMs=25055
+09-25 15:01:58.575  4445  8268 E ExoPlayerImplInternal:   Caused by: java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:01:58.581  4445  8268 E ExoPlayerImplInternal: Disable failed.
+09-25 15:01:58.581  4445  8268 E ExoPlayerImplInternal:   java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:01:58.583  4445  8268 E ExoPlayerImplInternal: Reset failed.
+09-25 15:01:58.583  4445  8268 E ExoPlayerImplInternal:   java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:01:58.589  4445  4445 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 15:01:58.589  4445  4445 E PlaybackService: Caused by: java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:01:58.589  4445  4445 W PlayerViewModel: playback error at level=dolby for songId=4611686018727083242, retrying at jyeffect
+09-25 15:01:58.589  4445  4445 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 15:01:58.789  4445  4445 D PlaybackService: Playing: https://ws.stream.qqmusic.qq.com/RS01000zwUDf0KftQv.flac?guid=6253254210&vkey=D79ECB7CBC3AA390D9535D04321B8AF36FC00442BE6676F1DCFDCDDE2E10361EFE33B096496860D14F195744FEF43AD765C1B827122EA564__v21e2a1605&uin=1152921504891728649&redirect=1&ncrustkey=song:4611686018727083242:hires startPositionMs=0
+09-25 15:01:58.804  4445  8268 E ExoPlayerImplInternal:   Caused by: java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:01:58.805  4445  8268 E ExoPlayerImplInternal: Disable failed.
+09-25 15:01:58.805  4445  8268 E ExoPlayerImplInternal:   java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:01:58.805  4445  8268 E ExoPlayerImplInternal: Reset failed.
+09-25 15:01:58.805  4445  8268 E ExoPlayerImplInternal:   java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:01:58.849  4445  4445 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 15:01:58.849  4445  4445 E PlaybackService: Caused by: java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:01:58.850  4445  4445 W PlayerViewModel: playback error at level=hires for songId=4611686018727083242, retrying at lossless
+09-25 15:01:58.850  4445  4445 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 15:01:59.040  4445  4445 D PlaybackService: Playing: https://ws.stream.qqmusic.qq.com/F000000zwUDf0KftQv.flac?guid=6253254210&vkey=B0EF3A7418B98FFADDA50D63BD3B3BDD31444F3D966A6E240515DF558F956282E664846FB9E8EE4551AB7CC4CB3798ECDF3DF009FB8631C2__v2b9ab047&uin=1152921504891728649&redirect=1&ncrustkey=song:4611686018727083242:lossless startPositionMs=0
+09-25 15:01:59.056  4445  8268 E ExoPlayerImplInternal:   Caused by: java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:01:59.056  4445  8268 E ExoPlayerImplInternal: Disable failed.
+09-25 15:01:59.056  4445  8268 E ExoPlayerImplInternal:   java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:01:59.056  4445  8268 E ExoPlayerImplInternal: Reset failed.
+09-25 15:01:59.056  4445  8268 E ExoPlayerImplInternal:   java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:01:59.064  4445  4445 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 15:01:59.064  4445  4445 E PlaybackService: Caused by: java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:01:59.064  4445  4445 W PlayerViewModel: playback error at level=lossless for songId=4611686018727083242, retrying at exhigh
+09-25 15:01:59.064  4445  4445 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 15:01:59.287  4445  4445 D PlaybackService: Playing: https://ws.stream.qqmusic.qq.com/Q001001GZ6wJ0gJaEG.flac?guid=6253254210&vkey=EBB669C17C779D7B0238DB0309409B84C17D5B8AB58BA75838AB3F54B9F9E38B58968331BAB62A91E5B249676FBD2D135AD4ABF8C9D9601B__v2b9aacd2&uin=1152921504891728649&redirect=1&ncrustkey=song:4611686018727083242:dolby startPositionMs=0
+09-25 15:01:59.305  4445  8268 E ExoPlayerImplInternal:   Caused by: java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:01:59.305  4445  8268 E ExoPlayerImplInternal: Disable failed.
+09-25 15:01:59.305  4445  8268 E ExoPlayerImplInternal:   java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:01:59.305  4445  8268 E ExoPlayerImplInternal: Reset failed.
+09-25 15:01:59.305  4445  8268 E ExoPlayerImplInternal:   java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:01:59.321  4445  4445 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 15:01:59.321  4445  4445 E PlaybackService: Caused by: java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:01:59.321  4445  4445 W PlayerViewModel: playback error at level=dolby for songId=4611686018727083242, retrying at jyeffect
+09-25 15:01:59.321  4445  4445 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 15:01:59.546  4445  8073 I QqApi   : vkey ok: requested=jyeffect actual=jyeffect prefix=Q000 mid=000zwUDf0KftQv
+09-25 15:01:59.549  4445  4445 D PlaybackService: Playing: https://ws.stream.qqmusic.qq.com/Q000001GZ6wJ0gJaEG.flac?guid=6253254210&vkey=7FF7BE4A597AB45D8E874B8101432208EE0677A009576EF426E0B1385AC5B8D4E11C9AD03D0C722DDB61C412D27667896EFF24B0082F8F42__v2b9a899c&uin=1152921504891728649&redirect=1&ncrustkey=song:4611686018727083242:jyeffect startPositionMs=0
+09-25 15:01:59.563  4445  8268 E ExoPlayerImplInternal:   Caused by: java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:01:59.563  4445  8268 E ExoPlayerImplInternal: Disable failed.
+09-25 15:01:59.563  4445  8268 E ExoPlayerImplInternal:   java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:01:59.564  4445  8268 E ExoPlayerImplInternal: Reset failed.
+09-25 15:01:59.564  4445  8268 E ExoPlayerImplInternal:   java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:01:59.576  4445  4445 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 15:01:59.576  4445  4445 E PlaybackService: Caused by: java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:01:59.576  4445  4445 W PlayerViewModel: playback error at level=jyeffect for songId=4611686018727083242, retrying at hires
+09-25 15:01:59.577  4445  4445 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 15:01:59.802  4445  4445 D PlaybackService: Playing: https://ws.stream.qqmusic.qq.com/RS01000zwUDf0KftQv.flac?guid=6253254210&vkey=D79ECB7CBC3AA390D9535D04321B8AF36FC00442BE6676F1DCFDCDDE2E10361EFE33B096496860D14F195744FEF43AD765C1B827122EA564__v21e2a1605&uin=1152921504891728649&redirect=1&ncrustkey=song:4611686018727083242:hires startPositionMs=0
+09-25 15:01:59.816  4445  8268 E ExoPlayerImplInternal:   Caused by: java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:01:59.816  4445  8268 E ExoPlayerImplInternal: Disable failed.
+09-25 15:01:59.816  4445  8268 E ExoPlayerImplInternal:   java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:01:59.816  4445  8268 E ExoPlayerImplInternal: Reset failed.
+09-25 15:01:59.816  4445  8268 E ExoPlayerImplInternal:   java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:01:59.837  4445  4445 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 15:01:59.837  4445  4445 E PlaybackService: Caused by: java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:01:59.837  4445  4445 W PlayerViewModel: playback error at level=hires for songId=4611686018727083242, retrying at lossless
+09-25 15:01:59.838  4445  4445 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 15:02:00.064  4445  4445 D PlaybackService: Playing: https://ws.stream.qqmusic.qq.com/F000000zwUDf0KftQv.flac?guid=6253254210&vkey=B0EF3A7418B98FFADDA50D63BD3B3BDD31444F3D966A6E240515DF558F956282E664846FB9E8EE4551AB7CC4CB3798ECDF3DF009FB8631C2__v2b9ab047&uin=1152921504891728649&redirect=1&ncrustkey=song:4611686018727083242:lossless startPositionMs=0
+09-25 15:02:00.081  4445  8268 E ExoPlayerImplInternal:   Caused by: java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:02:00.081  4445  8268 E ExoPlayerImplInternal: Disable failed.
+09-25 15:02:00.081  4445  8268 E ExoPlayerImplInternal:   java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:02:00.082  4445  8268 E ExoPlayerImplInternal: Reset failed.
+09-25 15:02:00.082  4445  8268 E ExoPlayerImplInternal:   java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:02:00.094  4445  4445 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 15:02:00.094  4445  4445 E PlaybackService: Caused by: java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:02:00.094  4445  4445 W PlayerViewModel: playback error at level=lossless for songId=4611686018727083242, retrying at exhigh
+09-25 15:02:00.094  4445  4445 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 15:02:00.322  4445  8073 I QqApi   : vkey ok: requested=exhigh actual=exhigh prefix=C400 mid=000zwUDf0KftQv
+09-25 15:02:00.326  4445  4445 D PlaybackService: Playing: https://ws.stream.qqmusic.qq.com/C400000zwUDf0KftQv.m4a?guid=6253254210&vkey=819AB4F9D10C3C49CC57F172CB40237820DAD0591F26A3CEEA3B8E8AA20501F48CB5053560E6D7B85B1A06B868D36E301232A6AFC74A3624__v2b94c2e3&uin=1152921504891728649&redirect=1&ncrustkey=song:4611686018727083242:exhigh startPositionMs=0
+09-25 15:02:00.352  4445  8268 E ExoPlayerImplInternal:   Caused by: java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:02:00.352  4445  8268 E ExoPlayerImplInternal: Disable failed.
+09-25 15:02:00.352  4445  8268 E ExoPlayerImplInternal:   java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:02:00.352  4445  8268 E ExoPlayerImplInternal: Reset failed.
+09-25 15:02:00.352  4445  8268 E ExoPlayerImplInternal:   java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:02:00.358  4445  4445 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 15:02:00.358  4445  4445 E PlaybackService: Caused by: java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:02:00.358  4445  4445 W PlayerViewModel: playback error at level=exhigh for songId=4611686018727083242, retrying at higher
+09-25 15:02:00.358  4445  4445 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 15:02:00.584  4445  8090 I QqApi   : vkey ok: requested=higher actual=higher prefix=M800 mid=000zwUDf0KftQv
+09-25 15:02:00.588  4445  4445 D PlaybackService: Playing: https://ws.stream.qqmusic.qq.com/M800000zwUDf0KftQv.mp3?guid=6253254210&vkey=572E768B67CCE6B2B7B476EB5AC9939898E096C5233D9BA751F815DAA196DA01D05EF56906C39169AAE62B4955EFAEA11B44AC0006FDD9E5__v21e2a1605&uin=1152921504891728649&redirect=1&ncrustkey=song:4611686018727083242:higher startPositionMs=0
+09-25 15:02:00.602  4445  8268 E ExoPlayerImplInternal:   Caused by: java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:02:00.603  4445  8268 E ExoPlayerImplInternal: Disable failed.
+09-25 15:02:00.603  4445  8268 E ExoPlayerImplInternal:   java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:02:00.603  4445  8268 E ExoPlayerImplInternal: Reset failed.
+09-25 15:02:00.603  4445  8268 E ExoPlayerImplInternal:   java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:02:00.616  4445  4445 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 15:02:00.616  4445  4445 E PlaybackService: Caused by: java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:02:00.616  4445  4445 W PlayerViewModel: playback error at level=higher for songId=4611686018727083242, retrying at standard
+09-25 15:02:00.616  4445  4445 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 15:02:00.863  4445  4445 D PlaybackService: Playing: https://ws.stream.qqmusic.qq.com/Q001001GZ6wJ0gJaEG.flac?guid=6253254210&vkey=EBB669C17C779D7B0238DB0309409B84C17D5B8AB58BA75838AB3F54B9F9E38B58968331BAB62A91E5B249676FBD2D135AD4ABF8C9D9601B__v2b9aacd2&uin=1152921504891728649&redirect=1&ncrustkey=song:4611686018727083242:dolby startPositionMs=0
+09-25 15:02:00.880  4445  8268 E ExoPlayerImplInternal:   Caused by: java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:02:00.880  4445  8268 E ExoPlayerImplInternal: Disable failed.
+09-25 15:02:00.880  4445  8268 E ExoPlayerImplInternal:   java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:02:00.880  4445  8268 E ExoPlayerImplInternal: Reset failed.
+09-25 15:02:00.880  4445  8268 E ExoPlayerImplInternal:   java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:02:00.895  4445  4445 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 15:02:00.895  4445  4445 E PlaybackService: Caused by: java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:02:00.895  4445  4445 W PlayerViewModel: playback error at level=dolby for songId=4611686018727083242, retrying at jyeffect
+09-25 15:02:00.895  4445  4445 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 15:02:01.107  4445  8064 I QqApi   : vkey ok: requested=jyeffect actual=jyeffect prefix=Q000 mid=000zwUDf0KftQv
+09-25 15:02:01.113  4445  4445 D PlaybackService: Playing: https://ws.stream.qqmusic.qq.com/Q000001GZ6wJ0gJaEG.flac?guid=6253254210&vkey=4DF2A1519D8143D8A6CC4C8057FA613C6CA11004758D8D9A9FCEBC2492700B797F75CA8C6E4122FA2DE615C15951A4CF2534C66BE05A3203__v2b9ab1c2&uin=1152921504891728649&redirect=1&ncrustkey=song:4611686018727083242:jyeffect startPositionMs=0
+09-25 15:02:01.131  4445  8268 E ExoPlayerImplInternal:   Caused by: java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:02:01.131  4445  8268 E ExoPlayerImplInternal: Disable failed.
+09-25 15:02:01.131  4445  8268 E ExoPlayerImplInternal:   java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:02:01.131  4445  8268 E ExoPlayerImplInternal: Reset failed.
+09-25 15:02:01.131  4445  8268 E ExoPlayerImplInternal:   java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:02:01.137  4445  4445 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 15:02:01.137  4445  4445 E PlaybackService: Caused by: java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:02:01.137  4445  4445 W PlayerViewModel: playback error at level=jyeffect for songId=4611686018727083242, retrying at hires
+09-25 15:02:01.137  4445  4445 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 15:02:01.364  4445  4445 D PlaybackService: Playing: https://ws.stream.qqmusic.qq.com/RS01000zwUDf0KftQv.flac?guid=6253254210&vkey=D79ECB7CBC3AA390D9535D04321B8AF36FC00442BE6676F1DCFDCDDE2E10361EFE33B096496860D14F195744FEF43AD765C1B827122EA564__v21e2a1605&uin=1152921504891728649&redirect=1&ncrustkey=song:4611686018727083242:hires startPositionMs=0
+09-25 15:02:01.381  4445  8268 E ExoPlayerImplInternal:   Caused by: java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:02:01.381  4445  8268 E ExoPlayerImplInternal: Disable failed.
+09-25 15:02:01.381  4445  8268 E ExoPlayerImplInternal:   java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:02:01.381  4445  8268 E ExoPlayerImplInternal: Reset failed.
+09-25 15:02:01.381  4445  8268 E ExoPlayerImplInternal:   java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:02:01.409  4445  4445 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 15:02:01.409  4445  4445 E PlaybackService: Caused by: java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:02:01.409  4445  4445 W PlayerViewModel: playback error at level=hires for songId=4611686018727083242, retrying at lossless
+09-25 15:02:01.409  4445  4445 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 15:02:01.614  4445  4445 D PlaybackService: Playing: https://ws.stream.qqmusic.qq.com/F000000zwUDf0KftQv.flac?guid=6253254210&vkey=B0EF3A7418B98FFADDA50D63BD3B3BDD31444F3D966A6E240515DF558F956282E664846FB9E8EE4551AB7CC4CB3798ECDF3DF009FB8631C2__v2b9ab047&uin=1152921504891728649&redirect=1&ncrustkey=song:4611686018727083242:lossless startPositionMs=0
+09-25 15:02:01.629  4445  8268 E ExoPlayerImplInternal:   Caused by: java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:02:01.629  4445  8268 E ExoPlayerImplInternal: Disable failed.
+09-25 15:02:01.629  4445  8268 E ExoPlayerImplInternal:   java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:02:01.629  4445  8268 E ExoPlayerImplInternal: Reset failed.
+09-25 15:02:01.629  4445  8268 E ExoPlayerImplInternal:   java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:02:01.638  4445  4445 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 15:02:01.638  4445  4445 E PlaybackService: Caused by: java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:02:01.638  4445  4445 W PlayerViewModel: playback error at level=lossless for songId=4611686018727083242, retrying at exhigh
+09-25 15:02:01.639  4445  4445 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 15:02:01.865  4445  4445 D PlaybackService: Playing: https://ws.stream.qqmusic.qq.com/C400000zwUDf0KftQv.m4a?guid=6253254210&vkey=819AB4F9D10C3C49CC57F172CB40237820DAD0591F26A3CEEA3B8E8AA20501F48CB5053560E6D7B85B1A06B868D36E301232A6AFC74A3624__v2b94c2e3&uin=1152921504891728649&redirect=1&ncrustkey=song:4611686018727083242:exhigh startPositionMs=0
+09-25 15:02:01.892  4445  8268 E ExoPlayerImplInternal:   Caused by: java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:02:01.893  4445  8268 E ExoPlayerImplInternal: Disable failed.
+09-25 15:02:01.893  4445  8268 E ExoPlayerImplInternal:   java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:02:01.893  4445  8268 E ExoPlayerImplInternal: Reset failed.
+09-25 15:02:01.893  4445  8268 E ExoPlayerImplInternal:   java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:02:01.904  4445  4445 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 15:02:01.904  4445  4445 E PlaybackService: Caused by: java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:02:01.904  4445  4445 W PlayerViewModel: playback error at level=exhigh for songId=4611686018727083242, retrying at higher
+09-25 15:02:01.904  4445  4445 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 15:02:02.119  4445  4445 D PlaybackService: Playing: https://ws.stream.qqmusic.qq.com/M800000zwUDf0KftQv.mp3?guid=6253254210&vkey=572E768B67CCE6B2B7B476EB5AC9939898E096C5233D9BA751F815DAA196DA01D05EF56906C39169AAE62B4955EFAEA11B44AC0006FDD9E5__v21e2a1605&uin=1152921504891728649&redirect=1&ncrustkey=song:4611686018727083242:higher startPositionMs=0
+09-25 15:02:02.137  4445  8268 E ExoPlayerImplInternal:   Caused by: java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:02:02.137  4445  8268 E ExoPlayerImplInternal: Disable failed.
+09-25 15:02:02.137  4445  8268 E ExoPlayerImplInternal:   java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:02:02.137  4445  8268 E ExoPlayerImplInternal: Reset failed.
+09-25 15:02:02.137  4445  8268 E ExoPlayerImplInternal:   java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:02:02.152  4445  4445 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 15:02:02.152  4445  4445 E PlaybackService: Caused by: java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:02:02.152  4445  4445 W PlayerViewModel: playback error at level=higher for songId=4611686018727083242, retrying at standard
+09-25 15:02:02.152  4445  4445 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv cacheKey=null
+09-25 15:02:02.413  4445  8064 I QqApi   : vkey ok: requested=standard actual=standard prefix=M500 mid=000zwUDf0KftQv
+09-25 15:02:02.419  4445  4445 D PlaybackService: Playing: https://ws.stream.qqmusic.qq.com/M500000zwUDf0KftQv.mp3?guid=6253254210&vkey=0A66A6A0FE10FDBB2BC7B24710654668DA221B22C6975F5A9DAA14B5F8EBCC6EF7733BAD2CDBE07AE28496A21DFCC48DA7F020A9BF99EA19__v2b9ab224&uin=1152921504891728649&redirect=1&ncrustkey=song:4611686018727083242:standard startPositionMs=0
+09-25 15:02:02.441  4445  8268 E ExoPlayerImplInternal:   Caused by: java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:02:02.441  4445  8268 E ExoPlayerImplInternal: Disable failed.
+09-25 15:02:02.441  4445  8268 E ExoPlayerImplInternal:   java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:02:02.441  4445  8268 E ExoPlayerImplInternal: Reset failed.
+09-25 15:02:02.441  4445  8268 E ExoPlayerImplInternal:   java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:02:02.450  4445  4445 E PlaybackService: Playback error for songId=4611686018727083242 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 15:02:02.450  4445  4445 E PlaybackService: Caused by: java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:02:02.450  4445  4445 W PlayerViewModel: lowest tier also failed for songId=4611686018727083242, skipping
+09-25 15:02:02.450  4445  4445 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018690555381 mid=002n3u4D2u8DLn media=002n3u4D2u8DLn cacheKey=null
+09-25 15:02:02.633  4445  4445 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018536588792 mid=000WSotS3LnGHf media=0022g3hT3Oa0Nh cacheKey=null
+09-25 15:02:02.826  4445  4445 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018427589359 mid=003L8Oq94De6Fy media=003u4H921sRR6B cacheKey=null
+09-25 15:02:03.010  4445  8065 I QqApi   : vkey ok: requested=dolby actual=dolby prefix=Q001 mid=003u4H921sRR6B
+09-25 15:02:03.026  4445  4445 D PlaybackService: Playing: https://ws.stream.qqmusic.qq.com/Q001001QMGGH3SFbxG.flac?guid=6253254210&vkey=5C66FC12DD749DDB0FA1555E41AE5299BC56591D16D54B89B20E00A50052B0B31044FF65012DE8C58F80FC852C637AAC926F2C7BA5A416B6__v2b9abbab&uin=1152921504891728649&redirect=1&ncrustkey=song:4611686018427589359:dolby startPositionMs=0
+09-25 15:02:03.045  4445  8268 E ExoPlayerImplInternal:   Caused by: java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:02:03.046  4445  8268 E ExoPlayerImplInternal: Disable failed.
+09-25 15:02:03.046  4445  8268 E ExoPlayerImplInternal:   java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:02:03.046  4445  8268 E ExoPlayerImplInternal: Reset failed.
+09-25 15:02:03.046  4445  8268 E ExoPlayerImplInternal:   java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:02:03.090  4445  4445 E PlaybackService: Playback error for songId=4611686018427589359 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 15:02:03.090  4445  4445 E PlaybackService: Caused by: java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:02:03.090  4445  4445 W PlayerViewModel: playback error at level=dolby for songId=4611686018427589359, retrying at jyeffect
+09-25 15:02:03.090  4445  4445 I NcrustTrack: playSong -> currentTrack=qqmusic:4611686018427589359 mid=003L8Oq94De6Fy media=003u4H921sRR6B cacheKey=null
+09-25 15:02:03.299  4445  4445 D PlaybackService: Playing: https://ws.stream.qqmusic.qq.com/Q001001QMGGH3SFbxG.flac?guid=6253254210&vkey=5C66FC12DD749DDB0FA1555E41AE5299BC56591D16D54B89B20E00A50052B0B31044FF65012DE8C58F80FC852C637AAC926F2C7BA5A416B6__v2b9abbab&uin=1152921504891728649&redirect=1&ncrustkey=song:4611686018427589359:dolby startPositionMs=0
+09-25 15:02:03.315  4445  8268 E ExoPlayerImplInternal:   Caused by: java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:02:03.315  4445  8268 E ExoPlayerImplInternal: Disable failed.
+09-25 15:02:03.315  4445  8268 E ExoPlayerImplInternal:   java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:02:03.315  4445  8268 E ExoPlayerImplInternal: Reset failed.
+09-25 15:02:03.315  4445  8268 E ExoPlayerImplInternal:   java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.
+09-25 15:02:03.340  4445  4445 E PlaybackService: Playback error for songId=4611686018427589359 code=ERROR_CODE_UNSPECIFIED: Unexpected runtime error
+09-25 15:02:03.340  4445  4445 E PlaybackService: Caused by: java.lang.UnsupportedOperationException: Default channel mixing coefficients for 6->1 are not yet implemented.

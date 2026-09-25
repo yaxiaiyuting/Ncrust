@@ -38,6 +38,27 @@ data class SongUrlResult(
     val type: String = "",
     /** 该曲能达到的最高档位（privilege.maxBrLevel）。仅在实际文件可能低于请求档位时按需拉取。 */
     val songMaxLevel: String? = null,
+    /**
+     * v2.2.1 · P0：[actualLevel] 是不是**由实际拿到的东西推出来的**，而不是服务端标签。
+     *
+     * 为什么必须区分：v1.3.0 的教训是「标签写低、文件其实是高解析」（granted=lossless，
+     * 实测 br=1,685,762 = Hi-Res），所以**标签不可信**；但 QQ 那条路的 `actualLevel` 是
+     * 从**真正取回的文件名前缀**反推的（`RS01…flac` → hires），它本身就是证据。
+     * 两者混在一起时，`QualityAssessment` 只能一律「保持安静」，于是
+     * 「请求超清母带、拿到 Hi-Res」在界面上既不是降级也没有任何提示 —— 用户无从判断。
+     *
+     * `true` 的来源：QQ 取链（前缀反推）、离线缓存 key（key 里就写着档位）。
+     * `false`（默认）：网易云 eapi 返回的 `level` 字符串 —— 它只是标签。
+     *
+     * 注意：本类型**不落盘**（纯内存 DTO），所以按「加字段 = 加迁移逻辑」的规矩这里
+     * 不需要迁移；但新语义有单测（QualityAssessmentTest 的 trusted-level 用例）。
+     */
+    val levelFromFile: Boolean = false,
+    /**
+     * v2.2.1 · P0：本次请求 [SongUrlResult] 的档位，与实际档位不一致时记在这里。
+     * 离线兜底会「退化成这首歌的任意档位」，这是那条路径唯一的诚实出口。
+     */
+    val fallbackFromLevel: String? = null,
 )
 
 object SongUrlFetcher {

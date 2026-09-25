@@ -1,0 +1,20 @@
+09-25 14:35:55.268 14525 14525 I NcrustTrack: lyric request begin: track=qqmusic:4611686018727083242 gen=1
+09-25 14:35:55.268 14525 14525 W NcrustTrack: qq lyric skipped: track=qqmusic:4611686018727083242 missing songmid
+09-25 14:37:06.786 14525 14525 I NcrustTrack: lyric request begin: track=qqmusic:4611686018727083242 gen=3
+09-25 14:37:06.786 14525 14525 W NcrustTrack: qq lyric skipped: track=qqmusic:4611686018727083242 missing songmid
+09-25 14:38:17.218 14525 14525 I NcrustTrack: lyric request begin: track=qqmusic:4611686018727083242 mid=003Rxsvb1Vwl5U media=000zwUDf0KftQv gen=5
+09-25 14:39:09.222 15570 15570 I NcrustTrack: lyric request begin: track=qqmusic:4611686018727083242 gen=1
+09-25 14:39:09.222 15570 15570 W NcrustTrack: qq lyric skipped: track=qqmusic:4611686018727083242 missing songmid
+09-25 14:39:43.836 15570 15570 I NcrustTrack: lyric request begin: track=netease:1965392316 gen=3
+09-25 14:40:33.837 15570 15570 I NcrustTrack: lyric request begin: track=qqmusic:4611686018427589359 mid=003L8Oq94De6Fy media=003u4H921sRR6B gen=5
+09-25 14:40:41.221 15570 15570 I NcrustTrack: lyric request begin: track=qqmusic:4611686018530180922 mid=002gzBYN1Bvidu media=000q72xu3gNJcz gen=7
+09-25 14:40:57.395 16343 16343 I NcrustTrack: lyric request begin: track=qqmusic:4611686018530180922 gen=1
+09-25 14:40:57.395 16343 16343 W NcrustTrack: qq lyric skipped: track=qqmusic:4611686018530180922 missing songmid
+09-25 14:41:27.298 16343 16343 I NcrustTrack: lyric request begin: track=qqmusic:4611686018690600148 mid=002FBa2X4Yda23 media=002FBa2X4Yda23 gen=4
+09-25 14:41:28.782 16343 16343 I NcrustTrack: lyric request begin: track=qqmusic:4611686018690600148 mid=002FBa2X4Yda23 media=002FBa2X4Yda23 gen=6
+09-25 14:41:29.940 16343 16343 I NcrustTrack: lyric request begin: track=qqmusic:4611686018690600148 mid=002FBa2X4Yda23 media=002FBa2X4Yda23 gen=8
+09-25 14:41:30.994 16343 16343 I NcrustTrack: lyric request begin: track=qqmusic:4611686018690600148 mid=002FBa2X4Yda23 media=002FBa2X4Yda23 gen=10
+09-25 14:41:37.345 24395 24395 I NcrustTrack: lyric request begin: track=qqmusic:4611686018727083242 gen=1
+09-25 14:41:37.345 24395 24395 W NcrustTrack: qq lyric skipped: track=qqmusic:4611686018727083242 missing songmid
+09-25 14:43:55.731 28837 28837 I NcrustTrack: lyric request begin: track=qqmusic:4611686018727083242 gen=1
+09-25 14:43:55.731 28837 28837 W NcrustTrack: qq lyric skipped: track=qqmusic:4611686018727083242 missing songmid

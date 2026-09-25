@@ -1,0 +1,30 @@
+09-25 14:38:17.216 14525 16258 I QqApi   : vkey ok: requested=jymaster actual=hires prefix=RS01 mid=000zwUDf0KftQv
+09-25 14:38:45.408 14525 16281 E SongUrlFetcher: no playable url for songId=186005 at any level
+09-25 14:39:44.346 15570 24329 E SongUrlFetcher: no playable url for songId=186005 at any level
+09-25 14:40:22.736 15570 24327 E SongUrlFetcher: no playable url for songId=186005 at any level
+09-25 14:40:33.825 15570 24333 I QqApi   : vkey ok: requested=jymaster actual=jymaster prefix=AI00 mid=003u4H921sRR6B
+09-25 14:40:34.293 15570 24372 E SongUrlFetcher: no playable url for songId=186005 at any level
+09-25 14:40:41.209 15570 24332 I QqApi   : vkey ok: requested=jymaster actual=jymaster prefix=AI00 mid=000q72xu3gNJcz
+09-25 14:40:41.743 15570 24333 E SongUrlFetcher: no playable url for songId=186005 at any level
+09-25 14:41:27.297 16343 28726 I QqApi   : vkey ok: requested=jymaster actual=jymaster prefix=AI00 mid=002FBa2X4Yda23
+09-25 14:41:28.769 16343 28729 I QqApi   : vkey ok: requested=dolby actual=dolby prefix=Q001 mid=002FBa2X4Yda23
+09-25 14:41:29.933 16343 28726 I QqApi   : vkey ok: requested=jyeffect actual=jyeffect prefix=Q000 mid=002FBa2X4Yda23
+09-25 14:41:30.981 16343 28726 I QqApi   : vkey ok: requested=jymaster actual=jymaster prefix=AI00 mid=002FBa2X4Yda23
+09-25 14:44:17.458 28837 31990 I QqApi   : vkey ok: requested=jymaster actual=hires prefix=RS01 mid=000zwUDf0KftQv
+09-25 14:44:17.476 28837 32014 I QqApi   : vkey ok: requested=jymaster actual=jymaster prefix=AI00 mid=003u4H921sRR6B
+09-25 14:44:21.555 28837 32016 I QqApi   : vkey ok: requested=jymaster actual=standard prefix=M500 mid=002n3u4D2u8DLn
+09-25 14:44:24.582 28837 32016 I QqApi   : vkey ok: requested=jyeffect actual=standard prefix=M500 mid=002n3u4D2u8DLn
+09-25 14:44:25.578 28837 32016 I QqApi   : vkey ok: requested=hires actual=standard prefix=M500 mid=002n3u4D2u8DLn
+09-25 14:44:26.809 28837 31986 I QqApi   : vkey ok: requested=lossless actual=standard prefix=M500 mid=002n3u4D2u8DLn
+09-25 14:44:27.751 28837 31986 I QqApi   : vkey ok: requested=jyeffect actual=standard prefix=M500 mid=002n3u4D2u8DLn
+09-25 14:44:29.144 28837 32002 I QqApi   : vkey ok: requested=jymaster actual=standard prefix=M500 mid=002n3u4D2u8DLn
+09-25 14:44:30.456 28837 32002 I QqApi   : vkey ok: requested=jyeffect actual=standard prefix=M500 mid=002n3u4D2u8DLn
+09-25 14:44:43.575 28837 31988 W QqApi   : no playable url for qqmusic:4611686018536588792 at level=jyeffect
+09-25 14:44:43.576 28837 31988 W PlayerViewModel: no playable url for songId=4611686018536588792, skipping
+09-25 14:44:43.769 28837 32002 I QqApi   : vkey ok: requested=jyeffect actual=jyeffect prefix=Q000 mid=000zwUDf0KftQv
+09-25 14:44:43.798 28837 31990 I QqApi   : vkey ok: requested=jyeffect actual=jyeffect prefix=Q000 mid=003u4H921sRR6B
+09-25 14:44:48.518 28837 31989 I QqApi   : vkey ok: requested=jyeffect actual=jyeffect prefix=Q000 mid=000zwUDf0KftQv
+09-25 14:44:50.766 28837 31989 I QqApi   : vkey ok: requested=dolby actual=dolby prefix=Q001 mid=000zwUDf0KftQv
+09-25 14:44:51.280 28837 31989 I QqApi   : vkey ok: requested=jyeffect actual=jyeffect prefix=Q000 mid=000zwUDf0KftQv
+09-25 14:44:51.551 28837 32014 I QqApi   : vkey ok: requested=hires actual=hires prefix=RS01 mid=000zwUDf0KftQv
+09-25 14:44:51.915 28837 32002 I QqApi   : vkey ok: requested=jyeffect actual=jyeffect prefix=Q000 mid=000zwUDf0KftQv

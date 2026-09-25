@@ -156,6 +156,11 @@ object QqApi {
             return SongUrlResult(
                 url = OfflineKeys.withKey(url, song.id, actualLevel),
                 actualLevel = actualLevel,
+                // v2.2.1 · P0：这个档位是**从真正取回的文件名前缀反推的**（`RS01…flac` → hires），
+                // 它自己就是证据、不是服务端标签。标出来之后，QualityAssessment 才敢在
+                // 「请求母带、实拿 Hi-Res」时如实打上「已降级」，而不是像以前那样沉默
+                // （用户原话：「开了母带只能出极高，和免费用户没区别」）。
+                levelFromFile = true,
                 // QQ 的 vkey 响应**没有码率字段**（实测：`midurlinfo[]` 里没有 br），
                 // 但档位前缀本身就决定了码率 —— M500 恒为 128k mp3、M800 恒为 320k mp3、
                 // C400 是 96k AAC。填这些**由档位确定的已知值**，界面才能把
