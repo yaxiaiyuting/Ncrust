@@ -59,6 +59,11 @@ class StringsConstructorBudgetTest {
      * 245 = 255 − this − ceil(245/32) 个 mask − DefaultConstructorMarker。
      * **这个数不是配额，是天花板**：加文案请拆组，而拆组前必须先腾位置
      * （v2.3.0 的做法是把 `networkOfflineTitle` / `networkOfflineHint` 搬进 `OfflineStrings`）。
+     *
+     * ⚠️ v2.5.0 · D 的现状：`actionInsertNext` / `actionAppendToQueue` 搬进 `QueueStrings`、
+     * 同时新增 `queue` 这**一个**参数 —— **腾 2 花 1**，所以构造参数现在是 **244**，
+     * 只剩 **1 个空位**。下一个要加文案的人**必须先腾出一个位置**（把一条既有文案搬进某个嵌套组），
+     * 不能顺手再加第二条：245 就是 255 个槽正好用满的那一点，246 就是真机启动即崩。
      */
     private val maxConstructorParams = 245
 
@@ -98,6 +103,7 @@ class StringsConstructorBudgetTest {
             "com.takahashirinta.ncrust.ui.i18n.PlaylistsStrings",
             "com.takahashirinta.ncrust.ui.i18n.TagsStrings",
             "com.takahashirinta.ncrust.ui.i18n.LocalPlaylistStrings",
+            "com.takahashirinta.ncrust.ui.i18n.QueueStrings",
         )
         groups.forEach { name ->
             val clazz = Class.forName(name)
@@ -136,6 +142,37 @@ class StringsConstructorBudgetTest {
             assertEquals(s.offline.networkOfflineHint, s.networkOfflineHint)
             assertTrue(s.networkOfflineTitle.isNotBlank())
             assertTrue(s.networkOfflineHint.isNotBlank())
+        }
+    }
+
+    @Test
+    fun `添加到下一首的文案搬家后仍然可达（转发属性没写错）`() {
+        val presetList = listOf(zhCN, zhTW, en, jpJP, jpMY, koNK, deDE, ruRU)
+        presetList.forEach { s ->
+            // 搬进 QueueStrings 的两条既有文案：组内 == 转发属性（`Strings.xxx` 的写法不能失效），
+            // 且两边都非空 —— 漏填会编译错，这里再钉一次语义。
+            assertEquals(s.queue.actionInsertNext, s.actionInsertNext)
+            assertEquals(s.queue.actionAppendToQueue, s.actionAppendToQueue)
+            assertTrue(s.queue.actionInsertNext.isNotBlank())
+            assertTrue(s.queue.actionAppendToQueue.isNotBlank())
+            assertTrue(s.actionInsertNext.isNotBlank())
+            assertTrue(s.actionAppendToQueue.isNotBlank())
+
+            // v2.5.0 · D 新增的 6 条，8 种语言都必须有非空文案。
+            assertTrue(s.queue.actionAddToNext.isNotBlank())
+            assertTrue(s.queue.queueAddToNextDone.isNotBlank())
+            assertTrue(s.queue.queueAddToNextMoved.isNotBlank())
+            assertTrue(s.queue.queueAddToNextAlreadyNext.isNotBlank())
+            assertTrue(s.queue.queueAddToNextCurrent.isNotBlank())
+            assertTrue(s.queue.queueAddToNextStarted.isNotBlank())
+
+            // ★ 两个动作不许是同一个词：插播会**立刻打断**当前播放，
+            //   「添加到下一首播放」**不打断**。它们在同一个菜单里相邻，
+            //   文案如果写成同一句，用户会以为自己点错了入口。
+            assertTrue(
+                "actionAddToNext 与 actionInsertNext 撞词了：${s.actionAddToNext}",
+                s.actionAddToNext != s.actionInsertNext,
+            )
         }
     }
 }
