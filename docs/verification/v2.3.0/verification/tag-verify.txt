@@ -1,0 +1,31 @@
+# tag / APK badging / build.gradle 三源 versionCode 一致性（v2.3.0-gpl）
+时间：2026-09-25T17:34:17+08:00
+
+## ① tag 指向的源码
+$ git show v2.3.0-gpl:app/build.gradle.kts | grep -E '^\s+version(Code|Name)'
+        versionCode = 39
+        versionName = "2.3.0-gpl"
+tag commit: 02e28a25f2461653ed5612acaf13e239c67ebe2d
+02e28a2 docs: v2.3.0 最终构建证据（829 个单测全绿 / lint 0 Error / release sha256）
+
+## ② 产物 APK 的 aapt2 dump badging
+$ aapt2 dump badging dist/Ncrust-v2.3.0-gpl-release.apk
+package: name='com.takahashirinta.ncrust' versionCode='39' versionName='2.3.0-gpl' platformBuildVersionName='16' platformBuildVersionCode='36' compileSdkVersion='36' compileSdkVersionCodename='16'
+
+## ③ HEAD 的 app/ 源码 == tag 的 app/ 源码
+$ git diff --stat v2.3.0-gpl HEAD -- app/
+(空 = 一致)
+
+## ④ 工作区
+$ git status --short
+?? docs/verification/v2.3.0/verification/tag-verify.txt
+(空 = 干净)
+
+## ⑤ APK 签名
+Signer #1 certificate DN: CN=Ncrust GPL Fork, OU=Personal, O=yaxiaiyuting, L=Unknown, ST=Unknown, C=CN
+Signer #1 certificate SHA-256 digest: e75af3ffbcf76a36a567188d88d132adf3c7484c53c20a3a083cb1d222025511
+
+sha256: f9f32a77b41137f2aa16ed77abacceca0b96f90d80b7de915edb97eb8874a9c3
+
+## 结论
+三源一致：versionCode = 39 / versionName = 2.3.0-gpl
