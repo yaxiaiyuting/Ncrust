@@ -186,8 +186,28 @@ android {
         //   脚本输出：`MAX versionCode (所有来源) = 41 [Ncrust-v2.5.0-gpl-debug.apk]` ⇒ 下一个可用 **42**。
         //   实测记录：docs/verification/v2.5.1/verification/version-check.txt
         //   打 tag 前会用 `git show v2.5.1-gpl:app/build.gradle.kts | grep version` 再自证一次。
-        versionCode = 42
-        versionName = "2.5.1-gpl"
+        //
+        // v2.5.2（本版）：**歌词自动居中的几何修正**（用户紧急反馈）。
+        //
+        // 症状：自动居中「只是把第一行居中」—— 多行歌词、尤其是带翻译的歌，
+        //       大屏模式下整块明显往下坠。
+        // 根因：定位语义是「**条目顶边**落在视口 leadFraction 处」（`leadOffsetPx`），
+        //       而一个 LazyColumn 条目是 `原句 + 译文 + 音译`（含折行）的整块。
+        //       大屏右栏视口约 232dp，三行条目近 112dp ⇒ 整块一直铺到视口底部。
+        //       真机实测（S6 / 大屏模式 / 带翻译的歌）：条目中心落在面板 **67.6%** 处。
+        // 修法：改为「**整条的中点**落在 leadFraction 处」（`blockTopPx`），
+        //       并抽出发实测高度 → 同一帧纠正的路径；顶部渐隐带成为顶边下限。
+        //       修后同场景实测 67.6% → **53.6%**（残差 34px 是字体 leading 的几何差）。
+        //
+        // versionCode 出处：`tools/next-version.sh`（**带 fetch**）三源交叉验证 ——
+        //   ① 最近 5 个 tag 内 build.gradle 最大值 = 42（v2.5.1-gpl）；
+        //   ② `dist/*.apk` 的 aapt2 dump badging 最大值 = 42（Ncrust-v2.5.1-gpl-*，
+        //      v2.5.1 已于 2026-09-25 正式发布，所以这一版**必须**升号）；
+        //   ③ 仓库当前 build.gradle = 42。
+        //   脚本输出：`MAX versionCode (所有来源) = 42 [Ncrust-v2.5.1-gpl-debug.apk]` ⇒ 下一个可用 **43**。
+        //   实测记录：docs/verification/v2.5.2/verification/version-check.txt
+        versionCode = 43
+        versionName = "2.5.2-gpl"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
