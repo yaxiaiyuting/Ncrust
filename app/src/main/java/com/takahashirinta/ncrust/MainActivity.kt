@@ -191,6 +191,10 @@ class MainActivity : ComponentActivity() {
         // v2.1.0 · C：接线 QQ 音乐音源（注册 Provider + 初始化它自己的 HTTP 通道）。
         // 与 RetrofitClient.init 并列，幂等。
         com.takahashirinta.ncrust.qq.QqMusicSourceProvider.install(this)
+        // v2.2.0：QQ 歌单仓库（只读同步 + 私有目录缓存）。与上面并列、幂等。
+        // **它自己不发起任何请求**，只是拿一个 application context 用来读写缓存；
+        // 真正的网络调用只在用户打开歌单页/点刷新时发生（本版不做自动刷新）。
+        com.takahashirinta.ncrust.qq.QqPlaylistRepository.init(this)
         // 冷启动即刻并发启动预热：Home 三条网络 + 封面 Coil 预取。
         // splash 期间跑完，进入主页时 ContentCache 已就位，无 loader 闪烁。
         AppWarmup.start(this)
@@ -1970,6 +1974,7 @@ fun MainScreen(
                                 navController.navigate(NavRoutes.playlist(pl.id, pl.name, pl.coverImgUrl))
                             },
                             onPlayPlaylist = { playlistId -> playPlaylistNow(playlistId) },
+                            onOpenQqPlaylists = { navController.navigate(NavRoutes.QQ_PLAYLISTS) },
                             // 收藏单曲「播放全部」：**先播、后补**。
                             // 用本地已加载的收藏单曲立即开播（点击即出声、有反馈），剩余详情在
                             // 后台补齐后按红心顺序追加到队尾，避免为了"共 N 首"空等数秒网络。

@@ -157,6 +157,15 @@ data class Strings(
      * 构造参数上直接加而踩上限（v2.0.0 · HF1 就是这么崩的）。
      */
     val source: SourceStrings,
+    /**
+     * v2.2.0：QQ 歌单文案组。
+     *
+     * **必须做成嵌套组，不能摊平成 [Strings] 的构造参数。** 这正是 v2.0.0 · HF1 踩过的坑：
+     * `Strings` 的构造参数一旦逼近 dex 单方法 255 个参数寄存器上限，**编译能过、真机启动崩**
+     * （构造函数是单个 `<init>` 方法，参数寄存器用满即 `VerifyError`）。
+     * 所以新增文案一律进嵌套组，给 `Strings` 只加**一个**参数。
+     */
+    val playlists: PlaylistsStrings,
 
     // v1.5.1 · C：无网络时的首页降级空态（标题 / 提示）。有缓存时会直接显示缓存，
     // 只有"一条都没有"时才轮到它。
@@ -453,6 +462,25 @@ data class Strings(
     val cacheUsageImage: String get() = offline.cacheUsageImage
     val cacheUsageOther: String get() = offline.cacheUsageOther
     val cacheCleared: String get() = offline.cacheCleared
+
+    // ---- v2.2.0 · QQ 歌单（全部转发到 playlists 组，见 Strings.playlists 的 KDoc）----
+    val qqPlaylistsTitle: String get() = playlists.qqPlaylistsTitle
+    val playlistsSectionOwned: String get() = playlists.sectionOwned
+    val playlistsSectionFav: String get() = playlists.sectionFav
+    val playlistFavorite: String get() = playlists.favorite
+    val playlistRefresh: String get() = playlists.refresh
+    val playlistEmpty: String get() = playlists.empty
+    val playlistEmptyTracks: String get() = playlists.emptyTracks
+    val playlistLoginExpired: String get() = playlists.loginExpired
+    val playlistRelogin: String get() = playlists.relogin
+    val playlistOffline: String get() = playlists.offline
+    val playlistTruncated: String get() = playlists.truncated
+    val playlistLoadFailed: String get() = playlists.loadFailed
+    val playlistRetry: String get() = playlists.retry
+    val playlistNotFound: String get() = playlists.notFound
+    val playlistsEntryHint: String get() = playlists.entryHint
+    val playlistLoginRequired: String get() = playlists.loginRequired
+    val playlistTrackCount: (Int) -> String get() = playlists.trackCount
 }
 
 /** 字节数格式化为人类可读的 B/KB/MB/GB，供 cacheSizeLabel 复用。 */
@@ -604,4 +632,50 @@ data class SourceStrings(
     val sourceQqDeviceLimit: String,
     /** 登录过于频繁（104604）。 */
     val sourceQqLoginRateLimited: String,
+)
+
+/**
+ * v2.2.0 · QQ 音乐用户歌单文案组。
+ *
+ * 单独成组的原因见 [Strings.playlists] 的 KDoc（dex 255 参数寄存器上限）。
+ * 文案契约：
+ * - 「离线」必须说清是**本地缓存**，不承诺「数据是最新的」；
+ * - 「登录已过期」必须给**重新登录**出口，不能只显示一句话；
+ * - 收藏/自建要分开说，且**不出现「合并」字样** —— 本版不做跨源合并。
+ */
+data class PlaylistsStrings(
+    /** 页面标题。 */
+    val qqPlaylistsTitle: String,
+    /** 「自建歌单」分组标题。 */
+    val sectionOwned: String,
+    /** 「收藏歌单」分组标题。 */
+    val sectionFav: String,
+    /** 「我喜欢」这个特殊歌单的标记。 */
+    val favorite: String,
+    /** 手动刷新按钮。 */
+    val refresh: String,
+    /** 一个歌单都没有。 */
+    val empty: String,
+    /** 歌单里一首歌都没有。 */
+    val emptyTracks: String,
+    /** 登录态已过期。 */
+    val loginExpired: String,
+    /** 重新登录按钮。 */
+    val relogin: String,
+    /** 离线提示（显示的是本地缓存）。 */
+    val offline: String,
+    /** 歌单过大被截断的提示。 */
+    val truncated: String,
+    /** 加载失败。 */
+    val loadFailed: String,
+    /** 重试按钮。 */
+    val retry: String,
+    /** 歌单不存在或不属于当前账号。 */
+    val notFound: String,
+    /** 库页入口的副标题。 */
+    val entryHint: String,
+    /** 未登录时的空状态。 */
+    val loginRequired: String,
+    /** 「N 首」。 */
+    val trackCount: (Int) -> String,
 )

@@ -24,6 +24,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
@@ -83,6 +84,9 @@ fun LibraryScreen(
     onSongInsertNext: (SongItem) -> Unit = {},
     onSongAppendToQueue: (SongItem) -> Unit = {},
     onShowSongMenu: (SongItem, List<SongMenuAction>) -> Unit = { _, _ -> },
+    // v2.2.0：QQ 音乐歌单入口。**默认空实现**，所以既有调用点不受影响；
+    // 点进去是只含 QQ 歌单的独立页面，不与下面的网易云网格合并。
+    onOpenQqPlaylists: () -> Unit = {},
     refreshTrigger: Int = 0
 ) {
     val context = LocalContext.current
@@ -365,6 +369,11 @@ fun LibraryScreen(
                                 contentPadding = PaddingValues(bottom = BottomOverlayInsetDp),
                                 flingBehavior = rememberMetroFlingBehavior()
                             ) {
+                                // v2.2.0：QQ 音乐歌单入口。整行占满（span = 全部列），
+                                // 明确与下面的网易云歌单网格**分区**，不做跨源合并。
+                                item(key = "qq-playlists", span = { GridItemSpan(maxLineSpan) }) {
+                                    QqPlaylistEntryRow(onClick = onOpenQqPlaylists)
+                                }
                                 // B4：「新建歌单」作为网格第一格 —— 建空歌单的唯一入口。
                                 item(key = "create") {
                                     NewPlaylistGridItem(

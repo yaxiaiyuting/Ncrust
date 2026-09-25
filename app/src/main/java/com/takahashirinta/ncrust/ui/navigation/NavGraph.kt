@@ -22,11 +22,24 @@ object NavRoutes {
     const val PLAYLIST = "playlist/{playlistId}/{playlistName}/{playlistCoverUrl}"
     const val SONG_DETAIL = "song/{songId}"
 
+    /**
+     * v2.2.0：QQ 音乐歌单（按源隔离的独立页面）。
+     *
+     * 详情路由把**身份三元组**编进路径：`playlistId`(tid) + `ownerId`(uin) + `dirId`。
+     * ownerId 必须进路由 —— 否则「A 账号点进歌单 → 返回 → 切到 B 账号 → 系统恢复同一条
+     * 路由」会拿 A 的 playlistId 去 B 的账号下查，运气好是 10004，运气不好是另一个歌单。
+     */
+    const val QQ_PLAYLISTS = "qqplaylists"
+    const val QQ_PLAYLIST_DETAIL = "qqplaylist/{playlistId}/{ownerId}/{dirId}/{playlistName}"
+
     fun album(albumId: Long) = "album/$albumId"
     fun artist(artistId: Long) = "artist/$artistId"
     fun playlist(id: Long, name: String = "", coverUrl: String = "") =
         "playlist/$id/${URLEncoder.encode(name, StandardCharsets.UTF_8.toString())}/${URLEncoder.encode(coverUrl, StandardCharsets.UTF_8.toString())}"
     fun song(songId: Long) = "song/$songId"
+
+    fun qqPlaylistDetail(id: String, ownerId: String, dirId: Long, name: String) =
+        "qqplaylist/$id/$ownerId/$dirId/" + URLEncoder.encode(name, StandardCharsets.UTF_8.toString())
 }
 
 @Composable
@@ -116,6 +129,47 @@ fun MainNavGraph(
                 onSongClick = onSongClick,
                 onReplaceAndPlay = onReplaceAndPlay,
                 onInsertNext = onInsertNext,
+                onSongInsertNext = onSongInsertNext,
+                onSongAppendToQueue = onSongAppendToQueue,
+                onShowSongMenu = onShowSongMenu
+            )
+        }
+
+        composable(NavRoutes.QQ_PLAYLISTS) {
+            QqPlaylistScreen(
+                onBack = { navController.popBackStack() },
+                onPlaylistClick = { pl ->
+                    navController.navigate(
+                        NavRoutes.qqPlaylistDetail(pl.key.id, pl.key.ownerId, pl.dirId, pl.name)
+                    )
+                }
+            )
+        }
+
+        composable(
+            route = NavRoutes.QQ_PLAYLIST_DETAIL,
+            arguments = listOf(
+                navArgument("playlistId") { type = NavType.StringType },
+                navArgument("ownerId") { type = NavType.StringType },
+                navArgument("dirId") { type = NavType.LongType },
+                navArgument("playlistName") { type = NavType.StringType; defaultValue = "" }
+            )
+        ) { backStackEntry ->
+            val pid = backStackEntry.arguments?.getString("playlistId") ?: return@composable
+            val owner = backStackEntry.arguments?.getString("ownerId") ?: return@composable
+            val dirId = backStackEntry.arguments?.getLong("dirId") ?: 0L
+            val name = URLDecoder.decode(
+                backStackEntry.arguments?.getString("playlistName") ?: "",
+                StandardCharsets.UTF_8.toString()
+            )
+            QqPlaylistDetailScreen(
+                playlistId = pid,
+                ownerId = owner,
+                dirId = dirId,
+                playlistName = name,
+                onBack = { navController.popBackStack() },
+                onSongClick = onSongClick,
+                onReplaceAndPlay = onReplaceAndPlay,
                 onSongInsertNext = onSongInsertNext,
                 onSongAppendToQueue = onSongAppendToQueue,
                 onShowSongMenu = onShowSongMenu
