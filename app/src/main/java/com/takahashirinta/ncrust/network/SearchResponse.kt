@@ -74,6 +74,89 @@ data class SongItem(
      * 绝不把它当会员专享往前推。
      */
     @SerializedName("member_only") val memberOnly: Boolean? = null,
+    /**
+     * 网易云的**逐曲 `privilege` 对象**（v2.3.0）。搜索 / 艺人热歌 / 单曲详情三条接口
+     * 都会下发它，不需要额外请求。
+     *
+     * ## 为什么必须解析它
+     *
+     * v2.3.0 的探针要回答「搜索阶段能不能诚实标注能不能播」，结论是**能**，
+     * 而唯一的零假阳性判据就在这个对象里（[SongPrivilege.st] / [SongPrivilege.pl]）：
+     * 实测 `pl > 0` ⇒ 30/30 可播、假阳性 0（`docs/verification/v2.3.0/probe-copyright.md` §2）。
+     *
+     * 可空 + 默认值：Gson 走 Unsafe 反序列化、不调用构造函数，而且它会跟着进队列持久化 ——
+     * 老队列 JSON 里没有这个 key，读到就是 null（语义 = 「不知道」，不是「不能播」）。
+     */
+    @SerializedName("privilege") val privilege: SongPrivilege? = null,
+    /**
+     * 网易云的**「无版权时可推荐的替代」**（v2.3.0）。`null` = 服务端没有声明。
+     *
+     * 实测（2026-09，591 条样本）只有 **2 条**带它，但**零假阳性** ——
+     * 带上它时该曲确实取不到链，且服务端自己给了替代说明（实测 `typeDesc = "其它版本可播"`）。
+     * 所以它是「**确定无版权**」的判据，而不是「有没有版权」的普查字段。
+     */
+    @SerializedName("noCopyrightRcmd") val noCopyright: NoCopyrightRecommendation? = null,
+    /**
+     * 网易云的**原唱 / 翻唱**标注（v2.3.0）。实测取值与语义（`probe-official-tag.md`）：
+     * `1` = 原唱、`2` = 翻唱、`0`/`3` = 不知道（**不打标签**）。
+     *
+     * 这是**接口字段**，不是启发式 —— 自洽性检验（翻唱声称的原曲回头查是不是原唱）
+     * 58/60 = 96.7%，且剩余 3.3% 全落在「不知道」一侧而不是「说反了」。
+     * QQ 音乐没有等价字段，所以 QQ 侧的该字段恒为 null。
+     */
+    @SerializedName("originCoverType") val originCoverType: Int? = null,
+    /**
+     * 翻唱曲目**指向的原曲**（v2.3.0）。只在 [originCoverType] == 2 时出现（实测 198 条里 101 条）。
+     * 用途：翻唱角标的副标题「原唱：<艺人> · <曲名>」。
+     *
+     * 它带 `songId`，可以精确回查 —— 这正是「这不是字符串匹配启发式」的证据。
+     */
+    @SerializedName("originSongSimpleData") val originSong: OriginSongRef? = null,
+)
+
+/**
+ * 网易云逐曲 `privilege` 里**本应用用到的两个整数**（v2.3.0）。
+ *
+ * 只解析两个字段是有意的：整个 `privilege` 对象有 30+ 个 key（`chargeInfoList` /
+ * `freeTrialPrivilege` / 各种 `*Level`），本版一个都不用 —— 探针只确证了这两个的语义。
+ * 多解析一个没有实测支撑的字段，就是多一处「猜」。
+ *
+ * | 字段 | 实测语义 | 依据 |
+ * |---|---|---|
+ * | `pl` | **当前身份**在该曲上的可播最高码率；`> 0` ⇒ 一定能取到链 | 30/30，假阳性 0 |
+ * | `st` | 状态码。`0` = 正常；`-200` = 下架/无版权；`-1` = **混合，不可用** | `st==0 && pl==0` ⇒ 30/30 不可播；`st==-1` ⇒ 15 可播 / 15 不可播 |
+ */
+@Immutable
+data class SongPrivilege(
+    @SerializedName("st") val st: Int? = null,
+    @SerializedName("pl") val pl: Int? = null,
+)
+
+/**
+ * 网易云的「无版权推荐」对象（v2.3.0）。
+ *
+ * @property typeDesc 服务端给用户的一句话（实测 `"其它版本可播"`）。中文原文，
+ *   本版**只把它当作「确实无版权」的证据**，展示文案走本地化字符串，不直接回显。
+ * @property type 推荐类型（实测 `2`）。语义未确证，不参与判定。
+ */
+@Immutable
+data class NoCopyrightRecommendation(
+    @SerializedName("typeDesc") val typeDesc: String? = null,
+    @SerializedName("type") val type: Int? = null,
+)
+
+/**
+ * 翻唱曲目指向的原曲（v2.3.0）。字段名与网易云 `originSongSimpleData` 一一对应。
+ *
+ * @property songId 原曲的 songId。**可精确回查**，所以「翻唱 → 原唱」这条关系可验证，
+ *   不是名字匹配。
+ * @property artists 原曲的艺人（实测与 `ar` 同构，用同一个 [ArtistItem]）。
+ */
+@Immutable
+data class OriginSongRef(
+    @SerializedName("songId") val songId: Long? = null,
+    @SerializedName("name") val name: String? = null,
+    @SerializedName("artists") val artists: List<ArtistItem>? = null,
 )
 
 @Immutable

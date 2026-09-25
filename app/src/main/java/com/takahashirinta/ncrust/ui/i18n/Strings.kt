@@ -166,11 +166,31 @@ data class Strings(
      * 所以新增文案一律进嵌套组，给 `Strings` 只加**一个**参数。
      */
     val playlists: PlaylistsStrings,
+    /**
+     * v2.3.0 · C/D：**曲目标签文案组**（版权可用性 + 原唱/翻唱）。
+     *
+     * 同样必须拆组（理由见上一条）。这一组承载的是「每一行歌曲都可能在渲染的角标」，
+     * 8 种语言 × 7 条 = 56 个字符串 —— 摊平进构造参数会直接撞 dex 上限。
+     */
+    val tags: TagsStrings,
+    /**
+     * v2.3.0 · B：**本地歌单**文案组（列表 / 详情 / 增删 / 同步 / 清空）。
+     *
+     * 与 [playlists]（远程歌单镜像）分开是有意的：两者是**不同的功能面** ——
+     * 远程歌单只读、按源隔离；本地歌单可编辑、可混装音源。
+     * 文案放一起会让「移除」这类词在两处指不同的东西。
+     */
+    val localPlaylist: LocalPlaylistStrings,
 
-    // v1.5.1 · C：无网络时的首页降级空态（标题 / 提示）。有缓存时会直接显示缓存，
-    // 只有"一条都没有"时才轮到它。
-    val networkOfflineTitle: String,
-    val networkOfflineHint: String,
+    // v1.5.1 · C：无网络时的首页降级空态（标题 / 提示）。
+    //
+    // ★ v2.3.0：这两条**从构造参数搬进了 [OfflineStrings]**（语义上本来就属于「离线」那一组），
+    //   调用点由下面的转发属性原样保住。搬家的原因是硬约束，不是审美：
+    //   `Strings` 的构造参数在 **245** 个时就已经顶到 JVM/dex 的 255 槽上限
+    //   （245 + 8 个默认值 mask + 1 个 DefaultConstructorMarker + this = 255），
+    //   再加**一个**参数就会在类加载期抛 `ClassFormatError: Too many arguments in method signature`。
+    //   本版需要两个新文案组，所以必须**先腾出两个位置**。细节与实测见 [Strings] 的 KDoc 与
+    //   `StringsConstructorBudgetTest`。
 
     // Home screen
     val dailySongsTitle: String,
@@ -418,6 +438,11 @@ data class Strings(
     val offlineCacheDeleteTitle: String get() = offline.offlineCacheDeleteTitle
     val offlineCacheDeleted: String get() = offline.offlineCacheDeleted
 
+    // v2.3.0：这两条随字段一起搬进 [offline] 组，调用点（MainScreen / HomeScreen 的离线空态）
+    // 读的仍是 `strings.networkOfflineTitle`，一个字都不用改。
+    val networkOfflineTitle: String get() = offline.networkOfflineTitle
+    val networkOfflineHint: String get() = offline.networkOfflineHint
+
     // ---------- v2.1.0 · C：多音源那一组的转发属性 ----------
     val sourceQqMusic: String get() = source.sourceQqMusic
     val sourceQqAccount: String get() = source.sourceQqAccount
@@ -481,6 +506,45 @@ data class Strings(
     val playlistsEntryHint: String get() = playlists.entryHint
     val playlistLoginRequired: String get() = playlists.loginRequired
     val playlistTrackCount: (Int) -> String get() = playlists.trackCount
+
+    // ---- v2.3.0 · C/D：曲目标签（版权可用性 + 原唱/翻唱）----
+    val tagPlayable: String get() = tags.playable
+    val tagMemberOnly: String get() = tags.memberOnly
+    val tagNoCopyright: String get() = tags.noCopyright
+    val tagOriginal: String get() = tags.original
+    val tagCover: String get() = tags.cover
+    /** 翻唱行的副标题：「原唱：<艺人> · <曲名>」。 */
+    val tagCoverOrigin: (String, String) -> String get() = tags.coverOrigin
+    /** 播放失败且另一音源有候选时的提示。 */
+    val tagSwitchSourceHint: String get() = tags.switchSourceHint
+
+    // ---- v2.3.0 · B：本地歌单 ----
+    val localPlaylistSectionTitle: String get() = localPlaylist.sectionTitle
+    val localPlaylistNew: String get() = localPlaylist.newPlaylist
+    val localPlaylistEmpty: String get() = localPlaylist.empty
+    val localPlaylistEmptyTracks: String get() = localPlaylist.emptyTracks
+    val localPlaylistNameHint: String get() = localPlaylist.nameHint
+    val localPlaylistCreate: String get() = localPlaylist.create
+    val localPlaylistCreated: (String) -> String get() = localPlaylist.created
+    val localPlaylistAddTrack: String get() = localPlaylist.addTrack
+    val localPlaylistAdded: String get() = localPlaylist.added
+    val localPlaylistRemoveTrack: String get() = localPlaylist.removeTrack
+    val localPlaylistRemoved: String get() = localPlaylist.removed
+    val localPlaylistClear: String get() = localPlaylist.clear
+    val localPlaylistClearConfirm: (String) -> String get() = localPlaylist.clearConfirm
+    val localPlaylistCleared: String get() = localPlaylist.cleared
+    val localPlaylistSync: String get() = localPlaylist.sync
+    val localPlaylistSyncing: String get() = localPlaylist.syncing
+    val localPlaylistSynced: (Int, Int) -> String get() = localPlaylist.synced
+    val localPlaylistSyncFailed: String get() = localPlaylist.syncFailed
+    val localPlaylistSyncNoSource: String get() = localPlaylist.syncNoSource
+    val localPlaylistLocalBadge: String get() = localPlaylist.localBadge
+    val localPlaylistDelete: String get() = localPlaylist.delete
+    val localPlaylistDeleteConfirm: (String) -> String get() = localPlaylist.deleteConfirm
+    val localPlaylistDeleted: String get() = localPlaylist.deleted
+    val localPlaylistChoose: String get() = localPlaylist.choose
+    val localPlaylistAdopt: String get() = localPlaylist.adopt
+    val localPlaylistAdopted: (String) -> String get() = localPlaylist.adopted
 }
 
 /** 字节数格式化为人类可读的 B/KB/MB/GB，供 cacheSizeLabel 复用。 */
@@ -522,6 +586,15 @@ data class OfflineStrings(
     val offlineCacheDeleteTrack: String,
     val offlineCacheDeleteTitle: String,
     val offlineCacheDeleted: String,
+    /**
+     * v1.5.1 · C：无网络时的首页降级空态标题。
+     *
+     * v2.3.0 从 [Strings] 的构造参数搬到这里 —— 语义上它本来就是「离线」那一组的
+     * （有缓存时直接显示缓存，只有一条都没有时才轮到它），搬过来同时腾出了 dex 槽位。
+     */
+    val networkOfflineTitle: String,
+    /** [networkOfflineTitle] 的补充提示。 */
+    val networkOfflineHint: String,
     val cacheUsageAudio: String,
     val cacheUsageImage: String,
     val cacheUsageOther: String,
@@ -678,4 +751,98 @@ data class PlaylistsStrings(
     val loginRequired: String,
     /** 「N 首」。 */
     val trackCount: (Int) -> String,
+)
+
+/**
+ * v2.3.0 · C/D：曲目标签文案组。
+ *
+ * ## 为什么「可播放」这三个字必须谨慎
+ *
+ * v2.3.0 的探针（`docs/verification/v2.3.0/probe-copyright.md`）证明网易云的
+ * `privilege.pl > 0` ⇒ 30/30 能取到链、假阳性 0，所以 [playable] 是一个**能被实测支撑**的断言。
+ * 但它的语义是「**当前账号**可播放」，不是「有版权」——文案刻意写「可播放」而不是「正版」。
+ *
+ * [memberOnly] / [noCopyright] 同理：只在服务端给了判据时显示，
+ * 判不出来时整组文案**一个都不出现**（`TrackAvailability.UNKNOWN` 的 UI 契约）。
+ */
+data class TagsStrings(
+    /** 服务端确认当前账号能取到播放链。 */
+    val playable: String,
+    /** 当前账号拿不到链，判据指向会员墙。 */
+    val memberOnly: String,
+    /** 服务端显式声明无版权 / 已下架。 */
+    val noCopyright: String,
+    /** 服务端声明这条就是原曲本身（网易云 `originCoverType == 1`）。 */
+    val original: String,
+    /** 服务端声明这条是翻唱（网易云 `originCoverType == 2`）。 */
+    val cover: String,
+    /** 翻唱行的副标题：参数是 (原唱艺人, 原曲名)。 */
+    val coverOrigin: (String, String) -> String,
+    /** 播放失败、且这首歌在另一个音源上有候选时的提示。 */
+    val switchSourceHint: String,
+)
+
+/**
+ * v2.3.0 · B：本地歌单文案组。
+ *
+ * ## 「移除」与「清空」的语义差别必须体现在文案上
+ *
+ * 本地歌单是**只加不减 + tombstone**（铁律 4）：用户删掉的歌不会被同步复活，
+ * 但那条记录**仍在**（只是被标记）。所以文案不能用「删除」——
+ * 说「删除」而实际保留记录，与说「移除」而用户以为再也不会出现，都是撒谎。
+ * 本组统一用「从歌单移除」（可见效果）/「清空歌单」（连删除记录一起清掉）。
+ */
+data class LocalPlaylistStrings(
+    /** 库页「歌单」tab 里本地歌单分组的标题。 */
+    val sectionTitle: String,
+    /** 新建本地歌单。 */
+    val newPlaylist: String,
+    /** 一个本地歌单都没有。 */
+    val empty: String,
+    /** 本地歌单里一首歌都没有。 */
+    val emptyTracks: String,
+    /** 新建对话框的输入提示。 */
+    val nameHint: String,
+    /** 新建对话框的确认按钮。 */
+    val create: String,
+    /** 建好的提示，参数是歌单名。 */
+    val created: (String) -> String,
+    /** 把当前播放/歌曲加入本地歌单。 */
+    val addTrack: String,
+    /** 加入成功。 */
+    val added: String,
+    /** 从本地歌单移除（只打 tombstone，不物理删除）。 */
+    val removeTrack: String,
+    /** 移除成功的反馈。 */
+    val removed: String,
+    /** 清空歌单（连 tombstone 一起清）。 */
+    val clear: String,
+    /** 清空的二次确认，参数是歌单名。 */
+    val clearConfirm: (String) -> String,
+    /** 清空成功。 */
+    val cleared: String,
+    /** 手动同步。 */
+    val sync: String,
+    /** 同步中。 */
+    val syncing: String,
+    /** 同步结果，参数是 (新增, 跳过)。 */
+    val synced: (Int, Int) -> String,
+    /** 同步失败（网络）。 */
+    val syncFailed: String,
+    /** 这个歌单没有可同步的远程来源。 */
+    val syncNoSource: String,
+    /** 用户手动加入的曲目角标。 */
+    val localBadge: String,
+    /** 删除本地歌单。 */
+    val delete: String,
+    /** 删除本地歌单的二次确认，参数是歌单名。 */
+    val deleteConfirm: (String) -> String,
+    /** 删除成功。 */
+    val deleted: String,
+    /** 「加入本地歌单」选择器的标题。 */
+    val choose: String,
+    /** v2.3.0 · B：把一个远程歌单转存成可编辑的本地歌单（QQ 歌单页 / 网易云歌单页的顶部入口）。 */
+    val adopt: String,
+    /** 转存成功的反馈，参数是歌单名。 */
+    val adopted: (String) -> String,
 )
