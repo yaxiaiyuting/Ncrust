@@ -11,6 +11,7 @@
 package com.takahashirinta.ncrust.playlist
 
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.takahashirinta.ncrust.network.SongItem
 import com.takahashirinta.ncrust.network.model.AlbumItem
 import com.takahashirinta.ncrust.network.model.ArtistItem
@@ -64,6 +65,25 @@ object PlaylistCacheCodec {
     const val DEFAULT_TTL_MS = 10 * 60 * 1000L
 
     private val gson = Gson()
+
+    /**
+     * 编译期捕获的集合类型。用它们解析数组**不依赖字段的泛型签名**，
+     * 因此不受 R8 混淆/属性裁剪影响（见 [ListEnvelope] 的 KDoc）。
+     * proguard 已有 `-keep class * extends com.google.gson.reflect.TypeToken`。
+     */
+    private val playlistListType = object : TypeToken<List<PlaylistDto>>() {}.type
+    private val songListType = object : TypeToken<List<SongDto>>() {}.type
+
+    /** 解析信封里那段「字符串形式的数组」；`null`/空串/坏 JSON 一律返回 null（按 MALFORMED 处理）。 */
+    private fun decodePlaylistRows(json: String?): List<PlaylistDto>? {
+        if (json.isNullOrBlank()) return null
+        return runCatching { gson.fromJson<List<PlaylistDto>>(json, playlistListType) }.getOrNull()
+    }
+
+    private fun decodeSongRows(json: String?): List<SongDto>? {
+        if (json.isNullOrBlank()) return null
+        return runCatching { gson.fromJson<List<SongDto>>(json, songListType) }.getOrNull()
+    }
 
     // ---------------------------------------------------------------- DTO ----
     // 全部可空 + 默认值：Gson 不调用构造函数，缺字段时必须是 null 而不是抛异常。
@@ -122,20 +142,43 @@ object PlaylistCacheCodec {
         val memberOnly: Boolean = false,
     )
 
+    /**
+     * 列表信封。
+     *
+     * ## 为什么数组存成**字符串**（`playlistsJson`）而不是 `List<PlaylistDto>`
+     *
+     * 这是 release 真机上踩出来的一个 R8 坑，不是风格选择：
+     *
+     * `List<PlaylistDto>` 的元素类型只能靠**字段的泛型签名 attribute** 得知。
+     * R8 对本包（`playlist.**`）没有 keep 规则时，会把这个 attribute 丢掉，
+     * 于是 Gson 看到的是**裸 `List`** ⇒ 元素按 `Object` 反序列化成 `LinkedTreeMap`
+     * ⇒ 代码里 `as PlaylistDto` 直接 `ClassCastException` 崩溃。
+     * **debug 构建完全正常**（不混淆），所以它只在 release APK 上出现 ——
+     * PCL110 实测崩溃栈（retrace 后）：
+     * `PlaylistCacheCodec.decodeList(PlaylistCacheCodec.kt:463)` ← `LinkedTreeMap cannot be cast to PlaylistDto`。
+     *
+     * 存成字符串之后，数组用**编译期捕获**的 `TypeToken<List<PlaylistDto>>` 解析
+     * （项目里 `HomeSnapshot` / `LyricsCache` 用的就是这套，且 proguard 已有
+     * `-keep class * extends com.google.gson.reflect.TypeToken`），
+     * **不依赖任何字段泛型签名**，因此与 keep 规则无关、结构上不会再犯。
+     *
+     * 代价是 JSON 里多一层转义、肉眼可读性略降；正确性优先。
+     */
     internal data class ListEnvelope(
         val version: Int = 0,
         val ownerId: String? = null,
         val savedAt: Long = 0L,
-        val playlists: List<PlaylistDto>? = null,
+        val playlistsJson: String? = null,
     )
 
+    /** 详情信封。数组同样存成字符串，理由见 [ListEnvelope]。 */
     internal data class DetailEnvelope(
         val version: Int = 0,
         val ownerId: String? = null,
         val savedAt: Long = 0L,
         val complete: Boolean = false,
         val total: Int = 0,
-        val songs: List<SongDto>? = null,
+        val songsJson: String? = null,
     )
 
     // ------------------------------------------------------------- 读结果 ----
@@ -201,7 +244,7 @@ object PlaylistCacheCodec {
                 version = SCHEMA_VERSION,
                 ownerId = ownerId,
                 savedAt = savedAt,
-                playlists = playlists.map { it.toDto() },
+                playlistsJson = gson.toJson(playlists.map { it.toDto() }, playlistListType),
             )
         )
 
@@ -218,7 +261,7 @@ object PlaylistCacheCodec {
             savedAt = savedAt,
             complete = complete,
             total = total,
-            songs = songs.map { it.toDto() },
+            songsJson = gson.toJson(songs.map { it.toDto() }, songListType),
         )
     )
 
@@ -250,7 +293,8 @@ object PlaylistCacheCodec {
         if (env.ownerId.isNullOrBlank()) return ListRead.Dropped(DropReason.LEGACY_NO_OWNER)
         if (env.ownerId != expectedOwnerId) return ListRead.Dropped(DropReason.OWNER_MISMATCH)
 
-        val rows = env.playlists ?: return ListRead.Dropped(DropReason.MALFORMED)
+        val rows = decodePlaylistRows(env.playlistsJson)
+            ?: return ListRead.Dropped(DropReason.MALFORMED)
         // 条目级：必填字段缺失的一律丢弃（缺字段 ≠ 空值）。
         val decoded = rows.mapNotNull { it.toDomain() }
         if (decoded.isEmpty() && rows.isNotEmpty()) return ListRead.Dropped(DropReason.MALFORMED)
@@ -279,7 +323,8 @@ object PlaylistCacheCodec {
         if (env.ownerId.isNullOrBlank()) return DetailRead.Dropped(DropReason.LEGACY_NO_OWNER)
         if (env.ownerId != expectedOwnerId) return DetailRead.Dropped(DropReason.OWNER_MISMATCH)
 
-        val rows = env.songs ?: return DetailRead.Dropped(DropReason.MALFORMED)
+        val rows = decodeSongRows(env.songsJson)
+            ?: return DetailRead.Dropped(DropReason.MALFORMED)
         // 条目级：`id <= 0` 或 source 缺失的一律丢弃（缺字段 ≠ 空值）。
         val decoded = rows.mapIndexedNotNull { i, dto -> dto.toDomain()?.let { i to it } }
         if (decoded.isEmpty() && rows.isNotEmpty()) return DetailRead.Dropped(DropReason.MALFORMED)

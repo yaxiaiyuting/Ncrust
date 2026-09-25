@@ -243,12 +243,14 @@ class PlaylistCacheCodecTest {
      */
     @Test
     fun `条目缺 source 时丢弃而不是回落网易云`() {
+        // 内层数组存成**字符串**（playlistsJson）—— 这是 codec 的当前形状，
+        // 为的是绕开 R8 丢泛型签名导致 Gson 产出 LinkedTreeMap 的 release 崩溃
+        // （见 PlaylistCacheCodec.ListEnvelope 的 KDoc 与 proguard-rules.pro）。
+        val inner = """[{"id":"1","ownerId":"$ownerA","source":"qqmusic","name":"好条目"},""" +
+            """{"id":"2","ownerId":"$ownerA","name":"坏条目——没有 source"}]"""
         val mixed = """
             {"version":${PlaylistCacheCodec.SCHEMA_VERSION},"ownerId":"$ownerA","savedAt":$now,
-             "playlists":[
-               {"id":"1","ownerId":"$ownerA","source":"qqmusic","name":"好条目"},
-               {"id":"2","ownerId":"$ownerA","name":"坏条目——没有 source"}
-             ]}
+             "playlistsJson":${org.json.JSONObject.quote(inner)}}
         """.trimIndent()
         val read = PlaylistCacheCodec.decodeList(mixed, expectedOwnerId = ownerA, now = now)
         val ok = read as PlaylistCacheCodec.ListRead.Ok
@@ -259,10 +261,11 @@ class PlaylistCacheCodecTest {
 
     @Test
     fun `详情条目 id 非法时丢弃`() {
+        val inner = """[{"id":0,"source":"qqmusic"},{"id":5,"source":"qqmusic","name":"ok"}]"""
         val bad = """
             {"version":${PlaylistCacheCodec.SCHEMA_VERSION},"ownerId":"$ownerA","savedAt":$now,
              "complete":true,"total":2,
-             "songs":[{"id":0,"source":"qqmusic"},{"id":5,"source":"qqmusic","name":"ok"}]}
+             "songsJson":${org.json.JSONObject.quote(inner)}}
         """.trimIndent()
         val ok = PlaylistCacheCodec.decodeDetail(bad, ownerA, now) as PlaylistCacheCodec.DetailRead.Ok
         assertEquals(1, ok.songs.size)
@@ -327,5 +330,35 @@ class PlaylistCacheCodecTest {
     @Test
     fun `时钟回拨按过期处理`() {
         assertFalse(PlaylistCacheCodec.isFresh(now + 10_000L, now, PlaylistCacheCodec.DEFAULT_TTL_MS))
+    }
+
+    /**
+     * **release 崩溃的回归测试**（PCL110 实测，retrace 后定位到 decodeList）。
+     *
+     * 症状：debug 正常，release 一进歌单页就 `ClassCastException:
+     * LinkedTreeMap cannot be cast to PlaylistDto`。
+     * 根因：R8 对 `playlist.**` 没有 keep 规则时会丢掉 DTO 字段的**泛型签名 attribute**，
+     * Gson 于是把 `List<PlaylistDto>` 当成裸 `List`、元素反序列化成 `LinkedTreeMap`。
+     *
+     * 修法是把内层数组存成**字符串**并用编译期捕获的 `TypeToken` 解析，
+     * 从而**完全不依赖字段泛型签名**。这条测试钉住「信封里必须是字符串字段」这一形状：
+     * 谁要是改回泛型 List，这里会立刻红 —— 而不是等到 release 装机才崩。
+     */
+    @Test
+    fun `信封里的数组必须以字符串字段承载——R8 泛型签名回归`() {
+        val raw = PlaylistCacheCodec.encodeList(ownerA, listOf(playlist("1")), now)
+        assertTrue("列表数组必须落在 playlistsJson 字符串字段里", raw.contains("playlistsJson"))
+        assertFalse("不得再出现依赖泛型签名的 playlists 数组字段", raw.contains("\"playlists\":["))
+        assertTrue(
+            "字符串字段仍要能被解回来",
+            PlaylistCacheCodec.decodeList(raw, ownerA, now) is PlaylistCacheCodec.ListRead.Ok,
+        )
+
+        val rawDetail = PlaylistCacheCodec.encodeDetail(ownerA, listOf(song(5L)), now, true, 1)
+        assertTrue("详情数组必须落在 songsJson 字符串字段里", rawDetail.contains("songsJson"))
+        assertFalse("不得再出现依赖泛型签名的 songs 数组字段", rawDetail.contains("\"songs\":["))
+        assertTrue(
+            PlaylistCacheCodec.decodeDetail(rawDetail, ownerA, now) is PlaylistCacheCodec.DetailRead.Ok,
+        )
     }
 }

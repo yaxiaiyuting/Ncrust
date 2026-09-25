@@ -31,6 +31,13 @@
 -keep class com.takahashirinta.ncrust.network.** { *; }
 -keep class com.takahashirinta.ncrust.network.model.** { *; }
 -keep class com.takahashirinta.ncrust.lyric.** { *; }
+# v2.2.0：歌单缓存 DTO 与编解码。**这一条是真的踩过坑才加的** ——
+# playlist.** 在没有 keep 时，R8 会丢掉 DTO 字段的泛型签名 attribute，
+# 导致 Gson 把 List<PlaylistDto> 当成裸 List、元素反序列化成 LinkedTreeMap，
+# release 真机上表现为 ClassCastException 崩溃（debug 完全正常）。
+# 代码侧已经改成用 TypeToken 解析（见 PlaylistCacheCodec.ListEnvelope 的 KDoc），
+# 这里是第二道防线：万一将来有人又写了依赖字段泛型签名的持久化结构。
+-keep class com.takahashirinta.ncrust.playlist.** { *; }
 
 # =============================================================================
 # Retrofit / OkHttp —— 保留 interface 上的 HTTP 注解
