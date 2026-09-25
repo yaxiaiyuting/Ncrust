@@ -192,4 +192,162 @@ class LyricsPanelScrollTest {
         assertTrue(center > lead)
         assertEquals((center - lead).toFloat(), vh * 0.14f, 2f)
     }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // v2.5.2：**整条歌词**居中（用户报「自动居中只是把第一行居中」）
+    //
+    // 一个 LazyColumn 条目不是「一行」，而是 `Box(padding 10dp) { Column { 原句、译文、音译 } }`。
+    // 大屏模式右栏视口只有约 232dp，三行条目却接近 112dp —— 把**顶边**摆在正中的旧语义
+    // 会让整条一直铺到视口底部（视觉中点在 74% 处），行数越多偏得越狠。
+    // ═══════════════════════════════════════════════════════════════════════
+
+    /** 大屏模式右栏的实测视口（PCL110：约 232dp 高）。 */
+    private val bigScreenVh = px(232f).toInt()
+
+    /** 条目高度（dp → px）：单行 / 原句+译文 / 原句+译文+音译。 */
+    private fun itemH(rows: Int) = px(
+        when (rows) {
+            1 -> 62f
+            2 -> 88f
+            else -> 112f
+        }
+    ).toInt()
+
+    private fun fade(vh: Int) = LyricsPanelScroll.fadeHeightPx(vh, px(100f), px(24f))
+
+    @Test
+    fun `回归本体——大屏三行条目：整条中点接近视口正中，而旧语义在 74 百分比处`() {
+        val vh = bigScreenVh
+        val h = itemH(3)
+        val top = LyricsPanelScroll.blockTopPx(vh, LyricsPanelScroll.CENTER_FRACTION, h, fade(vh))
+        val blockCenter = top + h / 2f
+        // 新：整条中点 ≈ 54%（被顶部渐隐带夹住了一点点，见下一条用例）
+        assertTrue("整条中点应在 50%~56%，实测 ${blockCenter / vh}", blockCenter / vh in 0.50f..0.56f)
+        // 旧：顶边落在正中 ⇒ 整条中点 = 0.5 + h/2/vh ≈ 74%
+        val legacyCenter = vh * LyricsPanelScroll.CENTER_FRACTION + h / 2f
+        assertTrue("旧语义确实在 73% 之外（这就是用户看到的偏）", legacyCenter / vh > 0.73f)
+        // 改善幅度：至少往上挪 40dp
+        assertTrue((legacyCenter - blockCenter) > px(40f))
+    }
+
+    @Test
+    fun `单行条目在横屏下严格落在正中`() {
+        val vh = bigScreenVh
+        val h = itemH(1)
+        val top = LyricsPanelScroll.blockTopPx(vh, LyricsPanelScroll.CENTER_FRACTION, h, fade(vh))
+        assertEquals(vh * 0.5f, top + h / 2f, 1f)
+    }
+
+    @Test
+    fun `竖屏 36 百分比语义不变——只是从顶边改成整条中点`() {
+        val vh = px(700f).toInt()
+        val h = itemH(3)
+        val top = LyricsPanelScroll.blockTopPx(vh, LyricsPanelScroll.LEAD_FRACTION, h, fade(vh))
+        assertEquals(vh * LyricsPanelScroll.LEAD_FRACTION, top + h / 2f, 1f)
+        // 竖屏视口高，渐隐带（100dp）夹不到它
+        assertTrue(top > fade(vh))
+    }
+
+    @Test
+    fun `顶边永远不进顶部渐隐带——宁可不完美居中，也不能让当前行发灰`() {
+        val vh = bigScreenVh
+        for (rows in 1..3) {
+            val h = itemH(rows)
+            val top = LyricsPanelScroll.blockTopPx(vh, LyricsPanelScroll.CENTER_FRACTION, h, fade(vh))
+            assertTrue("$rows 行的顶边 $top 落进了渐隐带 ${fade(vh)}", top >= fade(vh))
+        }
+    }
+
+    @Test
+    fun `条目比视口还高时退化成顶对齐（滚动容器通用行为）`() {
+        val vh = bigScreenVh
+        val h = vh * 2
+        val top = LyricsPanelScroll.blockTopPx(vh, LyricsPanelScroll.CENTER_FRACTION, h, fade(vh))
+        assertEquals(fade(vh), top, 1f)
+        assertTrue("顶边不得为负", top >= 0f)
+    }
+
+    @Test
+    fun `高度未知时逐字节回落 v2_5_1 的顶边语义（这是「还没量到」的中间态）`() {
+        val vh = bigScreenVh
+        for (f in listOf(LyricsPanelScroll.LEAD_FRACTION, LyricsPanelScroll.CENTER_FRACTION)) {
+            assertEquals(
+                LyricsPanelScroll.leadOffsetPx(vh, f),
+                LyricsPanelScroll.blockOffsetPx(vh, f, -1, fade(vh)),
+            )
+            assertEquals(
+                LyricsPanelScroll.leadOffsetPx(vh, f),
+                LyricsPanelScroll.blockOffsetPx(vh, f, 0, fade(vh)),
+            )
+        }
+    }
+
+    @Test
+    fun `视口未知时 offset 仍是 0（首帧兜底不回归）`() {
+        assertEquals(0, LyricsPanelScroll.blockOffsetPx(0, LyricsPanelScroll.CENTER_FRACTION, itemH(3), 0f))
+    }
+
+    @Test
+    fun `offset 与 blockTopPx 同号相反（负数=内容上移）`() {
+        val vh = px(700f).toInt()
+        val h = itemH(2)
+        val off = LyricsPanelScroll.blockOffsetPx(vh, LyricsPanelScroll.LEAD_FRACTION, h, fade(vh))
+        assertTrue(off < 0)
+        assertEquals(-LyricsPanelScroll.blockTopPx(vh, LyricsPanelScroll.LEAD_FRACTION, h, fade(vh)).toInt(), off)
+    }
+
+    @Test
+    fun `纠正量：方向正确，且已经摆正时严格为 0（不许做无意义滚动）`() {
+        val vh = bigScreenVh
+        val h = itemH(3)
+        val desired = LyricsPanelScroll.blockTopPx(vh, LyricsPanelScroll.CENTER_FRACTION, h, fade(vh)).toInt()
+        // 旧语义把它摆在了正中（顶边），要往上纠正 ⇒ 正数
+        val legacyTop = (vh * LyricsPanelScroll.CENTER_FRACTION).toInt()
+        val corr = LyricsPanelScroll.blockCorrectionPx(
+            vh, LyricsPanelScroll.CENTER_FRACTION, h, fade(vh), legacyTop,
+        )
+        assertEquals(legacyTop - desired, corr)
+        assertTrue("旧位置在新位置下方 ⇒ 需上移（正数）", corr > 0)
+        // 已经摆正 ⇒ 0：无意义滚动会把 isScrollInProgress 翻起来，误触发「用户滚动了」
+        assertEquals(
+            0,
+            LyricsPanelScroll.blockCorrectionPx(vh, LyricsPanelScroll.CENTER_FRACTION, h, fade(vh), desired),
+        )
+        // 高度/视口未知 ⇒ 0
+        assertEquals(0, LyricsPanelScroll.blockCorrectionPx(vh, LyricsPanelScroll.CENTER_FRACTION, -1, fade(vh), 0))
+        assertEquals(0, LyricsPanelScroll.blockCorrectionPx(0, LyricsPanelScroll.CENTER_FRACTION, h, 0f, 0))
+    }
+
+    @Test
+    fun `条目放得下时整条不会越过视口底边`() {
+        val vh = px(700f).toInt()
+        for (rows in 1..3) {
+            val h = itemH(rows)
+            val top = LyricsPanelScroll.blockTopPx(vh, LyricsPanelScroll.LEAD_FRACTION, h, fade(vh))
+            assertTrue("$rows 行的底边越界", top + h <= vh)
+        }
+    }
+
+    // ---------- 渐隐带：v2.5.2 起抽成唯一落点 ----------
+
+    @Test
+    fun `渐隐带高度逐值与 v1_7_0 的内联公式一致（数值不许漂）`() {
+        for (vhDp in listOf(60f, 120f, 210f, 232f, 280f, 400f, 556f, 700f, 900f)) {
+            val vh = px(vhDp).toInt()
+            val legacy = minOf(px(100f), vh * 0.3f).coerceAtLeast(px(24f))
+            assertEquals("视口 ${vhDp}dp 的渐隐高度漂了", legacy, fade(vh), 0.01f)
+        }
+    }
+
+    @Test
+    fun `渐隐带：竖屏仍是 100dp、短视口按 30 百分比收窄、极短视口吃下限`() {
+        assertEquals(px(100f), fade(px(700f).toInt()), 0.01f)
+        assertEquals(px(232f) * 0.3f, fade(px(232f).toInt()), 0.01f)
+        assertEquals(px(24f), fade(px(50f).toInt()), 0.01f)   // 15dp < 24dp 下限
+    }
+
+    @Test
+    fun `渐隐带：视口未知时回落基准值（首帧不闪烁）`() {
+        assertEquals(px(100f), fade(0), 0.01f)
+    }
 }
