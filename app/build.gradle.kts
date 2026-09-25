@@ -157,8 +157,15 @@ android {
         //   「这个号已经发布出去了」来源，本次实测 v2.3.0-gpl = 39）；③ 仓库当前 build.gradle。
         //   三者一致 = 39 ⇒ 本版 **40**。打 tag 前会用
         //   `git show v2.4.0-gpl:app/build.gradle.kts | grep version` 再自证一次。
-        versionCode = 40
-        versionName = "2.4.0-gpl"
+        // v2.5.0（本版）：versionCode 出处：`tools/next-version.sh`（**带 fetch**）三源交叉验证 ——
+        //   ① 最近 5 个 tag 内 build.gradle 最大值；② `dist/*.apk` 的 aapt2 badging（唯一可信的
+        //   「这个号已经发布出去了」来源，本次实测 v2.4.0-gpl = 40，debug 与 release 两个包一致）；
+        //   ③ 仓库当前 build.gradle = 40。
+        //   脚本输出：`MAX versionCode (所有来源) = 40 [Ncrust-v2.4.0-gpl-debug.apk]` ⇒ 下一个可用 **41**。
+        //   实测记录：docs/verification/v2.5.0/verification/version-check.txt
+        //   打 tag 前会用 `git show v2.5.0-gpl:app/build.gradle.kts | grep version` 再自证一次。
+        versionCode = 41
+        versionName = "2.5.0-gpl"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
