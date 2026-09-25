@@ -170,4 +170,85 @@ internal object QqRequests {
                 .put("loginMode", 1)
                 .put("phoneNo", phoneNo),
         )
+
+    // ---------------- 用户歌单（v2.2.0 · 只读） ----------------
+    // 端点与字段全部来自 docs/verification/v2.2.0/qq-playlist-probe/ 的四轮真机实测，
+    // 不是文档推断。三条最容易写错的实测事实：
+    //   1) 列表接口返回 **camelCase**（dirId/dirName/songNum/tid），
+    //      而详情接口的 dirinfo 是**下划线**（dirid/songnum）—— 同一份数据两套命名；
+    //   2) 列表接口的 `param.uin` 是**查询主体**（不是「我是谁」），它公开可读，
+    //      **不能**用它的成败判登录态（见 QqPlaylistApi 的登录态说明）；
+    //   3) 收藏歌单接口必须传 **encrypt_uin**，传裸 uin 会得到 `80050`。
+
+    const val PLAYLIST_LIST_MODULE = "music.musicasset.PlaylistBaseRead"
+    const val PLAYLIST_LIST_METHOD = "GetPlaylistByUin"
+    const val PLAYLIST_FAV_MODULE = "music.musicasset.PlaylistFavRead"
+    const val PLAYLIST_FAV_METHOD = "CgiGetPlaylistFavInfo"
+    const val PLAYLIST_DETAIL_MODULE = "music.srfDissInfo.DissInfo"
+    const val PLAYLIST_DETAIL_METHOD = "CgiGetDiss"
+    const val USER_INFO_MODULE = "music.UserInfo.userInfoServer"
+    const val USER_INFO_METHOD = "GetLoginUserInfo"
+
+    /** 单页上限。实测 2000 也被接受；取 500 是为了与网易云 `LIKED_FILL_PAGE_SIZE` 量级一致。 */
+    const val PLAYLIST_PAGE_MAX = 500
+
+    /** 用户自建歌单列表。实测返回里**包含 `dirId=201`「我喜欢」**。 */
+    fun playlistList(uin: String): JSONObject = JSONObject()
+        .put("module", PLAYLIST_LIST_MODULE)
+        .put("method", PLAYLIST_LIST_METHOD)
+        .put("param", JSONObject().put("uin", uin))
+
+    /**
+     * 收藏（他人）歌单列表。
+     *
+     * @param encryptUin 从歌单详情的 `dirinfo.encrypt_uin` 取到（实测 28 字符）。
+     *   **不能传裸 uin**：实测裸 uin 返回 `80050`。
+     */
+    fun playlistFavList(encryptUin: String, offset: Int, size: Int): JSONObject = JSONObject()
+        .put("module", PLAYLIST_FAV_MODULE)
+        .put("method", PLAYLIST_FAV_METHOD)
+        .put(
+            "param",
+            JSONObject()
+                .put("uin", encryptUin)
+                .put("offset", offset.coerceAtLeast(0))
+                .put("size", size.coerceIn(1, 100)),
+        )
+
+    /**
+     * 歌单详情（含歌曲列表）。
+     *
+     * 实测两种寻址**等价**：`disstid=0, dirid=<目录号>` 与 `disstid=<tid>, dirid=<目录号>`
+     * 都返回同一份数据；「我喜欢」用 `dirid=201` 打开。
+     *
+     * @param songBegin **offset**（不是页码）。实测越界不报错：`code=0` + 0 首 + `hasmore=0`。
+     * @param songNum 每页数量。实测 500/1000/2000 都被接受，服务端按实际总数截断。
+     */
+    fun playlistDetail(disstid: Long, dirid: Long, songBegin: Int, songNum: Int): JSONObject =
+        JSONObject()
+            .put("module", PLAYLIST_DETAIL_MODULE)
+            .put("method", PLAYLIST_DETAIL_METHOD)
+            .put(
+                "param",
+                JSONObject()
+                    .put("disstid", disstid)
+                    .put("dirid", dirid)
+                    .put("tag", true)
+                    .put("song_begin", songBegin.coerceAtLeast(0))
+                    .put("song_num", songNum.coerceIn(1, PLAYLIST_PAGE_MAX))
+                    .put("userinfo", true)
+                    .put("orderlist", true)
+                    .put("onlysonglist", false),
+            )
+
+    /**
+     * 登录态自证 + 用户信息（昵称 / 头像）。
+     *
+     * **这是唯一能判「登录态还有效吗」的读接口**：实测无 cookie 时返回 `code=1000`，
+     * 而 `GetPlaylistByUin` / `CgiGetDiss` / `vip_login_base` 在没有登录态时**照样返回数据**。
+     */
+    fun loginUserInfo(): JSONObject = JSONObject()
+        .put("module", USER_INFO_MODULE)
+        .put("method", USER_INFO_METHOD)
+        .put("param", JSONObject())
 }
