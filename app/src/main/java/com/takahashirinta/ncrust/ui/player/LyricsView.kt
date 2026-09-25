@@ -93,6 +93,10 @@ fun LyricsView(
     // 纯逻辑见 [com.takahashirinta.ncrust.lyric.DynamicLyricFont]。关掉时下面所有分支都不走，
     // 每行 fontScale = 1f ⇒ 面板里的表达式与 v1.9.3 逐字节一致。
     dynamicFontEnabled: Boolean = false,
+    // v2.3.0 · E：**横屏 / 大屏右栏**布局。为 true 时当前行定位到视口正中（0.5）
+    // 而不是竖屏的 0.36 —— 短面板下 0.36 看起来是歪的（见 LyricsPanelScroll.CENTER_FRACTION）。
+    // 默认 false ⇒ 竖屏调用点的渲染位置一个像素都不动。
+    centeredLayout: Boolean = false,
 ) {
     val strings = LocalStrings.current
     if (lyrics.isEmpty()) {
@@ -347,6 +351,12 @@ fun LyricsView(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 20.dp),
+            // v2.3.0 · E：横屏把定位目标从「上方 36%」换成「正中 50%」。
+            leadFraction = if (centeredLayout) {
+                LyricsPanelScroll.CENTER_FRACTION
+            } else {
+                LyricsPanelScroll.LEAD_FRACTION
+            },
         )
 
         // 上下边缘淡出,让歌词从黑里浮出来(沿用原实现;高度见 fadeHeight)

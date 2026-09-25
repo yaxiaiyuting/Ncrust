@@ -54,8 +54,37 @@ internal object LyricsPanelScroll {
      *
      * 与 v1.5.0 起的定位语义完全一致（原实现写死 `0.36f`），只是提出来当唯一定义 ——
      * 顶部留白的上限与定位 offset 必须用同一个数，否则不变量 1 不成立。
+     *
+     * **竖屏用这个值**（黄金分割上方：当前行偏上，下方留出接下来的几句）。
      */
     const val LEAD_FRACTION = 0.36f
+
+    /**
+     * v2.3.0 · E：**横屏 / 大屏右栏**用的目标比例 —— 视口正中。
+     *
+     * ## 为什么横屏要换成 0.5 而不是继续用 0.36（真机实测几何）
+     *
+     * v2.3.0 的探针在大屏模式（S6 / SM-G9209，2560×1440px，density 640）上量到：
+     *
+     * | | 面板尺寸 | 0.36 对应的当前行位置 | 面板下方剩余 |
+     * |---|---|---|---|
+     * | 横屏 | 1274 × **928px = 232.0dp** | `0.36 × 232 = 83.5dp` = 334px | ≈ 148dp（约 1.4 行） |
+     * | 竖屏 | 1280 × 816px = 204.0dp | `0.36 × 204 = 73.4dp` | ≈ 131dp |
+     *
+     * 横屏一屏只放得下 **3 行**（探针 dump：`frac_itemtop` 依次为 −0.04 / 0.12 / **0.36** / 0.74）。
+     * 当前行落在 36% 时，它上方只露出一行的一半、下方只有一行半 —— 视觉重心明显偏上，
+     * 这就是用户说的「不正」。0.5 让上下余量对称，是 3 行视口下唯一不偏的目标。
+     *
+     * ## 这是**有意的行为改变**，只在横屏生效
+     *
+     * 探针同时证明 0.36 的**自动定位本身是精确的**（6 次独立基线全部 `frac_itemtop = 0.3599`），
+     * 所以这不是「修一个算错的数」，而是「横屏改用另一个目标」。竖屏一个像素都不动
+     * （[LEAD_FRACTION] 仍是 0.36，探针竖屏实测 0.3591）。
+     *
+     * 证据：`docs/verification/v2.3.0/probe-lyric-landscape.md`、
+     * `probe-raw/lyric-panel-measurements.txt`、`probe-raw/landscape-device-notes.md`。
+     */
+    const val CENTER_FRACTION = 0.5f
 
     /**
      * 顶部／底部留白的基准值（dp）。
@@ -66,23 +95,31 @@ internal object LyricsPanelScroll {
     const val BASE_SPACER_DP = 200f
 
     /**
-     * 顶部留白高度（px）：`min(基准, LEAD_FRACTION × 视口)`。
+     * 顶部留白高度（px）：`min(基准, leadFraction × 视口)`。
      *
      * [viewportHeightPx] <= 0（首帧 / 无界约束）⇒ 返回基准值。
+     *
+     * v2.3.0 · E 起 [leadFraction] 可传入（横屏传 [CENTER_FRACTION]）。
+     * **默认值就是原来的 0.36**，所以既有调用点与既有单测（`LyricsPanelScrollTest`）
+     * 的行为逐字节不变。
      */
-    fun topSpacerHeightPx(viewportHeightPx: Int, baseSpacerPx: Float): Float {
+    fun topSpacerHeightPx(
+        viewportHeightPx: Int,
+        baseSpacerPx: Float,
+        leadFraction: Float = LEAD_FRACTION,
+    ): Float {
         if (viewportHeightPx <= 0) return baseSpacerPx
-        return minOf(baseSpacerPx, viewportHeightPx * LEAD_FRACTION)
+        return minOf(baseSpacerPx, viewportHeightPx * leadFraction)
     }
 
     /**
-     * 定位 offset（px）：负值 = 目标行落在视口 [LEAD_FRACTION] 高处。
+     * 定位 offset（px）：负值 = 目标行落在视口 [leadFraction] 高处。
      *
      * 视口未知（<= 0）时返回 0，与 v1.5.0 起的兜底行为一致（此时列表还没排版，
      * 这个 offset 也不会被真正用上）。
      */
-    fun leadOffsetPx(viewportHeightPx: Int): Int =
-        if (viewportHeightPx > 0) -(viewportHeightPx * LEAD_FRACTION).toInt() else 0
+    fun leadOffsetPx(viewportHeightPx: Int, leadFraction: Float = LEAD_FRACTION): Int =
+        if (viewportHeightPx > 0) -(viewportHeightPx * leadFraction).toInt() else 0
 
     /**
      * 歌词行下标 → LazyColumn item 下标（第 0 项是顶部留白，所以恒 +1）。

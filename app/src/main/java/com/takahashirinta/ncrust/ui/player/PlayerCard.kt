@@ -807,6 +807,11 @@ fun PlayerCard(
                                     onFontScaleStep = { delta -> playerViewModel.stepLyricsFontScale(delta) },
                                     // v2.0.0 · T4：动态字号（实验性，默认关）。
                                     dynamicFontEnabled = showDynamicLyricFont,
+                                    // v2.3.0 · E：横屏 / 大屏右栏（usesSideCover = 宽屏或大屏模式）
+                                    // 的歌词面板只有约 210~280dp 高，当前行定位到**正中**而不是
+                                    // 竖屏的 36%；配合面板里的「5s 无触碰自动居中」，
+                                    // 用户手动翻过歌词之后它会自己回到正中。
+                                    centeredLayout = usesSideCover,
                                 )
                             }
                         }

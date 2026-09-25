@@ -54,6 +54,8 @@ import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.LiveRegionMode
@@ -167,6 +169,9 @@ fun NcrustLyricsPanel(
     sweepConfig: LyricsSweepConfig = LyricsSweepConfig.DEFAULT,
     onLineClick: (Long) -> Unit = {},
     onUserScrolled: () -> Unit = {},
+    // v2.3.0 · E：定位目标比例。默认 = 竖屏的 LEAD_FRACTION(0.36)，
+    // 横屏 / 大屏右栏由调用方传 CENTER_FRACTION(0.5) —— 短面板下 0.36 看起来是歪的。
+    leadFraction: Float = LyricsPanelScroll.LEAD_FRACTION,
 ) {
     val currentPosition by rememberUpdatedState(currentPositionMillis)
     val timestamps = remember(lines) { LongArray(lines.size) { lines[it].timestampMillis } }
@@ -235,7 +240,7 @@ fun NcrustLyricsPanel(
         if (vh > 0) {
             listState.scrollToItem(
                 LyricsPanelScroll.targetItemIndex(currentIndex, lines.size),
-                LyricsPanelScroll.leadOffsetPx(vh),
+                LyricsPanelScroll.leadOffsetPx(vh, leadFraction),
             )
         } else {
             // 还没排版（首帧）：先回顶。顶部留白一旦按视口夹取，"回顶"就是"首句落在 36%"。
@@ -255,7 +260,7 @@ fun NcrustLyricsPanel(
         smoothCurrentIndex.snapTo(idx.toFloat())
         listState.scrollToItem(
             LyricsPanelScroll.targetItemIndex(currentIndex, lines.size),
-            LyricsPanelScroll.leadOffsetPx(vh),
+            LyricsPanelScroll.leadOffsetPx(vh, leadFraction),
         )
         lastAutoScrolledIndex = idx
     }
@@ -275,7 +280,7 @@ fun NcrustLyricsPanel(
         smoothCurrentIndex.snapTo(idx.toFloat())
         listState.scrollToItem(
             LyricsPanelScroll.targetItemIndex(currentIndex, lines.size),
-            LyricsPanelScroll.leadOffsetPx(vh),
+            LyricsPanelScroll.leadOffsetPx(vh, leadFraction),
         )
         lastAutoScrolledIndex = idx
     }
@@ -294,24 +299,70 @@ fun NcrustLyricsPanel(
         try {
             listState.animateScrollToItem(
                 LyricsPanelScroll.targetItemIndex(currentIndex, lines.size),
-                LyricsPanelScroll.leadOffsetPx(vh),
+                LyricsPanelScroll.leadOffsetPx(vh, leadFraction),
             )
         } finally {
             programmaticScrolling = false
         }
     }
 
-    // 用户手动滚动 -> 暂停自动跟随 5s。
+    // 用户手动滚动 -> 暂停自动跟随（谁来解除见下面的 v2.3.0 · E 段）。
     LaunchedEffect(listState.isScrollInProgress) {
         if (listState.isScrollInProgress && !programmaticScrolling) {
             if (!userScrolling) {
                 userScrolling = true
                 onUserScrolled()
             }
-        } else if (!listState.isScrollInProgress && userScrolling) {
-            delay(5000)
-            userScrolling = false
-            lastAutoScrolledIndex = -1
+        }
+        // ★ v2.3.0 · E：这里原来是 `else if (!isScrollInProgress && userScrolling) { delay(5000);
+        //   userScrolling = false; lastAutoScrolledIndex = -1 }` —— **只放旗子、不滚动**。
+        //   于是「手动调整后歌词留在原地」：重新定位要等 `LaunchedEffect(currentIndex)`，
+        //   而它只在**换行**时才跑；用户在间奏里、或暂停后翻看歌词时当前行不变，
+        //   那条 effect 一次都不会执行。解除旗子的职责已移交下面的世代计时器
+        //   （它做完「解除 + 真正滚回目标位置」两件事），见 LyricsAutoCenter。
+    }
+
+    // ------------------------------------------------------------------ v2.3.0 · E
+    // 横屏 / 大屏「5s 无触碰自动居中」。
+    //
+    // ## 计时器凭什么能重来（而不是只跑一次）
+    //
+    // 每次用户**碰**面板（按下 / 抬起）就把 `touchGeneration` +1；它同时是
+    // `LaunchedEffect` 的 key。Compose 在 key 变化时取消上一个协程 ⇒ 天然得到
+    // 「最后一次交互之后 5 秒」的语义，不需要手写 Job 管理，也不可能有两个计时器并存。
+    //
+    // ## 为什么只认「触摸」而不认播放/暂停/seek（任务书 7.2 要求探针确认后决定）
+    //
+    // · `seek` 有它自己的两条重定位路径（点行 → `onLineClick` 立即定位；
+    //   拖动进度条 → 行变化触发 `LaunchedEffect(currentIndex)`），再让 seek 重置计时
+    //   只会**推迟**回正，没有任何额外收益；
+    // · `播放/暂停` 根本不移动列表，把它算作「交互」会让「暂停后翻看歌词」这种
+    //   **最需要回正**的场景永远等不到回正（用户不会每隔 5 秒按一次暂停）。
+    //
+    // 所以判据收窄成一句：**只有手指落在面板上才算交互**。这也是任务书 7.2 的字面语义。
+    var pointerDown by remember { mutableStateOf(false) }
+    var touchGeneration by remember { mutableIntStateOf(LyricsAutoCenter.GENERATION_NEVER_TOUCHED) }
+
+    LaunchedEffect(touchGeneration) {
+        if (!LyricsAutoCenter.shouldSchedule(touchGeneration)) return@LaunchedEffect
+        delay(LyricsAutoCenter.IDLE_TIMEOUT_MS)
+        // 到点这一刻手指还按着 ⇒ 放弃（拖拽中不打断）。抬起时世代 +1，会重新计时。
+        if (!LyricsAutoCenter.shouldRecenter(pointerDown, lines.size, enabled)) return@LaunchedEffect
+        // 先解除「别跟着我」，再滚 —— 顺序不能反：animateScrollToItem 会让
+        // isScrollInProgress 变 true，若此时 userScrolling 还是 true，跨行 effect 会继续被挡住。
+        userScrolling = false
+        lastAutoScrolledIndex = currentIndex
+        val vh = listState.layoutInfo.viewportSize.height
+        if (vh <= 0) return@LaunchedEffect
+        programmaticScrolling = true
+        try {
+            // 用 animateScrollToItem 而不是 scrollToItem：任务书 7.3 要求「动画平滑、不突兀」。
+            listState.animateScrollToItem(
+                LyricsPanelScroll.targetItemIndex(currentIndex, lines.size),
+                LyricsPanelScroll.leadOffsetPx(vh, leadFraction),
+            )
+        } finally {
+            programmaticScrolling = false
         }
     }
 
@@ -324,6 +375,28 @@ fun NcrustLyricsPanel(
         modifier = modifier
             .fillMaxSize()
             .graphicsLayer { alpha = fadeIn }
+            // v2.3.0 · E：只**观察**指针事件、绝不消费（Initial pass + 什么都不改），
+            // 所以 LazyColumn 自己的滚动 / 点行 seek 的手势一个都不受影响。
+            // key 用 Unit：检测器只读/写 state，不需要随参数重建。
+            .pointerInput(Unit) {
+                awaitPointerEventScope {
+                    while (true) {
+                        val event = awaitPointerEvent(PointerEventPass.Initial)
+                        when (event.type) {
+                            PointerEventType.Press -> {
+                                pointerDown = true
+                                touchGeneration = LyricsAutoCenter.nextGeneration(touchGeneration)
+                            }
+                            PointerEventType.Release -> {
+                                pointerDown = false
+                                // 抬起时 +1：这一次的 5s 计时从**松手**开始算。
+                                touchGeneration = LyricsAutoCenter.nextGeneration(touchGeneration)
+                            }
+                            else -> Unit
+                        }
+                    }
+                }
+            }
             .semantics {
                 text = AnnotatedString(a11yText.value)
                 liveRegion = LiveRegionMode.Polite
@@ -333,6 +406,7 @@ fun NcrustLyricsPanel(
             LyricsPanelScroll.topSpacerHeightPx(
                 viewportHeightPx = if (maxHeight.value.isFinite()) maxHeight.roundToPx() else 0,
                 baseSpacerPx = LyricsPanelScroll.BASE_SPACER_DP.dp.toPx(),
+                leadFraction = leadFraction,
             ).toDp()
         }
         LazyColumn(
