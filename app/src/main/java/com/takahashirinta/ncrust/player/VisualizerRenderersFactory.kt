@@ -15,8 +15,6 @@ import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.audio.AudioSink
 import androidx.media3.exoplayer.audio.DefaultAudioSink
 import androidx.media3.exoplayer.audio.TeeAudioProcessor
-import androidx.media3.exoplayer.audio.WaveformAudioBufferSink
-import com.takahashirinta.ncrust.ui.player.WaveformStore
 
 /**
  * v1.8.0 · T3：把音频链路"旁路"出一份 PCM 给可视化用。
@@ -59,16 +57,17 @@ class VisualizerRenderersFactory(context: Context) : DefaultRenderersFactory(con
         enableFloatOutput: Boolean,
         enableAudioTrackPlaybackParams: Boolean,
     ): AudioSink {
-        val waveformSink = WaveformAudioBufferSink(
-            WaveformStore.BARS_PER_SECOND,
-            // 1 = 混成单声道：柱状图只画一条包络，省掉 UI 侧再合并一次。
-            // media3 内部走默认的 ChannelMixingMatrix。
-            1,
-        ) { _: Int, bar: WaveformAudioBufferSink.WaveformBar ->
-            // 音频线程。WaveformBar 是**复用**对象，回调返回后就会被重置，
-            // 所以这里只能立刻取值，不能把它存起来。
-            WaveformStore.onBar(bar.rootMeanSquare)
-        }
+        // v2.2.1 · P0：**不能用 media3 的 `WaveformAudioBufferSink(…, 1, …)`。**
+        //
+        // 它的第二个参数是「把输入混成几声道」，传 1 就会在 flush 时构造
+        // `ChannelMixingMatrix.create(输入声道数, 1)`；而 media3 1.5.0 只实现了
+        // 「同声道数 / 1→2 / 2→1」三种矩阵，**6→1 直接抛 UnsupportedOperationException**。
+        // QQ 的臻品档（本应用档位表里的 dolby / jyeffect）实测就是 6 声道 FLAC，
+        // 于是「切杜比」必然把 AudioSink 打坏、之后任何档位都播不出声 —— 详见
+        // [TransparentWaveformSink] 的档头与 docs/verification/v2.2.1/p0-quality-loop/PROBE.md。
+        //
+        // 换来的是可视化柱高语义完全不变（同样是 RMS，只是对所有声道一起算）。
+        val waveformSink = TransparentWaveformSink()
         val processors = arrayOf<AudioProcessor>(TeeAudioProcessor(waveformSink))
         return DefaultAudioSink.Builder(context)
             .setAudioProcessors(processors)
