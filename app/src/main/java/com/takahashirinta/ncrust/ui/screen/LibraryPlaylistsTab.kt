@@ -24,7 +24,7 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -40,7 +40,10 @@ import com.takahashirinta.ncrust.playlist.PlaylistResult
 import com.takahashirinta.ncrust.qq.QqPlaylistRepository
 import com.takahashirinta.ncrust.source.Playlist
 import com.takahashirinta.ncrust.ui.BottomOverlayInsetDp
+import com.takahashirinta.ncrust.ui.components.appCoverFrame
+import com.takahashirinta.ncrust.ui.components.appPressScale
 import com.takahashirinta.ncrust.ui.i18n.LocalStrings
+import com.takahashirinta.ncrust.ui.theme.AppShapes
 import io.github.takahashirinta.kanesumi.anim.sokuou.MetroDefault
 import io.github.takahashirinta.kanesumi.anim.sokuou.rememberMetroFlingBehavior
 import io.github.takahashirinta.kanesumi.controls.MetroDialog
@@ -344,6 +347,8 @@ private fun QqPlaylistInlineRow(playlist: Playlist, onClick: () -> Unit) {
         Box(
             modifier = Modifier
                 .size(48.dp)
+                // v2.5.0 · B：占位底板先裁圆，方形底才不会从圆角封面四角露出来。
+                .clip(AppShapes.small)
                 .background(colors.surfaceVariant),
         ) {
             val cover = playlist.coverUrl
@@ -352,7 +357,10 @@ private fun QqPlaylistInlineRow(playlist: Playlist, onClick: () -> Unit) {
                     model = cover,
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize(),
+                    // 圆角 + 1dp 描边；形状按渲染边长：48dp < 160dp ⇒ AppShapes.small。
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .appCoverFrame(shape = AppShapes.small),
                 )
             }
         }
@@ -392,11 +400,14 @@ private fun LocalPlaylistGridItem(
     val strings = LocalStrings.current
     val colors = LocalMetroColors.current
     val typography = LocalMetroTypography.current
-    Column(modifier = modifier.clickable { onClick() }) {
+    Column(modifier = modifier.appPressScale().clickable { onClick() }) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(1f)
+                // v2.5.0 · B：本地歌单格子没有封面图，占位色块与同格封面同形
+                // （栅格 minSize=160dp ⇒ 单元格 ≥160dp ⇒ AppShapes.large）。
+                .clip(AppShapes.large)
                 .background(colors.surfaceVariant),
             contentAlignment = Alignment.Center,
         ) {
@@ -472,7 +483,3 @@ fun LocalPlaylistCreateDialog(
         }
     }
 }
-
-/** 未使用但保留的直角裁切常量（Kanesumi Design：本页所有封面都是直角）。 */
-@Suppress("unused")
-private val squareShape = RectangleShape

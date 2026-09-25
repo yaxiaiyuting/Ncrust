@@ -8,6 +8,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -52,7 +53,10 @@ import com.takahashirinta.ncrust.ui.components.ArtistSearchItem
 import com.takahashirinta.ncrust.ui.components.SongCard
 import com.takahashirinta.ncrust.ui.components.SongCardStyle
 import com.takahashirinta.ncrust.ui.components.SongMenuAction
+import com.takahashirinta.ncrust.ui.components.appCoverFrame
+import com.takahashirinta.ncrust.ui.components.listItemAppear
 import com.takahashirinta.ncrust.ui.i18n.LocalStrings
+import com.takahashirinta.ncrust.ui.theme.AppShapes
 import com.takahashirinta.ncrust.ui.theme.desaturateColor
 import com.takahashirinta.ncrust.ui.theme.themeColorForIndex
 import com.takahashirinta.ncrust.ui.viewmodel.SearchViewModel
@@ -422,11 +426,14 @@ fun SearchScreen(
                                         )
                                     }
                                 }
-                                items(songs, key = { it.id }) { item ->
+                                // v2.5.0 · A：列表入场（淡入 + 上滑）。items → itemsIndexed
+                                // 只为拿到下标，key 显式传同一条（`it.id`）⇒ diff 行为不变。
+                                itemsIndexed(songs, key = { _, item -> item.id }) { index, item ->
                                     SongCard(
                                         song = item,
                                         style = SongCardStyle.LIST,
                                         coverSize = 72.dp,
+                                        modifier = Modifier.listItemAppear(index),
                                         onClick = {
                                             SearchHistoryManager.addSong(context, item)
                                             dismissKeyboard(); onSongClick(item)
@@ -624,7 +631,10 @@ private fun ToplistRow(playlist: PlaylistApi.PlaylistCard, onClick: () -> Unit) 
         coil.compose.AsyncImage(
             model = CoverUrls.small(playlist.coverUrl),
             contentDescription = playlist.name,
-            modifier = Modifier.size(48.dp),
+            // v2.5.0 · B：圆角 + 1dp 描边。形状按渲染边长：48dp < 160dp ⇒ AppShapes.small。
+            modifier = Modifier
+                .size(48.dp)
+                .appCoverFrame(shape = AppShapes.small),
             contentScale = ContentScale.Crop
         )
         Spacer(Modifier.width(12.dp))
@@ -700,7 +710,10 @@ private fun SearchHistoryItemCard(
             AsyncImage(
                 model = CoverUrls.small(item.coverUrl),
                 contentDescription = null,
-                modifier = Modifier.size(64.dp),
+                // v2.5.0 · B：圆角 + 1dp 描边。形状按渲染边长：64dp < 160dp ⇒ small。
+                modifier = Modifier
+                    .size(64.dp)
+                    .appCoverFrame(shape = AppShapes.small),
                 contentScale = ContentScale.Crop
             )
             Spacer(Modifier.width(12.dp))

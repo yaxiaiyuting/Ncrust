@@ -18,6 +18,7 @@ import coil.compose.AsyncImage
 import com.takahashirinta.ncrust.network.AlbumSearchItem
 import com.takahashirinta.ncrust.network.CoverUrls
 import com.takahashirinta.ncrust.ui.i18n.LocalStrings
+import com.takahashirinta.ncrust.ui.theme.AppShapes
 import io.github.takahashirinta.kanesumi.controls.MetroDropdownMenu
 import io.github.takahashirinta.kanesumi.core.theme.LocalMetroColors
 import io.github.takahashirinta.kanesumi.core.theme.LocalMetroTypography
@@ -52,7 +53,10 @@ fun AlbumSearchItem(
         AsyncImage(
             model = CoverUrls.small(album.picUrl),
             contentDescription = strings.albumCoverDesc,
-            modifier = Modifier.size(72.dp),
+            // v2.5.0 · B：圆角 + 1dp 描边。形状按渲染边长：72dp < 160dp ⇒ AppShapes.small。
+            modifier = Modifier
+                .size(72.dp)
+                .appCoverFrame(shape = AppShapes.small),
             contentScale = ContentScale.Crop
         )
         Spacer(Modifier.width(12.dp))

@@ -22,6 +22,7 @@ import com.takahashirinta.ncrust.network.CoverUrls
 import com.takahashirinta.ncrust.network.PlaylistApi
 import com.takahashirinta.ncrust.network.PlaylistEditApi
 import com.takahashirinta.ncrust.ui.i18n.LocalStrings
+import com.takahashirinta.ncrust.ui.theme.AppShapes
 import io.github.takahashirinta.kanesumi.controls.MetroBottomSheet
 import io.github.takahashirinta.kanesumi.controls.MetroDivider
 import io.github.takahashirinta.kanesumi.controls.MetroProgressIndicator
@@ -187,7 +188,10 @@ fun AddToPlaylistSheet(
                         AsyncImage(
                             model = CoverUrls.small(playlist.coverImgUrl),
                             contentDescription = null,
-                            modifier = Modifier.size(48.dp),
+                            // v2.5.0 · B：圆角 + 1dp 描边。形状按渲染边长：48dp < 160dp ⇒ small。
+                            modifier = Modifier
+                                .size(48.dp)
+                                .appCoverFrame(shape = AppShapes.small),
                             contentScale = ContentScale.Crop,
                         )
                         Spacer(Modifier.width(12.dp))

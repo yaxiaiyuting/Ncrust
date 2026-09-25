@@ -16,7 +16,9 @@ import io.github.takahashirinta.kanesumi.core.theme.MetroColors
  * 对比逐级增强」：
  *  - 深色 OLED 底 #000000 逐级更亮：#0E0E0E → #1A1A1A → #242424 → #2E2E2E；
  *  - 浅色纸底 #F6F2E9 逐级更暖更深：#FBF7EE → #FFFDF8 → #F2EBDE → #EDE6D8。
- * 两套都只有颜色差，不产生任何阴影 / 圆角 —— 直角、无 elevation 的视觉识别不变。
+ * 两套都只有颜色差，不产生任何阴影 —— 无 elevation 的视觉识别不变。
+ * （v2.5.0 · B 起圆角由 `AppShapes` 统一施加；旧正典是「直角、无圆角」，
+ * 颜色板本身仍然只描述颜色、不携带任何形状。）
  */
 @Immutable
 data class NcrustColors(

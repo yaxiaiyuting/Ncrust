@@ -19,6 +19,7 @@ import coil.compose.AsyncImage
 import com.takahashirinta.ncrust.network.ArtistSearchItem
 import com.takahashirinta.ncrust.network.CoverUrls
 import com.takahashirinta.ncrust.ui.i18n.LocalStrings
+import com.takahashirinta.ncrust.ui.theme.AppShapes
 import io.github.takahashirinta.kanesumi.controls.MetroDropdownMenu
 import io.github.takahashirinta.kanesumi.core.theme.LocalMetroColors
 import io.github.takahashirinta.kanesumi.core.theme.LocalMetroTypography
@@ -49,11 +50,16 @@ fun ArtistSearchItem(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(modifier = Modifier.size(72.dp)) {
+            // v2.5.0 · B：艺人头像画的是**人像**而不是专辑封面，所以取圆形（AppShapes.full），
+            // 不套用「≥160dp → large / <160dp → small」那条方封面尺寸规则；顺带带上 1dp 描边。
+            // appCoverFrame 必须排在 background **之前**：圆形裁切要罩住这块占位底色，
+            // 否则方形底色会从圆形的四角露出来（描边在内容之后绘制，不会被底色盖掉）。
             AsyncImage(
                 model = CoverUrls.small(artist.picUrl),
                 contentDescription = strings.artistAvatarDesc,
                 modifier = Modifier
                     .fillMaxSize()
+                    .appCoverFrame(shape = AppShapes.full)
                     .background(LocalMetroColors.current.surfaceVariant),
                 contentScale = ContentScale.Crop
             )

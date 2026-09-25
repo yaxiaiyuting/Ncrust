@@ -26,7 +26,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -35,6 +35,7 @@ import androidx.compose.runtime.snapshotFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -69,7 +70,11 @@ import com.takahashirinta.ncrust.ui.components.PlaylistCreateOutcome
 import com.takahashirinta.ncrust.ui.components.SongCard
 import com.takahashirinta.ncrust.ui.components.SongCardStyle
 import com.takahashirinta.ncrust.ui.components.SongMenuAction
+import com.takahashirinta.ncrust.ui.components.appCoverFrame
+import com.takahashirinta.ncrust.ui.components.appPressScale
+import com.takahashirinta.ncrust.ui.components.listItemAppear
 import com.takahashirinta.ncrust.ui.i18n.LocalStrings
+import com.takahashirinta.ncrust.ui.theme.AppShapes
 import kotlinx.coroutines.launch
 import android.widget.Toast
 
@@ -309,10 +314,13 @@ fun LibraryScreen(
                                     PlayAllButton(onClick = onPlayAllLiked)
                                 }
                             }
-                            items(savedSongs, key = { it.id }) { song ->
+                            // v2.5.0 · A：列表入场（淡入 + 上滑）。items → itemsIndexed 只为拿下标，
+                            // key 显式传同一条（`it.id`）⇒ LazyColumn 的 diff 行为不变。
+                            itemsIndexed(savedSongs, key = { _, song -> song.id }) { index, song ->
                                 SongCard(
                                     song = song,
                                     style = SongCardStyle.LIST,
+                                    modifier = Modifier.listItemAppear(index),
                                     onClick = { onSongClick(song) },
                                     onShowMenu = {
                                         onShowSongMenu(song, listOf(
@@ -393,7 +401,11 @@ fun LibraryScreen(
     }
 }
 
-/** B4：「新建歌单」格子。与歌单格子同尺寸，直角、无圆角，只有一个居中的 +。 */
+/**
+ * B4：「新建歌单」格子。与歌单格子同尺寸、同圆角（v2.5.0 · B 起封面格一律裁圆角；
+ * 旧正典是「直角、无圆角」），占位色块按同一条尺寸规则取 [AppShapes.large]。
+ * 内容仍然只有一个居中的 +。
+ */
 @Composable
 fun NewPlaylistGridItem(
     modifier: Modifier = Modifier,
@@ -403,11 +415,13 @@ fun NewPlaylistGridItem(
     label: String? = null,
 ) {
     val strings = LocalStrings.current
-    Column(modifier = modifier.clickable { onClick() }) {
+    Column(modifier = modifier.appPressScale().clickable { onClick() }) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(1f)
+                // 与同格封面同形：栅格 minSize=160dp ⇒ 单元格 ≥160dp ⇒ large。
+                .clip(AppShapes.large)
                 .background(LocalMetroColors.current.surfaceVariant),
             contentAlignment = Alignment.Center,
         ) {
@@ -439,12 +453,16 @@ fun PlaylistGridItem(
     onPlayAll: () -> Unit
 ) {
     val strings = LocalStrings.current
-    Column(modifier = modifier.clickable { onClick() }) {
+    Column(modifier = modifier.appPressScale().clickable { onClick() }) {
         Box(modifier = Modifier.fillMaxWidth().aspectRatio(1f)) {
             AsyncImage(
                 model = CoverUrls.small(playlist.coverImgUrl),
                 contentDescription = strings.playlistCoverDesc,
-                modifier = Modifier.fillMaxSize(),
+                // v2.5.0 · B：圆角 + 1dp 描边。形状按渲染边长：栅格 minSize=160dp
+                // ⇒ 单元格 ≥160dp ⇒ AppShapes.large（窄屏 360dp 内容宽下是 2 列 179dp）。
+                modifier = Modifier
+                    .fillMaxSize()
+                    .appCoverFrame(shape = AppShapes.large),
                 contentScale = ContentScale.Crop
             )
             PlayAllButton(
@@ -467,12 +485,15 @@ fun LibraryAlbumGridItem(
     onPlayAll: () -> Unit
 ) {
     val strings = LocalStrings.current
-    Column(modifier = modifier.clickable { onClick() }) {
+    Column(modifier = modifier.appPressScale().clickable { onClick() }) {
         Box(modifier = Modifier.fillMaxWidth().aspectRatio(1f)) {
             AsyncImage(
                 model = CoverUrls.small(album.picUrl),
                 contentDescription = strings.albumCoverDesc,
-                modifier = Modifier.fillMaxSize(),
+                // 同上：栅格单元格 ≥160dp ⇒ AppShapes.large。
+                modifier = Modifier
+                    .fillMaxSize()
+                    .appCoverFrame(shape = AppShapes.large),
                 contentScale = ContentScale.Crop
             )
             PlayAllButton(

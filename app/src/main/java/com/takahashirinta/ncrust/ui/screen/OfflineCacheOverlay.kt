@@ -40,6 +40,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -56,9 +57,11 @@ import coil.compose.AsyncImage
 import com.takahashirinta.ncrust.cache.OfflineAudioCache
 import com.takahashirinta.ncrust.cache.OfflineLibrary
 import com.takahashirinta.ncrust.cache.OfflineTrack
+import com.takahashirinta.ncrust.ui.components.appCoverFrame
 import com.takahashirinta.ncrust.ui.i18n.LocalStrings
 import com.takahashirinta.ncrust.ui.i18n.Strings
 import com.takahashirinta.ncrust.ui.i18n.formatCacheBytes
+import com.takahashirinta.ncrust.ui.theme.AppShapes
 import com.takahashirinta.ncrust.ui.theme.LocalNcrustColors
 import com.takahashirinta.ncrust.ui.viewmodel.PlayerViewModel
 import io.github.takahashirinta.kanesumi.controls.MetroSelectorFlyout
@@ -324,11 +327,14 @@ private fun OfflineTrackRow(
             .padding(start = 16.dp, end = 8.dp, top = 6.dp, bottom = 6.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // 封面色块：有图就铺满（Kanesumi 铁律：图片不裁圆角），没有就用按 id 派生的
-        // 稳定色块 —— 列表行不因为缺封面塌成空白。
+        // v2.5.0 · B：封面改为圆角 + 1dp 描边（**旧正典是「图片不裁圆角」，Kanesumi 铁律那一版**，
+        // 本版起封面一律裁圆角）。形状按渲染边长：48dp < 160dp ⇒ AppShapes.small。
+        // 底板（按 id 派生的稳定色块）一起裁 —— 列表行不因为缺封面塌成空白，
+        // 缺封面时它就是这块圆角色块。
         Box(
             modifier = Modifier
                 .size(48.dp)
+                .clip(AppShapes.small)
                 .background(coverPlaceholder(track.songId))
         ) {
             track.albumPicUrl?.takeIf { it.isNotBlank() }?.let { url ->
@@ -336,7 +342,9 @@ private fun OfflineTrackRow(
                     model = url,
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .appCoverFrame(shape = AppShapes.small),
                 )
             }
         }

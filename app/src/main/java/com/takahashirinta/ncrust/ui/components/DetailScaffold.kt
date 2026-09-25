@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.takahashirinta.ncrust.ui.BottomOverlayInsetDp
+import com.takahashirinta.ncrust.ui.theme.AppShapes
 import io.github.takahashirinta.kanesumi.anim.sokuou.MetroDefault
 import io.github.takahashirinta.kanesumi.anim.sokuou.SokuouTweens
 import io.github.takahashirinta.kanesumi.anim.sokuou.rememberMetroFlingBehavior
@@ -241,7 +242,10 @@ fun DetailHeader(
                 model = CoverUrls.large(coverUrl),
                 contentDescription = strings.coverDesc,
                 placeholder = androidx.compose.ui.graphics.painter.ColorPainter(LocalMetroColors.current.surfaceVariant),
-                modifier = Modifier.size(220.dp),
+                // v2.5.0 · B：220dp ≥ 160dp ⇒ AppShapes.large（尺寸→形状规则见下方窄屏封面）。
+                modifier = Modifier
+                    .size(220.dp)
+                    .appCoverFrame(shape = AppShapes.large),
                 contentScale = ContentScale.Crop
             )
             Spacer(Modifier.width(24.dp))
@@ -263,6 +267,8 @@ fun DetailHeader(
     }
 
     Column(modifier = Modifier.fillMaxWidth()) {
+        // v2.5.0 · B：封面圆角 + 1dp 描边。形状按**渲染边长**选（≥160dp → large，
+        // <160dp → small）；窄屏这里是 fillMaxWidth 的方封面，手机上 ≥320dp ⇒ large。
         AsyncImage(
             model = CoverUrls.large(coverUrl),
             contentDescription = strings.coverDesc,
@@ -270,7 +276,8 @@ fun DetailHeader(
             placeholder = androidx.compose.ui.graphics.painter.ColorPainter(LocalMetroColors.current.surfaceVariant),
             modifier = Modifier
                 .fillMaxWidth()
-                .aspectRatio(1f),
+                .aspectRatio(1f)
+                .appCoverFrame(shape = AppShapes.large),
             contentScale = ContentScale.Crop
         )
         Spacer(Modifier.height(20.dp))

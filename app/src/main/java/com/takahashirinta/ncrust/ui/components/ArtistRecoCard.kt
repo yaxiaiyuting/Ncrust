@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -26,6 +27,7 @@ import com.takahashirinta.ncrust.network.CoverUrls
 import com.takahashirinta.ncrust.network.RetrofitClient
 import com.takahashirinta.ncrust.network.model.ArtistDetail
 import com.takahashirinta.ncrust.ui.i18n.LocalStrings
+import com.takahashirinta.ncrust.ui.theme.AppShapes
 import io.github.takahashirinta.kanesumi.core.theme.LocalMetroColors
 import io.github.takahashirinta.kanesumi.core.theme.MetroText
 
@@ -36,7 +38,8 @@ import io.github.takahashirinta.kanesumi.core.theme.MetroText
  * 这里只负责把艺人主体拉出来渲染。艺人信息用 [RetrofitClient.api] 的
  * `api/artist/albums/{id}` —— 一次请求同时拿到 artist 主体（名称/头像）与专辑数。
  * 不用 `/eapi/v1/artist/detail`：B0 实测它已 400 失效。
- * 样式沿用首页既有信息卡：直角、无圆角、封面 72dp、副标题一行省略号。
+ * 样式沿用首页既有信息卡：封面 72dp、副标题一行省略号；**圆角**自 v2.5.0 · B 起生效
+ * —— 旧设计正典是「直角、无圆角」，那一版这里没有任何裁切。
  */
 @Composable
 fun ArtistRecoCard(
@@ -61,6 +64,8 @@ fun ArtistRecoCard(
         Box(
             modifier = Modifier
                 .size(72.dp)
+                // v2.5.0 · B：占位底板也要一起裁圆，否则方形底会从圆形头像的四角露出来。
+                .clip(AppShapes.full)
                 .background(LocalMetroColors.current.surfaceVariant)
         ) {
             val pic = artist?.picUrl
@@ -68,7 +73,10 @@ fun ArtistRecoCard(
                 Image(
                     painter = rememberAsyncImagePainter(CoverUrls.large(pic)),
                     contentDescription = null,
-                    modifier = Modifier.fillMaxSize(),
+                    // 艺人头像是人像 ⇒ 圆形（AppShapes.full）+ 1dp 描边，不套用方封面的尺寸规则。
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .appCoverFrame(shape = AppShapes.full),
                     contentScale = ContentScale.Crop
                 )
             }

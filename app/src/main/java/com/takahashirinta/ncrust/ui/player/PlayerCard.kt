@@ -85,6 +85,10 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import android.widget.Toast
+import androidx.compose.foundation.border
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Shape
+import com.takahashirinta.ncrust.ui.theme.AppShapes
 
 @Composable
 fun PlayerCard(
@@ -1451,7 +1455,13 @@ fun PlayerCard(
                         translationY = currentCenterY - boundsCenter
                         transformOrigin = TransformOrigin(0.5f, 0.5f)
                     },
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Crop,
+                // v2.5.0 · B：大封面 = AppShapes.large(16dp) + 1dp outlineVariant 描边。
+                // 描边色用 MetroColors.divider —— 它就是 NcrustColors.outlineVariant
+                // 的桥接值（见 NcrustColors.toMetroColors），本文件已经只读 MetroColors，
+                // 不为了一个颜色再引第二个主题源进来。
+                shape = AppShapes.large,
+                frameColor = LocalMetroColors.current.divider,
             )
         }
 
@@ -1508,6 +1518,31 @@ private const val COVER_HOLD_MS = 400L
  *  - 记住最近一次成功加载的封面，切歌换图期间先沿用旧图（视觉无缝）；
  *  - 新图在 [COVER_HOLD_MS] 内就绪 → 直接换上新图；
  *  - 超过阈值仍未就绪 → 才退化为占位色。
+ *
+ * ## v2.5.0 · B：圆角 + 边框**必须加在这里，不能在调用点加**
+ *
+ * 这个 Box 的调用点（`PlayerCard` 的封面叠加层）把整个节点放在卡片布局的 (0,0)，
+ * 视觉位置**全部**由它自己的 `graphicsLayer { translationX/Y/scale }` 搬过去。
+ * 因此：
+ *
+ *  - 若把 `Modifier.clip(...)` 加在调用点、且排在那个 `graphicsLayer` **之前**
+ *    （即更外层），裁切层的边界是**未被平移的布局边界**（屏幕左上角那块），
+ *    移动过去的封面会被整块裁掉 —— 这是"加了圆角结果封面不见了"的形状；
+ *  - 正确做法是让裁切发生在**层内**：要么写进同一个 `graphicsLayer` 的
+ *    `shape` + `clip`，要么像这里一样加在**调用点 modifier 之后**（= 层的内侧）。
+ *    本实现选后者，因为它同时还要画描边，且 `border` 与 `clip` 必须共用同一个 shape。
+ *
+ * ## mini bar 的取舍（如实记录）
+ *
+ * 大封面与 mini bar 封面是**同一个节点**：mini 态是整层被 `scale` 到 56dp 的结果。
+ * 所以圆角与描边会**等比缩放** —— mini 态下 16dp 圆角渲染成约 2.5dp、
+ * 1dp 描边渲染成约 0.16dp（基本不可见）。
+ *
+ * 这是**有意接受**的，不是遗漏。要让它不缩放，就得在动画的每一帧改
+ * `graphicsLayer.shape` 并把描边宽度按 `1/scale` 反算 ——
+ * 那会让播放器展开/收起这条**播放链路上的关键动画**每帧重建图层属性，
+ * 与铁律 15（动效不得影响播放性能）冲突，代价明显大于收益。
+ * 「给 mini bar 一个独立的封面渲染点」是将来可选的方案，本版不做。
  */
 @Composable
 private fun StableCover(
@@ -1516,6 +1551,10 @@ private fun StableCover(
     placeholderColor: Color,
     modifier: Modifier = Modifier,
     contentScale: ContentScale = ContentScale.Crop,
+    /** v2.5.0 · B：圆角。默认 `AppShapes.large`（播放页封面是"大封面"档）。 */
+    shape: Shape = AppShapes.large,
+    /** v2.5.0 · B：描边色。传 `null` 表示不画描边（留给将来的"无边框"场景）。 */
+    frameColor: Color? = null,
 ) {
     val context = LocalContext.current
     val painter = rememberAsyncImagePainter(
@@ -1541,7 +1580,17 @@ private fun StableCover(
         if (painter.state !is AsyncImagePainter.State.Success) timedOut = true
     }
 
-    Box(modifier = modifier) {
+    // ⚠️ 顺序：`modifier`（含调用点的 graphicsLayer 变换）在前，clip/border 在后。
+    // Compose 的修饰符链是"先写的在外层"，所以这里是 **变换在外、裁切在内** ——
+    // 裁切发生在层内、随后被整体平移/缩放，这正是上面 KDoc 说明的正确顺序。
+    // 反过来写会把封面裁在屏幕左上角。
+    Box(
+        modifier = modifier
+            .clip(shape)
+            .then(
+                if (frameColor != null) Modifier.border(1.dp, frameColor, shape) else Modifier
+            )
+    ) {
         // 底层：切歌后旧图垫底（超阈值退化占位色）。
         val bg = if (timedOut) null else lastBitmap
         if (bg != null) {

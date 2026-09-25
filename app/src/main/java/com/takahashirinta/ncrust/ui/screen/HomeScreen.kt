@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -20,6 +21,7 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -57,7 +59,11 @@ import com.takahashirinta.ncrust.ui.components.PlayAllButton
 import com.takahashirinta.ncrust.ui.components.SongCard
 import com.takahashirinta.ncrust.ui.components.SongCardStyle
 import com.takahashirinta.ncrust.ui.components.SongMenuAction
+import com.takahashirinta.ncrust.ui.components.appCoverFrame
+import com.takahashirinta.ncrust.ui.components.appPressScale
+import com.takahashirinta.ncrust.ui.components.listItemAppear
 import com.takahashirinta.ncrust.ui.i18n.LocalStrings
+import com.takahashirinta.ncrust.ui.theme.AppShapes
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -461,14 +467,17 @@ fun HomeScreen(
                         SectionHeader(title = strings.newSongsTitle)
                     }
                     item(span = { GridItemSpan(maxLineSpan) }) { Spacer(Modifier.height(6.dp)) }
-                    items(
+                    itemsIndexed(
                         items = newSongs,
-                        key = { it.id },
-                        span = { if (isWide) GridItemSpan(1) else GridItemSpan(maxLineSpan) }
-                    ) { song ->
+                        // items → itemsIndexed 只为拿下标（入场动效用）；key 显式传同一条
+                        // （`it.id`）⇒ LazyVerticalGrid 的 diff 行为不变。
+                        key = { _, song -> song.id },
+                        span = { _, _ -> if (isWide) GridItemSpan(1) else GridItemSpan(maxLineSpan) }
+                    ) { index, song ->
                         if (isWide) {
                             SongGridTile(
                                 song = song,
+                                modifier = Modifier.listItemAppear(index),
                                 onClick = { onSongClick(song) },
                                 onLongClick = { onShowSongMenu(song, songMenu(song)) }
                             )
@@ -476,6 +485,7 @@ fun HomeScreen(
                             SongCard(
                                 song = song,
                                 style = SongCardStyle.LIST,
+                                modifier = Modifier.listItemAppear(index),
                                 onClick = { onSongClick(song) },
                                 onShowMenu = { onShowSongMenu(song, songMenu(song)) }
                             )
@@ -526,12 +536,19 @@ private fun DailySongTile(song: SongItem, onClick: () -> Unit, onLongClick: () -
     Column(
         modifier = Modifier
             .width(160.dp)
+            // v2.5.0 · A：卡片按压回弹（不消费事件，combinedClickable 行为不变）。
+            .appPressScale()
             .combinedClickableFallback(onClick, onLongClick)
     ) {
         AsyncImage(
             model = CoverUrls.small(song.album?.picUrl),
             contentDescription = strings.coverDesc,
-            modifier = Modifier.fillMaxWidth().aspectRatio(1f),
+            // v2.5.0 · B：封面圆角 + 1dp 描边。形状按**渲染边长**选（≥160dp → large，
+            // <160dp → small）；本 tile 固定 160dp 宽且 1:1 ⇒ 160dp ⇒ large。
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(1f)
+                .appCoverFrame(shape = AppShapes.large),
             contentScale = ContentScale.Crop
         )
         Spacer(Modifier.height(6.dp))
@@ -560,17 +577,23 @@ private fun DailySongTile(song: SongItem, onClick: () -> Unit, onLongClick: () -
  */
 @OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
-private fun SongGridTile(song: SongItem, onClick: () -> Unit, onLongClick: () -> Unit) {
+private fun SongGridTile(song: SongItem, modifier: Modifier = Modifier, onClick: () -> Unit, onLongClick: () -> Unit) {
     val strings = LocalStrings.current
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
+            .appPressScale()
             .combinedClickableFallback(onClick, onLongClick)
     ) {
         AsyncImage(
             model = CoverUrls.small(song.album?.picUrl),
             contentDescription = strings.coverDesc,
-            modifier = Modifier.fillMaxWidth().aspectRatio(1f),
+            // 同一尺寸规则：本栅格 minSize=148dp ⇒ 单元格 ≈148–160dp（< 160）⇒ small；
+            // 只有宽屏才会走到这里。
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(1f)
+                .appCoverFrame(shape = AppShapes.small),
             contentScale = ContentScale.Crop
         )
         Spacer(Modifier.height(6.dp))
@@ -596,12 +619,16 @@ private fun SongGridTile(song: SongItem, onClick: () -> Unit, onLongClick: () ->
 /** 推荐歌单大 tile：160dp 方封面 + 圆播放按钮。 */
 @Composable
 private fun PlaylistTile(playlist: PlaylistApi.PlaylistCard, onClick: () -> Unit, onPlayAll: () -> Unit) {    val strings = LocalStrings.current
-    Column(modifier = Modifier.width(160.dp).clickable { onClick() }) {
+    Column(modifier = Modifier.width(160.dp).appPressScale().clickable { onClick() }) {
         Box(modifier = Modifier.fillMaxWidth().aspectRatio(1f)) {
             AsyncImage(
                 model = CoverUrls.small(playlist.coverUrl),
                 contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
+                // 160dp ≥ 160dp ⇒ AppShapes.large（尺寸规则见 DailySongTile）。
+                // 右下的 ▶ 浮层（PlayAllButton）不动。
+                modifier = Modifier
+                    .fillMaxSize()
+                    .appCoverFrame(shape = AppShapes.large),
                 contentScale = ContentScale.Crop
             )
             PlayAllButton(
@@ -631,8 +658,11 @@ private fun PlaylistTile(playlist: PlaylistApi.PlaylistCard, onClick: () -> Unit
 /**
  * 私人 FM 电台大 tile：形制同 PlaylistTile，封面为 Metro 风格图形——
  * 整块用**用户头像提取的强调色**铺底，中央是一枚**对称音频波形**记号
- * (以中线为轴上下等幅的方端竖条，包络中间高两侧收)，无文字、无圆角；
+ * (以中线为轴上下等幅的方端竖条，包络中间高两侧收，记号本身仍是方端、无圆角)；
  * 记号颜色按底色明度取黑/白以保证对比。
+ *
+ * v2.5.0 · B：这块强调色底板占的是**封面位**，所以与同排 PlaylistTile 的 160dp 封面
+ * 取同一档圆角（[AppShapes.large]）——旧正典是「直角、无圆角」，整块不裁切。
  */
 @Composable
 private fun FmRadioTile(
@@ -650,11 +680,12 @@ private fun FmRadioTile(
         isLightTheme -> LocalMetroColors.current.background
         else -> Color.White
     }
-    Column(modifier = Modifier.width(160.dp).clickable { onClick() }) {
+    Column(modifier = Modifier.width(160.dp).appPressScale().clickable { onClick() }) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(1f)
+                .clip(AppShapes.large)
                 .background(accent)
         ) {
             // 对称音频波形：5 根方端竖条，包络 0.5→1→0.5，中线上下等幅。

@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
@@ -63,10 +64,12 @@ import com.takahashirinta.ncrust.qq.QqProfile
 import com.takahashirinta.ncrust.power.BackgroundActivity
 import com.takahashirinta.ncrust.ui.BottomOverlayInsetDp
 import com.takahashirinta.ncrust.ui.components.QrAuthorizeScreen
+import com.takahashirinta.ncrust.ui.components.appCoverFrame
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import com.takahashirinta.ncrust.ui.components.QrLoginDialog
 import com.takahashirinta.ncrust.ui.theme.BackgroundImageManager
+import com.takahashirinta.ncrust.ui.theme.AppShapes
 import com.takahashirinta.ncrust.lyric.LyricsDisplayPrefs
 import com.takahashirinta.ncrust.lyric.LyricsSweepQuality
 import com.takahashirinta.ncrust.ui.i18n.LocalStrings
@@ -836,6 +839,10 @@ private fun ProfileBlock(
         Box(
             modifier = Modifier
                 .size(96.dp)
+                // v2.5.0 · B：用户头像是**人像** ⇒ 圆形（AppShapes.full），不套用方封面的
+                // 「≥160dp → large / <160dp → small」尺寸规则。底板一起裁圆，
+                // 否则方形底会从圆形头像的四角露出来（「未登录」的人像图标也随之为圆形）。
+                .clip(AppShapes.full)
                 .background(LocalMetroColors.current.surfaceVariant),
             contentAlignment = Alignment.Center
         ) {
@@ -843,7 +850,10 @@ private fun ProfileBlock(
                 AsyncImage(
                     model = profile.avatarUrl,
                     contentDescription = strings.userAvatarDesc,
-                    modifier = Modifier.fillMaxSize(),
+                    // 圆形 + 1dp 描边；同一 shape 落在图片本身。
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .appCoverFrame(shape = AppShapes.full),
                     contentScale = ContentScale.Crop
                 )
             } else {

@@ -36,8 +36,10 @@ import com.takahashirinta.ncrust.ui.components.SongCard
 import com.takahashirinta.ncrust.ui.components.SongCardStyle
 import com.takahashirinta.ncrust.ui.components.SongMenuAction
 import com.takahashirinta.ncrust.ui.components.SongTags
+import com.takahashirinta.ncrust.ui.components.appCoverFrame
 import com.takahashirinta.ncrust.ui.i18n.LocalStrings
 import com.takahashirinta.ncrust.ui.i18n.Strings
+import com.takahashirinta.ncrust.ui.theme.AppShapes
 import io.github.takahashirinta.kanesumi.controls.MetroTabItem
 import io.github.takahashirinta.kanesumi.controls.MetroTabRow
 import io.github.takahashirinta.kanesumi.core.theme.LocalMetroColors
@@ -364,7 +366,13 @@ private fun AggregatedAlbumGridItem(
         AsyncImage(
             model = CoverUrls.small(album.picUrl),
             contentDescription = strings.albumCoverDesc,
-            modifier = Modifier.fillMaxWidth().aspectRatio(1f),
+            // v2.5.0 · B：封面圆角 + 1dp 描边。形状按**渲染边长**选（≥160dp → large，
+            // <160dp → small）；本页是 2 列拼贴（chunked(2) + weight(1f)，间距 2dp），
+            // 窄屏 360dp 内容宽下单格 179dp、宽屏更宽 ⇒ 都 ≥160 ⇒ large。
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(1f)
+                .appCoverFrame(shape = AppShapes.large),
             contentScale = ContentScale.Crop
         )
         Spacer(Modifier.height(6.dp))
@@ -413,7 +421,7 @@ private fun AggregatedAlbumGridItem(
 fun ArtistAlbumGridItem(album: ArtistAlbumItem, modifier: Modifier = Modifier, onClick: () -> Unit) {
     val strings = LocalStrings.current
     Column(modifier = modifier.clickable { onClick() }) {
-        AsyncImage(model = CoverUrls.small(album.picUrl), contentDescription = strings.albumCoverDesc, modifier = Modifier.fillMaxWidth().aspectRatio(1f), contentScale = ContentScale.Crop)
+        AsyncImage(model = CoverUrls.small(album.picUrl), contentDescription = strings.albumCoverDesc, modifier = Modifier.fillMaxWidth().aspectRatio(1f).appCoverFrame(shape = AppShapes.large), contentScale = ContentScale.Crop)
         Spacer(Modifier.height(6.dp))
         MetroText(album.name, color = LocalMetroColors.current.onBackground, style = LocalMetroTypography.current.bodyMedium, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(horizontal = 6.dp))
         album.publishTime?.let {

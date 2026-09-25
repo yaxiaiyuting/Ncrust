@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.runtime.*
@@ -32,6 +31,7 @@ import io.github.takahashirinta.kanesumi.core.theme.MetroIcon
 import io.github.takahashirinta.kanesumi.core.theme.MetroText
 import com.takahashirinta.ncrust.ui.i18n.LocalStrings
 import kotlinx.coroutines.launch
+import com.takahashirinta.ncrust.ui.theme.AppShapes
 
 enum class SongCardStyle {
     LIST,
@@ -92,6 +92,10 @@ fun SongCard(
             Row(
                 modifier = modifier
                     .fillMaxWidth()
+                    // v2.5.0 · A：按压回弹。放在 clickable **之前**（更靠外层），
+                    // 缩放作用于包含点击区的整行；本修饰符只观察指针、不消费事件，
+                    // 所以下面 combinedClickable 的点击/长按行为一字不变。
+                    .appPressScale()
                     .combinedClickable(
                         onClick = onClick,
                         onLongClick = { onShowMenu?.invoke() }
@@ -100,12 +104,17 @@ fun SongCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (showCover) {
+                    // v2.5.0 · B：封面圆角 + 1dp 描边。形状按**渲染边长**选，规则是
+                    // 「≥160dp → AppShapes.large，<160dp → AppShapes.small」：本行封面是
+                    // 72dp（搜索结果传 56dp），都 < 160 ⇒ small。
                     AsyncImage(
                         model = CoverUrls.small(song.album?.picUrl),
                         contentDescription = strings.coverDesc,
                         // 纯色占位:避免低端机解码完成前出现"空方块"闪变(Metro 不做 crossfade,直接落图)
                         placeholder = ColorPainter(LocalMetroColors.current.surfaceVariant),
-                        modifier = Modifier.size(actualCoverSize),
+                        modifier = Modifier
+                            .size(actualCoverSize)
+                            .appCoverFrame(shape = AppShapes.small),
                         contentScale = ContentScale.Crop
                     )
                     Spacer(Modifier.width(14.dp))
@@ -173,7 +182,9 @@ fun SongCard(
 
         SongCardStyle.GRID -> {
             // 按压缩放动画：Animatable + graphicsLayer，动画帧仅在 draw 阶段消费。
-            // 只给 GRID 创建——LIST 是首页高频路径，每项省一个 Animatable + 协程作用域分配。
+            // GRID 用**自己的** 1.03x 曲线（不是 `Modifier.appPressScale` 的 1.05x）——
+            // 它同时承担点击/长按，换掉会改动这里的手感；LIST/COMPACT 行的回弹则由
+            // appPressScale 统一提供，两条路径不叠加。
             val scaleAnim = remember { Animatable(1f) }
             val scaleScope = rememberCoroutineScope()
             Column(
@@ -201,7 +212,11 @@ fun SongCard(
                     placeholder = ColorPainter(LocalMetroColors.current.surfaceVariant),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .aspectRatio(1f),
+                        .aspectRatio(1f)
+                        // 同一尺寸规则：GRID 格子宽随列数变化，按最常见的自适应栅格
+                        // （单元格 ≈148–160dp，< 160）取 small；若将来放进 2 列大格
+                        // （≥160dp），按同一规则应改 large。本形态当前无调用点。
+                        .appCoverFrame(shape = AppShapes.small),
                     contentScale = ContentScale.Crop
                 )
                 Spacer(Modifier.height(8.dp))
@@ -278,10 +293,16 @@ fun PlayAllButton(
 ) {
     // 圆形外框(用户决策): 直径 = 原边长。clip 先于 background, 裁切不产生
     // 额外合成层, 与方形按钮同价。
+    //
+    // v2.5.0 · A：圆形的 shape 常量换成 `AppShapes.full`。二者对正方形完全等价
+    // （`full` = 百分比 50% 的圆角，Material 3 官方把这一档叫 `full`，
+    // 见 probe-splayer-ref.md §4）。换的理由不是外观，是**单一落点**：
+    // 圆角规范只允许有一个文件出现 shape 构造器，否则第一次改规范就要全仓库找
+    // （`AppShapesSingleSourceTest` 会拦下这一处）。
     Box(
         modifier = modifier
             .size(size)
-            .clip(CircleShape)
+            .clip(AppShapes.full)
             .background(LocalMetroColors.current.primary)
             .combinedClickable(onClick = onClick),
         contentAlignment = Alignment.Center
