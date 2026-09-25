@@ -12,6 +12,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -73,6 +75,16 @@ fun DetailScaffold(
     onTopEndAction: (() -> Unit)? = null,
     topEndIcon: ImageVector = Icons.Default.MoreVert,
     topEndContentDescription: String = "",
+    /**
+     * v2.3.0 · B：把内部 `LazyColumn` 的 `LazyListState` 暴露给调用方。
+     *
+     * 存在的唯一理由是**下拉刷新**：`nestedScroll` 需要一个「列表在不在顶部」的判据，
+     * 而那个判据只有 `LazyListState` 能回答（`firstVisibleItemIndex == 0 &&
+     * firstVisibleItemScrollOffset == 0`）。默认值让所有既有调用点一个字节都不用改。
+     */
+    listState: LazyListState = rememberLazyListState(),
+    /** v2.3.0 · B：挂在内容 `LazyColumn` 上的修饰符（下拉刷新手势从这儿进去）。 */
+    contentModifier: Modifier = Modifier,
     content: LazyListScope.() -> Unit
 ) {
     val strings = LocalStrings.current
@@ -140,7 +152,8 @@ fun DetailScaffold(
                             )
                     ) {
                         LazyColumn(
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier.fillMaxSize().then(contentModifier),
+                            state = listState,
                             contentPadding = PaddingValues(bottom = BottomOverlayInsetDp),
                             flingBehavior = rememberMetroFlingBehavior()
                         ) {

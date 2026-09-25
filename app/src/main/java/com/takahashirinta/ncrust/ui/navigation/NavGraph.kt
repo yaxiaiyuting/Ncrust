@@ -23,14 +23,29 @@ object NavRoutes {
     const val SONG_DETAIL = "song/{songId}"
 
     /**
-     * v2.2.0：QQ 音乐歌单（按源隔离的独立页面）。
+     * v2.2.0：QQ 音乐歌单详情。
      *
      * 详情路由把**身份三元组**编进路径：`playlistId`(tid) + `ownerId`(uin) + `dirId`。
      * ownerId 必须进路由 —— 否则「A 账号点进歌单 → 返回 → 切到 B 账号 → 系统恢复同一条
      * 路由」会拿 A 的 playlistId 去 B 的账号下查，运气好是 10004，运气不好是另一个歌单。
+     *
+     * v2.3.0 · A：**`QQ_PLAYLISTS` 列表路由与 `QqPlaylistScreen` 已删除** ——
+     * 歌单列表现在平铺在库页的「歌单」tab 里（`LibraryPlaylistsTab`），
+     * 「一步可达」之后那个二级列表页就没有存在意义了（留着它等于留一条没有入口的死路由）。
      */
-    const val QQ_PLAYLISTS = "qqplaylists"
     const val QQ_PLAYLIST_DETAIL = "qqplaylist/{playlistId}/{ownerId}/{dirId}/{playlistName}"
+
+    /**
+     * v2.3.0 · B：**本地歌单**详情 / 编辑页。
+     *
+     * 路由把 [PlaylistKey] 的三元组原样编进路径（与 QQ 详情同一条纪律：
+     * 归属账号必须进路由，否则「A 账号点进去 → 返回 → 切到 B 账号 → 系统恢复同一条路由」
+     * 会拿 A 的歌单 id 去 B 的账号下查）。
+     *
+     * 这里**没有** `dirId`：本地歌单的 `dirId` 是载荷、存在本地记录里
+     * （`LocalPlaylist.dirId`），请求详情时由仓库读出来 —— 路由里再带一份就成了第二处真相。
+     */
+    const val LOCAL_PLAYLIST_DETAIL = "localplaylist/{source}/{ownerId}/{playlistId}"
 
     fun album(albumId: Long) = "album/$albumId"
     fun artist(artistId: Long) = "artist/$artistId"
@@ -40,6 +55,12 @@ object NavRoutes {
 
     fun qqPlaylistDetail(id: String, ownerId: String, dirId: Long, name: String) =
         "qqplaylist/$id/$ownerId/$dirId/" + URLEncoder.encode(name, StandardCharsets.UTF_8.toString())
+
+    /** v2.3.0 · B：本地歌单路由。三段都做 URL 编码 —— `PlaylistKey.id` 可能是 `local:...`。 */
+    fun localPlaylist(sourceKey: String, ownerId: String, playlistId: String): String =
+        "localplaylist/" + URLEncoder.encode(sourceKey, StandardCharsets.UTF_8.toString()) +
+            "/" + URLEncoder.encode(ownerId, StandardCharsets.UTF_8.toString()) +
+            "/" + URLEncoder.encode(playlistId, StandardCharsets.UTF_8.toString())
 }
 
 @Composable
@@ -135,17 +156,6 @@ fun MainNavGraph(
             )
         }
 
-        composable(NavRoutes.QQ_PLAYLISTS) {
-            QqPlaylistScreen(
-                onBack = { navController.popBackStack() },
-                onPlaylistClick = { pl ->
-                    navController.navigate(
-                        NavRoutes.qqPlaylistDetail(pl.key.id, pl.key.ownerId, pl.dirId, pl.name)
-                    )
-                }
-            )
-        }
-
         composable(
             route = NavRoutes.QQ_PLAYLIST_DETAIL,
             arguments = listOf(
@@ -167,6 +177,41 @@ fun MainNavGraph(
                 ownerId = owner,
                 dirId = dirId,
                 playlistName = name,
+                onBack = { navController.popBackStack() },
+                onSongClick = onSongClick,
+                onReplaceAndPlay = onReplaceAndPlay,
+                onSongInsertNext = onSongInsertNext,
+                onSongAppendToQueue = onSongAppendToQueue,
+                onShowSongMenu = onShowSongMenu
+            )
+        }
+
+        composable(
+            route = NavRoutes.LOCAL_PLAYLIST_DETAIL,
+            arguments = listOf(
+                navArgument("source") { type = NavType.StringType },
+                navArgument("ownerId") { type = NavType.StringType },
+                navArgument("playlistId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val sourceKey = URLDecoder.decode(
+                backStackEntry.arguments?.getString("source") ?: "",
+                StandardCharsets.UTF_8.toString()
+            )
+            val owner = URLDecoder.decode(
+                backStackEntry.arguments?.getString("ownerId") ?: "",
+                StandardCharsets.UTF_8.toString()
+            )
+            val pid = URLDecoder.decode(
+                backStackEntry.arguments?.getString("playlistId") ?: "",
+                StandardCharsets.UTF_8.toString()
+            )
+            LocalPlaylistDetailScreen(
+                playlistKey = com.takahashirinta.ncrust.source.PlaylistKey(
+                    source = com.takahashirinta.ncrust.source.MusicSource.fromKey(sourceKey),
+                    id = pid,
+                    ownerId = owner,
+                ),
                 onBack = { navController.popBackStack() },
                 onSongClick = onSongClick,
                 onReplaceAndPlay = onReplaceAndPlay,

@@ -1,6 +1,9 @@
 package com.takahashirinta.ncrust.ui.components
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -23,6 +26,8 @@ import io.github.takahashirinta.kanesumi.controls.MetroBottomSheet
 import io.github.takahashirinta.kanesumi.controls.MetroDivider
 import io.github.takahashirinta.kanesumi.controls.MetroProgressIndicator
 import io.github.takahashirinta.kanesumi.core.insets.metroNavigationBarsPadding
+import io.github.takahashirinta.kanesumi.controls.MetroDialog
+import io.github.takahashirinta.kanesumi.controls.MetroTextField
 import io.github.takahashirinta.kanesumi.core.theme.LocalMetroColors
 import io.github.takahashirinta.kanesumi.core.theme.LocalMetroTypography
 import io.github.takahashirinta.kanesumi.core.theme.MetroIcon
@@ -220,3 +225,103 @@ fun AddToPlaylistSheet(
 
 /** 单次「加入歌单」的结果，供 sheet 决定关闭还是留下列错误。 */
 enum class AddToPlaylistResult { SUCCESS, DUPLICATE, FAILED }
+
+/**
+ * v2.3.0 · B：「加入**本地**歌单」选择器。
+ *
+ * ## 为什么与 [AddToPlaylistSheet] 分开而不是加一个参数
+ *
+ * 两者的**幂等语义不同**：网易云的加歌由服务端 502 兜底（重复添加返回 502，
+ * 客户端按幂等成功提示）；本地歌单的重复添加是**明确的规则 7**
+ * （清除 tombstone + origin 改 LOCAL，见 `LocalPlaylistSync.addManual`）。
+ * 把两种语义塞进同一个 sheet，迟早会有人把「502 幂等」套到本地路径上。
+ *
+ * ## 空列表也要能用
+ *
+ * 一个本地歌单都没有时，sheet 里只有「新建」一项 —— 不能因为「没有可选项」
+ * 就把整个入口藏起来，那样用户永远建不出第一个本地歌单。
+ */
+@Composable
+fun LocalPlaylistPickerDialog(
+    playlists: List<com.takahashirinta.ncrust.local.LocalPlaylist>,
+    onDismiss: () -> Unit,
+    onPick: (com.takahashirinta.ncrust.local.LocalPlaylist) -> Unit,
+    onCreateNew: (String) -> Unit,
+) {
+    val strings = LocalStrings.current
+    val colors = LocalMetroColors.current
+    val typography = LocalMetroTypography.current
+    var creating by remember { mutableStateOf(false) }
+    var newName by remember { mutableStateOf("") }
+
+    MetroDialog(onDismissRequest = onDismiss) {
+        Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 14.dp)) {
+            MetroText(
+                strings.localPlaylistChoose,
+                color = colors.onBackground,
+                style = typography.titleMedium,
+            )
+            Spacer(Modifier.height(8.dp))
+            if (creating) {
+                MetroTextField(
+                    value = newName,
+                    onValueChange = { newName = it },
+                    placeholder = strings.localPlaylistNameHint,
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                Spacer(Modifier.height(8.dp))
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                    Box(Modifier.clickable { creating = false }.padding(10.dp)) {
+                        MetroText(strings.cancel, color = colors.onSurfaceVariant)
+                    }
+                    Spacer(Modifier.width(8.dp))
+                    Box(
+                        Modifier
+                            .clickable(enabled = newName.isNotBlank()) { onCreateNew(newName.trim()) }
+                            .padding(10.dp),
+                    ) {
+                        MetroText(strings.localPlaylistCreate, color = colors.primary)
+                    }
+                }
+            } else {
+                if (playlists.isEmpty()) {
+                    MetroText(
+                        strings.localPlaylistEmpty,
+                        color = colors.onSurfaceVariant,
+                        style = typography.bodySmall,
+                    )
+                    Spacer(Modifier.height(8.dp))
+                }
+                // 列表可能很长，但本地歌单有 100 的上限（LocalPlaylistSync.MAX_PLAYLISTS），
+                // 这里不做虚拟化 —— 一个可滚动的 Column 足够，且避免了嵌套 LazyColumn 的约束问题。
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(max = 280.dp)
+                        .verticalScroll(rememberScrollState()),
+                ) {
+                    playlists.forEach { pl ->
+                        Box(
+                            Modifier
+                                .fillMaxWidth()
+                                .clickable { onPick(pl) }
+                                .padding(vertical = 12.dp),
+                        ) {
+                            MetroText(pl.name, color = colors.onBackground, style = typography.bodyLarge)
+                        }
+                    }
+                }
+                Spacer(Modifier.height(6.dp))
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .clickable { creating = true }
+                        .padding(vertical = 12.dp),
+                ) {
+                    MetroText(strings.localPlaylistNew, color = colors.primary, style = typography.bodyMedium)
+                }
+            }
+        }
+    }
+}

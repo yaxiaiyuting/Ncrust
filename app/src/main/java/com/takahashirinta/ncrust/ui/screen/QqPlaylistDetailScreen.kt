@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import com.takahashirinta.ncrust.network.SongItem
 import com.takahashirinta.ncrust.playlist.PlaylistDegradation
 import com.takahashirinta.ncrust.playlist.PlaylistHardFailure
+import com.takahashirinta.ncrust.local.LocalPlaylistRepository
 import com.takahashirinta.ncrust.playlist.PlaylistLoadCoordinator
 import com.takahashirinta.ncrust.playlist.PlaylistResult
 import com.takahashirinta.ncrust.qq.QqPlaylistRepository
@@ -42,6 +43,7 @@ import io.github.takahashirinta.kanesumi.core.theme.LocalMetroColors
 import io.github.takahashirinta.kanesumi.core.theme.LocalMetroTypography
 import io.github.takahashirinta.kanesumi.core.theme.MetroIcon
 import io.github.takahashirinta.kanesumi.core.theme.MetroText
+import android.widget.Toast
 import kotlinx.coroutines.launch
 
 /**
@@ -80,6 +82,7 @@ fun QqPlaylistDetailScreen(
     val strings = LocalStrings.current
     val colors = LocalMetroColors.current
     val typography = LocalMetroTypography.current
+    val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
     val key = remember(playlistId, ownerId) {
@@ -185,6 +188,34 @@ fun QqPlaylistDetailScreen(
                     color = colors.onSurfaceVariant,
                     style = typography.bodySmall,
                 )
+                // v2.3.0 · B：把这张**只读**的 QQ 歌单转存成可编辑的本地歌单。
+                // 动作落在 header（y≈56dp 起，远离「播放器死带」），且只在真的拉到曲目后出现。
+                // 转存后**立刻同步一次**，用户进本地歌单时看到的不是一张空表。
+                if (songs.isNotEmpty()) {
+                    Spacer(Modifier.height(4.dp))
+                    Box(
+                        modifier = Modifier
+                            .clickable {
+                                scope.launch {
+                                    val local = LocalPlaylistRepository.adoptRemote(
+                                        context = context,
+                                        key = key,
+                                        name = resolvedName.ifBlank { strings.qqPlaylistsTitle },
+                                        dirId = dirId,
+                                    )
+                                    LocalPlaylistRepository.sync(context, local, force = true)
+                                    Toast.makeText(
+                                        context,
+                                        strings.localPlaylistAdopted(local.name),
+                                        Toast.LENGTH_SHORT,
+                                    ).show()
+                                }
+                            }
+                            .padding(vertical = 6.dp, horizontal = 2.dp),
+                    ) {
+                        MetroText(strings.localPlaylistAdopt, color = colors.primary, style = typography.bodyMedium)
+                    }
+                }
                 degradation?.let { deg ->
                     Spacer(Modifier.height(6.dp))
                     val text = when (deg) {
