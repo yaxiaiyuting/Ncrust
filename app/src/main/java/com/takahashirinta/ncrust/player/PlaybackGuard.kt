@@ -405,3 +405,59 @@ class QualityCeilingMemory(
         return if (prefIdx > capIdx) remembered.first else preferred
     }
 }
+
+/**
+ * v2.3.0 · C：「此源无版权，可切另一源」提示的**节流闸**。
+ *
+ * ## 为什么提示也要有界（铁律 8）
+ *
+ * 这条提示挂在「取链彻底失败 ⇒ 即将自动跳歌」这条路径上，而那条路径**本来就会连续触发**：
+ * 一段整张专辑都下架的歌单能一路跳下去。`AutoSkipGuard` 把跳歌限到 5 次，
+ * 但 5 条提示在 2 秒内连续弹出仍然是一屏噪音，用户只会觉得应用坏了。
+ *
+ * 所以提示单独设一道闸：**同一个时间窗内最多一条**。
+ * 与 `AutoSkipGuard` / `QualityRetryGuard` 一样，判定抽成纯逻辑、由 JVM 单测钉住 ——
+ * 「有界」这件事必须能被测出来，不能靠读代码相信它。
+ *
+ * ## 为什么不用「只提示一次」
+ *
+ * 用户可能隔十分钟又碰到一首放不了的歌 —— 那时提示是有用的。
+ * 所以闸门是**节流**（时间窗）而不是**一次性**（latch）。
+ */
+class SourceFallbackHintGate(
+    private val minIntervalMs: Long = DEFAULT_MIN_INTERVAL_MS,
+) {
+
+    private var lastShownAtMs: Long = Long.MIN_VALUE
+
+    /**
+     * @param nowMs 当前时刻（`System.currentTimeMillis()`）。
+     * @return true = 这一次可以弹提示（并且内部已记下时刻）。
+     */
+    fun shouldHint(nowMs: Long): Boolean {
+        // 两个判据都必须显式写出来，不能图省事写成 `nowMs - lastShownAtMs < minIntervalMs`：
+        //
+        // · 「从未提示过」用**哨兵比较**而不是算术（`Long.MIN_VALUE` 参与减法会溢出，
+        //   方向正好相反 —— 第一次会被误判成「刚提示过」，提示永远不出现）；
+        // · 时钟被往回拨（用户改系统时间 / NTP 校正）时 `nowMs - lastShownAtMs` 是负数，
+        //   同样会被误判成「刚提示过」。那一侧选择**放行**：宁可再提示一次，
+        //   也不要因为时钟问题让用户永远看不到「可以换个音源」这条出口。
+        if (lastShownAtMs != Long.MIN_VALUE && nowMs >= lastShownAtMs &&
+            nowMs - lastShownAtMs < minIntervalMs
+        ) {
+            return false
+        }
+        lastShownAtMs = nowMs
+        return true
+    }
+
+    /** 用户回到前台 / 手动操作时清闸，让下一次失败立刻能提示。 */
+    fun reset() {
+        lastShownAtMs = Long.MIN_VALUE
+    }
+
+    companion object {
+        /** 同一个提示在 20 秒内不重复。 */
+        const val DEFAULT_MIN_INTERVAL_MS = 20_000L
+    }
+}

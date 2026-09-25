@@ -84,8 +84,16 @@ enum class TrackAccess {
  * 用泛型而不是直接吃 `SongItem`，是为了让排序规则可以脱离 Retrofit/Gson 注解单测 ——
  * 否则测「排序」要先构造十几个无关字段，测试会写成「构造数据」而不是「验证规则」。
  * 调用方（`SearchViewModel`）用一行 `map { RankedSong(it, accessOf(it)) }` 适配。
+ *
+ * v2.3.0 · C 新增 [availability]，**带默认值**：v2.1.4 的既有构造点与单测
+ * （`SearchRankingTest`）一个字节都不用改，默认值 [TrackAvailability.UNKNOWN] 恰好就是
+ * 「没有额外信息 ⇒ 不参与重排」的中性取值。
  */
-data class RankedSong<T>(val value: T, val access: TrackAccess)
+data class RankedSong<T>(
+    val value: T,
+    val access: TrackAccess,
+    val availability: TrackAvailability = TrackAvailability.UNKNOWN,
+)
 
 /**
  * 聚合搜索的排序（v2.1.4）。
@@ -149,5 +157,58 @@ object SearchRanking {
             if (i < b.size) out.add(b[i])
         }
         return out
+    }
+
+    /**
+     * v2.3.0 · C：把**服务端显式声明无版权**的行降到本组末尾，其余顺序**一个字节不改**。
+     *
+     * ## 为什么只降 [TrackAvailability.NO_COPYRIGHT] 这一档
+     *
+     * 任务书 5.3 的原话是「同一首歌两源都有时，优先展示有版权的音源」。探针结论是
+     * **这句话的前提不成立**：两个平台各自独立编号，接口里没有任何跨源标识
+     * （无 ISRC、无指纹，见 `probe-source-attribution.md` §1），所以程序上**无法**知道
+     * 「这两行是同一首歌」。既然配不成对，「优先展示有版权的那个源」就没有可执行的落点。
+     *
+     * 退而求其次时**不能**粗暴地按 `isPlayable` 全量重排：搜索「周杰伦」时网易云前排
+     * 几乎全是 `fee=1`（无版权/VIP），全量重排会把一堆**翻唱与 Live** 顶到最前面，
+     * 相关性排序被我们洗掉，用户更难找到他要的那首。那是**负收益**。
+     *
+     * 所以只做一件收益为正、风险为零的事：**服务端自己说「这条没版权、我给你换个版本」的行**
+     * （实测整池 591 条里只有 2 条，0.3%）沉到本组末尾。它有三个好性质：
+     *
+     * 1. **稳定分区**（[List.partition] 保序）⇒ 同档内服务端相关性顺序原样保留；
+     * 2. **只降不升** ⇒ 绝不会把冷门结果顶到精确匹配前面；
+     * 3. 只作用于**同一音源组内部** ⇒ 不引入任何跨源行为（铁律：不做跨源合并）。
+     *
+     * [TrackAvailability.PLAYABLE] 与 [TrackAvailability.MEMBER_ONLY] / [UNKNOWN]
+     * **一律不参与重排**：前者是「确证能播」，但把它提前同样会洗掉相关性排序；
+     * 后两者本来就不可靠（`st == -1` 那一档 15/30 是能播的）。
+     */
+    fun <T> demoteNoCopyright(group: List<RankedSong<T>>): List<RankedSong<T>> {
+        if (group.none { it.availability == TrackAvailability.NO_COPYRIGHT }) return group
+        val (bad, good) = group.partition { it.availability == TrackAvailability.NO_COPYRIGHT }
+        return good + bad
+    }
+
+    /**
+     * v2.3.0 · C：在 [rank] 之上叠加重排。
+     *
+     * 两件事**分别作用于不同的层**，互不干扰：
+     * - [rank] 决定**两个音源之间**的顺序（会员买在哪家，哪家先出）；
+     * - [demoteNoCopyright] 只决定**同一音源组内部**无版权行的位置。
+     */
+    fun <T> order(
+        netease: List<RankedSong<T>>,
+        qq: List<RankedSong<T>>,
+        neteaseVip: Boolean,
+        qqVip: Boolean,
+    ): List<RankedSong<T>> {
+        val ranked = rank(netease, qq, neteaseVip, qqVip)
+        if (ranked.none { it.availability == TrackAvailability.NO_COPYRIGHT }) return ranked
+        // 交错之后两个源的行是混着的，所以按 source 分组降级会改变跨源顺序 ——
+        // 这里改用「整体稳定分区」：无版权的行沉到**整张表**末尾。
+        // 之所以敢这么做：无版权的行本来就该在最后，而它是 0.3% 的少数，
+        // 沉底不会改变其余任何两行的相对顺序。
+        return demoteNoCopyright(ranked)
     }
 }

@@ -46,6 +46,16 @@ enum class MusicSource(val key: String) {
         /** 解析字符串 key；null / 空串 / 不认识的值一律回落 [DEFAULT]。 */
         fun fromKey(key: String?): MusicSource =
             values().firstOrNull { it.key == key } ?: DEFAULT
+
+        /**
+         * v2.3.0 · C：**另一个**可登录音源（用于「此源无版权，可切另一源」的提示）。
+         *
+         * 只有一个可选音源时返回 null（调用方据此**不发提示** —— 不能提示用户去一个不存在的地方）。
+         * 返回值来自 [selectable]，所以它与 UI 上音源切换的顺序、以及将来新增第三个音源时的行为
+         * 是同一份定义，不需要再改这里。
+         */
+        fun otherThan(source: MusicSource): MusicSource? =
+            selectable.firstOrNull { it != source }
     }
 }
 

@@ -10,6 +10,7 @@ import com.takahashirinta.ncrust.qq.QqClient
 import com.takahashirinta.ncrust.search.RankedSong
 import com.takahashirinta.ncrust.search.SearchRanking
 import com.takahashirinta.ncrust.search.TrackAccess
+import com.takahashirinta.ncrust.search.TrackAvailability
 import com.takahashirinta.ncrust.source.MusicSource
 import com.takahashirinta.ncrust.source.SourceRouter
 import com.takahashirinta.ncrust.source.trackKey
@@ -141,12 +142,22 @@ class SearchViewModel : ViewModel() {
                     // 排序是纯函数且幂等，排两次不会抖。
                     fun publish(neteaseList: List<SongItem>, qqList: List<SongItem>) {
                         val (neteaseVip, qqVip) = vipFlagsProvider()
-                        _songs.value = SearchRanking.rank(
+                        // v2.3.0 · C：`order` = v2.1.4 的 `rank`（会员买在哪家哪家先出）
+                        // + 把「服务端显式声明无版权」的行沉底。两者作用在不同的层，见其 KDoc。
+                        _songs.value = SearchRanking.order(
                             netease = neteaseList.map {
-                                RankedSong(it, TrackAccess.ofNeteaseFee(it.fee))
+                                RankedSong(
+                                    it,
+                                    TrackAccess.ofNeteaseFee(it.fee),
+                                    TrackAvailability.of(it),
+                                )
                             },
                             qq = qqList.map {
-                                RankedSong(it, TrackAccess.ofQqMemberOnly(it.memberOnly))
+                                RankedSong(
+                                    it,
+                                    TrackAccess.ofQqMemberOnly(it.memberOnly),
+                                    TrackAvailability.of(it),
+                                )
                             },
                             neteaseVip = neteaseVip,
                             qqVip = qqVip,

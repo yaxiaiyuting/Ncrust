@@ -54,6 +54,7 @@ import com.takahashirinta.ncrust.network.RetrofitClient
 import com.takahashirinta.ncrust.network.SongItem
 import com.takahashirinta.ncrust.qq.QqApi
 import com.takahashirinta.ncrust.source.MusicSource
+import com.takahashirinta.ncrust.source.SourceIds
 import com.takahashirinta.ncrust.source.SourceRouter
 import com.takahashirinta.ncrust.source.TrackKey
 import com.takahashirinta.ncrust.source.isResolvable
@@ -66,6 +67,7 @@ import com.takahashirinta.ncrust.player.PlaybackFailure
 import com.takahashirinta.ncrust.player.PlaybackService
 import com.takahashirinta.ncrust.player.QualityCeilingMemory
 import com.takahashirinta.ncrust.player.QualityRetryGuard
+import com.takahashirinta.ncrust.player.SourceFallbackHintGate
 import com.takahashirinta.ncrust.player.classifyFailure
 import com.takahashirinta.ncrust.player.maySkipOnUrlFailure
 import com.takahashirinta.ncrust.player.PlaybackStateManager
@@ -286,6 +288,43 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
 
     /** v2.2.1 · P0：自动跳歌熔断（连续 5 次即停）。纯逻辑，见 PlaybackGuard.kt。 */
     private val autoSkipGuard = AutoSkipGuard()
+
+    /**
+     * v2.3.0 · C：「此源无版权，可切另一源」提示的节流闸（20s 一条）。
+     *
+     * 提示挂在「取链彻底失败 ⇒ 即将自动跳歌」这条**本来就会连续触发**的路径上，
+     * 所以它自己必须也有界 —— 否则一段整体下架的歌单会连着弹 5 条提示。
+     * 判定是纯逻辑（[SourceFallbackHintGate]），由 JVM 单测钉住。
+     */
+    private val sourceFallbackHintGate = SourceFallbackHintGate()
+
+    /**
+     * v2.3.0 · C：播放路径取链彻底失败时，提示用户可切到另一个音源。
+     *
+     * ## 为什么是「提示」而不是「自动切源」
+     *
+     * 自动切源需要：用曲名/艺人去另一个平台再搜一次 → 判定是不是同一首 → 换队列项播放。
+     * 这三点全都不可靠（探针结论：接口里**没有**任何跨源同一性标识，见
+     * `docs/verification/v2.3.0/probe-source-attribution.md` §1），
+     * 而且它会在**失败路径**里插一次网络请求 —— 正是 v2.2.1 那场 P0 级联的形状。
+     *
+     * 所以这里只做一件零风险的事：把「这首歌在这个源放不出来」翻译成用户能行动的建议。
+     * 判定同样只用**结构性事实**：QQ 的 id 带 bit62 标志位（[SourceIds.sourceOfId]），
+     * 不需要读任何可变字段，也不会猜错平台。
+     */
+    private fun showSourceFallbackHint(songId: Long) {
+        val app = runCatching { getApplication<Application>() }.getOrNull() ?: return
+        if (!sourceFallbackHintGate.shouldHint(System.currentTimeMillis())) return
+        val current = SourceIds.sourceOfId(songId)
+        val other = MusicSource.otherThan(current) ?: return
+        val strings = stringsForCode(getSavedLanguageCode(app))
+        val label = when (other) {
+            MusicSource.QQMUSIC -> strings.sourceQqMusic
+            MusicSource.NETEASE -> strings.sourceNetease
+        }
+        val text = strings.tagSwitchSourceHint + "：" + label
+        runCatching { Toast.makeText(app, text, Toast.LENGTH_LONG).show() }
+    }
 
     /**
      * v2.2.1 · P0：本会话内**已经证明播不出来**的 URL（离线缓存 key）。
@@ -1309,6 +1348,9 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                 }
         } else {
             // 播放路径：这才是「这首放不了」。仍然要过连续跳歌熔断。
+            // v2.3.0 · C：先给一次**有界**的「可切另一音源」提示，再跳歌。
+            // 提示本身不发网络请求、不重试、不改动跳歌判定 —— 它只解释发生了什么。
+            showSourceFallbackHint(songId)
             if (autoSkipGuard.requestAutoSkip()) {
                     Log.w(
                         "PlayerViewModel",
