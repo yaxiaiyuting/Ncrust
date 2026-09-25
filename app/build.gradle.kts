@@ -102,6 +102,29 @@ android {
         // 验证最大值为 35（dist/Ncrust-v2.1.5-gpl-*.apk）⇒ 本版 36。
         versionCode = 36
         versionName = "2.1.6-gpl"
+        // v2.2.0：QQ 音乐用户歌单/信息**只读**同步（探针先行）。
+        // 新增：QQ 歌单列表 + 详情（分页）+「我喜欢」（dirId=201）+ 收藏歌单；
+        // 本地缓存按 source+ownerId+playlistId 隔离并带 schema 迁移；离线可看、手动刷新；
+        // 账号/歌单切换的世代竞态防护（generation + ownerId + key 三重判据）。
+        // **不做**：任何写操作、跨源合并、最近播放（接口实测不存在）、华为控制中心卡片。
+        //
+        // versionCode 出处：`tools/next-version.sh`（**带 fetch**）三源交叉验证
+        //   ① tag 指向的 build.gradle 最大值 = 36（v2.1.6-gpl / fae47b4）
+        //   ② dist/*.apk 的 aapt2 dump badging 最大值 = 36（Ncrust-v2.1.6-gpl-*.apk）
+        //   ③ 工作区 build.gradle = 36
+        //   ⇒ max = 36 ⇒ 本版 **37**（取 max+1 是硬纪律：撞号会导致无法覆盖安装）。
+        //
+        // ⚠️ 本条**纠正过一次**：首次跑脚本时用了 `--no-fetch`，本地没有 v2.1.6 的 tag，
+        //   脚本报 max=36 只因为读到了未提交的工作区改动，我据此以为 v2.1.6 尚未成立。
+        //   带 fetch 后才发现 v2.1.6 **已经打 tag（fae47b4）并已有 draft release**。
+        //   教训与 v1.9.2 那次一致：**动版本号之前必须先 fetch**，否则三源里的「tag」
+        //   这一源是残缺的。本版因此也把基线从 v2.1.5 改基到 v2.1.6 ——
+        //   否则 v2.2.0(37) 装到 v2.1.6(36) 之上会把 MediaSession 合并等修复**回退**掉。
+        //
+        // 版本线选择依据（为何独立 v2.2.0、不并入 v2.1.6）见
+        // docs/verification/v2.2.0/VERSION-DECISION.md。
+        versionCode = 37
+        versionName = "2.2.0-gpl"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
