@@ -358,6 +358,32 @@ class CrossSourceMatcherTest {
     }
 
     @Test
+    fun `只有确证可播才允许说「已默认选中有版权的音源」（真机抓到的回显虚高）`() {
+        // 设备实测反例：Adele《Strangers By Nature》两源都是「需会员」，
+        // 而单曲页仍写着「已默认选中有版权的音源」⇒ 违反铁律 7。修法是把
+        // 「排序回退」与「能力断言」分开：默认行可以不等于可播放行。
+        assertTrue(CrossSourceMatcher.isConfirmedPlayable(TrackAvailability.PLAYABLE))
+        assertFalse(CrossSourceMatcher.isConfirmedPlayable(TrackAvailability.MEMBER_ONLY))
+        assertFalse(CrossSourceMatcher.isConfirmedPlayable(TrackAvailability.NO_COPYRIGHT))
+        // ★ UNKNOWN 不算确证：探测失败与「能播」是两件事。
+        assertFalse(CrossSourceMatcher.isConfirmedPlayable(TrackAvailability.UNKNOWN))
+    }
+
+    @Test
+    fun `没有任何可播版本时 默认行是排序回退而不是能力断言`() {
+        val versions = listOf(
+            ne to TrackAvailability.MEMBER_ONLY,
+            qq to TrackAvailability.MEMBER_ONLY,
+        )
+        val picked = CrossSourceMatcher.pickPlayable(versions, { it.first }, { it.second })
+        assertNotNull("仍然要挑一行作为默认（用户点了就能试）", picked)
+        assertFalse(
+            "但这一行**不能**被说成「有版权的音源」",
+            CrossSourceMatcher.isConfirmedPlayable(picked!!.second),
+        )
+    }
+
+    @Test
     fun `默认选源 列表为空时返回 null`() {
         assertNull(CrossSourceMatcher.pickPlayable(emptyList<Pair<MusicSource, TrackAvailability>>(),
             { it.first }, { it.second }))

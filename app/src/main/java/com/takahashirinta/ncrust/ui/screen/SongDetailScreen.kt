@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.takahashirinta.ncrust.crosssource.CrossSourceMatcher
 import com.takahashirinta.ncrust.crosssource.AggregatedSong
 import com.takahashirinta.ncrust.crosssource.CatalogAggregator
 import com.takahashirinta.ncrust.crosssource.TrackPage
@@ -290,10 +291,16 @@ private fun SongVersionRow(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
+            // ★ 「已默认选中有版权的音源」是一句**关于事实的断言**，只有在真的探到
+            //   `PLAYABLE` 时才能说。真机验证时抓到过反例：Adele《Strangers By Nature》
+            //   两源都是「需会员」，而这一行仍然显示「已默认选中有版权的音源」——
+            //   铁律 7 明令禁止这种「降级时回显虚高」。两源都没确证可播时，
+            //   如实说「两源都未能确证可播放」。
             if (isPreferred) {
+                val confirmed = CrossSourceMatcher.isConfirmedPlayable(version.availability)
                 MetroText(
-                    strings.source.aggDefaultPlayable,
-                    color = colors.primary,
+                    if (confirmed) strings.source.aggDefaultPlayable else strings.source.aggNoPlayable,
+                    color = if (confirmed) colors.primary else colors.onSurfaceVariant,
                     style = LocalMetroTypography.current.bodySmall,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis

@@ -347,6 +347,24 @@ object CrossSourceMatcher {
         items.sortedWith(compareBy { availabilityOrder(availabilityOf(it)) })
 
     /**
+     * 这一行**是不是真的被确证过能播** —— 决定 UI 允许说哪一句话。
+     *
+     * ## 为什么单拎一个谓词出来（真机验证抓到的一次「回显虚高」）
+     *
+     * 单曲页原本在「默认那一行」上无条件显示「已默认选中有版权的音源」。
+     * API 24 模拟器实测反例：Adele《Strangers By Nature》在**两源都是「需会员」**
+     * （QQ 拿不到 `purl`、网易云 `pl==0`），而那一行照样写着「已默认选中有版权的音源」——
+     * 这违反铁律 7（降级时不得回显虚高）。
+     *
+     * 判据只能看 [TrackAvailability.PLAYABLE]：`UNKNOWN` **不算**确证
+     * （探测失败与「能播」是两件事），`MEMBER_ONLY` / `NO_COPYRIGHT` 更不算。
+     * 所以 `pickPlayable` 挑出来的「默认行」在没有任何 `PLAYABLE` 时会回落到第一条 ——
+     * 那是**排序回退**，不是**能力断言**，两者必须分开表达。
+     */
+    fun isConfirmedPlayable(availability: TrackAvailability): Boolean =
+        availability == TrackAvailability.PLAYABLE
+
+    /**
      * 在双源列表里挑「用户点这一行时该放哪个版本」。
      *
      * 规则：**能播的优先**；都能播或都不能播时，回落到用户当前的口径偏好
