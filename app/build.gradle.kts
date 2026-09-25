@@ -96,8 +96,12 @@ android {
         // 分叉依据从全局字段改成参数；`LyricLoadCoordinator` 把「世代 + 当前曲目 + UI 状态机」
         // 合成一个纯逻辑对象。`SweepTrack` 的扫词算法、`applicationId`、签名、权限全部未动。
         // 根因、A/B 真机证据与未验证边界见 docs/verification/v2.1.5/。
-        versionCode = 35
-        versionName = "2.1.5-gpl"
+        // v2.1.6：媒体承重结构改造 —— 把并行的两条 MediaSession 合并成一条。
+        // 决定性的华为白名单证据（third_app_filter.xml 是硬编码包名表）见
+        // docs/verification/v2.1.6/。versionCode 出处：tools/next-version.sh 三源交叉
+        // 验证最大值为 35（dist/Ncrust-v2.1.5-gpl-*.apk）⇒ 本版 36。
+        versionCode = 36
+        versionName = "2.1.6-gpl"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
