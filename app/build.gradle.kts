@@ -80,9 +80,44 @@ android {
         // 即**账号权益本来就只到 HQ**，服务端是按权益如实下发 —— 真正的缺陷在客户端：
         // 音质角标把「请求档位」当「实际档位」显示，于是 320k 的 mp3 被写成「超清母带」。
         // 本版修掉这个撒谎的角标，并按用户要求让聚合搜索按「用户有哪些平台的会员」排序。
-        versionCode = 34
-        versionName = "2.1.4-gpl"
+        //
+        // **第十三次按脚本定号**：冷启动跑 `tools/next-version.sh`，三源交叉验证的最大值是 34
+        // （最近 tag = 34、dist 里 48 个 APK 的 aapt2 badging 最大值 = 34、
+        // 仓库当前 build.gradle = 34）⇒ 本版取 **35**。
+        //
+        // v2.1.5 是**跨源切歌专项修复版**：用户报障「QQ 音乐歌曲播放完自动切到网易云歌曲，
+        // 音频已变但歌词仍是 QQ 那首」。根因是「当前歌的音源」由三个并列的可变字段表示，
+        // 而**只有显式 playSong 会写它们** —— 无缝预载的自动接续只更新了 songId，
+        // 于是取词仍按上一首的音源路由：拿上一首 QQ 曲目的 songmid 去问 QQ，
+        // 拿回来的是上一首的歌词，而且因为请求确实是当前代而通过了所有闸门。
+        //
+        // 修法：把曲目身份收成一个不可变值 `TrackKey(source, id, sourceId, mediaId)`
+        // （相等性**只看 source+id**），取词入口改成 `fetchLyrics(track)`、
+        // 分叉依据从全局字段改成参数；`LyricLoadCoordinator` 把「世代 + 当前曲目 + UI 状态机」
+        // 合成一个纯逻辑对象。`SweepTrack` 的扫词算法、`applicationId`、签名、权限全部未动。
+        // 根因、A/B 真机证据与未验证边界见 docs/verification/v2.1.5/。
+        versionCode = 35
+        versionName = "2.1.5-gpl"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    /**
+     * v2.1.5：lint 基线。
+     *
+     * **HEAD（v2.1.4）上 `lintDebug` 本来就是红的**：57 个 error，全部是既有问题 ——
+     * `GradleDependency`(42) / `UseTomlInstead`(38) / `NewApi`(14) /
+     * `AndroidGradlePluginVersion`(3) / `UnusedResources`(2) 等依赖版本与 opt-in 类提示，
+     * 与本次改动无关（基线报告留档在 `docs/verification/v2.1.5/lint-report-HEAD-unmodified.txt`）。
+     *
+     * 用基线而不是「关掉 lint」或「批量 suppress」：基线是按 (文件, 问题类型, 消息) 记账的，
+     * **本版新增的文件不在基线里**，所以它们身上任何新问题仍然会让构建失败 ——
+     * 「lint 必须通过」这条验收因此仍然有约束力，而不是被一纸豁免架空。
+     */
+    lint {
+        baseline = file("lint-baseline.xml")
+        // 基线只挡 error；warning 继续可见（不因为加了基线就把它们藏起来）。
+        warningsAsErrors = false
+        abortOnError = true
     }
 
     buildTypes {
