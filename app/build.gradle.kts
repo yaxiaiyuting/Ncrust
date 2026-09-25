@@ -139,8 +139,21 @@ android {
         //   ② dist/*.apk 的 aapt2 dump badging 最大值 = **37**（Ncrust-v2.2.0-gpl-release.apk）
         //   ③ 工作区 build.gradle（本版已收敛成单处赋值）= 37
         //   ⇒ max = 37 ⇒ 本版 **38**（取 max+1 是硬纪律：撞号会导致无法覆盖安装）。
-        versionCode = 38
-        versionName = "2.2.1-gpl"
+        // v2.3.0：库界面信息架构重构 + 本地歌单编辑（只加不减 + tombstone）
+        //          + 搜索/艺人/单曲的音源归属与版权标注 + 官方（原唱/翻唱）标签
+        //          + 横屏歌词 5s 无触碰自动居中。
+        // **不做**（任务书明确排除）：远程歌单写操作、跨源歌单合并、第三个音源、
+        //   华为控制中心卡片。本地歌单只写本地 prefs，不碰任何远程写接口。
+        // 探针：docs/verification/v2.3.0/PROBE-SUMMARY.md（五个问题全部有实测答案）。
+        //
+        // versionCode 出处：`tools/next-version.sh`（**带 fetch**）三源交叉验证
+        //   ① 最近 5 个 tag 指向的 build.gradle 最大值 = 38（v2.2.1-gpl）
+        //   ② dist/*.apk 的 aapt2 dump badging 最大值 = 38（Ncrust-v2.2.1-gpl-*.apk）
+        //   ③ 工作区 build.gradle（上一版收敛成单处赋值）= 38
+        //   ⇒ max = 38 ⇒ 本版 **39**（取 max+1 是硬纪律：撞号会导致无法覆盖安装）。
+        //   实测记录：docs/verification/v2.3.0/verification/version-check.txt
+        versionCode = 39
+        versionName = "2.3.0-gpl"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
