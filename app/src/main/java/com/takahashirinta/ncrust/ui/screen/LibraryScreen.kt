@@ -24,7 +24,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
@@ -334,6 +333,15 @@ fun LibraryScreen(
                 }
 
                 2 -> {
+                    // v2.2.0：QQ 歌单入口**提到 when 之外**。
+                    //
+                    // 原来它作为网格的第一格，只在「网易云歌单已加载且非空」这一支里渲染 ⇒
+                    // 网易云在转圈 / 报错 / 空列表时，用户**根本点不到 QQ 歌单**
+                    // （PCL110 实测：网易云歌单加载卡住 10s+，QQ 入口整个不可见）。
+                    // QQ 音乐是独立音源，它的入口不该被另一个音源的加载状态绑架。
+                    Column(modifier = Modifier.fillMaxSize()) {
+                    QqPlaylistEntryRow(onClick = onOpenQqPlaylists)
+                    Box(modifier = Modifier.weight(1f)) {
                     when {
                         isLoadingPlaylists -> {
                             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -369,11 +377,6 @@ fun LibraryScreen(
                                 contentPadding = PaddingValues(bottom = BottomOverlayInsetDp),
                                 flingBehavior = rememberMetroFlingBehavior()
                             ) {
-                                // v2.2.0：QQ 音乐歌单入口。整行占满（span = 全部列），
-                                // 明确与下面的网易云歌单网格**分区**，不做跨源合并。
-                                item(key = "qq-playlists", span = { GridItemSpan(maxLineSpan) }) {
-                                    QqPlaylistEntryRow(onClick = onOpenQqPlaylists)
-                                }
                                 // B4：「新建歌单」作为网格第一格 —— 建空歌单的唯一入口。
                                 item(key = "create") {
                                     NewPlaylistGridItem(
@@ -400,6 +403,8 @@ fun LibraryScreen(
                             }
                         }
                     }
+                    }   // Box(weight) —— QQ 入口之下的剩余空间
+                    }   // Column —— QQ 入口 + 网易云歌单区
                 }
             } }
         }

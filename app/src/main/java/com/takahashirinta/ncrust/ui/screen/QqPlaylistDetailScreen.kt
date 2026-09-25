@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.takahashirinta.ncrust.network.SongItem
 import com.takahashirinta.ncrust.playlist.PlaylistDegradation
@@ -92,6 +93,9 @@ fun QqPlaylistDetailScreen(
     var degradation by remember(key) { mutableStateOf<PlaylistDegradation?>(null) }
     var failure by remember(key) { mutableStateOf<PlaylistHardFailure?>(null) }
     var hasLoadedOnce by remember(key) { mutableStateOf(false) }
+    // 歌单名以**接口返回的 dirinfo.title 为准**，nav 参数只做首帧占位。
+    // 路由里的名字要过 URL 编解码，中文/空格/斜杠都可能失真；而详情接口每次都会带回真名。
+    var resolvedName by remember(key) { mutableStateOf(playlistName) }
 
     fun load(force: Boolean) {
         if (isLoading) return
@@ -108,6 +112,8 @@ fun QqPlaylistDetailScreen(
                     if (coordinator.isCurrent(load)) {
                         songs = songs + page.songs
                         tracks = tracks + page.tracks
+                        // 服务端给了真名就用真名（首帧之后即可纠正 nav 参数的失真）。
+                        page.name?.takeIf { it.isNotBlank() }?.let { resolvedName = it }
                     }
                 },
             )
@@ -140,7 +146,8 @@ fun QqPlaylistDetailScreen(
     }
 
     DetailScaffold(
-        title = playlistName.ifBlank { strings.qqPlaylistsTitle },
+        // 同 QqPlaylistScreen：title 已弃用且会被返回箭头压住，标题由 header 渲染。
+        title = "",
         onBack = onBack,
         isLoading = isLoading && !hasLoadedOnce,
         hasCachedContent = hasLoadedOnce && songs.isNotEmpty(),
@@ -157,8 +164,21 @@ fun QqPlaylistDetailScreen(
         topEndIcon = Icons.Default.PlayArrow,
         topEndContentDescription = strings.playAllButton,
         header = {
-            Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)) {
-                MetroText(strings.sourceQqMusic, color = colors.primary, style = typography.titleMedium)
+            // 同 QqPlaylistScreen：top = 56dp 让开顶部 scrim（见该文件的说明）。
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp, top = 56.dp, bottom = 8.dp),
+            ) {
+                MetroText(
+                    resolvedName.ifBlank { strings.qqPlaylistsTitle },
+                    color = colors.onSurface,
+                    style = typography.titleLarge,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                Spacer(Modifier.height(2.dp))
+                MetroText(strings.sourceQqMusic, color = colors.primary, style = typography.bodyMedium)
                 Spacer(Modifier.height(4.dp))
                 MetroText(
                     strings.playlistTrackCount(tracks.size.coerceAtLeast(songs.size)),

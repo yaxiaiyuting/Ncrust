@@ -135,7 +135,11 @@ fun QqPlaylistScreen(
     val collected = qqGroup.filter { !it.isOwned }
 
     DetailScaffold(
-        title = strings.qqPlaylistsTitle,
+        // title 传空串：DetailScaffold 的 title 参数**已弃用**（见其 KDoc
+        // 「页面标题由 header 本身承担」），且它画在顶部 scrim 里、会被返回箭头压住
+        // （PCL110 实测截图 10-qq-list-release-fixed.png 里 "QQ 音乐歌单" 被箭头盖住左半）。
+        // 按项目约定：标题由 header 自己渲染。
+        title = "",
         onBack = onBack,
         isLoading = isLoading && !hasLoadedOnce,
         hasCachedContent = hasLoadedOnce && playlists.isNotEmpty(),
@@ -218,8 +222,16 @@ private fun InfoBanner(
 ) {
     val colors = LocalMetroColors.current
     val typography = LocalMetroTypography.current
-    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)) {
-        MetroText(sourceLabel, color = colors.primary, style = typography.titleMedium)
+    // top = 56dp 是为了让开 DetailScaffold 的顶部 scrim（返回箭头 + 标题）。
+    // 与 DetailHeader 的既有约定一致；用 8dp 会让第一个分组标题压在返回箭头上
+    // （PCL110 实测截图 04-qq-list.png 复现过）。
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 16.dp, end = 16.dp, top = 56.dp, bottom = 8.dp),
+    ) {
+        // 页面标题由 header 承担（项目约定，见 DetailScaffold 的 KDoc）。
+        MetroText(sourceLabel, color = colors.onSurface, style = typography.titleLarge)
         if (degradation != null) {
             Spacer(Modifier.height(6.dp))
             val text = when (degradation) {
