@@ -2817,3 +2817,68 @@ MediaSession 合并等修复**静默回退** —— 5 个功能提交因此 `git
 两个真实 QQ 账号互切（两台设备同一账号）、S6(API 24) 界面渲染（设备掉线）、
 release APK 在 API 24 安装（S6 原装 debug 签名，卸载会清登录态）、收藏歌单非空列表（收藏数为 0）。
 详见 `docs/verification/v2.2.0/VERIFICATION.md`。
+
+## v2.2.1 新增（本 fork · P0 级联故障：QQ 循环切音质 / 自动切歌 / 音频焦点被抢）
+
+> **发布说明**：`dist/RELEASE-NOTES-v2.2.1-gpl.md`。
+> **探针、根因链、版本回溯、真机 A/B**：`docs/verification/v2.2.1/p0-quality-loop/`。
+
+### 五条新规则（**本版起是硬约束，写在最前面**）
+
+1. **失败处理必须有界。** 任何重试 / 跳转 / 循环路径都要有熔断，禁止无限循环。
+   判定抽成纯逻辑（`player/PlaybackGuard.kt`）并加单测 —— 「有界」这件事必须能被测出来，
+   不能靠读代码相信它。本版的三道闸：单曲自动重试 ≤ **3** 次、连续自动跳歌 ≤ **5** 次、
+   两次自动重取间隔 ≥ **10s**。
+2. **音质切换失败 ≠ 播放失败，不得触发跳歌。** 判据是纯函数
+   `maySkipOnUrlFailure(origin)`：音质来源（`QUALITY_SWITCH`/`QUALITY_RETRY`）取不到链时
+   只能「回退到最后成功档位」或「暂停 + 错误态」，**永远不跳歌**。
+3. **服务端标签不可信。** 降级时不得用 `maxOf(标签, 实测)` 回显虚高（v2.1.4 的教训），
+   反过来也成立：拿不到实测参数时**不许**拿标签当证据（`levelFromFile = false` 一律沉默）。
+   只有「由真正取回的文件反推出来的档位」（QQ 前缀 / 离线 key）才允许断言降级。
+4. **版本决策必须 fetch 后做。** `--no-fetch` 的三源交叉校验里「tag」这一源是残缺的
+   （v2.2.0 已经因此差点误判 v2.1.6 尚未成立）。禁止用 `--no-fetch` 判断版本是否成立。
+5. **release-only 问题修复后必须补回归单测。** 本版的 6→1 声道崩溃只在 release 包里
+   表现为 `ERROR_CODE_UNSPECIFIED`（`cause` 才带真相），必须有用例钉住
+   「旧写法必然抛 / 新写法不抛」这条事实，否则下一次「顺手优化」就会把它带回来。
+
+### 根因链（一句话版）
+
+可视化 tee `WaveformAudioBufferSink(…, 1, …)` 把输出声明成**单声道** → QQ「臻品音质」档
+（统一档位表的 `dolby`）回的是 **6 声道 FLAC**（`Q001…flac`，解析 STREAMINFO 得出）→
+media3 的 `ChannelMixingMatrix` 只实现 `N→N / 1→2 / 2→1`，**6→1 抛
+`UnsupportedOperationException`** → AudioSink 进入不可恢复状态（`Disable failed` / `Reset failed`）
+→ **同一 player 实例之后每一档都失败**（连立体声 Hi-Res 与 128k mp3 都报同一个错）
+→ 无上限降档走完 8 档（每次 `play()` = 一次 `requestAudioFocus`）→ 跳歌 → 下一首继续。
+
+真机 35 秒内可量化的规模：**18 次播放错误、16 次降档、1 次跳歌、72 次 6→1 异常**
+（`logcat/A-before-v2.2.0-cascade.txt`）。
+
+### 五个设计教训（下一个改播放器的人先读这个）
+
+1. **「平台假设」必须 A/B 对照，注释里的推断不算证据。** 旧代码的注释写着
+   「media3 内部走默认的 ChannelMixingMatrix」——**那是一句没有验证过的假设**，
+   而 `javap` 三十秒就能证伪。凡是「把某个参数交给第三方库去处理」的地方，
+   都要问一句：它对这个取值真的实现了分支吗？
+2. **错误分类要看 `cause`，不能只看 `errorCode`。** 那次最致命的一档是
+   `ERROR_CODE_UNSPECIFIED`（名字本身就在说「我不知道」），真相只在 cause 里。
+   `classifyFailure` 因此认 cause 的类名/消息。
+3. **`putString(key, null)` 是删除键，不是写入 null。** `PlaybackStateManager.saveState`
+   的 sourceKey/sourceId/mediaId 默认值 null 让「少传三个参数」变成**静默抹掉身份**。
+   本版给 `PlaybackService` 补上了这三个参数，并在 `MainScreen` 恢复队列后再补一次
+   （两个来源：落盘的单曲状态 + 队列里的 SongItem，后者才有 songmid / media_mid）。
+4. **`actualLevel` 不能当「下一次请求」的基准。** 凡是「实际档位」可能不随请求变化
+   （离线兜底、服务端封顶、缓存命中）的地方，用它算下一档都可能形成**固定点**。
+   取 `min(请求, 实际)` 再严格降一档 + 记住试过哪些，才是有界的。
+5. **「确实播出声了」是唯一的成功判据。** 自动跳歌计数的清零条件如果写成「起播成功」，
+   那么「起播即失败」的曲目会把计数冲掉，熔断永远不生效 —— 实测那轮级联正是这样
+   绕过所有旧防线的。判据必须是**进度前进 ≥3s**。
+
+### 音频焦点
+
+- 焦点申请由 media3 在 `playWhenReady = true` 时发起，应用侧**不得**再插第二个
+  `requestAudioFocus`（那本身就是焦点争抢）。
+- 应用能控的是**重试次数**与**是否释放**：失败即 `player.stop()`
+  （media3 唯一会 reset AudioSink + `abandonAudioFocus` 的入口），
+  且 10s 内不重复自动重取。
+- 判定「焦点有没有被反复抢」的现场手段：`adb shell dumpsys audio` 的
+  `Audio Focus stack entries` + `dumpsys media_session` 的 `state=` 变化次数。
