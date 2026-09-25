@@ -204,8 +204,6 @@ val zhCN = Strings(
     addToLibraryButton = "加入库",
 
     actionAddToLibrary = "加入库",
-    actionInsertNext = "插播",
-    actionAppendToQueue = "最后播放",
     actionGoToArtist = "转到歌手",
     actionGoToAlbum = "转到专辑",
     batteryTitle = "后台运行",
@@ -406,5 +404,15 @@ val zhCN = Strings(
             choose = "选择本地歌单",
             adopt = "转存为本地歌单",
             adopted = { name -> "已转存「$name」，可在库里编辑" },
+        ),
+        queue = QueueStrings(
+            actionInsertNext = "插播",
+            actionAppendToQueue = "最后播放",
+            actionAddToNext = "添加到下一首播放",
+            queueAddToNextDone = "已添加到下一首播放",
+            queueAddToNextMoved = "已移到下一首",
+            queueAddToNextAlreadyNext = "已在下一首",
+            queueAddToNextCurrent = "这首歌正在播放",
+            queueAddToNextStarted = "队列为空，已直接播放",
         ),
 )

@@ -8,6 +8,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.PlayArrow
+// v2.5.0 · D：「添加到下一首播放」。与「播放」用不同图标 —— 两者语义不同
+// （前者不打断当前播放，只排队），同图标会让人以为点哪个都一样。
+import androidx.compose.material.icons.filled.QueuePlayNext
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,6 +31,8 @@ import com.takahashirinta.ncrust.source.songRefOf
 import com.takahashirinta.ncrust.ui.ResponsiveContent
 import com.takahashirinta.ncrust.ui.components.SongTags
 import com.takahashirinta.ncrust.ui.components.TopScrimIconButton
+// v2.5.0 · A/D：按压回弹（AppMotion.pressScale，零重组）。
+import com.takahashirinta.ncrust.ui.components.appPressScale
 import com.takahashirinta.ncrust.ui.i18n.LocalStrings
 import com.takahashirinta.ncrust.ui.viewmodel.SongViewModel
 import io.github.takahashirinta.kanesumi.core.theme.LocalMetroColors
@@ -65,7 +70,15 @@ fun SongDetailScreen(
     sourceKey: String,
     songId: String,
     onBack: () -> Unit,
-    onPlay: (SongItem) -> Unit = {}
+    onPlay: (SongItem) -> Unit = {},
+    /**
+     * v2.5.0 · D：「添加到下一首播放」。把**那一行真实的 `SongItem`** 排到当前播放队列的
+     * 下一首位置，**不打断正在播的那首歌**。
+     *
+     * 默认空实现：本页有三个调用点（两处路由 + 预览），漏传时退化成"点了没反应"，
+     * 而不是编译不过 —— 与 [onPlay] 的既有约定一致。
+     */
+    onAddToNext: (SongItem) -> Unit = {}
 ) {
     val strings = LocalStrings.current
     val source = remember(sourceKey) { MusicSource.fromKey(sourceKey) }
@@ -158,7 +171,8 @@ fun SongDetailScreen(
                                 SongVersionRow(
                                     version = version,
                                     isPreferred = version.key == trackPage.preferredKey,
-                                    onPlay = { onPlay(version.song) }
+                                    onPlay = { onPlay(version.song) },
+                                    onAddToNext = { onAddToNext(version.song) }
                                 )
                             }
                             // 「另一源没有可校验的对应条目」是**结论**，只在真的搜过时才下 ——
@@ -258,7 +272,8 @@ private fun routeAnchorSong(source: MusicSource, idFromRoute: Long): SongItem {
 private fun SongVersionRow(
     version: AggregatedSong,
     isPreferred: Boolean,
-    onPlay: () -> Unit
+    onPlay: () -> Unit,
+    onAddToNext: () -> Unit
 ) {
     val strings = LocalStrings.current
     val colors = LocalMetroColors.current
@@ -307,10 +322,31 @@ private fun SongVersionRow(
                 )
             }
         }
+        // v2.5.0 · D：「添加到下一首播放」。**放在播放键左侧**：播放仍是这一行的主操作
+        // （用户点一行最可能的意图是听它），新按钮是次要动作，不该抢占主操作的手指落点。
+        //
+        // 触摸契约：与右侧播放键同规格 —— 视觉 24dp、命中区 48dp
+        // （见 `PlayerCard` 那条「小控件命中区只增不减」）。两个 48dp 命中盒相邻，
+        // 中间不额外留间隙：留了就会出现"点在两键之间毫无反应"的死区。
+        Box(
+            modifier = Modifier
+                .size(48.dp)
+                .appPressScale()
+                .clickable { onAddToNext() },
+            contentAlignment = Alignment.Center
+        ) {
+            MetroIcon(
+                imageVector = Icons.Default.QueuePlayNext,
+                contentDescription = strings.queue.actionAddToNext,
+                tint = colors.onSurfaceVariant,
+                sizeDp = 24.dp
+            )
+        }
         // 触摸契约：视觉 24dp，命中区 48dp（见 `PlayerCard` 那条「小控件命中区只增不减」）。
         Box(
             modifier = Modifier
                 .size(48.dp)
+                .appPressScale()
                 .clickable { onPlay() },
             contentAlignment = Alignment.Center
         ) {

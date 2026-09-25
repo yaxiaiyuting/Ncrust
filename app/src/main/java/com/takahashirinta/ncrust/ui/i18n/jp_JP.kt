@@ -204,8 +204,6 @@ val jpJP = Strings(
     addToLibraryButton = "ライブラリに追加",
 
     actionAddToLibrary = "ライブラリに追加",
-    actionInsertNext = "次に再生",
-    actionAppendToQueue = "キューの最後に追加",
     actionGoToArtist = "アーティストへ",
     actionGoToAlbum = "アルバムへ",
     batteryTitle = "バックグラウンド実行",
@@ -406,5 +404,15 @@ val jpJP = Strings(
             choose = "ローカルプレイリストを選択",
             adopt = "ローカルプレイリストに取り込む",
             adopted = { name -> "「$name」を取り込みました。ライブラリで編集できます" },
+        ),
+        queue = QueueStrings(
+            actionInsertNext = "次に再生",
+            actionAppendToQueue = "キューの最後に追加",
+            actionAddToNext = "次の再生に追加",
+            queueAddToNextDone = "次の再生に追加しました",
+            queueAddToNextMoved = "次の再生に移動しました",
+            queueAddToNextAlreadyNext = "すでに次の再生です",
+            queueAddToNextCurrent = "この曲は再生中です",
+            queueAddToNextStarted = "キューが空のため再生しました",
         ),
 )

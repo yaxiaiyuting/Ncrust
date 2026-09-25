@@ -204,8 +204,6 @@ val en = Strings(
     addToLibraryButton = "Add to Library",
 
     actionAddToLibrary = "Add to Library",
-    actionInsertNext = "Play Next",
-    actionAppendToQueue = "Add to Queue",
     actionGoToArtist = "Go to artist",
     actionGoToAlbum = "Go to album",
     batteryTitle = "Background activity",
@@ -405,5 +403,15 @@ val en = Strings(
             choose = "Choose a local playlist",
             adopt = "Save as local playlist",
             adopted = { name -> "Saved \"$name\" — you can edit it in your library" },
+        ),
+        queue = QueueStrings(
+            actionInsertNext = "Play Next",
+            actionAppendToQueue = "Add to Queue",
+            actionAddToNext = "Add to next",
+            queueAddToNextDone = "Added to play next",
+            queueAddToNextMoved = "Moved to play next",
+            queueAddToNextAlreadyNext = "Already plays next",
+            queueAddToNextCurrent = "This song is playing",
+            queueAddToNextStarted = "Queue was empty, playing now",
         ),
 )

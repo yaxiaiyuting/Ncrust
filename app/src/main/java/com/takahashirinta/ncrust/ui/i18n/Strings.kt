@@ -181,6 +181,20 @@ data class Strings(
      * 文案放一起会让「移除」这类词在两处指不同的东西。
      */
     val localPlaylist: LocalPlaylistStrings,
+    /**
+     * v2.5.0 · D：**「添加到下一首播放」文案组**（[QueueStrings]）。
+     *
+     * **为什么必须拆组**：`Strings` 的构造参数在 245 个时**一个空位都没有** ——
+     * `1 (this) + 245 + 8 (默认值 mask) + 1 (DefaultConstructorMarker) = 255`，正好用满；
+     * 再加**一个**参数就会在类加载期抛
+     * `ClassFormatError: Too many arguments in method signature`（编译照过，真机启动即崩）。
+     *
+     * 本组同时**吸收**了原先直接挂在构造参数上的 `actionInsertNext` / `actionAppendToQueue`
+     * （语义上本来就是「队列动作」，与本版新增的 `actionAddToNext` 同一个面）：
+     * **腾出 2 个位置、花掉 1 个，净余 1 个** ⇒ 构造参数由 245 降到 **244**。
+     * 类体里的转发属性保住了全部既有调用点，一个字都不用改。
+     */
+    val queue: QueueStrings,
 
     // v1.5.1 · C：无网络时的首页降级空态（标题 / 提示）。
     //
@@ -236,9 +250,12 @@ data class Strings(
     val addToLibraryButton: String,
 
     // Song / queue actions
+    //
+    // ★ v2.5.0 · D：原来的 `actionInsertNext` / `actionAppendToQueue` 两条**搬进了 [QueueStrings]**
+    //   （它们和本版新增的 `actionAddToNext` 是同一个功能面）。搬家的原因与 v2.3.0 那两条相同：
+    //   构造参数已经是 245 = 用满 255 槽，必须先腾位置。调用点由类体里的转发属性原样保住，
+    //   细节见 [Strings.queue] 的 KDoc。
     val actionAddToLibrary: String,
-    val actionInsertNext: String,
-    val actionAppendToQueue: String,
     val actionGoToArtist: String,
     val actionGoToAlbum: String,
 
@@ -545,6 +562,16 @@ data class Strings(
     val localPlaylistChoose: String get() = localPlaylist.choose
     val localPlaylistAdopt: String get() = localPlaylist.adopt
     val localPlaylistAdopted: (String) -> String get() = localPlaylist.adopted
+
+    // ---------- v2.5.0 · D：队列动作那一组的转发属性 ----------
+    // 前两条随字段一起搬进 [queue] 组（腾出构造参数位置，见 [Strings.queue] 的 KDoc），
+    // 调用点（各 Screen 的歌曲长按菜单）读的仍是 `strings.actionInsertNext` / `strings.actionAppendToQueue`，
+    // 一个字都不用改 —— 与 v2.3.0 的 [networkOfflineTitle] 同一套做法。
+    // 第三条是本版新文案；它同样走转发属性，是为了让「插播 / 添加到下一首播放 / 最后播放」
+    // 这三个**同一个菜单里**的动作在调用点长得一样，不会有人漏掉 queue. 前缀而写错分组。
+    val actionInsertNext: String get() = queue.actionInsertNext
+    val actionAppendToQueue: String get() = queue.actionAppendToQueue
+    val actionAddToNext: String get() = queue.actionAddToNext
 }
 
 /** 字节数格式化为人类可读的 B/KB/MB/GB，供 cacheSizeLabel 复用。 */
@@ -891,4 +918,48 @@ data class LocalPlaylistStrings(
     val adopt: String,
     /** 转存成功的反馈，参数是歌单名。 */
     val adopted: (String) -> String,
+)
+
+/**
+ * v2.5.0 · D：「添加到下一首播放」文案组。
+ *
+ * ## 为什么又是一个嵌套组
+ *
+ * dex 的 `invoke-*` 指令寄存器是 8 位 ⇒ **单个方法最多 255 个参数寄存器**，而 [Strings] 是
+ * 「一个 data class 装全部 UI 文案」的结构：构造参数在 **245** 个时就已经
+ * `1 (this) + 245 + 8 (默认值 mask) + 1 (DefaultConstructorMarker) = 255` 用满，
+ * 再加一个参数会在**类加载期**抛 `ClassFormatError: Too many arguments in method signature`
+ * （编译照过，真机启动即崩 —— v2.0.0 · HF1 与 v2.3.0 各踩过一次）。
+ *
+ * 本组进场时把 `actionInsertNext` / `actionAppendToQueue` 两条**既有**文案从主构造器搬了进来，
+ * **腾 2 花 1**，净腾出 1 个空位（245 → 244）。算术与回归防线见 [Strings.queue] 的 KDoc
+ * 与 `StringsConstructorBudgetTest`。
+ *
+ * ## [actionAddToNext] 与 [actionInsertNext] 是**两个不同的用户动作**，文案不许写成同一句
+ *
+ * - [actionInsertNext]（插播）= **立刻打断当前播放**，把这首歌插到队首并起播；
+ * - [actionAddToNext]（添加到下一首播放）= **不打断当前播放**，只把它排到当前歌之后，
+ *   等这一首自然放完再放。
+ *
+ * 两者在队列上的落点相同（当前歌之后），但用户立刻听到的结果不同（一个马上响、一个不响），
+ * 所以同一个菜单里必须是两句不同的话 —— 写成同一句，用户会以为自己点错了入口。
+ * `StringsConstructorBudgetTest` 里有一条用例专门钉住 `actionAddToNext != actionInsertNext`。
+ */
+data class QueueStrings(
+    /** 「插播」：**立刻**把这首歌插到队首并播放（既有语义，从 [Strings] 搬来，措辞未改）。 */
+    val actionInsertNext: String,
+    /** 「最后播放」：追加到队尾（既有语义，从 [Strings] 搬来，措辞未改）。 */
+    val actionAppendToQueue: String,
+    /** 「添加到下一首播放」：**不打断当前播放**，只把它排到当前歌之后。 */
+    val actionAddToNext: String,
+    /** 操作成功提示（插到当前歌之后；原本不在队列里）。 */
+    val queueAddToNextDone: String,
+    /** 这首歌原本已在队列别处、被**移动**过来的提示（不是新增一份）。 */
+    val queueAddToNextMoved: String,
+    /** 它已经在下一首位置上的**幂等**提示（队列一个字节没动）。 */
+    val queueAddToNextAlreadyNext: String,
+    /** 它就是正在播放的那一首时的提示（幂等忽略）。 */
+    val queueAddToNextCurrent: String,
+    /** 队列为空、因此直接起播的提示。 */
+    val queueAddToNextStarted: String,
 )

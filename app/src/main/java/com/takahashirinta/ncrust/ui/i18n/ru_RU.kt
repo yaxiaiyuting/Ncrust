@@ -204,8 +204,6 @@ val ruRU = Strings(
     addToLibraryButton = "Добавить в библиотеку",
 
     actionAddToLibrary = "В библиотеку",
-    actionInsertNext = "Следующим",
-    actionAppendToQueue = "В конец очереди",
     actionGoToArtist = "К исполнителю",
     actionGoToAlbum = "К альбому",
     batteryTitle = "Фоновая работа",
@@ -405,5 +403,15 @@ val ruRU = Strings(
             choose = "Выбрать локальный плейлист",
             adopt = "Сохранить как локальный плейлист",
             adopted = { name -> "«$name» сохранён — его можно редактировать в библиотеке" },
+        ),
+        queue = QueueStrings(
+            actionInsertNext = "Следующим",
+            actionAppendToQueue = "В конец очереди",
+            actionAddToNext = "Играть следующим",
+            queueAddToNextDone = "Добавлено следующим",
+            queueAddToNextMoved = "Перенесено к следующему",
+            queueAddToNextAlreadyNext = "Уже играет следующим",
+            queueAddToNextCurrent = "Эта песня сейчас играет",
+            queueAddToNextStarted = "Очередь пуста, играет сейчас",
         ),
 )

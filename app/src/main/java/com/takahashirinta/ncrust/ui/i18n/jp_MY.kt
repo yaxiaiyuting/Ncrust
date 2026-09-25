@@ -204,8 +204,6 @@ val jpMY = Strings(
     addToLibraryButton = "庫 入",
 
     actionAddToLibrary = "庫 入",
-    actionInsertNext = "次 挿",
-    actionAppendToQueue = "最後 加",
     actionGoToArtist = "アーティストへ",
     actionGoToAlbum = "アルバムへ",
     batteryTitle = "背景 行",
@@ -405,5 +403,15 @@ val jpMY = Strings(
             choose = "本地 曲目 を 選",
             adopt = "本地 曲目 に 取込",
             adopted = { name -> "「$name」 取込 了、庫 に て 編集 可" },
+        ),
+        queue = QueueStrings(
+            actionInsertNext = "次 挿",
+            actionAppendToQueue = "最後 加",
+            actionAddToNext = "次 加",
+            queueAddToNextDone = "次 加 了",
+            queueAddToNextMoved = "次 移",
+            queueAddToNextAlreadyNext = "已 次 在",
+            queueAddToNextCurrent = "此曲 現奏",
+            queueAddToNextStarted = "列 空 即奏",
         ),
 )

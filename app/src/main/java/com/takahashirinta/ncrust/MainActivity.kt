@@ -41,6 +41,10 @@ import androidx.compose.material.icons.filled.LibraryMusic
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PlaylistAdd
 import androidx.compose.material.icons.filled.PlaylistPlay
+// v2.5.0 · D：「添加到下一首播放」。**不能**复用 PlaylistAdd / PlaylistPlay ——
+// 那两个图标在本菜单里已经分别是「加入歌单」与「插播」，同一个菜单里两个不同动作
+// 用同一个图标是实打实的误导。QueuePlayNext 的语义（排队并下一个播）正好。
+import androidx.compose.material.icons.filled.QueuePlayNext
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.ui.viewinterop.AndroidView
@@ -99,6 +103,13 @@ import com.takahashirinta.ncrust.ui.components.PlaylistCreateOutcome
 import com.takahashirinta.ncrust.ui.components.SongMenuAction
 import com.takahashirinta.ncrust.ui.components.SongMenuSheet
 import com.takahashirinta.ncrust.ui.components.TopScrimIconButton
+// v2.5.0 · D：应用级 Snackbar（本仓库此前没有任何 Snackbar 设施）。
+import com.takahashirinta.ncrust.ui.components.AppSnackbarHost
+import com.takahashirinta.ncrust.ui.components.rememberAppSnackbarState
+// v2.5.0 · D：「添加到下一首播放」的队列边界判定（纯逻辑 + 单测）。
+import com.takahashirinta.ncrust.player.QueueInsert
+// v2.5.0 · D：Snackbar 要浮在底部导航/mini bar 之上，位置复用既有的叠层留白常量。
+import com.takahashirinta.ncrust.ui.BottomOverlayInsetDp
 import com.takahashirinta.ncrust.ui.navigation.MainNavGraph
 import com.takahashirinta.ncrust.ui.navigation.NavRoutes
 import com.takahashirinta.ncrust.ui.player.PlayerCardOverlay
@@ -267,6 +278,8 @@ class MainActivity : ComponentActivity() {
                 mutableStateOf(getSavedAccentSource(this@MainActivity))
             }
             val coverAccentRgb by playerViewModel.coverAccentRgb.collectAsState()
+            // v2.5.0 · A（色调）：封面取色的多角色调色板（深/浅两套，后台已算好）。
+            val coverTheme by playerViewModel.coverTheme.collectAsState()
             // B2-D：配置变化或手动刷新都会让 tick +1，触发重新读取系统色。
             val accentTick = systemAccentTick.intValue
             val composeContext = androidx.compose.ui.platform.LocalContext.current
@@ -286,6 +299,14 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
+            // v2.5.0 · A（色调）：只有「跟随封面」这一档才把调色板交给主题。
+            // 预设档与系统档传 null ⇒ NcrustTheme 用固定的、经过 WCAG 校验的默认色板，
+            // 行为与本版之前**逐字节一致**（所以这条改动对没开"跟随封面"的用户是零影响）。
+            //
+            // `forMode(isDark)` 是一次字段选择，不是计算 —— 两套变体在 PlaybackService
+            // 的后台线程上就算完了，这里只是挑一套（所以切深浅色立即正确，不用等换歌）。
+            val coverPalette = if (accentSource == AccentSource.COVER) coverTheme?.forMode(isDark) else null
+
             val baseViewConfig = LocalViewConfiguration.current
             val metroConfig = remember(baseViewConfig) { metroViewConfiguration(baseViewConfig) }
             CompositionLocalProvider(
@@ -294,7 +315,11 @@ class MainActivity : ComponentActivity() {
                 // 消除"神经质"输入印象。配合 MetroFlingBehavior 覆盖 fling 阶段。
                 LocalViewConfiguration provides metroConfig,
             ) {
-                NcrustTheme(primaryColor = accentColor, isDark = isDark) {
+                NcrustTheme(
+                    primaryColor = accentColor,
+                    isDark = isDark,
+                    coverPalette = coverPalette,
+                ) {
                     // Kanesumi Metro* 组件读 LocalMetroColors / LocalMetroTypography,
                     // 并通过 MetroTheme 注入的 LocalIndication -> MetroIndication 拿到直角
                     // 闪切反馈。这里从 NcrustColors 派生 MetroColors,让两套主题源共享同一
@@ -891,6 +916,14 @@ fun MainScreen(
 
     var menuSong by remember { mutableStateOf<SongItem?>(null) }
     var menuSongActions by remember { mutableStateOf<List<SongMenuAction>>(emptyList()) }
+
+    // v2.5.0 · D：应用级 Snackbar。本仓库此前没有 Snackbar 设施，反馈一律走 Toast。
+    // 「添加到下一首播放」有四种结果（插入 / 搬移 / 已在下一首 / 直接起播），
+    // 用 Toast 连弹会互相覆盖，所以这里是**唯一**用 Snackbar 的地方。
+    // 宿主是非交互浮层（见 AppSnackbarHost 的 KDoc：它刻意不挂任何指针输入，
+    // 因此不会在本应用那套「屏幕底部死带」问题上新增一条）。
+    val snackbar = rememberAppSnackbarState()
+
     // v1.3.0 · B2：保存为歌单。playlistSnapshot 是点按钮那一刻的队列快照。
     var showCreatePlaylist by remember { mutableStateOf(false) }
     var playlistSnapshot by remember { mutableStateOf<List<SongItem>>(emptyList()) }
@@ -1463,22 +1496,128 @@ fun MainScreen(
         expandCard()
     }
 
+    /**
+     * v2.5.0 · D：**「添加到下一首播放」**（铁律 16）。
+     *
+     * 与 [playSongItem]（立刻打断并播放）和 [appendToQueue]（排到队尾）都不一样的第三件事：
+     * **不打断当前播放**，只把这首歌排到当前歌之后。
+     *
+     * ## 与 v2.5.0 之前的关系
+     *
+     * 这个函数在 v2.5.0 之前就存在，并且已经做对了最容易被写错的一步
+     * （去重后**重新定位** `currentQueueIndex`）。本版把判定搬进 [QueueInsert]（可单测），
+     * 并修掉三个真实缺陷：
+     *
+     *  1. **队列为空时只改队列、不起播** —— 用户点「添加到下一首播放」在空队列下
+     *     完全没有反应（`currentQueueIndex` 被设成 0 但没有 `playFromQueue`）。
+     *     现在走 [QueueInsert.Outcome.START_FRESH] 分支真的起播；
+     *  2. **随机模式下功能静默失效** —— 只改线性队列、不改编排序列，
+     *     下一首仍然是原来那首随机歌。现在用 [QueueInsert.shuffleAfterInsert] 修正；
+     *  3. **不重新同步待播槽位** —— 这是最隐蔽的一条：ExoPlayer 的播放列表里
+     *     已经预载了旧的「下一首」，插入新歌之后它**仍然会播那一首**，
+     *     而队列面板显示的是新插入的歌。这就是 v1.5.2「串台」的形状。
+     *     现在插入后立刻重新预载新的下一首，让 `PreloadSlot.decide` 走 REPLACE。
+     *
+     * 另外把「它就是当前歌」从**静默 return** 改成**有反馈的幂等**
+     * （原先用户点下去什么都不会发生，看起来像按钮坏了）。
+     */
     fun insertNext(song: SongItem) {
-        // 关键不变量：playbackQueue[currentQueueIndex] 必须始终等于当前正在播的歌。
-        // 直接 .filter 会把当前歌之前的重复项也删掉，让 currentQueueIndex 指错下一项——
-        // 于是"下一首"变成当前歌的后一首之后的项。所以先记录当前歌 id，过滤后重新定位。
-        val currentId = playbackQueue.getOrNull(currentQueueIndex)?.id
-        if (song.id == currentId) return  // 已在播的曲无需"下一首"到自己
-        val filtered = playbackQueue.filter { it.id != song.id }.toMutableList()
-        val newCurrentIndex = if (currentId != null)
-            filtered.indexOfFirst { it.id == currentId }.coerceAtLeast(0)
-        else -1
-        val insertPos = (newCurrentIndex + 1).coerceIn(0, filtered.size)
-        filtered.add(insertPos, song)
-        playbackQueue = filtered
-        currentQueueIndex = if (newCurrentIndex < 0) 0 else newCurrentIndex
-        if (playMode == QueueModes.SHUFFLE) generateShuffledIndices()
+        val oldIds = playbackQueue.map { it.id }
+        val plan = QueueInsert.plan(oldIds, currentQueueIndex, song.id)
+
+        // ── 幂等路径：队列一个字节都不动，只给反馈 ──────────────────────────────
+        if (!plan.queueChanged) {
+            when (plan.outcome) {
+                QueueInsert.Outcome.ALREADY_CURRENT ->
+                    snackbar.show(mainStrings.queue.queueAddToNextCurrent)
+                QueueInsert.Outcome.ALREADY_NEXT ->
+                    snackbar.show(mainStrings.queue.queueAddToNextAlreadyNext)
+                // 其余取值在 queueChanged == false 时不可能出现；真出现就静默，
+                // 不要为了「分支齐全」而编一句没有意义的提示。
+                else -> Unit
+            }
+            return
+        }
+
+        // ── 按 id 重建队列 ────────────────────────────────────────────────────
+        // 用显式循环而不是 mapNotNull：`plan.ids` 只可能由「旧队列的 id」+「song.id」
+        // 组成，任何一项装配不出来都说明输入不一致 —— 此时**放弃这次变更**
+        // 比让队列静默缺一首安全（队列缺项 = 某首歌再也播不到）。
+        val byId = playbackQueue.associateBy { it.id }
+        val rebuilt = ArrayList<SongItem>(plan.ids.size)
+        for (id in plan.ids) {
+            val item = byId[id] ?: (song.takeIf { it.id == id })
+            if (item == null) return
+            rebuilt.add(item)
+        }
+
+        playbackQueue = rebuilt
+        currentQueueIndex = plan.currentIndex
+
+        // ── 乱序模式：把插入项接到当前歌的播放顺序之后 ─────────────────────────
+        if (playMode == QueueModes.SHUFFLE) {
+            val fixed = QueueInsert.shuffleAfterInsert(
+                oldIds = oldIds,
+                newIds = plan.ids,
+                shuffled = shuffledIndices,
+                newCurrentIndex = plan.currentIndex,
+                insertPos = plan.insertPos,
+            )
+            if (fixed != null) {
+                shuffledIndices = fixed
+                // 契约：shuffledIndices[shuffledPosition] 恒等于正在播的那一首。
+                shuffledPosition = fixed.indexOf(plan.currentIndex).coerceAtLeast(0)
+            } else {
+                // 修正不了就重洗一轮 —— 宁可随机性变一次，也不给出一个错的播放顺序。
+                generateShuffledIndices()
+            }
+        }
+
         PlaybackStateManager.saveQueue(context, playbackQueue, currentQueueIndex)
+
+        // ── 空队列：真的起播（缺陷 1） ────────────────────────────────────────
+        // playFromQueue 自己会预载下一首，所以这条分支直接返回，不走下面的重同步。
+        if (plan.shouldStartPlayback) {
+            snackbar.show(mainStrings.queue.queueAddToNextStarted)
+            playFromQueue(0)
+            expandCard()
+            return
+        }
+
+        // ── 待播槽位重同步（缺陷 3） ─────────────────────────────────────────
+        // 单曲循环模式跳过：它的无缝实现是预载**当前歌自己**，
+        // 改成预载下一首等于静默把单曲循环变成顺序播放（见 QueueInsert 的 KDoc）。
+        if (QueueInsert.shouldPreloadAfterInsert(playMode)) {
+            val nextIdx = QueueInsert.nextIndexAfterInsert(
+                playMode = playMode,
+                size = playbackQueue.size,
+                newCurrentIndex = currentQueueIndex,
+                shuffledIndices = shuffledIndices,
+            )
+            val nextSong = playbackQueue.getOrNull(nextIdx)
+            if (nextSong != null) {
+                val (nTitle, nArtist, nArtwork) = songParams(nextSong)
+                playerViewModel.preloadNextSong(
+                    nextSong.id, nTitle, nArtist, nArtwork,
+                    // 不 allowCurrent：这里预载的**必须**是别人；若插入的恰好等于当前歌，
+                    // QueueInsert 已经在上面按 ALREADY_CURRENT 幂等返回了。
+                    allowCurrent = false,
+                    sourceKey = nextSong.source,
+                    sourceId = nextSong.sourceId,
+                    mediaId = nextSong.mediaId,
+                )
+            }
+        }
+
+        // ── 反馈 ──────────────────────────────────────────────────────────────
+        // 「搬移」与「新增」对用户是两件事：后者才是他以为发生的事，
+        // 前者意味着队列里本来就有这首歌（用户可能忘了）。
+        snackbar.show(
+            if (plan.outcome == QueueInsert.Outcome.MOVED_TO_NEXT)
+                mainStrings.queue.queueAddToNextMoved
+            else
+                mainStrings.queue.queueAddToNextDone
+        )
     }
 
     fun appendToQueue(song: SongItem) {
@@ -2223,6 +2362,26 @@ fun MainScreen(
             return result
         }
 
+        // v2.5.0 · D：应用级 Snackbar。
+        //
+        // zIndex 1.6f 的取舍：在播放器卡片（1f）与底部导航（1.5f）**之上**，
+        // 在长按菜单（2f）**之下** —— 菜单打开时提示条不该压在菜单上。
+        //
+        // 位置用 BottomOverlayInsetDp（窄屏 144dp / 宽屏 64dp）再加 12dp 缓冲：
+        // 这个常量本来就是「屏幕底部被浮层遮挡的总高度」，Snackbar 要坐在
+        // mini bar 之上而不是压在它身上，所以直接复用它、不新造数字。
+        //
+        // ⚠️ 宿主**不挂任何指针输入**（详见 AppSnackbarHost 的 KDoc）。
+        // 本应用因为「看不见的地方还能点」踩过一整类坑，一个画在底部、
+        // 覆盖在内容之上的浮层如果可点击，就会造出只在提示出现的 2 秒内存在的死带。
+        AppSnackbarHost(
+            state = snackbar,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .zIndex(1.6f)
+                .padding(bottom = BottomOverlayInsetDp + 12.dp),
+        )
+
         menuSong?.let { song ->
             Box(Modifier.fillMaxSize().zIndex(2f)) {
                 SongMenuSheet(
@@ -2251,6 +2410,20 @@ fun MainScreen(
                             showAddToLocalPlaylist = true
                         },
                     ) + menuSongActions + listOf(
+                        // v2.5.0 · D：「添加到下一首播放」。放在全局菜单里（而不是各 Screen
+                        // 各自加一条），是因为这里才是**全应用唯一的歌曲入口** ——
+                        // 首页/歌单/专辑/歌手/收藏/搜索/本地歌单全部经由此处，
+                        // 加一次就全覆盖，也避免同一个文案在 8 个语言文件里被抄 7 遍。
+                        //
+                        // 排在「转到歌手/转到专辑」**之前**：它是对队列的操作，
+                        // 与上面的「加入歌单/插播」同属"对这首歌做什么"，
+                        // 而后两项是"离开这里去看别的"。
+                        SongMenuAction(
+                            Icons.Default.QueuePlayNext,
+                            LocalStrings.current.queue.actionAddToNext,
+                        ) {
+                            insertNext(song)
+                        },
                         SongMenuAction(Icons.Default.Person, LocalStrings.current.actionGoToArtist) {
                             resolveAndNavigate(song, toArtist = true)
                         },

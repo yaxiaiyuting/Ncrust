@@ -204,8 +204,6 @@ val deDE = Strings(
     addToLibraryButton = "Zur Bibliothek hinzufügen",
 
     actionAddToLibrary = "Zur Bibliothek",
-    actionInsertNext = "Als Nächstes abspielen",
-    actionAppendToQueue = "Zur Warteschlange hinzufügen",
     actionGoToArtist = "Zum Künstler",
     actionGoToAlbum = "Zum Album",
     batteryTitle = "Hintergrundaktivität",
@@ -405,5 +403,15 @@ val deDE = Strings(
             choose = "Lokale Playlist wählen",
             adopt = "Als lokale Playlist speichern",
             adopted = { name -> "\"$name\" gespeichert – jetzt in der Bibliothek bearbeitbar" },
+        ),
+        queue = QueueStrings(
+            actionInsertNext = "Als Nächstes abspielen",
+            actionAppendToQueue = "Zur Warteschlange hinzufügen",
+            actionAddToNext = "Als Nächstes vormerken",
+            queueAddToNextDone = "Als Nächstes vorgemerkt",
+            queueAddToNextMoved = "Als Nächstes eingereiht",
+            queueAddToNextAlreadyNext = "Läuft bereits als Nächstes",
+            queueAddToNextCurrent = "Dieser Titel läuft gerade",
+            queueAddToNextStarted = "Warteschlange war leer, läuft jetzt",
         ),
 )
