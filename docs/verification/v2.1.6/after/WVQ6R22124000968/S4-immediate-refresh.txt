@@ -1,0 +1,18 @@
+# 场景：暂停态 -> 播放 -> 暂停 的 position/speed 是否立即反映（不等 2Hz ticker）
+
+## 播放中，连续 3 次 1s 间隔采样（position 应在涨）
+--- 采样 1 ---
+      state=PlaybackState {state=3, position=4375, buffered position=20736, speed=1.0, updated=2350702, actions=7340031, custom actions=[], active item id=0, error=null}
+--- 采样 2 ---
+      state=PlaybackState {state=3, position=4375, buffered position=20736, speed=1.0, updated=2350702, actions=7340031, custom actions=[], active item id=0, error=null}
+--- 采样 3 ---
+      state=PlaybackState {state=3, position=8769, buffered position=25600, speed=1.0, updated=2355144, actions=7340031, custom actions=[], active item id=0, error=null}
+
+## 注入 PAUSE 后 立刻(0.3s) 与 3s 后 的对比
+$ input keyevent 127
+--- 0.3s 后 ---
+      state=PlaybackState {state=2, position=10497, buffered position=25600, speed=0.0, updated=2356868, actions=7340031, custom actions=[], active item id=0, error=null}
+--- 3s 后 ---
+      state=PlaybackState {state=2, position=10497, buffered position=25600, speed=0.0, updated=2356868, actions=7340031, custom actions=[], active item id=0, error=null}
+
+## 恢复播放

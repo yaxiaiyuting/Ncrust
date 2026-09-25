@@ -1,0 +1,84 @@
+09-25 13:02:01.588  1639  2059 I HwMediaSessionServiceInner: handleActiveSession: session is com.netease.cloudmusic/MediaSession (userId=0)
+09-25 13:02:01.588  1639  2059 E HwMediaSessionServiceInner: handleActiveSession: stack is null
+09-25 13:02:01.593  1639  1876 I HwMediaSessionServiceEx: onActiveSessionsChanged controller size = 1  topPkg:com.netease.cloudmusic
+09-25 13:02:01.594  1639  1876 I MediaControlUtils: checkController is true
+09-25 13:02:01.594  1639  1876 I MediaControllerCache: HwMediaSessionServiceEx cache change size:1
+09-25 13:02:01.594  1639  1876 V HwMediaSessionServiceEx: getPlayerInfo, playerId: 202558260,pkgname: com.netease.cloudmusic
+09-25 13:02:01.595  1639  1876 V HwMediaSessionServiceEx: on event EventType: 20, playerId: null
+09-25 13:02:01.596  1639  1876 I MediaControlUtils: checkController is true
+09-25 13:02:01.596  1639  1876 I HwMediaSessionServiceEx: player infoList size: 1
+09-25 13:02:01.596  1639  1876 V HwMediaSessionServiceEx: getPlayerInfo, playerId: 202558260,pkgname: com.netease.cloudmusic
+09-25 13:02:01.596  1639  1876 I HwMediaSessionServiceEx: registerEventObserver by 1639  filter id:202558260 observer:com.android.server.audio.HwAudioServiceEx$10@7ea567
+09-25 13:02:01.596  1639  1876 I HwMediaSessionServiceEx: onEventFromRequestData: 3
+09-25 13:02:01.596  1639  1876 E HwMediaSessionServiceEx: getPlaybackState is null
+09-25 13:02:01.596  1639  1876 V HwMediaSessionServiceEx: on event EventType: 20, playerId: null
+09-25 13:02:01.597  1639  1876 V HwMediaSessionServiceEx: on event EventType: 4, playerId: 202558260
+09-25 13:02:01.598  1639  2198 I HwMediaSessionServiceEx: registerEventObserver by 2730  filter id:202558260 observer:android.os.BinderProxy@928c4a9
+09-25 13:02:01.624  1639  1876 I HwMediaSessionServiceEx: onMetadataChanged begin
+09-25 13:02:01.624  1639  1876 I HwMediaSessionServiceEx: getTitleAndArtist, title: The Final Countdown, artist: Europe, playerId: 202558260
+09-25 13:02:01.625  1639  1876 V HwMediaSessionServiceEx: on event EventType: 3, playerId: 202558260
+09-25 13:02:01.625  1639  1876 V HwMediaSessionServiceEx: on event EventType: 11, playerId: 202558260
+09-25 13:02:03.828  1639  1639 D MediaSessionService: Audio playback is changed, config=AudioPlaybackConfiguration piid:391 deviceId:0 type:android.media.AudioTrack u/pid:10235/24523 state:started attr:AudioAttributes: usage=USAGE_MEDIA content=CONTENT_TYPE_MUSIC flags=0x800 tags= bundle=null sessionId:129, removed=false
+09-25 13:02:03.828  1639  1639 I MediaSessionStack: updateMediaButtonSessionIfNeeded, callers=com.android.server.media.MediaSessionService.lambda$onStart$0$MediaSessionService:299 com.android.server.media.MediaSessionService$$ExternalSyntheticLambda0.onAudioPlayerActiveStateChanged:2 
+09-25 13:02:03.828  1639  1639 I MediaSessionService: Media button session is changed to com.netease.cloudmusic/MediaSession (userId=0)
+09-25 13:02:03.828  1639  1639 I MediaSessionService: rememberMediaButtonReceiverLocked com.netease.cloudmusic/MediaSession (userId=0)
+09-25 13:02:03.828  1639  1639 I MediaSessionService: apptype = 7, IAWARE_APP_TYPE_MUSIC = 7
+09-25 13:02:03.829  1639  1639 I MediaSessionService: isAudioApp:com.netease.cloudmusic is audio app
+09-25 13:02:03.853  1639  1876 I HwMediaSessionServiceEx: onActiveSessionsChanged controller size = 1  topPkg:com.netease.cloudmusic
+09-25 13:02:03.854  1639  1876 I MediaControlUtils: checkController is true
+09-25 13:02:04.754  1639  1639 D MediaSessionService: Audio playback is changed, config=AudioPlaybackConfiguration piid:391 deviceId:2 type:android.media.AudioTrack u/pid:10235/24523 state:paused attr:AudioAttributes: usage=USAGE_MEDIA content=CONTENT_TYPE_MUSIC flags=0x800 tags= bundle=null sessionId:129, removed=false
+09-25 13:02:04.754  1639  1639 I MediaSessionStack: updateMediaButtonSessionIfNeeded, callers=com.android.server.media.MediaSessionService.lambda$onStart$0$MediaSessionService:299 com.android.server.media.MediaSessionService$$ExternalSyntheticLambda0.onAudioPlayerActiveStateChanged:2 
+09-25 13:02:04.899  1639  1876 I HwMediaSessionServiceEx: onSessionEvent, event: EVENT_LYRIC_STATE_CHANGED
+09-25 13:02:04.999  1639  3996 I MediaSessionService: Pause other media when new session is playing.
+09-25 13:02:05.000  1639  3996 I MediaControlUtils: checkController is true
+09-25 13:02:05.000  1639  3996 E HwMediaSessionServiceInner: pauseMigrateInMediaApp mMigrateInStackMap is empty
+09-25 13:02:05.003  1639  1876 I HwMediaSessionServiceEx: onPlaybackStateChanged begin: state=3, position=187449, speed=1.0, actions=822, errorMessage=null, playerId=202558260
+09-25 13:02:05.014  1639  1876 I HwMediaSessionServiceEx:  playbackSpeed: 1.0
+09-25 13:02:05.014  1639  1876 I HwMediaSessionServiceEx: onSessionEvent, event: hicar.media.action.PLAY_RATE_CHANGE
+09-25 13:02:05.014  1639  1876 I HwMediaSessionServiceEx: onMetadataChanged begin
+09-25 13:02:05.014  1639  1876 I HwMediaSessionServiceEx: getTitleAndArtist, title: The Final Countdown, artist: Europe, playerId: 202558260
+09-25 13:02:05.014  1639  1876 I HwMediaSessionServiceEx: unionMetadataCache create new cache using old image and new data
+09-25 13:02:05.015  1639  1876 I HwMediaSessionServiceEx: onPlaybackStateChanged begin: state=3, position=187449, speed=1.0, actions=822, errorMessage=null, playerId=202558260
+09-25 13:02:05.015  1639  1876 I HwMediaSessionServiceEx:  playbackSpeed: 1.0
+09-25 13:02:05.015  1639  1876 I HwMediaSessionServiceEx: onPlaybackStateChanged begin: state=3, position=187449, speed=1.0, actions=822, errorMessage=null, playerId=202558260
+09-25 13:02:05.015  1639  1876 I HwMediaSessionServiceEx:  playbackSpeed: 1.0
+09-25 13:02:05.015  1639  1876 V HwMediaSessionServiceEx: on event EventType: 4, playerId: 202558260
+09-25 13:02:05.019  1639  1876 I MediaControlUtils: checkController is true
+09-25 13:02:05.019  1639  1876 I HwMediaSessionServiceEx: player infoList size: 1
+09-25 13:02:05.019  1639  1876 V HwMediaSessionServiceEx: getPlayerInfo, playerId: 202558260,pkgname: com.netease.cloudmusic
+09-25 13:02:05.019  1639  1876 I HwMediaSessionServiceEx:  playbackSpeed: 1.0
+09-25 13:02:05.022  1639  1876 V HwMediaSessionServiceEx: on event EventType: 4, playerId: 202558260
+09-25 13:02:05.023  1639  1876 V HwMediaSessionServiceEx: on event EventType: 3, playerId: 202558260
+09-25 13:02:05.023  1639  1876 V HwMediaSessionServiceEx: on event EventType: 11, playerId: 202558260
+09-25 13:02:05.023  1639  1876 V HwMediaSessionServiceEx: on event EventType: 4, playerId: 202558260
+09-25 13:02:05.023  1639  1876 V HwMediaSessionServiceEx: on event EventType: 4, playerId: 202558260
+09-25 13:02:05.023  1639  1876 V HwMediaSessionServiceEx: on event EventType: 4, playerId: 202558260
+09-25 13:02:05.023  1639  1876 V HwMediaSessionServiceEx: on event EventType: 4, playerId: 202558260
+09-25 13:02:05.074  1639  1639 D MediaSessionService: Audio playback is changed, config=AudioPlaybackConfiguration piid:391 deviceId:0 type:android.media.AudioTrack u/pid:10235/24523 state:started attr:AudioAttributes: usage=USAGE_MEDIA content=CONTENT_TYPE_MUSIC flags=0x800 tags= bundle=null sessionId:129, removed=false
+09-25 13:02:05.074  1639  1639 I MediaSessionStack: updateMediaButtonSessionIfNeeded, callers=com.android.server.media.MediaSessionService.lambda$onStart$0$MediaSessionService:299 com.android.server.media.MediaSessionService$$ExternalSyntheticLambda0.onAudioPlayerActiveStateChanged:2 
+09-25 13:02:05.613  1639  1876 I HwMediaSessionServiceEx: onPlaybackStateChanged begin: state=3, position=187449, speed=1.0, actions=822, errorMessage=null, playerId=202558260
+09-25 13:02:05.613  1639  1876 I HwMediaSessionServiceEx:  playbackSpeed: 1.0
+09-25 13:02:05.613  1639  1876 V HwMediaSessionServiceEx: on event EventType: 4, playerId: 202558260
+09-25 13:02:05.613  1639  1876 V HwMediaSessionServiceEx: on event EventType: 4, playerId: 202558260
+09-25 13:02:05.620  1639  3105 I MediaControlUtils: checkController is true
+09-25 13:02:05.620  1639  3105 I HwMediaSessionServiceEx: player infoList size: 1
+09-25 13:02:05.620  1639  3105 V HwMediaSessionServiceEx: getPlayerInfo, playerId: 202558260,pkgname: com.netease.cloudmusic
+09-25 13:02:05.620  1639  3105 I HwMediaSessionServiceEx:  playbackSpeed: 1.0
+09-25 13:02:05.621  1639  3105 I MediaControlUtils: checkController is true
+09-25 13:02:05.621  1639  3105 I HwMediaSessionServiceEx: player infoList size: 1
+09-25 13:02:05.621  1639  3105 V HwMediaSessionServiceEx: getPlayerInfo, playerId: 202558260,pkgname: com.netease.cloudmusic
+09-25 13:02:05.622  1639  3105 I HwMediaSessionServiceEx:  playbackSpeed: 1.0
+09-25 13:02:05.623  1639  3105 I HwMediaSessionServiceEx: registerEventObserver by 25058  filter id:202558260 observer:android.os.BinderProxy@316484
+09-25 13:02:05.625  1639  3105 I HwMediaSessionServiceEx: onEventFromRequestData: 1
+09-25 13:02:05.626  1639  1876 V HwMediaSessionServiceEx: on event EventType: 3, playerId: 202558260
+09-25 13:02:05.626  1639  1876 V HwMediaSessionServiceEx: on event EventType: 3, playerId: 202558260
+09-25 13:02:05.626  1639  3991 I HwMediaSessionServiceEx: onEventFromRequestData: 5
+09-25 13:02:05.626  1639  1876 V HwMediaSessionServiceEx: on event EventType: 5, playerId: 202558260
+09-25 13:02:05.627  1639  3992 I HwMediaSessionServiceEx: onEventFromRequestData: 3
+09-25 13:02:05.627  1639  3992 I HwMediaSessionServiceEx:  playbackSpeed: 1.0
+09-25 13:02:05.628  1639  1876 V HwMediaSessionServiceEx: on event EventType: 4, playerId: 202558260
+09-25 13:02:05.629  1639  1876 V HwMediaSessionServiceEx: on event EventType: 4, playerId: 202558260
+09-25 13:02:05.629  1639  1876 V HwMediaSessionServiceEx: on event EventType: 4, playerId: 202558260
+09-25 13:02:05.630  1639  3996 I HwMediaSessionServiceEx: onEventFromRequestData: 4
+09-25 13:02:05.630  1639  1876 V HwMediaSessionServiceEx: on event EventType: 11, playerId: 202558260
+09-25 13:02:05.631  1639  1876 V HwMediaSessionServiceEx: on event EventType: 11, playerId: 202558260

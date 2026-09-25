@@ -1,0 +1,354 @@
+# 三包 badging 关键行（package / sdkVersion / targetSdkVersion / install-location / 权限）
+# 采集时间 2026-09-25T12:57:31+08:00
+Android Asset Packaging Tool (aapt) 2.19-11948202
+# $ aapt2 dump badging <apk>   (aapt2 = )
+
+======================== netease  (tmp/apks/netease-base.apk)
+---- sha256: 6efecd9a422a0660504241026ef0e801bfa07c33b6ba1e5ed3ba0cf5b7853ba7
+---- $ /home/duanjb666/Android/sdk/build-tools/35.0.0/aapt2 dump badging tmp/apks/netease-base.apk | grep -E '^(package|sdkVersion|targetSdkVersion|uses-permission|uses-feature)'
+package: name='com.netease.cloudmusic' versionCode='9006005' versionName='9.6.05' platformBuildVersionName='14' platformBuildVersionCode='34' compileSdkVersion='34' compileSdkVersionCodename='14'
+targetSdkVersion:'33'
+uses-permission: name='android.permission.READ_PHONE_STATE'
+uses-permission: name='com.netease.cloudmusic.permission.OPERATOR_FREE'
+uses-permission: name='android.permission.CAMERA'
+uses-permission: name='android.permission.FLASHLIGHT'
+uses-permission: name='android.permission.BLUETOOTH'
+uses-permission: name='android.permission.BLUETOOTH_ADMIN'
+uses-permission: name='android.permission.BLUETOOTH_SCAN'
+uses-permission: name='android.permission.BLUETOOTH_CONNECT'
+uses-permission: name='android.permission.INTERNET'
+uses-permission: name='android.permission.READ_EXTERNAL_STORAGE'
+uses-permission: name='android.permission.WRITE_EXTERNAL_STORAGE'
+uses-permission: name='android.permission.READ_MEDIA_IMAGES'
+uses-permission: name='android.permission.READ_MEDIA_VIDEO'
+uses-permission: name='android.permission.READ_MEDIA_AUDIO'
+uses-permission: name='android.permission.RECORD_AUDIO'
+uses-permission: name='android.permission.READ_LOGS'
+uses-permission: name='android.permission.WAKE_LOCK'
+uses-permission: name='android.permission.ACCESS_NETWORK_STATE'
+uses-permission: name='android.permission.READ_CONTACTS'
+uses-permission: name='android.permission.ACCESS_FINE_LOCATION'
+uses-permission: name='android.permission.ACCESS_COARSE_LOCATION'
+uses-permission: name='android.permission.ACCESS_WIFI_STATE'
+uses-permission: name='android.permission.MOUNT_UNMOUNT_FILESYSTEMS'
+uses-permission: name='android.permission.WRITE_SETTINGS'
+uses-permission: name='android.permission.SYSTEM_ALERT_WINDOW'
+uses-permission: name='android.permission.GET_TASKS'
+uses-permission: name='android.permission.REORDER_TASKS'
+uses-permission: name='android.permission.MODIFY_AUDIO_SETTINGS'
+uses-permission: name='android.permission.VIBRATE'
+uses-permission: name='com.android.launcher.permission.INSTALL_SHORTCUT'
+uses-permission: name='com.huawei.android.launcher.permission.CHANGE_BADGE'
+uses-permission: name='android.permission.CHANGE_WIFI_STATE'
+uses-permission: name='android.permission.ACCESS_LOCATION_EXTRA_COMMANDS'
+uses-permission: name='android.permission.ACTIVITY_RECOGNITION'
+uses-permission: name='com.sec.android.provider.badge.permission.READ'
+uses-permission: name='com.sec.android.provider.badge.permission.WRITE'
+uses-permission: name='com.htc.launcher.permission.READ_SETTINGS'
+uses-permission: name='com.htc.launcher.permission.UPDATE_SHORTCUT'
+uses-permission: name='com.sonyericsson.home.permission.BROADCAST_BADGE'
+uses-permission: name='com.sonymobile.home.permission.PROVIDER_INSERT_BADGE'
+uses-permission: name='com.anddoes.launcher.permission.UPDATE_COUNT'
+uses-permission: name='com.majeur.launcher.permission.UPDATE_BADGE'
+uses-permission: name='android.permission.READ_APP_BADGE'
+uses-permission: name='com.oppo.launcher.permission.READ_SETTINGS'
+uses-permission: name='com.oppo.launcher.permission.WRITE_SETTINGS'
+uses-permission: name='android.permission.FOREGROUND_SERVICE'
+uses-permission: name='com.netease.cloudmusic.app.permission.READ_FILE'
+uses-permission: name='android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS'
+uses-permission: name='android.permission.POST_NOTIFICATIONS'
+uses-permission: name='android.permission.SCHEDULE_EXACT_ALARM'
+uses-permission: name='oplus.bracketspace.permission.INSERT_PERMISSION'
+uses-permission: name='android.permission.SET_WALLPAPER'
+uses-permission: name='android.permission.WRITE_CONTACTS'
+uses-permission: name='com.miui.personalassistant.permission.WIDGET_READ_SETTINGS'
+uses-permission: name='com.miui.personalassistant.permission.WIDGET_WRITE_SETTINGS'
+uses-permission: name='com.huawei.permission.DISTRIBUTED_DATASYNC'
+uses-permission: name='huawei.permission.DISTRIBUTED_DEVICE_STATE_CHANGE'
+uses-permission: name='com.netease.permission.REQUEST_OPEN_API'
+uses-permission: name='android.permission.WRITE_CALENDAR'
+uses-permission: name='com.netease.cloudmusic.permission.PROCESS_PUSH_MSG'
+uses-permission: name='com.netease.cloudmusic.permission.MIPUSH_RECEIVE'
+uses-permission: name='android.permission.READ_CALENDAR'
+uses-permission: name='android.permission.REQUEST_INSTALL_PACKAGES'
+uses-permission: name='com.coloros.mcs.permission.RECIEVE_MCS_MESSAGE'
+uses-permission: name='com.heytap.mcs.permission.RECIEVE_MCS_MESSAGE'
+uses-permission: name='android.permission.USE_FINGERPRINT'
+uses-permission: name='android.permission.CHANGE_NETWORK_STATE'
+uses-permission: name='com.huawei.hicar.HICAR_PERMISSION'
+uses-permission: name='com.hihonor.brain.permission.KIT_SERVICE_ACCESS'
+uses-permission: name='com.xiaomi.dist.permission.ACCESS_APP_HANDOFF'
+uses-permission: name='com.xiaomi.dist.permission.ACCESS_APP_META'
+uses-permission: name='com.miui.miplay.audio.ACCESS_STATE'
+uses-permission: name='com.netease.cloudmusic.permission.PUSH_PROVIDER'
+uses-permission: name='com.asus.msa.SupplementaryDID.ACCESS'
+uses-permission: name='freemme.permission.msa'
+uses-permission: name='freemme.permission.msa.SECURITY_ACCESS'
+uses-permission: name='oplus.permission.settings.LAUNCH_FOR_EXPORT'
+uses-permission: name='com.vivo.identifier.permission.OAID_STATE_DIALOG'
+uses-permission: name='com.nemu.oaid.permission.read'
+uses-permission: name='com.nemu.oaid.permission.write'
+uses-permission: name='com.asus.permission.READ_SDID_PROVIDER'
+uses-permission: name='getui.permission.GetuiService.com.netease.cloudmusic'
+uses-permission: name='com.vivo.notification.permission.BADGE_ICON'
+uses-permission: name='com.hihonor.push.permission.READ_PUSH_NOTIFICATION_INFO'
+
+======================== huaweimusic  (tmp/apks/huaweimusic-base.apk)
+---- sha256: f3650cbac5f049dc1cdfe22f55b6518e902f75715e9963a79b8fd1c210127665
+---- $ /home/duanjb666/Android/sdk/build-tools/35.0.0/aapt2 dump badging tmp/apks/huaweimusic-base.apk | grep -E '^(package|sdkVersion|targetSdkVersion|uses-permission|uses-feature)'
+package: name='com.huawei.music' versionCode='121145301' versionName='12.11.45.301' platformBuildVersionName='14' platformBuildVersionCode='34' compileSdkVersion='34' compileSdkVersionCodename='14'
+targetSdkVersion:'29'
+uses-permission: name='android.permission.FOREGROUND_SERVICE'
+uses-permission: name='com.huawei.android.powerkit.permission.BIND'
+uses-permission: name='com.huawei.android.powerkit.permission.STATECHG'
+uses-permission: name='com.huawei.meetime.CAAS_SHARE_SERVICE'
+uses-permission: name='com.huawei.permission.SET_AUDIO_PARAMETERS'
+uses-permission: name='android.permission.WRITE_CALENDAR'
+uses-permission: name='android.permission.READ_CALENDAR'
+uses-permission: name='android.permission.CHANGE_WIFI_STATE'
+uses-permission: name='com.android.launcher.permission.INSTALL_SHORTCUT'
+uses-permission: name='android.permission.INTERNET'
+uses-permission: name='android.permission.ACCESS_NETWORK_STATE'
+uses-permission: name='android.permission.FLASHLIGHT' maxSdkVersion='22'
+uses-permission: name='android.permission.ACCESS_COARSE_LOCATION' maxSdkVersion='30'
+uses-permission: name='android.permission.ACCESS_FINE_LOCATION' maxSdkVersion='30'
+uses-permission: name='com.huawei.decision.permission.ACCESS_PERMISSION'
+uses-permission: name='com.android.deskclock.huawei.permission.UPDATE_ALARM'
+uses-permission: name='com.huawei.contacts.permission.SET_RINGTONE'
+uses-permission: name='huawei.permmisons.mms.CHANGE_MMS_RINGTON_REQUEST'
+uses-permission: name='com.huawei.systemmanager.permission.ACCESS_INTERFACE'
+uses-permission: name='android.permission.WRITE_CONTACTS'
+uses-permission: name='android.permission.CAPTURE_VIDEO_OUTPUT'
+uses-permission: name='android.permission.READ_PHONE_STATE' maxSdkVersion='23'
+uses-permission: name='android.permission.READ_PRIVILEGED_PHONE_STATE'
+uses-permission: name='android.permission.RECORD_AUDIO'
+uses-permission: name='android.permission.WAKE_LOCK'
+uses-permission: name='android.permission.MODIFY_AUDIO_SETTINGS'
+uses-permission: name='android.permission.BLUETOOTH'
+uses-permission: name='android.permission.BLUETOOTH_ADMIN'
+uses-permission: name='android.permission.BLUETOOTH_CONNECT'
+uses-permission: name='android.permission.BLUETOOTH_SCAN' usesPermissionFlags='neverForLocation'
+uses-permission: name='android.permission.BLUETOOTH_ADVERTISE'
+uses-permission: name='android.permission.ACCESS_WIFI_STATE'
+uses-permission: name='android.permission.WRITE_EXTERNAL_STORAGE'
+uses-permission: name='android.permission.READ_EXTERNAL_STORAGE'
+uses-permission: name='android.permission.READ_MEDIA_STORAGE'
+uses-permission: name='android.permission.WRITE_MEDIA_STORAGE'
+uses-permission: name='android.permission.USES_LOG_UPLOAD_SERVICE'
+uses-permission: name='android.permission.SYSTEM_ALERT_WINDOW'
+uses-permission: name='com.huawei.permission.HICAR_DISPLAY'
+uses-permission: name='android.permission.WRITE_SETTINGS'
+uses-permission: name='android.permission.GET_ACCOUNTS' maxSdkVersion='22'
+uses-permission: name='android.permission.MANAGE_ACCOUNTS' maxSdkVersion='22'
+uses-permission: name='android.permission.USE_CREDENTIALS' maxSdkVersion='22'
+uses-permission: name='android.permission.EXPAND_STATUS_BAR'
+uses-permission: name='com.huawei.permission.ONEHOP'
+uses-permission: name='com.android.mediacenter.permission.INTERACTION'
+uses-permission: name='com.huawei.hpxsettings.LAUNCH_HPX_SETTINGS'
+uses-permission: name='huawei.permission.CASERVICE'
+uses-permission: name='com.android.keyguard.permission.SHOW_LYRICS'
+uses-permission: name='com.huawei.permission.sec.ACCESS_UDID'
+uses-permission: name='sws.permission.START_SWSHEADPHONE'
+uses-permission: name='dolby.permission.START_DOLBY'
+uses-permission: name='huawei.permission.HIRES_ICON_CHANGE_ACTION'
+uses-permission: name='imcs.permission.MUSIC_CONTROL'
+uses-permission: name='com.huawei.systemmanager.permission.APPLY_TRIM_POLICY'
+uses-permission: name='com.huawei.permission.HANDOFF'
+uses-permission: name='com.huawei.pcassistant.permisssion.HANDOFF_SDK_SERVICE'
+uses-permission: name='android.permission.WRITE_SECURE_SETTINGS'
+uses-permission: name='huawei.android.permission.HW_SIGNATURE_OR_SYSTEM'
+uses-permission: name='com.huawei.android.launcher.permission.ACCESS_INTERFACE'
+uses-permission: name='android.permission.READ_SYNC_SETTINGS'
+uses-permission: name='android.permission.WRITE_SYNC_SETTINGS'
+uses-permission: name='android.permission.REORDER_TASKS' maxSdkVersion='27'
+uses-permission: name='com.huawei.permission.sec.MDM.v2'
+uses-permission: name=' com.hihonor.permission.sec.MDM.v2'
+uses-permission: name='com.android.permission.airsharing_play_interface'
+uses-permission: name='android.permission.REAL_GET_TASKS'
+uses-permission: name='com.huawei.permission.MANAGE_FOLD_SCREEN'
+uses-permission: name='android.permission.MANAGE_USERS'
+uses-permission: name='com.huawei.android.permission.BIND_QUICK_ACTION_SERVICE'
+uses-permission: name='com.huawei.powergenie.receiverPermission'
+uses-permission: name='android.permission.CAMERA'
+uses-permission-sdk-23: name='android.permission.INTERNAL_SYSTEM_WINDOW'
+uses-permission: name='com.huawei.android.launcher.permission.CHANGE_BADGE'
+uses-permission: name='com.huawei.iconnect.permission.RECEIVE_BROADCAST'
+uses-permission: name='huawei.permission.CLICK_STATUSBAR_BROADCAST'
+uses-permission: name='com.huawei.appmarket.service.commondata.permission.GET_COMMON_DATA'
+uses-permission: name='com.huawei.dataprivacycenter.permission.LAUNCH_DATA_PRIVACY_CENTER'
+uses-permission: name='com.huawei.parentcontrol.permission.provider'
+uses-permission: name='com.huawei.permission.music_provider'
+uses-permission: name='ohos.permission.GET_BUNDLE_INFO'
+uses-permission: name='android.permission.READ_SEARCH_INDEXABLES'
+uses-permission: name='com.huawei.permission.external_app_settings.USE_COMPONENT'
+uses-permission: name='com.huawei.permission.ACCESS_HW_KEYSTORE'
+uses-permission: name='com.hihonor.permission.sec.MDM.v2'
+uses-permission: name='com.hihonor.parentcontrol.permission.provider'
+uses-permission: name='hihonor.android.permission.HW_SIGNATURE_OR_SYSTEM'
+uses-permission: name='android.permission.VIBRATE'
+uses-permission: name='com.huawei.hmsauto.permission.audiocontrol.AUDIO_CONTROL'
+uses-permission: name='android.permission.MODIFY_AUDIO_ROUTING'
+uses-permission: name='android.Manifest.permission.MODIFY_AUDIO_ROUTING'
+uses-permission: name='android.permission.HIDE_NON_SYSTEM_OVERLAY_WINDOWS'
+uses-permission: name='android.permission.READ_MEDIA_IMAGES'
+uses-permission: name='com.hihonor.permission.sec.ACCESS_UDID'
+uses-permission: name='com.huawei.music.HEAD_SET_PROVIDER_READ'
+uses-permission: name='com.huawei.music.HEAD_SET_PROVIDER_WRITE'
+uses-permission: name='com.huawei.music.HEAD_SET'
+uses-permission: name='com.huawei.audioaccessorymanager.permission.ACCESS_BIND_AUDIO_INFO_PROVIDER'
+uses-permission: name='com.huawei.audioaccessorymanager.permission.VERSION_CHECK'
+uses-permission: name='android.permission.CHANGE_NETWORK_STATE'
+uses-permission: name='com.huawei.audioaccessorymanager.permission.ACCESS_BIND_AAM_SERVICE'
+uses-permission: name='android.permission.REQUEST_INSTALL_PACKAGES'
+uses-permission: name='android.permission.RECEIVE_BOOT_COMPLETED'
+uses-permission: name='com.huawei.music.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION'
+uses-permission: name='com.huawei.music.permission.PROCESS_PUSH_MSG'
+uses-permission: name='com.huawei.music.permission.PUSH_PROVIDER'
+uses-permission: name='com.huawei.music.com.huawei.openaliance.ad.app.ins'
+uses-permission: name='android.permission.BROADCAST_STICKY'
+uses-permission: name='com.hihonor.permission.MANAGE_FOLD_SCREEN'
+uses-permission: name='com.hihonor.permission.MANAGE_FOLD_SCREEN_PRIVILEGED'
+uses-permission: name='com.huawei.hicar.HICAR_PERMISSION'
+
+======================== ncrust  (tmp/apks/ncrust-base.apk)
+---- sha256: 315f0d8a551b426a90bb364c0e3a7ffd7bf442de7d836f5bc9986de53dd1b451
+---- $ /home/duanjb666/Android/sdk/build-tools/35.0.0/aapt2 dump badging tmp/apks/ncrust-base.apk | grep -E '^(package|sdkVersion|targetSdkVersion|uses-permission|uses-feature)'
+package: name='com.takahashirinta.ncrust' versionCode='35' versionName='2.1.5-gpl' platformBuildVersionName='16' platformBuildVersionCode='36' compileSdkVersion='36' compileSdkVersionCodename='16'
+targetSdkVersion:'36'
+uses-permission: name='android.permission.INTERNET'
+uses-permission: name='android.permission.ACCESS_NETWORK_STATE'
+uses-permission: name='android.permission.FOREGROUND_SERVICE'
+uses-permission: name='android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK'
+uses-permission: name='android.permission.WAKE_LOCK'
+uses-permission: name='android.permission.POST_NOTIFICATIONS'
+uses-permission: name='android.permission.MODIFY_AUDIO_SETTINGS'
+uses-permission: name='android.permission.POST_PROMOTED_NOTIFICATIONS'
+uses-permission: name='android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS'
+uses-permission: name='android.permission.CAMERA'
+uses-permission: name='com.takahashirinta.ncrust.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION'
+
+======================== 签名证书指纹（只看指纹，不反编译代码、不冒用身份）
+
+---- netease
+$ apksigner verify --print-certs tmp/apks/netease-base.apk
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::loadLibrary has been called by org.conscrypt.NativeLibraryUtil in an unnamed module (file:/home/duanjb666/Android/sdk/build-tools/35.0.0/lib/apksigner.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+Signer #1 certificate DN: CN=LiangJian, OU=Corp.Netease, O=CloudMusic, L=HangZhou, ST=ZheJiang, C=310000
+Signer #1 certificate SHA-256 digest: 54254d2be09daef48dedc2b4a4f497d153e14ed9d70814fc9c360ee9240827f7
+Signer #1 certificate SHA-1 digest: d35cb4a496f96a15afeb44a4c9694fe7435ea579
+Signer #1 certificate MD5 digest: da6b069da1e2982db3e386233f68d76d
+WARNING: META-INF/androidx.activity_activity-ktx.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.activity_activity.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.annotation_annotation-experimental.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.appcompat_appcompat-resources.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.appcompat_appcompat.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.arch.core_core-runtime.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.asynclayoutinflater_asynclayoutinflater.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.cardview_cardview.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.coordinatorlayout_coordinatorlayout.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.core_core-ktx.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.core_core.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.cursoradapter_cursoradapter.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.customview_customview.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.databinding_baseAdapters.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.databinding_databindingKtx.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.databinding_library.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.databinding_viewbinding.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.documentfile_documentfile.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.drawerlayout_drawerlayout.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.dynamicanimation_dynamicanimation.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.exifinterface_exifinterface.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.fragment_fragment-ktx.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.fragment_fragment.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.interpolator_interpolator.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.legacy_legacy-support-core-ui.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.legacy_legacy-support-core-utils.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.legacy_legacy-support-v4.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.lifecycle_lifecycle-extensions.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.lifecycle_lifecycle-livedata-core-ktx.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.lifecycle_lifecycle-livedata-core.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.lifecycle_lifecycle-livedata-ktx.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.lifecycle_lifecycle-livedata.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.lifecycle_lifecycle-process.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.lifecycle_lifecycle-runtime-ktx.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.lifecycle_lifecycle-runtime.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.lifecycle_lifecycle-service.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.lifecycle_lifecycle-viewmodel-ktx.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.lifecycle_lifecycle-viewmodel-savedstate.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.lifecycle_lifecycle-viewmodel.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.loader_loader.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.localbroadcastmanager_localbroadcastmanager.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.media_media.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.navigation_navigation-common-ktx.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.navigation_navigation-common.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.navigation_navigation-fragment-ktx.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.navigation_navigation-fragment.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.navigation_navigation-runtime-ktx.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.navigation_navigation-runtime.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.navigation_navigation-ui-ktx.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.navigation_navigation-ui.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.paging_paging-runtime.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.palette_palette.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.print_print.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.profileinstaller_profileinstaller.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.recyclerview_recyclerview.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.room_room-ktx.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.room_room-runtime.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.savedstate_savedstate.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.slidingpanelayout_slidingpanelayout.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.sqlite_sqlite-framework.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.sqlite_sqlite.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.startup_startup-runtime.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.swiperefreshlayout_swiperefreshlayout.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.tracing_tracing.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.transition_transition.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.vectordrawable_vectordrawable-animated.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.vectordrawable_vectordrawable.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.versionedparcelable_versionedparcelable.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.viewpager2_viewpager2.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.viewpager_viewpager.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/com/android/build/gradle/app-metadata.properties not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/com.google.android.material_material.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/kotlinx_coroutines_android.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/kotlinx_coroutines_core.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/services/java.security.Provider not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/services/kotlin.reflect.jvm.internal.impl.builtins.BuiltInsLoader not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/services/kotlin.reflect.jvm.internal.impl.resolve.ExternalOverridabilityCondition not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/services/kotlinx.coroutines.CoroutineExceptionHandler not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/services/kotlinx.coroutines.internal.MainDispatcherFactory not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/services/org.apache.lucene.org.apache.lucene.coexist.analysis.util.TokenFilterFactory not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/services/org.apache.lucene.org.apache.lucene.coexist.analysis.util.TokenizerFactory not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/services/org.apache.lucene.org.apache.lucene.coexist.codecs.Codec not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/services/org.apache.lucene.org.apache.lucene.coexist.codecs.DocValuesFormat not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/services/org.apache.lucene.org.apache.lucene.coexist.codecs.PostingsFormat not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/TRITON.properties not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+exit=0
+
+---- huaweimusic
+$ apksigner verify --print-certs tmp/apks/huaweimusic-base.apk
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::loadLibrary has been called by org.conscrypt.NativeLibraryUtil in an unnamed module (file:/home/duanjb666/Android/sdk/build-tools/35.0.0/lib/apksigner.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+Signer #1 certificate DN: CN=China, OU=Huawei, O=Huawei, L=Shenzhen, ST=Shenzhen, C=CN
+Signer #1 certificate SHA-256 digest: 3e13f630c77618de3a580dbbaffe0ac04a16444633cc0253afb088d3e3ab6efe
+Signer #1 certificate SHA-1 digest: 71fe20abbd81b466fa7f9364fdaa9e205807a42f
+Signer #1 certificate MD5 digest: 6a9becd1cce40b99ebdbfed9793ad32b
+exit=0
+
+---- ncrust
+$ apksigner verify --print-certs tmp/apks/ncrust-base.apk
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::loadLibrary has been called by org.conscrypt.NativeLibraryUtil in an unnamed module (file:/home/duanjb666/Android/sdk/build-tools/35.0.0/lib/apksigner.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+Signer #1 certificate DN: CN=Ncrust GPL Fork, OU=Personal, O=yaxiaiyuting, L=Unknown, ST=Unknown, C=CN
+Signer #1 certificate SHA-256 digest: e75af3ffbcf76a36a567188d88d132adf3c7484c53c20a3a083cb1d222025511
+Signer #1 certificate SHA-1 digest: 12f56c4b8bcdb72590f198e247210842e54d9b38
+Signer #1 certificate MD5 digest: ae4b8c93d4dce7754c5cd72721f05884
+exit=0

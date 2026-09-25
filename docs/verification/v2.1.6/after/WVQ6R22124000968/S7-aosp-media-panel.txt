@@ -1,0 +1,92 @@
+# 场景：非华为机型的系统媒体面板证据 = 通知栏媒体通知 + 会话元数据
+# （Android 11+ 的媒体面板直接消费 MediaSession 的 metadata/token，没有独立的 ROM 白名单）
+
+## 会话元数据（面板显示什么，这里就应该是什么）
+    metadata: null
+  Media button session is com.takahashirinta.ncrust/androidx.media3.session.id. (userId=0)
+    androidx.media3.session.id. com.takahashirinta.ncrust/androidx.media3.session.id. (userId=0)
+      state=PlaybackState {state=3, position=45102, buffered position=60757, speed=1.0, updated=2398193, actions=7340031, custom actions=[], active item id=0, error=null}
+      metadata: size=10, description=Wooh 第一次遇见阴天遮住你侧脸, 心墙 · 林俊杰, null
+
+## 通知栏里本包的媒体通知（含 MediaStyle token 指向）
+    NotificationRecord(0x010990ee: pkg=com.takahashirinta.ncrust user=UserHandle{0} id=1 tag=null importance=2 key=0|com.takahashirinta.ncrust|1|null|10274: Notification(channel=ncrust_playback shortcut=null contentView=null vibrate=null sound=null defaults=0x0 flags=0x6a color=0xff181010 category=transport groupKey=ranker_group1 actions=3 vis=PUBLIC))
+      uid=10274 userId=0
+      opPkg=com.takahashirinta.ncrust
+      icon=Icon(typ=RESOURCE pkg=com.takahashirinta.ncrust id=0x01080024)
+      flags=0x6a
+      pri=0
+      key=0|com.takahashirinta.ncrust|1|null|10274
+      seen=false
+      groupKey=0|com.takahashirinta.ncrust|1|null|10274
+      notification=
+            fullscreenIntent=null
+            contentIntent=PendingIntent{14f698f: PendingIntentRecord{76bdb1f com.takahashirinta.ncrust startActivity (allowlist: 9954737:+30s0ms/0/NOTIFICATION_SERVICE/NotificationManagerService)}}
+            deleteIntent=null
+            number=0
+            groupAlertBehavior=0
+            when=1790314208533
+            tickerText=null
+            contentView=null
+            bigContentView=null
+            headsUpContentView=null
+            color=0xff181010
+            timeout=unknown
+            actions={
+                [0] "上一首" -> PendingIntent{493b41c: PendingIntentRecord{8879c35 com.takahashirinta.ncrust startService (allowlist: 9954737:+30s0ms/0/NOTIFICATION_SERVICE/NotificationManagerService)}}
+                [1] "暂停" -> PendingIntent{d6c6825: PendingIntentRecord{7c7ca0f com.takahashirinta.ncrust startService (allowlist: 9954737:+30s0ms/0/NOTIFICATION_SERVICE/NotificationManagerService)}}
+                [2] "下一首" -> PendingIntent{81cdfa: PendingIntentRecord{953d8ca com.takahashirinta.ncrust startService (allowlist: 9954737:+30s0ms/0/NOTIFICATION_SERVICE/NotificationManagerService)}}
+              }
+            extras={
+                android.title=String (Wooh 第一次遇见阴天遮住你侧脸)
+                android.reduced.images=Boolean (true)
+                android.subText=null
+                android.template=String (android.app.Notification$MediaStyle)
+                android.showChronometer=Boolean (false)
+                android.text=String (心墙 · 林俊杰)
+                android.progress=Integer (0)
+                android.progressMax=Integer (0)
+                specialType=String (floating_window_notification)
+                android.appInfo=ApplicationInfo (ApplicationInfo{d630fab com.takahashirinta.ncrust})
+                android.showWhen=Boolean (true)
+                notification_should_ringtone=Boolean (false)
+                externalChannelType=Integer (3)
+                android.largeIcon=Icon (Icon(typ=BITMAP size=80x80))
+                PopupBackgroundWindowPrevilege=Boolean (true)
+                android.infoText=null
+                topFullscreen=Boolean (false)
+                android.mediaSession=Token (android.media.session.MediaSession$Token@9b963d8)
+                isRequestSingleLine=Boolean (false)
+                android.progressIndeterminate=Boolean (false)
+                android.remoteInputHistory=null
+                gameDndOn=Boolean (false)
+                android.colorized=Boolean (true)
+                android.compactActions=int[] (3)
+                  [0] 0
+                  [1] 1
+                  [2] 2
+            }
+      publicNotification=
+            None
+      stats=SingleNotificationStats{posttimeElapsedMs=2159107, posttimeToFirstClickMs=-1, posttimeToDismissMs=-1, airtimeCount=0, airtimeMs=0, currentAirtimeStartElapsedMs=-1, airtimeExpandedMs=0, posttimeToFirstVisibleExpansionMs=-1, currentAirtimeExpandedStartElapsedMs=-1, requestedImportance=3, naturalImportance=2, isNoisy=false}
+      mContactAffinity=0.0
+sed: couldn't flush stdout: 断开的管道
+
+## 系统媒体面板（Android 11+ 的 MediaCarouselController / MediaDataManager，若有）
+    MediaDataManager:
+    ----------------------------------------------------------------------------
+    listeners: [com.android.systemui.media.MediaTimeoutListener@6d750d6, com.android.systemui.media.MediaResumeListener@c38fa44]
+    mediaEntries: {0|com.takahashirinta.ncrust|1|null|10274=MediaData(userId=0, initialized=true, backgroundColor=-10928090, app=Ncrust, appIcon=android.graphics.drawable.BitmapDrawable@1b85fab, artist=心墙 · 林俊杰, song=Wooh 第一次遇见阴天遮住你侧脸, artwork=Icon(typ=BITMAP size=512x512), actions=[MediaAction(drawable=android.graphics.drawable.BitmapDrawable@1e90608, action=com.android.systemui.media.MediaDataManager$loadMediaDataInBg$runnable$1@23e31a1, contentDescription=上一首), MediaAction(drawable=android.graphics.drawable.BitmapDrawable@b205fc6, action=com.android.systemui.media.MediaDataManager$loadMediaDataInBg$runnable$1@31b4b87, contentDescription=暂停), MediaAction(drawable=android.graphics.drawable.BitmapDrawable@50c7ab4, action=com.android.systemui.media.MediaDataManager$loadMediaDataInBg$runnable$1@eeb46dd, contentDescription=下一首)], actionsToShowInCompact=[0, 1, 2], packageName=com.takahashirinta.ncrust, token=android.media.session.MediaSession$Token@7f36a4a, clickIntent=PendingIntent{5b2b252: android.os.BinderProxy@612de8a}, device=null, active=true, resumeAction=com.android.systemui.media.MediaResumeListener$getResumeAction$1@cd71923, resumption=false, notificationKey=0|com.takahashirinta.ncrust|1|null|10274, hasCheckedForResume=true)}
+    useMediaResumption: true
+
+    FalsingManager:
+    ----------------------------------------------------------------------------
+    BRIGHTLINE FALSING MANAGER
+    classifierEnabled=1
+--
+            com.android.systemui.media.MediaDataManager$appChangeReceiver$1@51b772d
+          Categories: 
+        android.intent.action.MANAGED_PROFILE_AVAILABLE:
+          Registered: true
+          Receivers:
+            com.android.systemui.statusbar.NotificationLockscreenUserManagerImpl$2@314f09e
+          Categories: 

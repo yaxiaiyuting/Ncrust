@@ -1,0 +1,31 @@
+# ============================================================================
+# logcat-hwmediasession-ncrust.txt
+# 内容：2026-09-25 12:59:10 那次 logcat 采集中**真实出现过**的两行（原文照抄）
+# 采集命令（已实际执行）：
+#   adb -s WVQ6R22124000968 logcat -d | grep -iE "HwMediaSession|MediaControlUtils|media white list|Media button session|MediaSessionService"
+#
+# ⚠️ 诚实性说明（必须保留）：
+#   1) 这次采集发生在主会话提出「设备协调」要求之前；此后按协调要求**未**在 WGR-W09 上重跑
+#      Ncrust 的播放态采集（避免与主会话的 Ncrust 回归互相污染、抢占媒体焦点）。
+#   2) 2026-09-25 13:05 再执行同一条命令时，设备 logcat 环形缓冲已滚过，输出 0 行 ——
+#      重跑结果原文见 tmp/logcat-rerun-check.txt。
+#      因此本文件是「当时真实输出」的落盘，而不是事后重新生成的。
+#   3) 同样两行在 v2.1.5 的独立记录里也出现过：
+#      ../../v2.1.5/p1-huawei-controlcenter/EVIDENCE.md 第 20-21 行。
+# ============================================================================
+
+09-25 12:59:10.329  1639  3997 V HwMediaSessionServiceInner: this app is not in media white list, pkgName: com.takahashirinta.ncrust
+09-25 12:59:10.332  1639  3997 V HwMediaSessionServiceInner: this app is not in media white list, pkgName: com.takahashirinta.ncrust
+
+# ----------------------------------------------------------------------------
+# 同一时段（12:56:40）执行的只读侦察命令及其被 grep 过滤后的真实输出（原文照抄，非全文）：
+#   $ adb -s WVQ6R22124000968 shell dumpsys media_session
+#     | grep -nE '^(Media|Sessions|Active|Media button|  [A-Za-z].*package|.*state=PlaybackState|.*package=)'
+#   Media button session is com.takahashirinta.ncrust/NcrustSession (userId=0)
+#   33:      package=com.takahashirinta.ncrust
+#   40:      state=PlaybackState {state=2, position=103823, buffered position=287000, speed=1.0, updated=184626, actions=822, custom actions=[], active item id=-1, error=null}
+#   47:      package=com.takahashirinta.ncrust
+#   54:      state=PlaybackState {state=2, position=103823, buffered position=124586, speed=0.0, updated=184623, actions=7339999, custom actions=[], active item id=0, error=null}
+#   65:  uid=10274 packages=com.takahashirinta.ncrust
+#   ⇒ 当时 Ncrust 为 state=2（暂停），两条会话都在，且它就是 Media button session。
+# ----------------------------------------------------------------------------

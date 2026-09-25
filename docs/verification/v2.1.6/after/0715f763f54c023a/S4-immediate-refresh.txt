@@ -1,0 +1,23 @@
+# 场景：暂停态 -> 播放 -> 暂停 的 position/speed 是否立即反映（不等 2Hz ticker）
+
+## 播放中，连续 3 次 1s 间隔采样（position 应在涨）
+--- 采样 1 ---
+  state=PlaybackState {state=3, position=5122, buffered position=21504, speed=1.0, updated=84183003, actions=7340031, custom actions=[], active item id=0, error=null}
+    state=PlaybackState {state=3, position=5122, buffered position=21504, speed=1.0, updated=84183003, actions=7340031, custom actions=[], active item id=0, error=null}
+--- 采样 2 ---
+  state=PlaybackState {state=3, position=5122, buffered position=21504, speed=1.0, updated=84183003, actions=7340031, custom actions=[], active item id=0, error=null}
+    state=PlaybackState {state=3, position=5122, buffered position=21504, speed=1.0, updated=84183003, actions=7340031, custom actions=[], active item id=0, error=null}
+--- 采样 3 ---
+  state=PlaybackState {state=3, position=9681, buffered position=28330, speed=1.0, updated=84187500, actions=7340031, custom actions=[], active item id=0, error=null}
+    state=PlaybackState {state=3, position=9681, buffered position=28330, speed=1.0, updated=84187500, actions=7340031, custom actions=[], active item id=0, error=null}
+
+## 注入 PAUSE 后 立刻(0.3s) 与 3s 后 的对比
+$ input keyevent 127
+--- 0.3s 后 ---
+  state=PlaybackState {state=2, position=12135, buffered position=28330, speed=0.0, updated=84189947, actions=7340031, custom actions=[], active item id=0, error=null}
+    state=PlaybackState {state=2, position=12135, buffered position=28330, speed=0.0, updated=84189947, actions=7340031, custom actions=[], active item id=0, error=null}
+--- 3s 后 ---
+  state=PlaybackState {state=2, position=12135, buffered position=28330, speed=0.0, updated=84189947, actions=7340031, custom actions=[], active item id=0, error=null}
+    state=PlaybackState {state=2, position=12135, buffered position=28330, speed=0.0, updated=84189947, actions=7340031, custom actions=[], active item id=0, error=null}
+
+## 恢复播放

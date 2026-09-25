@@ -1,0 +1,114 @@
+# 反汇编原文 —— huawei.cust.HwCfgFilePolicy.getDownloadCfgFile（COTA 通道）
+# 来源：/system/framework/framework.jar ! classes4.dex
+# 采集时间：2026-09-25T13:06:11+08:00
+
+----- METHOD getDownloadCfgFile -----
+    #14              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'getDownloadCfgFile'
+      type          : '(Ljava/lang/String;Ljava/lang/String;)[Ljava/lang/String;'
+      access        : 0x0009 (PUBLIC STATIC)
+      hiddenapi     : 0x0020 (SDK,TEST-API)
+      code          -
+      registers     : 10
+      ins           : 2
+      outs          : 5
+      insns size    : 42 16-bit code units
+562148:                                        |[562148] huawei.cust.HwCfgFilePolicy.getDownloadCfgFile:(Ljava/lang/String;Ljava/lang/String;)[Ljava/lang/String;
+562158: 1a00 5007                              |0000: const-string v0, "/data/cota/para/" // string@0750
+56215c: 7130 95f3 8009                         |0002: invoke-static {v0, v8, v9}, Lhuawei/cust/HwCfgFilePolicy;.getFileInfo:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)[Ljava/lang/String; // method@f395
+562162: 0c00                                   |0005: move-result-object v0
+562164: 1201                                   |0006: const/4 v1, #int 0 // #0
+562166: 7110 8df3 0100                         |0007: invoke-static {v1}, Lhuawei/cust/HwCfgFilePolicy;.getCfgPolicyDir:(I)[Ljava/lang/String; // method@f38d
+56216c: 0c02                                   |000a: move-result-object v2
+56216e: 2123                                   |000b: array-length v3, v2
+562170: 0114                                   |000c: move v4, v1
+562172: 3534 1200                              |000d: if-ge v4, v3, 001f // +0012
+562176: 4605 0204                              |000f: aget-object v5, v2, v4
+56217a: 7130 95f3 8509                         |0011: invoke-static {v5, v8, v9}, Lhuawei/cust/HwCfgFilePolicy;.getFileInfo:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)[Ljava/lang/String; // method@f395
+562180: 0c06                                   |0014: move-result-object v6
+562182: 7120 9ef3 0600                         |0015: invoke-static {v6, v0}, Lhuawei/cust/HwCfgFilePolicy;.isPresetNewerVersionInfo:([Ljava/lang/String;[Ljava/lang/String;)Z // method@f39e
+562188: 0a07                                   |0018: move-result v7
+56218a: 3807 0300                              |0019: if-eqz v7, 001c // +0003
+56218e: 0760                                   |001b: move-object v0, v6
+562190: d804 0401                              |001c: add-int/lit8 v4, v4, #int 1 // #01
+562194: 28ef                                   |001e: goto 000d // -0011
+562196: 1222                                   |001f: const/4 v2, #int 2 // #2
+562198: 2323 9f1f                              |0020: new-array v3, v2, [Ljava/lang/String; // type@1f9f
+56219c: 3800 0600                              |0022: if-eqz v0, 0028 // +0006
+5621a0: 7152 8cf8 1013                         |0024: invoke-static {v0, v1, v3, v1, v2}, Ljava/lang/System;.arraycopy:(Ljava/lang/Object;ILjava/lang/Object;II)V // method@f88c
+5621a6: 1103                                   |0027: return-object v3
+5621a8: 1201                                   |0028: const/4 v1, #int 0 // #0
+5621aa: 1101                                   |0029: return-object v1
+      catches       : (none)
+      positions     :
+        0x0000 line=483
+        0x0006 line=484
+        0x0011 line=485
+        0x0015 line=487
+        0x001b line=488
+        0x001c line=484
+        0x001f line=491
+        0x0022 line=492
+        0x0024 line=493
+        0x0027 line=494
+        0x0028 line=496
+      locals        :
+        0x0011 - 0x001c reg=5 dir Ljava/lang/String;
+        0x0015 - 0x001c reg=6 presetInfos [Ljava/lang/String;
+        0x0006 - 0x002a reg=0 cotaInfos [Ljava/lang/String;
+        0x0022 - 0x002a reg=3 newerInfos [Ljava/lang/String;
+        0x0000 - 0x002a reg=8 verDir Ljava/lang/String;
+        0x0000 - 0x002a reg=9 filePath Ljava/lang/String;
+
+
+## 相关静态字段
+      'BASE'	      3
+      'CLOUD_APN'	      7
+      'CLOUD_DPLMN'	      6
+      'CLOUD_MCC'	      5
+      'COMPATIBLE_VERSION'	      2
+      'COMPATIBLE_VERSION_TAG'	      "compatibleVersion"
+      'COTAINFO_DIR'	      "/data/cota/para/"
+      'CUST'	      4
+      'CUST_TYPE_CONFIG'	      0
+      'CUST_TYPE_MEDIA'	      1
+      'DEFAULT_SLOT'	      -2
+      'DOT_VERSION_ITEM_MAX_LENGTH'	      3
+      'DOT_VERSION_MAX_NUM'	      4
+      'EMUI'	      1
+      'GLOBAL'	      0
+      'HW_ACTION_CARRIER_CONFIG_CHANGED'	      "com.huawei.action.CARRIER_CONFIG_CHANGED"
+      'HW_CARRIER_CONFIG_CHANGE_STATE'	      "state"
+      'HW_CARRIER_CONFIG_OPKEY'	      "opkey"
+      'HW_CARRIER_CONFIG_SLOT'	      "slot"
+      'HW_CONFIG_STATE_PARA_UPDATE'	      3
+      'HW_CONFIG_STATE_SIM_ABSENT'	      2
+      'HW_CONFIG_STATE_SIM_LOADED'	      1
+      'PC'	      2
+      'SUBTYPE'	      4
+      'SUBTYPE_TAG'	      "subtype"
+      'TAG'	      "CfgFilePolicy"
+      'TXTSECTION'	      2
+      'TYPE'	      3
+      'TYPE_TAG'	      "type"
+      'VERSION'	      1
+      'VERSION_MARKS'	      null
+      'VERSION_TAG'	      "version"
+      'sCarrierConfigPolicy'	      name          : 'sCfgDirs'
+      'sCfgVersions'	      name          : 'sCotaFlag'
+      'sMediaDirs'	      name          : '<clinit>'
+      '<init>'	      name          : 'changeVersionToLongStr'
+      'getCfgFile'	      name          : 'getCfgFile'
+      'getCfgFileCommon'	      name          : 'getCfgFileList'
+      'getCfgFileList'	      name          : 'getCfgFileListCommon'
+      'getCfgPolicyDir'	      name          : 'getCfgPolicyDir'
+      'getCfgPolicyDirCommon'	      name          : 'getCfgVersion'
+      'getCustPolicyDirs'	      name          : 'getDownloadCfgFile'
+      'getFileConfig'	      name          : 'getFileConfig'
+      'getFileInfo'	      name          : 'getLastVersionItem'
+      'getOpKey'	      name          : 'getOpKey'
+      'getValue'	      name          : 'getValue'
+      'getVersionsFromFile'	      name          : 'initFileVersions'
+      'isNumFormat'	      name          : 'isPresetNewerVersionInfo'
+      'isVersionFourSegments'	      name          : 'parseCarrierPath'
+      'readVersionFile'	      name          : 'refreshCustDirPolicy'

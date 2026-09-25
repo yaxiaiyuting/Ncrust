@@ -1,0 +1,38 @@
+# 拉取到本机的大体积二进制 —— sha256 与来源（便于复现；这些文件在落盘后已删除，见文末说明）
+# 采集时间 2026-09-25T13:07:37+08:00
+
+## APK（adb pull，来源见 manifest-diff.md §0）
+f3650cbac5f049dc1cdfe22f55b6518e902f75715e9963a79b8fd1c210127665  tmp/apks/huaweimusic-base.apk
+559d4b607de68ec3f3c869b8cfba372fd7a7793aa7eb7b5693578bef36cdbd3a  tmp/apks/huaweimusic-split_card.apk
+315f0d8a551b426a90bb364c0e3a7ffd7bf442de7d836f5bc9986de53dd1b451  tmp/apks/ncrust-base.apk
+6efecd9a422a0660504241026ef0e801bfa07c33b6ba1e5ed3ba0cf5b7853ba7  tmp/apks/netease-base.apk
+
+## ROM jar（adb pull /system/framework/*.jar；本机 /system 只读、文件 0644 root:root，shell 可读）
+3109f5b387a0323aeee97720e0646bad1abd1c1a89de11829b0014eb57598c32  tmp/rom/framework.jar
+7b58c55f7c32930e49f3828358f12f54adec040ab7801c31a5d3e15fa6e347bd  tmp/rom/hwEmui.jar
+7af46ca9a83de0880a5d7ef9b2e345f944cd76d99ce9d46351f68c02e74944b4  tmp/rom/hwServices.jar
+a2d3dc1c04c33d2a2f9ec74d68d2e6497f8655d089208b460fc5b3c72eabb434  tmp/rom/services.jar
+60817bcc5a99cc7d6f553ffca47a720feb5103b74d4920fb669752cffc92d66f  tmp/rom/zframework.z.jar
+
+## 从 jar 里解出的 dex
+6f8186ef4e39c7b520c94fff085486eae18ffb157cbd5d309cd55b0d17a9cdc7  tmp/rom/x/framework/classes2.dex
+da0669da6e06060bc078be1888995a7fec38af90378386c2e37e9f28ac92e752  tmp/rom/x/framework/classes3.dex
+17857ac06320d12b6984b9a3e12a2b31fc4f7df243194b0678f6e17b7d7c798d  tmp/rom/x/framework/classes4.dex
+7b028b3ac927480c476c8c97bfcce756a1f9f5adc4fd215c2ba85a38823575b0  tmp/rom/x/framework/classes5.dex
+3703095a763ea14ac6e04bd39c2bfe0f286253f38f6490b14b35e6566a93dff9  tmp/rom/x/framework/classes.dex
+0304f609f90c81802ee7e2ec51b0bde633277e3e8ea25158ead54448395e0ebf  tmp/rom/x/hwEmui/classes.dex
+7acaa695b31822cf5783f79b4b31ee0c1ef6cb318f659b5809e535417b497815  tmp/rom/x/hwServices/classes.dex
+
+## 设备侧原始 md5（adb shell md5sum，第三方校验）
+c0267ff1c472f6ffbe0c924ad0e0702b  /system/framework/hwEmui.jar
+a7fb66b82604e4459105767c3043858e  /system/framework/hwServices.jar
+9d280df7996d310fa25b32e234e5eb81  /system/framework/framework.jar
+9264d05edad364d3de6c4b75ababaf5d  /system/emui/base/thirdappfilter/third_app_filter.xml
+7a213fd27ad90fb16db61480ac9e908c  /system/emui/base/xml/hw_mediaplaybackcontroller_app_config.xml
+
+## ⚠️ 落盘说明（诚实性）
+上面这些 APK / jar / dex 合计约 500 MB，已在 sha256 记录完成**之后**从本目录删除，
+以免把 500 MB 二进制塞进 git 工作区（本目录是 docs/ 下的文档目录）。
+它们全部可以按 EVIDENCE.md 里的 `adb pull` 命令原文从设备上原样取回，
+校验值以本文件为准（设备侧另有 `md5sum` 交叉校验）。
+**所有文本级证据（反汇编抽取、XML 原文、dumpsys/logcat/uiautomator、badging、截图）均已保留，未做任何删改。**

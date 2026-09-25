@@ -1,0 +1,462 @@
+
+########## 通知全文（最后一次采样，未裁剪） ##########
+Current Notification Manager state:
+  Notification List:
+    NotificationRecord(0x0fe9348a: pkg=com.takahashirinta.ncrust user=UserHandle{0} id=1 tag=null importance=2 key=0|com.takahashirinta.ncrust|1|null|10188: Notification(pri=0 contentView=null vibrate=null sound=null defaults=0x0 flags=0x6a color=0xff1db954 category=transport actions=3 vis=PUBLIC semFlags=0x0 semPriority=0))
+      uid=10188 userId=0
+      icon=Icon(typ=RESOURCE pkg=com.takahashirinta.ncrust id=0x01080024) / android:drawable/ic_media_play
+      pri=0
+      key=0|com.takahashirinta.ncrust|1|null|10188
+      seen=false
+      groupKey=0|com.takahashirinta.ncrust|1|null|10188
+      contentIntent=PendingIntent{1099afb: PendingIntentRecord{d8ce8b6 com.takahashirinta.ncrust startActivity (whitelist: +30s0ms)}}
+      deleteIntent=null
+      tickerText=null
+      contentView=null
+      defaults=0x00000000 flags=0x0000006a
+      sound=null
+      audioStreamType=-1
+      audioAttributes=AudioAttributes: usage=5 content=4 flags=0x0 tags= bundle=null
+      color=0xff1db954
+      vibrate=null
+      led=0x00000000 onMs=0 offMs=0
+      actions={
+        [0] "上一首" -> PendingIntent{771a718: PendingIntentRecord{e348851 com.takahashirinta.ncrust startService (whitelist: +30s0ms)}}
+        [1] "暂停" -> PendingIntent{dda571: PendingIntentRecord{dcc978 com.takahashirinta.ncrust startService (whitelist: +30s0ms)}}
+        [2] "下一首" -> PendingIntent{d2e0f56: PendingIntentRecord{6aab9b7 com.takahashirinta.ncrust startService (whitelist: +30s0ms)}}
+      }
+      extras={
+        android.title=String (你会等待还是离开)
+        android.subText=null
+        android.template=String (android.app.Notification$MediaStyle)
+        android.showChronometer=Boolean (false)
+        android.text=String (晴天 · 周杰伦)
+        android.progress=Integer (0)
+        android.progressMax=Integer (0)
+        android.appInfo=ApplicationInfo (ApplicationInfo{27a94fa com.takahashirinta.ncrust})
+        android.showWhen=Boolean (true)
+        android.largeIcon=null
+        android.infoText=null
+        android.mediaSession=Token (android.media.session.MediaSession$Token@af1caca)
+        android.originatingUserId=Integer (0)
+        android.progressIndeterminate=Boolean (false)
+        android.remoteInputHistory=null
+        android.compactActions=int[] (3)
+          [0] 0
+          [1] 1
+          [2] 2
+      }
+      stats=SingleNotificationStats{posttimeElapsedMs=80167319, posttimeToFirstClickMs=-1, posttimeToDismissMs=-1, airtimeCount=4, airtimeMs=1915364, currentAirtimeStartElapsedMs=-1, airtimeExpandedMs=0, posttimeToFirstVisibleExpansionMs=-1, currentAirtimeExpandedStartElapsedMs=-1, requestedImportance=3, naturalImportance=2, isNoisy=false}
+      mContactAffinity=0.0
+      mRecentlyIntrusive=false
+      mPackagePriority=0
+      mPackageVisibility=-1000
+      mUserImportance=UNSPECIFIED
+      mImportance=LOW
+      mImportanceExplanation=null
+      mIntercept=false
+      mGlobalSortKey=intrsv=1:grnk=0x0000:gsmry=1:nsk:rnk=0x0000
+      mRankingTimeMs=1790313316293(2026-09-25 13:15:16.293+0800)
+      mCreationTimeMs=1790310398781(2026-09-25 12:26:38.781+0800)
+      mVisibleSinceMs=1790313256016(2026-09-25 13:14:16.016+0800)
+      mUpdateTimeMs=1790313316301(2026-09-25 13:15:16.301+0800)
+      mSuppressedVisualEffects= 0
+    NotificationRecord(0x0cfec9c7: pkg=com.android.systemui user=UserHandle{-1} id=2131951673 tag=charging_state importance=1 key=-1|com.android.systemui|2131951673|charging_state|10070: Notification(pri=-2 contentView=null vibrate=null sound=null defaults=0x0 flags=0xa color=0xff607d8b category=sys vis=PUBLIC semFlags=0x0 semPriority=0))
+      uid=10070 userId=-1
+      icon=Icon(typ=RESOURCE pkg=com.android.systemui id=0x7f02056e) / com.android.systemui:drawable/stat_notify_afc
+      pri=-2
+      key=-1|com.android.systemui|2131951673|charging_state|10070
+      seen=false
+      groupKey=-1|com.android.systemui|2131951673|charging_state|10070
+      contentIntent=PendingIntent{e0bbf4: PendingIntentRecord{af18c2 com.android.systemui startActivity (whitelist: +30s0ms)}}
+      deleteIntent=null
+      tickerText=null
+      contentView=null
+      defaults=0x00000000 flags=0x0000000a
+      sound=null
+      audioStreamType=-1
+      audioAttributes=AudioAttributes: usage=5 content=4 flags=0x0 tags= bundle=null
+      color=0xff607d8b
+      vibrate=null
+      led=0x00000000 onMs=0 offMs=0
+      extras={
+        android.title=String (充电器充电)
+        android.template=String (android.app.Notification$BigTextStyle)
+        android.text=String (正在充电：91%
+(离充满电还有约 31 分钟))
+        android.appInfo=ApplicationInfo (ApplicationInfo{9896f9a com.android.systemui})
+        android.showWhen=Boolean (false)
+        android.substName=String (Android 系统)
+        android.bigText=String (正在充电：91%
+(离充满电还有约 31 分钟))
+        android.originatingUserId=Integer (-1)
+      }
+      stats=SingleNotificationStats{posttimeElapsedMs=79055775, posttimeToFirstClickMs=-1, posttimeToDismissMs=-1, airtimeCount=1, airtimeMs=1907917, currentAirtimeStartElapsedMs=-1, airtimeExpandedMs=0, posttimeToFirstVisibleExpansionMs=-1, currentAirtimeExpandedStartElapsedMs=-1, requestedImportance=1, naturalImportance=1, isNoisy=false}
+      mContactAffinity=0.0
+      mRecentlyIntrusive=false
+      mPackagePriority=0
+      mPackageVisibility=-1000
+      mUserImportance=UNSPECIFIED
+      mImportance=MIN
+      mImportanceExplanation=null
+      mIntercept=false
+      mGlobalSortKey=intrsv=1:grnk=0x0001:gsmry=1:nsk:rnk=0x0001
+      mRankingTimeMs=1790309287241(2026-09-25 12:08:07.241+0800)
+      mCreationTimeMs=1790309287241(2026-09-25 12:08:07.241+0800)
+      mVisibleSinceMs=1790311328343(2026-09-25 12:42:08.343+0800)
+      mUpdateTimeMs=1790313145881(2026-09-25 13:12:25.881+0800)
+      mSuppressedVisualEffects= 0
+    NotificationRecord(0x0dd06f2b: pkg=android user=UserHandle{-1} id=17040422 tag=null importance=1 key=-1|android|17040422|null|1000: Notification(pri=-2 contentView=null vibrate=null sound=null tick defaults=0x0 flags=0x2 color=0xff607d8b vis=PUBLIC semFlags=0x0 semPriority=0))
+      uid=1000 userId=-1
+      icon=Icon(typ=RESOURCE pkg=android id=0x0108089c) / android:drawable/stat_sys_data_usb_otg_connected
+      pri=-2
+      key=-1|android|17040422|null|1000
+      seen=true
+      groupKey=-1|android|17040422|null|1000
+      contentIntent=PendingIntent{9e09f88: PendingIntentRecord{b41ae2d android startActivity}}
+      deleteIntent=null
+      tickerText=使用 USB 传输文件
+      contentView=null
+      defaults=0x00000000 flags=0x00000002
+      sound=null
+      audioStreamType=-1
+      audioAttributes=AudioAttributes: usage=5 content=4 flags=0x0 tags= bundle=null
+      color=0xff607d8b
+      vibrate=null
+      led=0x00000000 onMs=0 offMs=0
+      extras={
+        android.title=String (使用 USB 传输文件)
+        android.text=String (点击获取其他 USB 选项)
+        android.appInfo=ApplicationInfo (ApplicationInfo{15727c1 android})
+        android.originatingUserId=Integer (-1)
+      }
+      stats=SingleNotificationStats{posttimeElapsedMs=79054050, posttimeToFirstClickMs=-1, posttimeToDismissMs=-1, airtimeCount=1, airtimeMs=1907917, currentAirtimeStartElapsedMs=-1, airtimeExpandedMs=0, posttimeToFirstVisibleExpansionMs=-1, currentAirtimeExpandedStartElapsedMs=-1, requestedImportance=1, naturalImportance=1, isNoisy=false}
+      mContactAffinity=0.0
+      mRecentlyIntrusive=false
+      mPackagePriority=0
+      mPackageVisibility=-1000
+      mUserImportance=UNSPECIFIED
+      mImportance=MIN
+      mImportanceExplanation=null
+      mIntercept=false
+      mGlobalSortKey=intrsv=1:grnk=0x0002:gsmry=1:nsk:rnk=0x0002
+      mRankingTimeMs=1790309285489(2026-09-25 12:08:05.489+0800)
+      mCreationTimeMs=1790309285489(2026-09-25 12:08:05.489+0800)
+      mVisibleSinceMs=1790311328343(2026-09-25 12:42:08.343+0800)
+      mUpdateTimeMs=1790309285489(2026-09-25 12:08:05.489+0800)
+      mSuppressedVisualEffects= 0
+  
+  mUseAttentionLight=false
+  mNotificationPulseEnabled=true
+  mMissedNotificationLightEnabled=true
+  mSoundNotificationKey=null
+  mVibrateNotificationKey=null
+  mDisableNotificationEffects=false
+  mCallState=CALL_STATE_IDLE
+  mSystemReady=true
+  mMaxPackageEnqueueRate=20.0
+  mArchive=Archive (64 notifications)
+    StatusBarNotification(pkg=com.takahashirinta.ncrust user=UserHandle{0} id=1 tag=null key=0|com.takahashirinta.ncrust|1|null|10188: Notification(pri=0 contentView=null vibrate=null sound=null defaults=0x0 flags=0x6a color=0xff1db954 category=transport actions=3 vis=PUBLIC semFlags=0x0 semPriority=0))
+    StatusBarNotification(pkg=com.takahashirinta.ncrust user=UserHandle{0} id=1 tag=null key=0|com.takahashirinta.ncrust|1|null|10188: Notification(pri=0 contentView=null vibrate=null sound=null defaults=0x0 flags=0x6a color=0xff1db954 category=transport actions=3 vis=PUBLIC semFlags=0x0 semPriority=0))
+    StatusBarNotification(pkg=com.takahashirinta.ncrust user=UserHandle{0} id=1 tag=null key=0|com.takahashirinta.ncrust|1|null|10188: Notification(pri=0 contentView=null vibrate=null sound=null defaults=0x0 flags=0x6a color=0xff1db954 category=transport actions=3 vis=PUBLIC semFlags=0x0 semPriority=0))
+    StatusBarNotification(pkg=com.takahashirinta.ncrust user=UserHandle{0} id=1 tag=null key=0|com.takahashirinta.ncrust|1|null|10188: Notification(pri=0 contentView=null vibrate=null sound=null defaults=0x0 flags=0x6a color=0xff1db954 category=transport actions=3 vis=PUBLIC semFlags=0x0 semPriority=0))
+    StatusBarNotification(pkg=android user=UserHandle{-1} id=17040436 tag=InputMethodManagerService_Noti key=-1|android|17040436|InputMethodManagerService_Noti|1000: Notification(pri=-2 contentView=null vibrate=null sound=null defaults=0x0 flags=0x1002 color=0x00000000 category=sys vis=PRIVATE semFlags=0x0 semPriority=0))
+    ...
+
+  Usage Stats:
+    AggregatedStats{
+      key='com.android.systemui',
+      numEnqueuedByApp=635,
+      numPostedByApp=9,
+      numUpdatedByApp=626,
+      numRemovedByApp=8,
+      numPeopleCacheHit=0,
+      numWithStaredPeople=0,
+      numWithValidPeople=0,
+      numPeopleCacheMiss=0,
+      numBlocked=0,
+      numSuspendedByAdmin=0,
+      numWithActions=0,
+      numPrivate=0,
+      numSecret=0,
+      numInterrupt=0,
+      numWithBigText=621,
+      numWithBigPicture=0
+      numForegroundService=0
+      numOngoing=635
+      numAutoCancel=0
+      numWithLargeIcon=0
+      numWithInbox=0
+      numWithMediaSession=0
+      numWithTitle=635
+      numWithText=635
+      numWithSubText=0
+      numWithInfoText=0
+numRateViolations=0
+numQuotaViolations=0
+      note_imp_noisy_: [0, 0, 0, 0, 0, 0]
+      note_imp_quiet_: [0, 635, 0, 0, 0, 0]
+      note_importance_: [0, 635, 0, 0, 0, 0]
+    }
+    AggregatedStats{
+      key='com.android.bluetooth',
+      numEnqueuedByApp=66,
+      numPostedByApp=3,
+      numUpdatedByApp=63,
+      numRemovedByApp=3,
+      numPeopleCacheHit=66,
+      numWithStaredPeople=0,
+      numWithValidPeople=0,
+      numPeopleCacheMiss=0,
+      numBlocked=0,
+      numSuspendedByAdmin=0,
+      numWithActions=0,
+      numPrivate=66,
+      numSecret=0,
+      numInterrupt=1,
+      numWithBigText=0,
+      numWithBigPicture=0
+      numForegroundService=0
+      numOngoing=62
+      numAutoCancel=0
+      numWithLargeIcon=0
+      numWithInbox=0
+      numWithMediaSession=0
+      numWithTitle=66
+      numWithText=4
+      numWithSubText=61
+      numWithInfoText=0
+numRateViolations=0
+numQuotaViolations=0
+      note_imp_noisy_: [0, 0, 0, 1, 0, 0]
+      note_imp_quiet_: [0, 0, 0, 65, 0, 0]
+      note_importance_: [0, 0, 65, 1, 0, 0]
+    }
+    AggregatedStats{
+      key='com.takahashirinta.ncrust',
+      numEnqueuedByApp=2417,
+      numPostedByApp=32,
+      numUpdatedByApp=2385,
+      numRemovedByApp=26,
+      numPeopleCacheHit=2417,
+      numWithStaredPeople=0,
+      numWithValidPeople=0,
+      numPeopleCacheMiss=0,
+      numBlocked=0,
+      numSuspendedByAdmin=0,
+      numWithActions=2417,
+      numPrivate=0,
+      numSecret=0,
+      numInterrupt=0,
+      numWithBigText=0,
+      numWithBigPicture=0
+      numForegroundService=216
+      numOngoing=0
+      numAutoCancel=0
+      numWithLargeIcon=2417
+      numWithInbox=0
+      numWithMediaSession=2417
+      numWithTitle=2220
+      numWithText=2220
+      numWithSubText=0
+      numWithInfoText=0
+numRateViolations=0
+numQuotaViolations=0
+      note_imp_noisy_: [0, 0, 0, 0, 0, 0]
+      note_imp_quiet_: [0, 0, 0, 2417, 0, 0]
+      note_importance_: [0, 0, 2417, 0, 0, 0]
+    }
+    AggregatedStats{
+      key='android',
+      numEnqueuedByApp=61,
+      numPostedByApp=21,
+      numUpdatedByApp=40,
+      numRemovedByApp=20,
+      numPeopleCacheHit=0,
+      numWithStaredPeople=0,
+      numWithValidPeople=0,
+      numPeopleCacheMiss=0,
+      numBlocked=0,
+      numSuspendedByAdmin=0,
+      numWithActions=0,
+      numPrivate=54,
+      numSecret=0,
+      numInterrupt=0,
+      numWithBigText=0,
+      numWithBigPicture=0
+      numForegroundService=0
+      numOngoing=61
+      numAutoCancel=0
+      numWithLargeIcon=0
+      numWithInbox=0
+      numWithMediaSession=0
+      numWithTitle=61
+      numWithText=61
+      numWithSubText=0
+      numWithInfoText=0
+numRateViolations=0
+numQuotaViolations=0
+      note_imp_noisy_: [0, 0, 0, 0, 0, 0]
+      note_imp_quiet_: [0, 61, 0, 0, 0, 0]
+      note_importance_: [0, 61, 0, 0, 0, 0]
+    }
+    AggregatedStats{
+      key='__global',
+      numEnqueuedByApp=3181,
+      numPostedByApp=67,
+      numUpdatedByApp=3114,
+      numRemovedByApp=57,
+      numPeopleCacheHit=2485,
+      numWithStaredPeople=0,
+      numWithValidPeople=0,
+      numPeopleCacheMiss=0,
+      numBlocked=0,
+      numSuspendedByAdmin=0,
+      numWithActions=2417,
+      numPrivate=122,
+      numSecret=0,
+      numInterrupt=1,
+      numWithBigText=623,
+      numWithBigPicture=0
+      numForegroundService=216
+      numOngoing=758
+      numAutoCancel=0
+      numWithLargeIcon=2417
+      numWithInbox=0
+      numWithMediaSession=2417
+      numWithTitle=2984
+      numWithText=2922
+      numWithSubText=61
+      numWithInfoText=0
+numRateViolations=0
+numQuotaViolations=0
+      note_imp_noisy_: [0, 0, 0, 0, 0, 0]
+      note_imp_quiet_: [0, 3, 0, 110, 0, 0]
+      note_importance_: [0, 3, 110, 0, 0, 0]
+    }
+    mStatsArrays.size(): 1
+    mStats.size(): 5
+    post_frequency{user_id=-1,pkg=android,day=0,count=51,muted=0/0,demoted=0}
+    post_frequency{user_id=-1,pkg=com.android.systemui,day=0,count=351,muted=0/0,demoted=0}
+    post_frequency{user_id=-1,pkg=android,day=1,count=20,muted=0/0,demoted=0}
+    post_frequency{user_id=-1,pkg=com.android.systemui,day=1,count=285,muted=0/0,demoted=1}
+    post_frequency{user_id=-1,pkg=android,day=2,count=15,muted=0/0,demoted=0}
+    post_frequency{user_id=-1,pkg=com.android.systemui,day=2,count=167,muted=0/0,demoted=0}
+    post_frequency{user_id=-1,pkg=android,day=3,count=31,muted=0/0,demoted=0}
+    post_frequency{user_id=-1,pkg=com.android.systemui,day=3,count=32,muted=0/0,demoted=0}
+    post_frequency{user_id=-1,pkg=android,day=4,count=109,muted=0/0,demoted=0}
+    post_frequency{user_id=-1,pkg=com.android.systemui,day=4,count=744,muted=0/0,demoted=0}
+    post_frequency{user_id=-1,pkg=android,day=5,count=13,muted=0/0,demoted=0}
+    post_frequency{user_id=-1,pkg=com.android.systemui,day=5,count=293,muted=0/1,demoted=0}
+    post_frequency{user_id=0,pkg=com.android.bluetooth,day=0,count=66,muted=1/1,demoted=65}
+    post_frequency{user_id=0,pkg=com.takahashirinta.ncrust,day=0,count=910,muted=0/0,demoted=910}
+    post_frequency{user_id=0,pkg=com.android.phone,day=1,count=1,muted=0/0,demoted=1}
+    post_frequency{user_id=0,pkg=com.sec.android.app.firewall,day=1,count=1,muted=0/0,demoted=1}
+    post_frequency{user_id=0,pkg=com.takahashirinta.ncrust,day=1,count=3185,muted=0/0,demoted=3185}
+    post_frequency{user_id=0,pkg=com.android.phone,day=2,count=1,muted=0/0,demoted=1}
+    post_frequency{user_id=0,pkg=com.sec.android.app.firewall,day=2,count=1,muted=0/0,demoted=1}
+    post_frequency{user_id=0,pkg=com.takahashirinta.ncrust,day=2,count=517,muted=0/0,demoted=517}
+    post_frequency{user_id=0,pkg=com.termux,day=2,count=3,muted=0/0,demoted=0}
+    post_frequency{user_id=0,pkg=com.takahashirinta.ncrust,day=3,count=1444,muted=0/0,demoted=1444}
+    post_frequency{user_id=0,pkg=com.termux,day=3,count=3,muted=0/0,demoted=0}
+    post_frequency{user_id=0,pkg=com.android.bluetooth,day=4,count=569,muted=3/3,demoted=566}
+    post_frequency{user_id=0,pkg=com.baidu.input,day=4,count=15,muted=0/0,demoted=15}
+    post_frequency{user_id=0,pkg=com.samsung.android.app.scrollcapture,day=4,count=2,muted=0/0,demoted=2}
+    post_frequency{user_id=0,pkg=com.samsung.android.sm_cn,day=4,count=1,muted=0/0,demoted=1}
+    post_frequency{user_id=0,pkg=com.takahashirinta.ncrust,day=4,count=252,muted=0/0,demoted=252}
+    post_frequency{user_id=0,pkg=mark.via.gp,day=4,count=9,muted=0/0,demoted=9}
+    post_frequency{user_id=0,pkg=bin.mt.plus,day=5,count=10,muted=0/0,demoted=10}
+    post_frequency{user_id=0,pkg=com.android.bluetooth,day=5,count=949,muted=14/14,demoted=935}
+    post_frequency{user_id=0,pkg=com.android.phone,day=5,count=6,muted=0/0,demoted=6}
+    post_frequency{user_id=0,pkg=com.android.providers.downloads,day=5,count=2,muted=0/0,demoted=2}
+    post_frequency{user_id=0,pkg=com.demonlab.lune,day=5,count=1,muted=0/0,demoted=1}
+    post_frequency{user_id=0,pkg=com.guang.cloudx,day=5,count=12,muted=0/0,demoted=12}
+    post_frequency{user_id=0,pkg=com.samsung.android.app.sreminder,day=5,count=1,muted=0/0,demoted=1}
+    post_frequency{user_id=0,pkg=com.samsung.android.spay,day=5,count=1,muted=0/1,demoted=0}
+    post_frequency{user_id=0,pkg=com.samsung.android.themestore,day=5,count=5,muted=0/0,demoted=5}
+    post_frequency{user_id=0,pkg=com.sec.android.app.firewall,day=5,count=6,muted=0/0,demoted=6}
+    post_frequency{user_id=0,pkg=com.sec.android.easyMover.Agent,day=5,count=1,muted=0/1,demoted=0}
+    post_frequency{user_id=0,pkg=com.sec.spp.push,day=5,count=1,muted=0/0,demoted=1}
+    post_frequency{user_id=0,pkg=com.takahashirinta.ncrust,day=5,count=45,muted=0/0,demoted=45}
+    post_frequency{user_id=0,pkg=com.termux,day=5,count=7,muted=0/0,demoted=0}
+
+  Zen Mode:
+    mInterruptionFilter=1
+    mZenMode=ZEN_MODE_OFF
+    mDefaultConfig=allow(calls=false,callsFrom=contacts,repeatCallers=false,messages=false,messagesFrom=contacts,alarms=true,events=false,reminders=false,whenScreenOff,whenScreenOn=true)
+      manualRule=null
+      automaticRules=ZenRule[enabled=false,snoozing=false,name=twschedule,zenMode=ZEN_MODE_ALARMS,conditionId=condition://android/schedule?days=1.2.3.4.5.6.7&start=22.0&end=7.0&exitAtAlarm=false,condition=null,component=ComponentInfo{android/com.android.server.notification.ScheduleConditionProvider},id=2a982a87ef87461783c4ebefb64c1e86,creationTime=1790230249410]
+    mConfigs[u=0]=allow(calls=false,callsFrom=contacts,repeatCallers=false,messages=false,messagesFrom=contacts,alarms=true,events=false,reminders=false,whenScreenOff,whenScreenOn=true)
+      manualRule=null
+      automaticRules=ZenRule[enabled=false,snoozing=false,name=twschedule,zenMode=ZEN_MODE_ALARMS,conditionId=condition://android/schedule?days=1.2.3.4.5.6.7&start=22.0&end=7.0&exitAtAlarm=false,condition=Condition[id=condition://android/schedule?days=1.2.3.4.5.6.7&start=22.0&end=7.0&exitAtAlarm=false,summary=...,line1=...,line2=...,icon=0,state=STATE_FALSE,flags=2],component=ComponentInfo{android/com.android.server.notification.ScheduleConditionProvider},id=8e31fbdd6ab14f28b0168f08ab2fcc40,creationTime=1420113690518]
+    mUser=0
+    mConfig=allow(calls=false,callsFrom=contacts,repeatCallers=false,messages=false,messagesFrom=contacts,alarms=true,events=false,reminders=false,whenScreenOff,whenScreenOn=true)
+      manualRule=null
+      automaticRules=ZenRule[enabled=false,snoozing=false,name=twschedule,zenMode=ZEN_MODE_ALARMS,conditionId=condition://android/schedule?days=1.2.3.4.5.6.7&start=22.0&end=7.0&exitAtAlarm=false,condition=Condition[id=condition://android/schedule?days=1.2.3.4.5.6.7&start=22.0&end=7.0&exitAtAlarm=false,summary=...,line1=...,line2=...,icon=0,state=STATE_FALSE,flags=2],component=ComponentInfo{android/com.android.server.notification.ScheduleConditionProvider},id=8e31fbdd6ab14f28b0168f08ab2fcc40,creationTime=1420113690518]
+    mSuppressedEffects=0
+    mDefaultPhoneApp=null
+    RepeatCallers.mThresholdMinutes=0
+    mSubscriptions={condition://android/schedule?days=1.2.3.4.5.6.7&start=22.0&end=7.0&exitAtAlarm=false=ComponentInfo{android/com.android.server.notification.ScheduleConditionProvider}}
+
+  Zen Log:
+    09-24 14:10:49.414 config: readXml,ZenModeConfig[user=0,allowCalls=false,allowRepeatCallers=false,allowMessages=false,allowCallsFrom=contacts,allowMessagesFrom=contacts,allowReminders=false,allowEvents=false,allowAlarms=true,allowWhenScreenOff=true,allowWhenScreenOn=true,automaticRules={8e31fbdd6ab14f28b0168f08ab2fcc40=ZenRule[enabled=false,snoozing=false,name=twschedule,zenMode=ZEN_MODE_ALARMS,conditionId=condition://android/schedule?days=1.2.3.4.5.6.7&start=22.0&end=7.0&exitAtAlarm=false,condition=Condition[id=condition://android/schedule?days=1.2.3.4.5.6.7&start=22.0&end=7.0&exitAtAlarm=false,summary=...,line1=...,line2=...,icon=0,state=STATE_FALSE,flags=2],component=ComponentInfo{android/com.android.server.notification.ScheduleConditionProvider},id=8e31fbdd6ab14f28b0168f08ab2fcc40,creationTime=1420113690518]},manualRule=null],Diff[automaticRule[2a982a87ef87461783c4ebefb64c1e86]:delete,automaticRule[8e31fbdd6ab14f28b0168f08ab2fcc40]:insert]
+    09-24 14:10:49.483 set_zen_mode: off,init
+    09-24 14:10:49.951 config: cleanUpZenRules,ZenModeConfig[user=0,allowCalls=false,allowRepeatCallers=false,allowMessages=false,allowCallsFrom=contacts,allowMessagesFrom=contacts,allowReminders=false,allowEvents=false,allowAlarms=true,allowWhenScreenOff=true,allowWhenScreenOn=true,automaticRules={8e31fbdd6ab14f28b0168f08ab2fcc40=ZenRule[enabled=false,snoozing=false,name=twschedule,zenMode=ZEN_MODE_ALARMS,conditionId=condition://android/schedule?days=1.2.3.4.5.6.7&start=22.0&end=7.0&exitAtAlarm=false,condition=Condition[id=condition://android/schedule?days=1.2.3.4.5.6.7&start=22.0&end=7.0&exitAtAlarm=false,summary=...,line1=...,line2=...,icon=0,state=STATE_FALSE,flags=2],component=ComponentInfo{android/com.android.server.notification.ScheduleConditionProvider},id=8e31fbdd6ab14f28b0168f08ab2fcc40,creationTime=1420113690518]},manualRule=null],Diff[]
+    09-24 14:10:49.952 set_zen_mode: off,onSystemReady
+    09-24 14:10:51.733 set_zen_mode: off,readXml
+    09-24 14:10:51.744 subscribe: condition://android/schedule?days=1.2.3.4.5.6.7&start=22.0&end=7.0&exitAtAlarm=false,ok
+    09-24 14:10:51.784 set_zen_mode: off,cleanUpZenRules
+    09-24 22:00:00.071 config: conditionChanged,ZenModeConfig[user=0,allowCalls=false,allowRepeatCallers=false,allowMessages=false,allowCallsFrom=contacts,allowMessagesFrom=contacts,allowReminders=false,allowEvents=false,allowAlarms=true,allowWhenScreenOff=true,allowWhenScreenOn=true,automaticRules={8e31fbdd6ab14f28b0168f08ab2fcc40=ZenRule[enabled=false,snoozing=false,name=twschedule,zenMode=ZEN_MODE_ALARMS,conditionId=condition://android/schedule?days=1.2.3.4.5.6.7&start=22.0&end=7.0&exitAtAlarm=false,condition=Condition[id=condition://android/schedule?days=1.2.3.4.5.6.7&start=22.0&end=7.0&exitAtAlarm=false,summary=...,line1=...,line2=...,icon=0,state=STATE_TRUE,flags=2],component=ComponentInfo{android/com.android.server.notification.ScheduleConditionProvider},id=8e31fbdd6ab14f28b0168f08ab2fcc40,creationTime=1420113690518]},manualRule=null],Diff[automaticRule[8e31fbdd6ab14f28b0168f08ab2fcc40].condition:Condition[id=condition://android/schedule?days=1.2.3.4.5.6.7&start=22.0&end=7.0&exitAtAlarm=false,summary=...,line1=...,line2=...,icon=0,state=STATE_FALSE,flags=2]->Condition[id=condition://android/schedule?days=1.2.3.4.5.6.7&start=22.0&end=7.0&exitAtAlarm=false,summary=...,line1=...,line2=...,icon=0,state=STATE_TRUE,flags=2]]
+    09-24 22:00:00.074 set_zen_mode: off,conditionChanged
+    09-25 07:00:00.258 config: conditionChanged,ZenModeConfig[user=0,allowCalls=false,allowRepeatCallers=false,allowMessages=false,allowCallsFrom=contacts,allowMessagesFrom=contacts,allowReminders=false,allowEvents=false,allowAlarms=true,allowWhenScreenOff=true,allowWhenScreenOn=true,automaticRules={8e31fbdd6ab14f28b0168f08ab2fcc40=ZenRule[enabled=false,snoozing=false,name=twschedule,zenMode=ZEN_MODE_ALARMS,conditionId=condition://android/schedule?days=1.2.3.4.5.6.7&start=22.0&end=7.0&exitAtAlarm=false,condition=Condition[id=condition://android/schedule?days=1.2.3.4.5.6.7&start=22.0&end=7.0&exitAtAlarm=false,summary=...,line1=...,line2=...,icon=0,state=STATE_FALSE,flags=2],component=ComponentInfo{android/com.android.server.notification.ScheduleConditionProvider},id=8e31fbdd6ab14f28b0168f08ab2fcc40,creationTime=1420113690518]},manualRule=null],Diff[automaticRule[8e31fbdd6ab14f28b0168f08ab2fcc40].condition:Condition[id=condition://android/schedule?days=1.2.3.4.5.6.7&start=22.0&end=7.0&exitAtAlarm=false,summary=...,line1=...,line2=...,icon=0,state=STATE_TRUE,flags=2]->Condition[id=condition://android/schedule?days=1.2.3.4.5.6.7&start=22.0&end=7.0&exitAtAlarm=false,summary=...,line1=...,line2=...,icon=0,state=STATE_FALSE,flags=2]]
+    09-25 07:00:00.262 set_zen_mode: off,conditionChanged
+
+  Ranking Config:
+Records:
+      com.android.bluetooth (1002)
+      android (1000)
+      com.sec.android.app.firewall (10020)
+      com.android.systemui (10070)
+      com.android.phone (1001)
+      com.takahashirinta.ncrust (10186)
+      com.takahashirinta.ncrust (10188)
+Restored without uid:
+
+  Notification listeners:
+    All notification listeners (0) enabled for current profiles:
+    Live notification listeners (3):
+      ComponentInfo{com.android.systemui/com.android.systemui.statusbar.phone.PhoneStatusBar} (user -1): android.service.notification.INotificationListener$Stub$Proxy@7eeb66 SYSTEM
+      ComponentInfo{android.ext.services/android.ext.services.notification.Ranker} (user 0): android.service.notification.INotificationListener$Stub$Proxy@8a77ea7 SYSTEM GUEST
+      ComponentInfo{android/com.android.server.am.MARsPolicyManager} (user 0): android.service.notification.NotificationListenerService$NotificationListenerWrapper@411ff54 SYSTEM
+    Snoozed notification listeners (0):
+    mListenerHints: 0
+    mListenersDisablingEffects: ()
+
+  mRankerServicePackageName: android.ext.services
+
+  Notification ranker services:
+    All notification ranker services (0) enabled for current profiles:
+    Live notification ranker services (1):
+      ComponentInfo{android.ext.services/android.ext.services.notification.Ranker} (user 0): android.service.notification.INotificationListener$Stub$Proxy@8a77ea7 SYSTEM
+    Snoozed notification ranker services (0):
+
+  Policy access:
+    mPolicyAccess: com.android.server.notification.NotificationManagerService$PolicyAccess@66d7efd
+
+  Condition providers:
+    All condition providers (0) enabled for current profiles:
+    Live condition providers (1):
+      ComponentInfo{android/com.android.server.notification.ScheduleConditionProvider} (user 0): android.service.notification.ConditionProviderService$Provider@dfe57f2 SYSTEM
+    Snoozed condition providers (0):
+    mRecords(1):
+      ConditionRecord[id=condition://android/schedule?days=1.2.3.4.5.6.7&start=22.0&end=7.0&exitAtAlarm=false,component=ComponentInfo{android/com.android.server.notification.ScheduleConditionProvider},subscribed=true]
+    mSystemConditionProviders: {schedule}
+    ScheduleConditionProvider:
+      mConnected=true
+      mRegistered=true
+      mSubscriptions=
+          condition://android/schedule?days=1.2.3.4.5.6.7&start=22.0&end=7.0&exitAtAlarm=false
+            ScheduleCalendar[mDays={1, 2, 3, 4, 5, 6, 7}, mSchedule=ScheduleInfo{days=[1, 2, 3, 4, 5, 6, 7], startHour=22, startMinute=0, endHour=7, endMinute=0, exitAtAlarm=false, nextAlarm=0}]
+      mNextAlarmTime=Fri Sep 25 22:00:00 GMT+08:00 2026 (1790344800000), in +8h44m38s942ms, now=Fri Sep 25 13:15:21 GMT+08:00 2026 (1790313321058)
+
+  Group summaries:

@@ -1,0 +1,66 @@
+# 判据关键探针：白名单若是硬编码包名数组，'com.netease.cloudmusic' / 'com.tencent.qqmusic' 会出现在 ROM jar 里
+# 采集时间 2026-09-25T12:57:03+08:00
+
+---- pattern: com.netease.cloudmusic
+$ adb -s WVQ6R22124000968 shell 'grep -l "com.netease.cloudmusic" /system/framework/*.jar 2>/dev/null'
+/system/framework/hwServices.jar
+/system/framework/services.jar
+/system/framework/zframework.z.jar
+exit=0
+---- pattern: com.tencent.qqmusic
+$ adb -s WVQ6R22124000968 shell 'grep -l "com.tencent.qqmusic" /system/framework/*.jar 2>/dev/null'
+/system/framework/hwServices.jar
+/system/framework/zframework.z.jar
+exit=0
+---- pattern: com.kugou.android
+$ adb -s WVQ6R22124000968 shell 'grep -l "com.kugou.android" /system/framework/*.jar 2>/dev/null'
+/system/framework/hwServices.jar
+/system/framework/zframework.z.jar
+exit=0
+---- pattern: com.huawei.music
+$ adb -s WVQ6R22124000968 shell 'grep -l "com.huawei.music" /system/framework/*.jar 2>/dev/null'
+/system/framework/framework.jar
+/system/framework/hwEmui.jar
+/system/framework/hwPartBasicplatformServices.jar
+/system/framework/hwPartIawareService.jar
+/system/framework/hwPartUserIAM.jar
+/system/framework/hwServices.jar
+/system/framework/services.jar
+exit=0
+---- pattern: com.android.mediacenter
+$ adb -s WVQ6R22124000968 shell 'grep -l "com.android.mediacenter" /system/framework/*.jar 2>/dev/null'
+/system/framework/framework.jar
+/system/framework/hwEmui.jar
+/system/framework/hwPartBasicplatformServices.jar
+/system/framework/hwPartIawareService.jar
+/system/framework/hwServices.jar
+/system/framework/hwWifi-service.jar
+/system/framework/services.jar
+exit=0
+---- pattern: com.takahashirinta.ncrust
+$ adb -s WVQ6R22124000968 shell 'grep -l "com.takahashirinta.ncrust" /system/framework/*.jar 2>/dev/null'
+exit=1
+
+## 白名单可能的配置文件名/路径候选（在 hwEmui.jar / hwServices.jar 中出现过才列）
+---- pattern: media_white_list
+exit=1
+---- pattern: media_whitelist
+exit=1
+---- pattern: white_list
+/system/framework/hwEmui.jar
+/system/framework/hwServices.jar
+exit=0
+---- pattern: whitelist
+/system/framework/hwEmui.jar
+/system/framework/hwServices.jar
+exit=0
+---- pattern: mediaWhiteList.xml
+exit=1
+---- pattern: medialist
+exit=1
+---- pattern: media_control
+/system/framework/hwEmui.jar
+/system/framework/hwServices.jar
+exit=0
+---- pattern: media_control_whitelist
+exit=1

@@ -1,0 +1,212 @@
+############ capture: douyin (com.ss.android.ugc.aweme)  开始时间 2026-09-25T13:00:56+08:00  设备 WVQ6R22124000968
+$ adb -s WVQ6R22124000968 shell am force-stop <四个候选应用>   # 清场，避免别的会话干扰
+$ adb -s WVQ6R22124000968 logcat -c
+$ adb -s WVQ6R22124000968 shell am start -n com.ss.android.ugc.aweme/.splash.SplashActivity
+Starting: Intent { cmp=com.ss.android.ugc.aweme/.splash.SplashActivity }
+exit=0
+## 轮询等待 state=3（最多 60s）
+  t=3s  state=state=1
+  t=6s  state=state=1
+  t=9s  state=state=1
+  t=12s  state=state=1
+  t=15s  state=state=1
+  t=18s  state=
+  t=21s  state=
+  t=24s  state=
+  t=27s  state=
+  t=30s  state=
+  t=33s  state=
+  t=36s  state=
+  t=39s  state=
+  t=42s  state=state=1
+  t=45s  state=state=1
+  t=48s  state=
+  t=51s  state=
+  t=54s  state=
+  t=57s  state=
+  t=60s  state=
+## 最终 state = <未取到>
+## ⚠️ 未在播放状态，证据无效（state=none）
+
+################ (1) dumpsys media_session   [2026-09-25T13:02:05+08:00]
+$ adb -s WVQ6R22124000968 shell dumpsys media_session
+  -> dumpsys-media-session-douyin.txt exit=0  bytes=2830
+  -- Media button session 原文:
+  Media button session is com.netease.cloudmusic/MediaSession (userId=0)
+  -- 本包会话原文:
+  -- uid/packages 行:
+  uid=10235 packages=com.netease.cloudmusic 
+
+################ (2) dumpsys notification --noredact  [2026-09-25T13:02:05+08:00]
+$ adb -s WVQ6R22124000968 shell dumpsys notification --noredact
+  -> dumpsys-notification-douyin.txt exit=0 bytes=305554
+  -- 本包通知（含 MediaStyle/style 关键字）:
+649:      AppSettings: com.ss.android.ugc.aweme (10083)
+703:        NotificationChannel{mId='com.ss.android.ugc.aweme.server', mName=Notification, mDescription=, mImportance=4, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=true, mLightColor=-16711936, mVibration=null, mUserLockedFields=0, mFgServiceShown=false, mVibrationEnabled=true, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedByOEM=false, mImportanceLockedDefaultApp=false, mOriginalImp=4, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false}
+704:        NotificationChannel{mId='com.ss.android.ugc.aweme.server.important.low', mName=Notification, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=null, mLights=true, mLightColor=-16711936, mVibration=null, mUserLockedFields=30, mFgServiceShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedByOEM=false, mImportanceLockedDefaultApp=false, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false}
+828:      userId=0 value={com.huawei.hifolder, com.quark.browser, com.takahashirinta.ncrust, com.qiyi.video.pad, com.phoenix.read, com.ks.kaishustory, com.ZWSoft.ZWCAD, com.huawei.kidsmode, com.VisualConcepts.MyNBA2K, com.xingin.xhs, com.umetrip.android.msky.app, com.android.camera2, com.baidu.searchbox, com.xingye.app, com.tencent.nba2kx, com.shinyv.cnr, com.youban.xblertongpbhw, tv.kbbmm.bpnovr, com.apkcombo.app, tv.danmaku.bilibilihd, com.ss.android.article.news, com.m4399.gamecenter, com.ss.android.ugc.aweme, com.hhdd.kadahd, com.snda.wifilocating, com.sina.weibo.harmonyos, com.bb.happykids.huawei, com.k7k7.goujihd.huawei, com.larus.nova, com.tencent.lolm, com.smile.gifmaker, com.gamein.com.t2ksports.nba2k20andmad, com.yuewen.dreamer, com.yodo1.ski, com.yangcong345.android.phone, com.huawei.hicreate}
+867:      key='com.ss.android.ugc.aweme',
+
+################ (3) logcat -d 过滤  [2026-09-25T13:02:05+08:00]
+$ adb -s WVQ6R22124000968 logcat -d | grep -iE "HwMediaSession|MediaControlUtils|media white list|Media button session|MediaSessionService"
+  -> logcat-hwmediasession-douyin.txt 行数=84
+09-25 13:02:01.588  1639  2059 I HwMediaSessionServiceInner: handleActiveSession: session is com.netease.cloudmusic/MediaSession (userId=0)
+09-25 13:02:01.588  1639  2059 E HwMediaSessionServiceInner: handleActiveSession: stack is null
+09-25 13:02:01.593  1639  1876 I HwMediaSessionServiceEx: onActiveSessionsChanged controller size = 1  topPkg:com.netease.cloudmusic
+09-25 13:02:01.594  1639  1876 I MediaControlUtils: checkController is true
+09-25 13:02:01.594  1639  1876 I MediaControllerCache: HwMediaSessionServiceEx cache change size:1
+09-25 13:02:01.594  1639  1876 V HwMediaSessionServiceEx: getPlayerInfo, playerId: 202558260,pkgname: com.netease.cloudmusic
+09-25 13:02:01.595  1639  1876 V HwMediaSessionServiceEx: on event EventType: 20, playerId: null
+09-25 13:02:01.596  1639  1876 I MediaControlUtils: checkController is true
+09-25 13:02:01.596  1639  1876 I HwMediaSessionServiceEx: player infoList size: 1
+09-25 13:02:01.596  1639  1876 V HwMediaSessionServiceEx: getPlayerInfo, playerId: 202558260,pkgname: com.netease.cloudmusic
+09-25 13:02:01.596  1639  1876 I HwMediaSessionServiceEx: registerEventObserver by 1639  filter id:202558260 observer:com.android.server.audio.HwAudioServiceEx$10@7ea567
+09-25 13:02:01.596  1639  1876 I HwMediaSessionServiceEx: onEventFromRequestData: 3
+09-25 13:02:01.596  1639  1876 E HwMediaSessionServiceEx: getPlaybackState is null
+09-25 13:02:01.596  1639  1876 V HwMediaSessionServiceEx: on event EventType: 20, playerId: null
+09-25 13:02:01.597  1639  1876 V HwMediaSessionServiceEx: on event EventType: 4, playerId: 202558260
+09-25 13:02:01.598  1639  2198 I HwMediaSessionServiceEx: registerEventObserver by 2730  filter id:202558260 observer:android.os.BinderProxy@928c4a9
+09-25 13:02:01.624  1639  1876 I HwMediaSessionServiceEx: onMetadataChanged begin
+09-25 13:02:01.624  1639  1876 I HwMediaSessionServiceEx: getTitleAndArtist, title: The Final Countdown, artist: Europe, playerId: 202558260
+09-25 13:02:01.625  1639  1876 V HwMediaSessionServiceEx: on event EventType: 3, playerId: 202558260
+09-25 13:02:01.625  1639  1876 V HwMediaSessionServiceEx: on event EventType: 11, playerId: 202558260
+09-25 13:02:03.828  1639  1639 D MediaSessionService: Audio playback is changed, config=AudioPlaybackConfiguration piid:391 deviceId:0 type:android.media.AudioTrack u/pid:10235/24523 state:started attr:AudioAttributes: usage=USAGE_MEDIA content=CONTENT_TYPE_MUSIC flags=0x800 tags= bundle=null sessionId:129, removed=false
+09-25 13:02:03.828  1639  1639 I MediaSessionStack: updateMediaButtonSessionIfNeeded, callers=com.android.server.media.MediaSessionService.lambda$onStart$0$MediaSessionService:299 com.android.server.media.MediaSessionService$$ExternalSyntheticLambda0.onAudioPlayerActiveStateChanged:2 
+09-25 13:02:03.828  1639  1639 I MediaSessionService: Media button session is changed to com.netease.cloudmusic/MediaSession (userId=0)
+09-25 13:02:03.828  1639  1639 I MediaSessionService: rememberMediaButtonReceiverLocked com.netease.cloudmusic/MediaSession (userId=0)
+09-25 13:02:03.828  1639  1639 I MediaSessionService: apptype = 7, IAWARE_APP_TYPE_MUSIC = 7
+09-25 13:02:03.829  1639  1639 I MediaSessionService: isAudioApp:com.netease.cloudmusic is audio app
+09-25 13:02:03.853  1639  1876 I HwMediaSessionServiceEx: onActiveSessionsChanged controller size = 1  topPkg:com.netease.cloudmusic
+09-25 13:02:03.854  1639  1876 I MediaControlUtils: checkController is true
+09-25 13:02:04.754  1639  1639 D MediaSessionService: Audio playback is changed, config=AudioPlaybackConfiguration piid:391 deviceId:2 type:android.media.AudioTrack u/pid:10235/24523 state:paused attr:AudioAttributes: usage=USAGE_MEDIA content=CONTENT_TYPE_MUSIC flags=0x800 tags= bundle=null sessionId:129, removed=false
+09-25 13:02:04.754  1639  1639 I MediaSessionStack: updateMediaButtonSessionIfNeeded, callers=com.android.server.media.MediaSessionService.lambda$onStart$0$MediaSessionService:299 com.android.server.media.MediaSessionService$$ExternalSyntheticLambda0.onAudioPlayerActiveStateChanged:2 
+09-25 13:02:04.899  1639  1876 I HwMediaSessionServiceEx: onSessionEvent, event: EVENT_LYRIC_STATE_CHANGED
+09-25 13:02:04.999  1639  3996 I MediaSessionService: Pause other media when new session is playing.
+09-25 13:02:05.000  1639  3996 I MediaControlUtils: checkController is true
+09-25 13:02:05.000  1639  3996 E HwMediaSessionServiceInner: pauseMigrateInMediaApp mMigrateInStackMap is empty
+09-25 13:02:05.003  1639  1876 I HwMediaSessionServiceEx: onPlaybackStateChanged begin: state=3, position=187449, speed=1.0, actions=822, errorMessage=null, playerId=202558260
+09-25 13:02:05.014  1639  1876 I HwMediaSessionServiceEx:  playbackSpeed: 1.0
+09-25 13:02:05.014  1639  1876 I HwMediaSessionServiceEx: onSessionEvent, event: hicar.media.action.PLAY_RATE_CHANGE
+09-25 13:02:05.014  1639  1876 I HwMediaSessionServiceEx: onMetadataChanged begin
+09-25 13:02:05.014  1639  1876 I HwMediaSessionServiceEx: getTitleAndArtist, title: The Final Countdown, artist: Europe, playerId: 202558260
+09-25 13:02:05.014  1639  1876 I HwMediaSessionServiceEx: unionMetadataCache create new cache using old image and new data
+09-25 13:02:05.015  1639  1876 I HwMediaSessionServiceEx: onPlaybackStateChanged begin: state=3, position=187449, speed=1.0, actions=822, errorMessage=null, playerId=202558260
+09-25 13:02:05.015  1639  1876 I HwMediaSessionServiceEx:  playbackSpeed: 1.0
+09-25 13:02:05.015  1639  1876 I HwMediaSessionServiceEx: onPlaybackStateChanged begin: state=3, position=187449, speed=1.0, actions=822, errorMessage=null, playerId=202558260
+09-25 13:02:05.015  1639  1876 I HwMediaSessionServiceEx:  playbackSpeed: 1.0
+09-25 13:02:05.015  1639  1876 V HwMediaSessionServiceEx: on event EventType: 4, playerId: 202558260
+09-25 13:02:05.019  1639  1876 I MediaControlUtils: checkController is true
+09-25 13:02:05.019  1639  1876 I HwMediaSessionServiceEx: player infoList size: 1
+09-25 13:02:05.019  1639  1876 V HwMediaSessionServiceEx: getPlayerInfo, playerId: 202558260,pkgname: com.netease.cloudmusic
+09-25 13:02:05.019  1639  1876 I HwMediaSessionServiceEx:  playbackSpeed: 1.0
+09-25 13:02:05.022  1639  1876 V HwMediaSessionServiceEx: on event EventType: 4, playerId: 202558260
+09-25 13:02:05.023  1639  1876 V HwMediaSessionServiceEx: on event EventType: 3, playerId: 202558260
+09-25 13:02:05.023  1639  1876 V HwMediaSessionServiceEx: on event EventType: 11, playerId: 202558260
+09-25 13:02:05.023  1639  1876 V HwMediaSessionServiceEx: on event EventType: 4, playerId: 202558260
+09-25 13:02:05.023  1639  1876 V HwMediaSessionServiceEx: on event EventType: 4, playerId: 202558260
+09-25 13:02:05.023  1639  1876 V HwMediaSessionServiceEx: on event EventType: 4, playerId: 202558260
+09-25 13:02:05.023  1639  1876 V HwMediaSessionServiceEx: on event EventType: 4, playerId: 202558260
+09-25 13:02:05.074  1639  1639 D MediaSessionService: Audio playback is changed, config=AudioPlaybackConfiguration piid:391 deviceId:0 type:android.media.AudioTrack u/pid:10235/24523 state:started attr:AudioAttributes: usage=USAGE_MEDIA content=CONTENT_TYPE_MUSIC flags=0x800 tags= bundle=null sessionId:129, removed=false
+09-25 13:02:05.074  1639  1639 I MediaSessionStack: updateMediaButtonSessionIfNeeded, callers=com.android.server.media.MediaSessionService.lambda$onStart$0$MediaSessionService:299 com.android.server.media.MediaSessionService$$ExternalSyntheticLambda0.onAudioPlayerActiveStateChanged:2 
+09-25 13:02:05.613  1639  1876 I HwMediaSessionServiceEx: onPlaybackStateChanged begin: state=3, position=187449, speed=1.0, actions=822, errorMessage=null, playerId=202558260
+09-25 13:02:05.613  1639  1876 I HwMediaSessionServiceEx:  playbackSpeed: 1.0
+09-25 13:02:05.613  1639  1876 V HwMediaSessionServiceEx: on event EventType: 4, playerId: 202558260
+09-25 13:02:05.613  1639  1876 V HwMediaSessionServiceEx: on event EventType: 4, playerId: 202558260
+09-25 13:02:05.620  1639  3105 I MediaControlUtils: checkController is true
+09-25 13:02:05.620  1639  3105 I HwMediaSessionServiceEx: player infoList size: 1
+09-25 13:02:05.620  1639  3105 V HwMediaSessionServiceEx: getPlayerInfo, playerId: 202558260,pkgname: com.netease.cloudmusic
+09-25 13:02:05.620  1639  3105 I HwMediaSessionServiceEx:  playbackSpeed: 1.0
+09-25 13:02:05.621  1639  3105 I MediaControlUtils: checkController is true
+09-25 13:02:05.621  1639  3105 I HwMediaSessionServiceEx: player infoList size: 1
+09-25 13:02:05.621  1639  3105 V HwMediaSessionServiceEx: getPlayerInfo, playerId: 202558260,pkgname: com.netease.cloudmusic
+09-25 13:02:05.622  1639  3105 I HwMediaSessionServiceEx:  playbackSpeed: 1.0
+09-25 13:02:05.623  1639  3105 I HwMediaSessionServiceEx: registerEventObserver by 25058  filter id:202558260 observer:android.os.BinderProxy@316484
+09-25 13:02:05.625  1639  3105 I HwMediaSessionServiceEx: onEventFromRequestData: 1
+09-25 13:02:05.626  1639  1876 V HwMediaSessionServiceEx: on event EventType: 3, playerId: 202558260
+09-25 13:02:05.626  1639  1876 V HwMediaSessionServiceEx: on event EventType: 3, playerId: 202558260
+09-25 13:02:05.626  1639  3991 I HwMediaSessionServiceEx: onEventFromRequestData: 5
+09-25 13:02:05.626  1639  1876 V HwMediaSessionServiceEx: on event EventType: 5, playerId: 202558260
+09-25 13:02:05.627  1639  3992 I HwMediaSessionServiceEx: onEventFromRequestData: 3
+09-25 13:02:05.627  1639  3992 I HwMediaSessionServiceEx:  playbackSpeed: 1.0
+09-25 13:02:05.628  1639  1876 V HwMediaSessionServiceEx: on event EventType: 4, playerId: 202558260
+09-25 13:02:05.629  1639  1876 V HwMediaSessionServiceEx: on event EventType: 4, playerId: 202558260
+09-25 13:02:05.629  1639  1876 V HwMediaSessionServiceEx: on event EventType: 4, playerId: 202558260
+09-25 13:02:05.630  1639  3996 I HwMediaSessionServiceEx: onEventFromRequestData: 4
+09-25 13:02:05.630  1639  1876 V HwMediaSessionServiceEx: on event EventType: 11, playerId: 202558260
+09-25 13:02:05.631  1639  1876 V HwMediaSessionServiceEx: on event EventType: 11, playerId: 202558260
+
+################ (4) settings list global | grep -i media_button_receiver  [2026-09-25T13:02:06+08:00]
+$ adb -s WVQ6R22124000968 shell settings list global | grep -i media_button_receiver
+exit=1  （exit=1 表示无该设置项）
+$ adb -s WVQ6R22124000968 shell settings list global | grep -iE "media|music"
+awareness_ca_com.android.mediacenter=1
+awareness_ca_com.huawei.music=1
+car_dock_sound=/system/media/audio/ui/Dock.ogg
+car_undock_sound=/system/media/audio/ui/Undock.ogg
+charging_started_sound=/system/media/audio/ui/ChargingStarted.ogg
+desk_dock_sound=/system/media/audio/ui/Dock.ogg
+desk_undock_sound=/system/media/audio/ui/Undock.ogg
+dock_audio_media_enabled=1
+huawei_music=1
+huawei_music_old=1
+lock_sound=/system/media/audio/ui/Lock.ogg
+low_battery_sound=/system/media/audio/ui/LowBattery.ogg
+trusted_sound=/system/media/audio/ui/Trusted.ogg
+unlock_sound=/system/media/audio/ui/Unlock.ogg
+wireless_charging_started_sound=/system/media/audio/ui/WirelessChargingStarted.ogg
+
+################ (5) 控制中心 uiautomator + 截图  [2026-09-25T13:02:06+08:00]
+$ adb -s WVQ6R22124000968 shell cmd statusbar expand-settings
+exit=0
+$ adb -s WVQ6R22124000968 shell uiautomator dump /sdcard/ui.xml
+UI hierchary dumped to: /sdcard/ui.xml
+exit=0
+/sdcard/ui.xml: 1 file pulled, 0 skipped. 30.8 MB/s (76097 bytes in 0.002s)
+  -> uiautomator-douyin.xml bytes=76097
+  -- 媒体卡文本节点（content-desc / text，过滤空值）:
+content-desc="查看已配对的设备"
+content-desc="查看 WLAN 列表"
+content-desc="打开设置。"
+content-desc="多屏协同"
+content-desc="关闭"
+content-desc="华为分享"
+content-desc="截屏"
+content-desc="进入超级终端页面"
+content-desc="静音"
+content-desc="开启性能模式"
+content-desc="蓝牙开启。"
+content-desc="蓝牙, 未连接。"
+content-desc="屏幕亮度"
+content-desc="切换播放设备"
+content-desc="上一首"
+content-desc="手机蹲方魂-nova 13未协同"
+content-desc="随行WiFi 3 Pro, 离线, 设备卡片"
+content-desc="位置信息"
+content-desc="下一首"
+content-desc="页面编辑"
+content-desc="暂停"
+content-desc="展开快捷设置"
+content-desc="振铃器静音。"
+content-desc="正在充电，已完成百分之100。"
+content-desc="自动旋转"
+content-desc="FreeBuds Pro, 未连接, 设备卡片"
+content-desc="The Final Countdown Europe"
+content-desc="WLAN 信号强度满格。"
+content-desc="WLAN, CMCC-YKPt-5G, WLAN 信号强度满格。"
+text=" "
+text="100"
+text="超级终端"
+text="蹲方魂-nova 13"
+text="控制中心"
+text="蓝牙"
+text="离线"
+text="屏幕亮度"
+text="随行WiFi 3 Pro"
+text="未连接"
+text="暂无可用的场景，马上去添加"
+$ adb -s WVQ6R22124000968 exec-out screencap -p > screenshots/douyin-controlcenter.png
+  -> screenshots/douyin-controlcenter.png bytes=437243
+$ adb -s WVQ6R22124000968 shell cmd statusbar collapse
+
+## 结束：force-stop com.ss.android.ugc.aweme
+############ capture 结束 2026-09-25T13:02:13+08:00

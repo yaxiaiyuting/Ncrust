@@ -1,0 +1,149 @@
+# 场景：让应用在播，间隔 8s 采两次通知，比对正文是否随歌词推进
+
+## 起播命令
+$ /usr/bin/adb -s 0715f763f54c023a shell am start -n com.takahashirinta.ncrust/.MainActivity
+--- stdout/stderr ---
+Starting: Intent { cmp=com.takahashirinta.ncrust/.MainActivity launchParam=MultiScreenLaunchParams { mDisplayId=0 mFlags=0 } }
+Warning: Activity not started, its current task has been brought to the front
+--- exit=0 ---
+$ /usr/bin/adb -s 0715f763f54c023a shell input keyevent 126
+--- stdout/stderr ---
+--- exit=0 ---
+
+########## 采样 1  (t+0s) ##########
+### 播放状态
+3 3 ### 通知正文（android.title / android.text）
+    NotificationRecord(0x0a509c38: pkg=com.takahashirinta.ncrust user=UserHandle{0} id=1 tag=null importance=2 key=0|com.takahashirinta.ncrust|1|null|10188: Notification(pri=0 contentView=null vibrate=null sound=null defaults=0x0 flags=0x6a color=0xff1db954 category=transport actions=3 vis=PUBLIC semFlags=0x0 semPriority=0))
+      uid=10188 userId=0
+      icon=Icon(typ=RESOURCE pkg=com.takahashirinta.ncrust id=0x01080024) / android:drawable/ic_media_play
+        android.title=String (但故事的最后你好像还是说了拜拜)
+        android.text=String (晴天 · 周杰伦)
+    NotificationRecord(0x07be1702: pkg=com.android.systemui user=UserHandle{-1} id=2131951673 tag=charging_state importance=1 key=-1|com.android.systemui|2131951673|charging_state|10070: Notification(pri=-2 contentView=null vibrate=null sound=null defaults=0x0 flags=0xa color=0xff607d8b category=sys vis=PUBLIC semFlags=0x0 semPriority=0))
+      uid=10070 userId=-1
+      icon=Icon(typ=RESOURCE pkg=com.android.systemui id=0x7f02056e) / com.android.systemui:drawable/stat_notify_afc
+        android.title=String (充电器充电)
+        android.text=String (正在充电：92%
+    NotificationRecord(0x0deeba50: pkg=android user=UserHandle{-1} id=17040422 tag=null importance=1 key=-1|android|17040422|null|1000: Notification(pri=-2 contentView=null vibrate=null sound=null tick defaults=0x0 flags=0x2 color=0xff607d8b vis=PUBLIC semFlags=0x0 semPriority=0))
+      uid=1000 userId=-1
+      icon=Icon(typ=RESOURCE pkg=android id=0x0108089c) / android:drawable/stat_sys_data_usb_otg_connected
+        android.title=String (使用 USB 传输文件)
+        android.text=String (点击获取其他 USB 选项)
+    StatusBarNotification(pkg=android user=UserHandle{-1} id=17040422 tag=null key=-1|android|17040422|null|1000: Notification(pri=-2 contentView=null vibrate=null sound=null tick defaults=0x0 flags=0x2 color=0xff607d8b vis=PUBLIC semFlags=0x0 semPriority=0))
+    StatusBarNotification(pkg=com.android.systemui user=UserHandle{-1} id=2131951673 tag=charging_state key=-1|com.android.systemui|2131951673|charging_state|10070: Notification(pri=-2 contentView=null vibrate=null sound=null defaults=0x0 flags=0xa color=0xff607d8b category=sys vis=PUBLIC semFlags=0x0 semPriority=0))
+    StatusBarNotification(pkg=com.takahashirinta.ncrust user=UserHandle{0} id=1 tag=null key=0|com.takahashirinta.ncrust|1|null|10188: Notification(pri=0 contentView=null vibrate=null sound=null defaults=0x0 flags=0x6a color=0xff1db954 category=transport actions=3 vis=PUBLIC semFlags=0x0 semPriority=0))
+    StatusBarNotification(pkg=com.takahashirinta.ncrust user=UserHandle{0} id=1 tag=null key=0|com.takahashirinta.ncrust|1|null|10188: Notification(pri=0 contentView=null vibrate=null sound=null defaults=0x0 flags=0x6a color=0xff1db954 category=transport actions=3 vis=PUBLIC semFlags=0x0 semPriority=0))
+    StatusBarNotification(pkg=com.takahashirinta.ncrust user=UserHandle{0} id=1 tag=null key=0|com.takahashirinta.ncrust|1|null|10188: Notification(pri=0 contentView=null vibrate=null sound=null defaults=0x0 flags=0x6a color=0xff1db954 category=transport actions=3 vis=PUBLIC semFlags=0x0 semPriority=0))
+    post_frequency{user_id=-1,pkg=android,day=0,count=52,muted=0/0,demoted=0}
+    post_frequency{user_id=-1,pkg=com.android.systemui,day=0,count=370,muted=0/0,demoted=0}
+    post_frequency{user_id=-1,pkg=android,day=1,count=20,muted=0/0,demoted=0}
+    post_frequency{user_id=-1,pkg=com.android.systemui,day=1,count=285,muted=0/0,demoted=1}
+    post_frequency{user_id=-1,pkg=android,day=2,count=15,muted=0/0,demoted=0}
+    post_frequency{user_id=-1,pkg=com.android.systemui,day=2,count=167,muted=0/0,demoted=0}
+    post_frequency{user_id=-1,pkg=android,day=3,count=31,muted=0/0,demoted=0}
+    post_frequency{user_id=-1,pkg=com.android.systemui,day=3,count=32,muted=0/0,demoted=0}
+    post_frequency{user_id=-1,pkg=android,day=4,count=109,muted=0/0,demoted=0}
+    post_frequency{user_id=-1,pkg=com.android.systemui,day=4,count=744,muted=0/0,demoted=0}
+    post_frequency{user_id=-1,pkg=android,day=5,count=13,muted=0/0,demoted=0}
+    post_frequency{user_id=-1,pkg=com.android.systemui,day=5,count=293,muted=0/1,demoted=0}
+    post_frequency{user_id=0,pkg=com.android.bluetooth,day=0,count=66,muted=1/1,demoted=65}
+    post_frequency{user_id=0,pkg=com.takahashirinta.ncrust,day=0,count=1089,muted=0/0,demoted=1089}
+    post_frequency{user_id=0,pkg=com.android.phone,day=1,count=1,muted=0/0,demoted=1}
+    post_frequency{user_id=0,pkg=com.sec.android.app.firewall,day=1,count=1,muted=0/0,demoted=1}
+    post_frequency{user_id=0,pkg=com.takahashirinta.ncrust,day=1,count=3185,muted=0/0,demoted=3185}
+    post_frequency{user_id=0,pkg=com.android.phone,day=2,count=1,muted=0/0,demoted=1}
+    post_frequency{user_id=0,pkg=com.sec.android.app.firewall,day=2,count=1,muted=0/0,demoted=1}
+    post_frequency{user_id=0,pkg=com.takahashirinta.ncrust,day=2,count=517,muted=0/0,demoted=517}
+### 通知栏里属于本包的通知条数（id 行）
+3
+
+########## 采样 2  (t+8s) ##########
+### 播放状态
+3 3 ### 通知正文（android.title / android.text）
+    NotificationRecord(0x0d7aa14e: pkg=com.takahashirinta.ncrust user=UserHandle{0} id=1 tag=null importance=2 key=0|com.takahashirinta.ncrust|1|null|10188: Notification(pri=0 contentView=null vibrate=null sound=null defaults=0x0 flags=0x6a color=0xff1db954 category=transport actions=3 vis=PUBLIC semFlags=0x0 semPriority=0))
+      uid=10188 userId=0
+      icon=Icon(typ=RESOURCE pkg=com.takahashirinta.ncrust id=0x01080024) / android:drawable/ic_media_play
+        android.title=String (但偏偏雨渐渐大到我看你不见)
+        android.text=String (晴天 · 周杰伦)
+    NotificationRecord(0x0d4ef68b: pkg=com.android.systemui user=UserHandle{-1} id=2131951673 tag=charging_state importance=1 key=-1|com.android.systemui|2131951673|charging_state|10070: Notification(pri=-2 contentView=null vibrate=null sound=null defaults=0x0 flags=0xa color=0xff607d8b category=sys vis=PUBLIC semFlags=0x0 semPriority=0))
+      uid=10070 userId=-1
+      icon=Icon(typ=RESOURCE pkg=com.android.systemui id=0x7f02056e) / com.android.systemui:drawable/stat_notify_afc
+        android.title=String (充电器充电)
+        android.text=String (正在充电：92%
+    NotificationRecord(0x0deeba50: pkg=android user=UserHandle{-1} id=17040422 tag=null importance=1 key=-1|android|17040422|null|1000: Notification(pri=-2 contentView=null vibrate=null sound=null tick defaults=0x0 flags=0x2 color=0xff607d8b vis=PUBLIC semFlags=0x0 semPriority=0))
+      uid=1000 userId=-1
+      icon=Icon(typ=RESOURCE pkg=android id=0x0108089c) / android:drawable/stat_sys_data_usb_otg_connected
+        android.title=String (使用 USB 传输文件)
+        android.text=String (点击获取其他 USB 选项)
+    StatusBarNotification(pkg=android user=UserHandle{-1} id=17040422 tag=null key=-1|android|17040422|null|1000: Notification(pri=-2 contentView=null vibrate=null sound=null tick defaults=0x0 flags=0x2 color=0xff607d8b vis=PUBLIC semFlags=0x0 semPriority=0))
+    StatusBarNotification(pkg=com.android.systemui user=UserHandle{-1} id=2131951673 tag=charging_state key=-1|com.android.systemui|2131951673|charging_state|10070: Notification(pri=-2 contentView=null vibrate=null sound=null defaults=0x0 flags=0xa color=0xff607d8b category=sys vis=PUBLIC semFlags=0x0 semPriority=0))
+    StatusBarNotification(pkg=com.takahashirinta.ncrust user=UserHandle{0} id=1 tag=null key=0|com.takahashirinta.ncrust|1|null|10188: Notification(pri=0 contentView=null vibrate=null sound=null defaults=0x0 flags=0x6a color=0xff1db954 category=transport actions=3 vis=PUBLIC semFlags=0x0 semPriority=0))
+    StatusBarNotification(pkg=com.takahashirinta.ncrust user=UserHandle{0} id=1 tag=null key=0|com.takahashirinta.ncrust|1|null|10188: Notification(pri=0 contentView=null vibrate=null sound=null defaults=0x0 flags=0x6a color=0xff1db954 category=transport actions=3 vis=PUBLIC semFlags=0x0 semPriority=0))
+    StatusBarNotification(pkg=com.takahashirinta.ncrust user=UserHandle{0} id=1 tag=null key=0|com.takahashirinta.ncrust|1|null|10188: Notification(pri=0 contentView=null vibrate=null sound=null defaults=0x0 flags=0x6a color=0xff1db954 category=transport actions=3 vis=PUBLIC semFlags=0x0 semPriority=0))
+    post_frequency{user_id=-1,pkg=android,day=0,count=52,muted=0/0,demoted=0}
+    post_frequency{user_id=-1,pkg=com.android.systemui,day=0,count=371,muted=0/0,demoted=0}
+    post_frequency{user_id=-1,pkg=android,day=1,count=20,muted=0/0,demoted=0}
+    post_frequency{user_id=-1,pkg=com.android.systemui,day=1,count=285,muted=0/0,demoted=1}
+    post_frequency{user_id=-1,pkg=android,day=2,count=15,muted=0/0,demoted=0}
+    post_frequency{user_id=-1,pkg=com.android.systemui,day=2,count=167,muted=0/0,demoted=0}
+    post_frequency{user_id=-1,pkg=android,day=3,count=31,muted=0/0,demoted=0}
+    post_frequency{user_id=-1,pkg=com.android.systemui,day=3,count=32,muted=0/0,demoted=0}
+    post_frequency{user_id=-1,pkg=android,day=4,count=109,muted=0/0,demoted=0}
+    post_frequency{user_id=-1,pkg=com.android.systemui,day=4,count=744,muted=0/0,demoted=0}
+    post_frequency{user_id=-1,pkg=android,day=5,count=13,muted=0/0,demoted=0}
+    post_frequency{user_id=-1,pkg=com.android.systemui,day=5,count=293,muted=0/1,demoted=0}
+    post_frequency{user_id=0,pkg=com.android.bluetooth,day=0,count=66,muted=1/1,demoted=65}
+    post_frequency{user_id=0,pkg=com.takahashirinta.ncrust,day=0,count=1091,muted=0/0,demoted=1091}
+    post_frequency{user_id=0,pkg=com.android.phone,day=1,count=1,muted=0/0,demoted=1}
+    post_frequency{user_id=0,pkg=com.sec.android.app.firewall,day=1,count=1,muted=0/0,demoted=1}
+    post_frequency{user_id=0,pkg=com.takahashirinta.ncrust,day=1,count=3185,muted=0/0,demoted=3185}
+    post_frequency{user_id=0,pkg=com.android.phone,day=2,count=1,muted=0/0,demoted=1}
+    post_frequency{user_id=0,pkg=com.sec.android.app.firewall,day=2,count=1,muted=0/0,demoted=1}
+    post_frequency{user_id=0,pkg=com.takahashirinta.ncrust,day=2,count=517,muted=0/0,demoted=517}
+### 通知栏里属于本包的通知条数（id 行）
+3
+
+########## 采样 3  (t+16s) ##########
+### 播放状态
+3 3 ### 通知正文（android.title / android.text）
+    NotificationRecord(0x0384d381: pkg=com.takahashirinta.ncrust user=UserHandle{0} id=1 tag=null importance=2 key=0|com.takahashirinta.ncrust|1|null|10188: Notification(pri=0 contentView=null vibrate=null sound=null defaults=0x0 flags=0x6a color=0xff1db954 category=transport actions=3 vis=PUBLIC semFlags=0x0 semPriority=0))
+      uid=10188 userId=0
+      icon=Icon(typ=RESOURCE pkg=com.takahashirinta.ncrust id=0x01080024) / android:drawable/ic_media_play
+        android.title=String (从前从前有个人爱你很久)
+        android.text=String (晴天 · 周杰伦)
+    NotificationRecord(0x0d4ef68b: pkg=com.android.systemui user=UserHandle{-1} id=2131951673 tag=charging_state importance=1 key=-1|com.android.systemui|2131951673|charging_state|10070: Notification(pri=-2 contentView=null vibrate=null sound=null defaults=0x0 flags=0xa color=0xff607d8b category=sys vis=PUBLIC semFlags=0x0 semPriority=0))
+      uid=10070 userId=-1
+      icon=Icon(typ=RESOURCE pkg=com.android.systemui id=0x7f02056e) / com.android.systemui:drawable/stat_notify_afc
+        android.title=String (充电器充电)
+        android.text=String (正在充电：92%
+    NotificationRecord(0x0deeba50: pkg=android user=UserHandle{-1} id=17040422 tag=null importance=1 key=-1|android|17040422|null|1000: Notification(pri=-2 contentView=null vibrate=null sound=null tick defaults=0x0 flags=0x2 color=0xff607d8b vis=PUBLIC semFlags=0x0 semPriority=0))
+      uid=1000 userId=-1
+      icon=Icon(typ=RESOURCE pkg=android id=0x0108089c) / android:drawable/stat_sys_data_usb_otg_connected
+        android.title=String (使用 USB 传输文件)
+        android.text=String (点击获取其他 USB 选项)
+    StatusBarNotification(pkg=android user=UserHandle{-1} id=17040422 tag=null key=-1|android|17040422|null|1000: Notification(pri=-2 contentView=null vibrate=null sound=null tick defaults=0x0 flags=0x2 color=0xff607d8b vis=PUBLIC semFlags=0x0 semPriority=0))
+    StatusBarNotification(pkg=com.android.systemui user=UserHandle{-1} id=2131951673 tag=charging_state key=-1|com.android.systemui|2131951673|charging_state|10070: Notification(pri=-2 contentView=null vibrate=null sound=null defaults=0x0 flags=0xa color=0xff607d8b category=sys vis=PUBLIC semFlags=0x0 semPriority=0))
+    StatusBarNotification(pkg=com.takahashirinta.ncrust user=UserHandle{0} id=1 tag=null key=0|com.takahashirinta.ncrust|1|null|10188: Notification(pri=0 contentView=null vibrate=null sound=null defaults=0x0 flags=0x6a color=0xff1db954 category=transport actions=3 vis=PUBLIC semFlags=0x0 semPriority=0))
+    StatusBarNotification(pkg=com.takahashirinta.ncrust user=UserHandle{0} id=1 tag=null key=0|com.takahashirinta.ncrust|1|null|10188: Notification(pri=0 contentView=null vibrate=null sound=null defaults=0x0 flags=0x6a color=0xff1db954 category=transport actions=3 vis=PUBLIC semFlags=0x0 semPriority=0))
+    StatusBarNotification(pkg=com.takahashirinta.ncrust user=UserHandle{0} id=1 tag=null key=0|com.takahashirinta.ncrust|1|null|10188: Notification(pri=0 contentView=null vibrate=null sound=null defaults=0x0 flags=0x6a color=0xff1db954 category=transport actions=3 vis=PUBLIC semFlags=0x0 semPriority=0))
+    post_frequency{user_id=-1,pkg=android,day=0,count=52,muted=0/0,demoted=0}
+    post_frequency{user_id=-1,pkg=com.android.systemui,day=0,count=371,muted=0/0,demoted=0}
+    post_frequency{user_id=-1,pkg=android,day=1,count=20,muted=0/0,demoted=0}
+    post_frequency{user_id=-1,pkg=com.android.systemui,day=1,count=285,muted=0/0,demoted=1}
+    post_frequency{user_id=-1,pkg=android,day=2,count=15,muted=0/0,demoted=0}
+    post_frequency{user_id=-1,pkg=com.android.systemui,day=2,count=167,muted=0/0,demoted=0}
+    post_frequency{user_id=-1,pkg=android,day=3,count=31,muted=0/0,demoted=0}
+    post_frequency{user_id=-1,pkg=com.android.systemui,day=3,count=32,muted=0/0,demoted=0}
+    post_frequency{user_id=-1,pkg=android,day=4,count=109,muted=0/0,demoted=0}
+    post_frequency{user_id=-1,pkg=com.android.systemui,day=4,count=744,muted=0/0,demoted=0}
+    post_frequency{user_id=-1,pkg=android,day=5,count=13,muted=0/0,demoted=0}
+    post_frequency{user_id=-1,pkg=com.android.systemui,day=5,count=293,muted=0/1,demoted=0}
+    post_frequency{user_id=0,pkg=com.android.bluetooth,day=0,count=66,muted=1/1,demoted=65}
+    post_frequency{user_id=0,pkg=com.takahashirinta.ncrust,day=0,count=1094,muted=0/0,demoted=1094}
+    post_frequency{user_id=0,pkg=com.android.phone,day=1,count=1,muted=0/0,demoted=1}
+    post_frequency{user_id=0,pkg=com.sec.android.app.firewall,day=1,count=1,muted=0/0,demoted=1}
+    post_frequency{user_id=0,pkg=com.takahashirinta.ncrust,day=1,count=3185,muted=0/0,demoted=3185}
+    post_frequency{user_id=0,pkg=com.android.phone,day=2,count=1,muted=0/0,demoted=1}
+    post_frequency{user_id=0,pkg=com.sec.android.app.firewall,day=2,count=1,muted=0/0,demoted=1}
+    post_frequency{user_id=0,pkg=com.takahashirinta.ncrust,day=2,count=517,muted=0/0,demoted=517}
+### 通知栏里属于本包的通知条数（id 行）
+3

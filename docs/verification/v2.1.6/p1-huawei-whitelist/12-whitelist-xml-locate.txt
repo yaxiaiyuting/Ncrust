@@ -1,0 +1,8 @@
+# 白名单配置文件定位 —— 采集时间 2026-09-25T12:58:20+08:00
+$ adb -s WVQ6R22124000968 shell 'find / -name "hw_mediaplaybackcontroller_app_config.xml" 2>/dev/null'
+/system/emui/base/xml/hw_mediaplaybackcontroller_app_config.xml
+exit=1
+
+$ adb -s WVQ6R22124000968 shell 'find / -name "third_app_filter.xml" 2>/dev/null'
+/system/emui/base/thirdappfilter/third_app_filter.xml
+exit=1

@@ -1,0 +1,93 @@
+$ /usr/bin/adb -s 0715f763f54c023a shell dumpsys media_session
+--- stdout/stderr ---
+MEDIA SESSION SERVICE (dumpsys media_session)
+
+2 sessions listeners.
+pid=4657, uid=10070, null
+pid=4602, uid=1002, ComponentInfo{com.android.bluetooth/com.android.bluetooth.avrcp.Avrcp}
+2 Sessions:
+HeadsetMediaButton com.android.server.telecom/HeadsetMediaButton
+  ownerPid=3714, ownerUid=1000, userId=0
+  package=com.android.server.telecom
+  launchIntent=null
+  mediaButtonReceiver=null
+  active=false
+  flags=65537
+  rating type=0
+  controllers: 0
+  state=null
+  audioAttrs=AudioAttributes: usage=2 content=1 flags=0x0 tags= bundle=null
+  volumeType=1, controlType=2, max=0, current=0
+  metadata:size=0, description=null
+  queueTitle=null, size=0
+
+androidx.media3.session.id. com.takahashirinta.ncrust/androidx.media3.session.id.
+  ownerPid=15610, ownerUid=10188, userId=0
+  package=com.takahashirinta.ncrust
+  launchIntent=null
+  mediaButtonReceiver=PendingIntent{bb40efe: PendingIntentRecord{eaff65f com.takahashirinta.ncrust startService}}
+  active=true
+  flags=7
+  rating type=0
+  controllers: 3
+  state=PlaybackState {state=3, position=225103, buffered position=249289, speed=1.0, updated=84105799, actions=7340031, custom actions=[], active item id=0, error=null}
+  audioAttrs=AudioAttributes: usage=1 content=2 flags=0x0 tags= bundle=null
+  volumeType=1, controlType=2, max=0, current=0
+  metadata:size=6, description=好不容易又能再多爱一天, 晴天 · 周杰伦, 叶惠美
+  queueTitle=null, size=2
+
+Global priority session is null
+Sessions Stack - have 2 sessions:
+  androidx.media3.session.id. com.takahashirinta.ncrust/androidx.media3.session.id.
+    ownerPid=15610, ownerUid=10188, userId=0
+    package=com.takahashirinta.ncrust
+    launchIntent=null
+    mediaButtonReceiver=PendingIntent{bb40efe: PendingIntentRecord{eaff65f com.takahashirinta.ncrust startService}}
+    active=true
+    flags=7
+    rating type=0
+    controllers: 3
+    state=PlaybackState {state=3, position=225103, buffered position=249289, speed=1.0, updated=84105799, actions=7340031, custom actions=[], active item id=0, error=null}
+    audioAttrs=AudioAttributes: usage=1 content=2 flags=0x0 tags= bundle=null
+    volumeType=1, controlType=2, max=0, current=0
+    metadata:size=6, description=好不容易又能再多爱一天, 晴天 · 周杰伦, 叶惠美
+    queueTitle=null, size=2
+
+  HeadsetMediaButton com.android.server.telecom/HeadsetMediaButton
+    ownerPid=3714, ownerUid=1000, userId=0
+    package=com.android.server.telecom
+    launchIntent=null
+    mediaButtonReceiver=null
+    active=false
+    flags=65537
+    rating type=0
+    controllers: 0
+    state=null
+    audioAttrs=AudioAttributes: usage=2 content=1 flags=0x0 tags= bundle=null
+    volumeType=1, controlType=2, max=0, current=0
+    metadata:size=0, description=null
+    queueTitle=null, size=0
+
+User Records:
+Record for user 0
+  MediaButtonReceiver:PendingIntent{bb40efe: PendingIntentRecord{eaff65f com.takahashirinta.ncrust startService}}
+  Restored ButtonReceiver:ComponentInfo{com.takahashirinta.ncrust/com.takahashirinta.ncrust.player.PlaybackService}
+  2 Sessions:
+  com.android.server.telecom/HeadsetMediaButton
+  com.takahashirinta.ncrust/androidx.media3.session.id.
+--- exit=0 ---
+
+===== 本包会话条数 = 1 =====
+===== 摘要 =====
+  mediaButtonReceiver=null
+  metadata:size=0, description=null
+  mediaButtonReceiver=PendingIntent{bb40efe: PendingIntentRecord{eaff65f com.takahashirinta.ncrust startService}}
+  state=PlaybackState {state=3, position=225103, buffered position=249289, speed=1.0, updated=84105799, actions=7340031, custom actions=[], active item id=0, error=null}
+  metadata:size=6, description=好不容易又能再多爱一天, 晴天 · 周杰伦, 叶惠美
+  androidx.media3.session.id. com.takahashirinta.ncrust/androidx.media3.session.id.
+    mediaButtonReceiver=PendingIntent{bb40efe: PendingIntentRecord{eaff65f com.takahashirinta.ncrust startService}}
+    state=PlaybackState {state=3, position=225103, buffered position=249289, speed=1.0, updated=84105799, actions=7340031, custom actions=[], active item id=0, error=null}
+    metadata:size=6, description=好不容易又能再多爱一天, 晴天 · 周杰伦, 叶惠美
+    mediaButtonReceiver=null
+    metadata:size=0, description=null
+  com.takahashirinta.ncrust/androidx.media3.session.id.

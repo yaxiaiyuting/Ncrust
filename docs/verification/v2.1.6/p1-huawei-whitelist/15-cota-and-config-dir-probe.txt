@@ -1,0 +1,15 @@
+$ adb -s WVQ6R22124000968 shell 'cat /system/emui/base/thirdappfilter/version.txt'
+version=1.10.22.228
+type=THIRDAPPFILTER
+subtype=generic
+compatibleVersion=2
+classify=1
+displayVersion=TF.GENC.1.10.22.228
+$ adb -s WVQ6R22124000968 shell 'ls -l /data/cota/para/thirdappfilter'   # COTA 覆盖目录是否存在
+ls: /data/cota/para/thirdappfilter: No such file or directory
+exit=1
+$ adb -s WVQ6R22124000968 shell 'cat /proc/mounts | grep -E "emui|system"'
+/dev/block/dm-5 /data/app/~~BsBvDvY55LAHnwvkUJekMA==/com.huawei.systemmanager-YTLhHIlqQMzc-XSU2BofwQ==/AiSecurityPlugin.apk erofs ro,seclabel,relatime,user_xattr,lz4asm 0 0
+/dev/block/dm-5 /data/app/~~BsBvDvY55LAHnwvkUJekMA==/com.huawei.systemmanager-YTLhHIlqQMzc-XSU2BofwQ==/AntimalPlugin.apk erofs ro,seclabel,relatime,user_xattr,lz4asm 0 0
+/dev/block/dm-5 /data/app/~~BsBvDvY55LAHnwvkUJekMA==/com.huawei.systemmanager-YTLhHIlqQMzc-XSU2BofwQ==/WlanSecurePlugin.apk erofs ro,seclabel,relatime,user_xattr,lz4asm 0 0
+cat: 15-cota-and-config-dir-probe.txt: 输入文件是输出文件

@@ -1,0 +1,1749 @@
+  Class descriptor  : 'Lhuawei/cust/HwCfgFilePolicy;'
+  Access flags      : 0x0001 (PUBLIC)
+  Superclass        : 'Ljava/lang/Object;'
+  Interfaces        -
+  Static fields     -
+    #0              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'BASE'
+      type          : 'I'
+      access        : 0x0019 (PUBLIC STATIC FINAL)
+      hiddenapi     : 0x0020 (SDK,TEST-API)
+      value         : 3
+    #1              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'CLOUD_APN'
+      type          : 'I'
+      access        : 0x0019 (PUBLIC STATIC FINAL)
+      hiddenapi     : 0x0020 (SDK,TEST-API)
+      value         : 7
+    #2              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'CLOUD_DPLMN'
+      type          : 'I'
+      access        : 0x0019 (PUBLIC STATIC FINAL)
+      hiddenapi     : 0x0020 (SDK,TEST-API)
+      value         : 6
+    #3              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'CLOUD_MCC'
+      type          : 'I'
+      access        : 0x0019 (PUBLIC STATIC FINAL)
+      hiddenapi     : 0x0020 (SDK,TEST-API)
+      value         : 5
+    #4              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'COMPATIBLE_VERSION'
+      type          : 'I'
+      access        : 0x001a (PRIVATE STATIC FINAL)
+      hiddenapi     : 0x0002 (BLOCKED)
+      value         : 2
+    #5              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'COMPATIBLE_VERSION_TAG'
+      type          : 'Ljava/lang/String;'
+      access        : 0x001a (PRIVATE STATIC FINAL)
+      hiddenapi     : 0x0002 (BLOCKED)
+      value         : "compatibleVersion"
+    #6              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'COTAINFO_DIR'
+      type          : 'Ljava/lang/String;'
+      access        : 0x001a (PRIVATE STATIC FINAL)
+      hiddenapi     : 0x0002 (BLOCKED)
+      value         : "/data/cota/para/"
+    #7              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'CUST'
+      type          : 'I'
+      access        : 0x0019 (PUBLIC STATIC FINAL)
+      hiddenapi     : 0x0020 (SDK,TEST-API)
+      value         : 4
+    #8              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'CUST_TYPE_CONFIG'
+      type          : 'I'
+      access        : 0x0019 (PUBLIC STATIC FINAL)
+      hiddenapi     : 0x0020 (SDK,TEST-API)
+      value         : 0
+    #9              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'CUST_TYPE_MEDIA'
+      type          : 'I'
+      access        : 0x0019 (PUBLIC STATIC FINAL)
+      hiddenapi     : 0x0020 (SDK,TEST-API)
+      value         : 1
+    #10              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'DEFAULT_SLOT'
+      type          : 'I'
+      access        : 0x0019 (PUBLIC STATIC FINAL)
+      hiddenapi     : 0x0020 (SDK,TEST-API)
+      value         : -2
+    #11              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'DOT_VERSION_ITEM_MAX_LENGTH'
+      type          : 'I'
+      access        : 0x001a (PRIVATE STATIC FINAL)
+      hiddenapi     : 0x0002 (BLOCKED)
+      value         : 3
+    #12              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'DOT_VERSION_MAX_NUM'
+      type          : 'I'
+      access        : 0x001a (PRIVATE STATIC FINAL)
+      hiddenapi     : 0x0002 (BLOCKED)
+      value         : 4
+    #13              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'EMUI'
+      type          : 'I'
+      access        : 0x0019 (PUBLIC STATIC FINAL)
+      hiddenapi     : 0x0020 (SDK,TEST-API)
+      value         : 1
+    #14              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'GLOBAL'
+      type          : 'I'
+      access        : 0x0019 (PUBLIC STATIC FINAL)
+      hiddenapi     : 0x0020 (SDK,TEST-API)
+      value         : 0
+    #15              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'HW_ACTION_CARRIER_CONFIG_CHANGED'
+      type          : 'Ljava/lang/String;'
+      access        : 0x0019 (PUBLIC STATIC FINAL)
+      hiddenapi     : 0x0020 (SDK,TEST-API)
+      value         : "com.huawei.action.CARRIER_CONFIG_CHANGED"
+    #16              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'HW_CARRIER_CONFIG_CHANGE_STATE'
+      type          : 'Ljava/lang/String;'
+      access        : 0x0019 (PUBLIC STATIC FINAL)
+      hiddenapi     : 0x0020 (SDK,TEST-API)
+      value         : "state"
+    #17              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'HW_CARRIER_CONFIG_OPKEY'
+      type          : 'Ljava/lang/String;'
+      access        : 0x0019 (PUBLIC STATIC FINAL)
+      hiddenapi     : 0x0020 (SDK,TEST-API)
+      value         : "opkey"
+    #18              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'HW_CARRIER_CONFIG_SLOT'
+      type          : 'Ljava/lang/String;'
+      access        : 0x0019 (PUBLIC STATIC FINAL)
+      hiddenapi     : 0x0020 (SDK,TEST-API)
+      value         : "slot"
+    #19              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'HW_CONFIG_STATE_PARA_UPDATE'
+      type          : 'I'
+      access        : 0x0019 (PUBLIC STATIC FINAL)
+      hiddenapi     : 0x0020 (SDK,TEST-API)
+      value         : 3
+    #20              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'HW_CONFIG_STATE_SIM_ABSENT'
+      type          : 'I'
+      access        : 0x0019 (PUBLIC STATIC FINAL)
+      hiddenapi     : 0x0020 (SDK,TEST-API)
+      value         : 2
+    #21              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'HW_CONFIG_STATE_SIM_LOADED'
+      type          : 'I'
+      access        : 0x0019 (PUBLIC STATIC FINAL)
+      hiddenapi     : 0x0020 (SDK,TEST-API)
+      value         : 1
+    #22              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'PC'
+      type          : 'I'
+      access        : 0x0019 (PUBLIC STATIC FINAL)
+      hiddenapi     : 0x0020 (SDK,TEST-API)
+      value         : 2
+    #23              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'SUBTYPE'
+      type          : 'I'
+      access        : 0x001a (PRIVATE STATIC FINAL)
+      hiddenapi     : 0x0002 (BLOCKED)
+      value         : 4
+    #24              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'SUBTYPE_TAG'
+      type          : 'Ljava/lang/String;'
+      access        : 0x001a (PRIVATE STATIC FINAL)
+      hiddenapi     : 0x0002 (BLOCKED)
+      value         : "subtype"
+    #25              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'TAG'
+      type          : 'Ljava/lang/String;'
+      access        : 0x001a (PRIVATE STATIC FINAL)
+      hiddenapi     : 0x0002 (BLOCKED)
+      value         : "CfgFilePolicy"
+    #26              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'TXTSECTION'
+      type          : 'I'
+      access        : 0x001a (PRIVATE STATIC FINAL)
+      hiddenapi     : 0x0002 (BLOCKED)
+      value         : 2
+    #27              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'TYPE'
+      type          : 'I'
+      access        : 0x001a (PRIVATE STATIC FINAL)
+      hiddenapi     : 0x0002 (BLOCKED)
+      value         : 3
+    #28              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'TYPE_TAG'
+      type          : 'Ljava/lang/String;'
+      access        : 0x001a (PRIVATE STATIC FINAL)
+      hiddenapi     : 0x0002 (BLOCKED)
+      value         : "type"
+    #29              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'VERSION'
+      type          : 'I'
+      access        : 0x001a (PRIVATE STATIC FINAL)
+      hiddenapi     : 0x0002 (BLOCKED)
+      value         : 1
+    #30              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'VERSION_MARKS'
+      type          : '[Ljava/lang/String;'
+      access        : 0x001a (PRIVATE STATIC FINAL)
+      hiddenapi     : 0x0002 (BLOCKED)
+      value         : null
+    #31              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'VERSION_TAG'
+      type          : 'Ljava/lang/String;'
+      access        : 0x001a (PRIVATE STATIC FINAL)
+      hiddenapi     : 0x0002 (BLOCKED)
+      value         : "version"
+    #32              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'sCarrierConfigPolicy'
+      type          : 'Lhuawei/cust/IHwCarrierConfigPolicy;'
+      access        : 0x000a (PRIVATE STATIC)
+      hiddenapi     : 0x0002 (BLOCKED)
+    #33              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'sCfgDirs'
+      type          : '[Ljava/lang/String;'
+      access        : 0x000a (PRIVATE STATIC)
+      hiddenapi     : 0x0002 (BLOCKED)
+    #34              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'sCfgVersions'
+      type          : 'Ljava/util/HashMap;'
+      access        : 0x000a (PRIVATE STATIC)
+      hiddenapi     : 0x0002 (BLOCKED)
+    #35              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'sCotaFlag'
+      type          : 'I'
+      access        : 0x000a (PRIVATE STATIC)
+      hiddenapi     : 0x0002 (BLOCKED)
+    #36              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'sMediaDirs'
+      type          : '[Ljava/lang/String;'
+      access        : 0x000a (PRIVATE STATIC)
+      hiddenapi     : 0x0002 (BLOCKED)
+  Instance fields   -
+  Direct methods    -
+    #0              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : '<clinit>'
+      type          : '()V'
+      access        : 0x10008 (STATIC CONSTRUCTOR)
+      hiddenapi     : 0x0002 (BLOCKED)
+      code          -
+      registers     : 5
+      ins           : 0
+      outs          : 5
+      insns size    : 60 16-bit code units
+5625d0:                                        |[5625d0] huawei.cust.HwCfgFilePolicy.<clinit>:()V
+5625e0: 1a00 62ef                              |0000: const-string v0, "global_cfg_version" // string@ef62
+5625e4: 1a01 3bce                              |0002: const-string v1, "emui_cfg_version" // string@ce3b
+5625e8: 1b02 2d3b 0100                         |0004: const-string/jumbo v2, "pc_cfg_version" // string@00013b2d
+5625ee: 1a03 2d00                              |0007: const-string v3, " " // string@002d
+5625f2: 1a04 a5b2                              |0009: const-string v4, "carrier_cfg_version" // string@b2a5
+5625f6: 2454 9f1f 1032                         |000b: filled-new-array {v0, v1, v2, v3, v4}, [Ljava/lang/String; // type@1f9f
+5625fc: 0c00                                   |000e: move-result-object v0
+5625fe: 6900 e6cb                              |000f: sput-object v0, Lhuawei/cust/HwCfgFilePolicy;.VERSION_MARKS:[Ljava/lang/String; // field@cbe6
+562602: 2200 8b1d                              |0011: new-instance v0, Ljava/util/HashMap; // type@1d8b
+562606: 7010 04fc 0000                         |0013: invoke-direct {v0}, Ljava/util/HashMap;.<init>:()V // method@fc04
+56260c: 6900 eacb                              |0016: sput-object v0, Lhuawei/cust/HwCfgFilePolicy;.sCfgVersions:Ljava/util/HashMap; // field@cbea
+562610: 7100 0f02 0000                         |0018: invoke-static {}, Landroid/common/HwFrameworkFactory;.getHwCarrierConfigPolicy:()Lhuawei/cust/IHwCarrierConfigPolicy; // method@020f
+562616: 0c00                                   |001b: move-result-object v0
+562618: 6900 e8cb                              |001c: sput-object v0, Lhuawei/cust/HwCfgFilePolicy;.sCarrierConfigPolicy:Lhuawei/cust/IHwCarrierConfigPolicy; // field@cbe8
+56261c: 1200                                   |001e: const/4 v0, #int 0 // #0
+56261e: 6700 ebcb                              |001f: sput v0, Lhuawei/cust/HwCfgFilePolicy;.sCotaFlag:I // field@cbeb
+562622: 1a00 b61e                              |0021: const-string v0, "CUST_POLICY_DIRS" // string@1eb6
+562626: 7110 92f8 0000                         |0023: invoke-static {v0}, Ljava/lang/System;.getenv:(Ljava/lang/String;)Ljava/lang/String; // method@f892
+56262c: 0c00                                   |0026: move-result-object v0
+56262e: 3800 0800                              |0027: if-eqz v0, 002f // +0008
+562632: 6e10 49f8 0000                         |0029: invoke-virtual {v0}, Ljava/lang/String;.length:()I // method@f849
+562638: 0a01                                   |002c: move-result v1
+56263a: 3901 0b00                              |002d: if-nez v1, 0038 // +000b
+56263e: 1a01 b91f                              |002f: const-string v1, "CfgFilePolicy" // string@1fb9
+562642: 1a02 5005                              |0031: const-string v2, "**** ERROR: env CUST_POLICY_DIRS not set, use default" // string@0550
+562646: 7120 2f0e 2100                         |0033: invoke-static {v1, v2}, Landroid/util/Log;.e:(Ljava/lang/String;Ljava/lang/String;)I // method@0e2f
+56264c: 1a00 7707                              |0036: const-string v0, "/system/emui:/system/global:/system/etc:/oem:/data/cust:/cust_spec" // string@0777
+562650: 7110 a2f3 0000                         |0038: invoke-static {v0}, Lhuawei/cust/HwCfgFilePolicy;.refreshCustDirPolicy:(Ljava/lang/String;)V // method@f3a2
+562656: 0e00                                   |003b: return-void
+      catches       : (none)
+      positions     :
+        0x0000 line=150
+        0x0011 line=161
+        0x0018 line=163
+        0x001e line=165
+        0x0021 line=660
+        0x0027 line=661
+        0x002f line=662
+        0x0036 line=663
+        0x0038 line=666
+        0x003b line=667
+      locals        :
+        0x0027 - 0x003b reg=0 policy Ljava/lang/String;
+
+    #1              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : '<init>'
+      type          : '()V'
+      access        : 0x10001 (PUBLIC CONSTRUCTOR)
+      hiddenapi     : 0x0020 (SDK,TEST-API)
+      code          -
+      registers     : 1
+      ins           : 1
+      outs          : 1
+      insns size    : 4 16-bit code units
+562658:                                        |[562658] huawei.cust.HwCfgFilePolicy.<init>:()V
+562668: 7010 00f8 0000                         |0000: invoke-direct {v0}, Ljava/lang/Object;.<init>:()V // method@f800
+56266e: 0e00                                   |0003: return-void
+      catches       : (none)
+      positions     :
+        0x0000 line=27
+      locals        :
+        0x0000 - 0x0004 reg=0 this Lhuawei/cust/HwCfgFilePolicy;
+
+    #2              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'changeVersionToLongStr'
+      type          : '(Ljava/lang/String;)Ljava/lang/String;'
+      access        : 0x000a (PRIVATE STATIC)
+      hiddenapi     : 0x0002 (BLOCKED)
+      code          -
+      registers     : 6
+      ins           : 1
+      outs          : 2
+      insns size    : 69 16-bit code units
+561d58:                                        |[561d58] huawei.cust.HwCfgFilePolicy.changeVersionToLongStr:(Ljava/lang/String;)Ljava/lang/String;
+561d68: 2200 a51c                              |0000: new-instance v0, Ljava/lang/StringBuilder; // type@1ca5
+561d6c: 7010 75f8 0000                         |0002: invoke-direct {v0}, Ljava/lang/StringBuilder;.<init>:()V // method@f875
+561d72: 1a01 3c9e                              |0005: const-string v1, "\\." // string@9e3c
+561d76: 6e20 4ff8 1500                         |0007: invoke-virtual {v5, v1}, Ljava/lang/String;.split:(Ljava/lang/String;)[Ljava/lang/String; // method@f84f
+561d7c: 0c01                                   |000a: move-result-object v1
+561d7e: 1202                                   |000b: const/4 v2, #int 0 // #0
+561d80: 1243                                   |000c: const/4 v3, #int 4 // #4
+561d82: 3532 3300                              |000d: if-ge v2, v3, 0040 // +0033
+561d86: 2113                                   |000f: array-length v3, v1
+561d88: 3532 3000                              |0010: if-ge v2, v3, 0040 // +0030
+561d8c: 3802 2600                              |0012: if-eqz v2, 0038 // +0026
+561d90: 4603 0102                              |0014: aget-object v3, v1, v2
+561d94: 6e10 49f8 0300                         |0016: invoke-virtual {v3}, Ljava/lang/String;.length:()I // method@f849
+561d9a: 0a03                                   |0019: move-result v3
+561d9c: 1234                                   |001a: const/4 v4, #int 3 // #3
+561d9e: 3543 1d00                              |001b: if-ge v3, v4, 0038 // +001d
+561da2: 2203 a51c                              |001d: new-instance v3, Ljava/lang/StringBuilder; // type@1ca5
+561da6: 7010 75f8 0300                         |001f: invoke-direct {v3}, Ljava/lang/StringBuilder;.<init>:()V // method@f875
+561dac: 1a04 9207                              |0022: const-string v4, "000" // string@0792
+561db0: 6e20 81f8 4300                         |0024: invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;.append:(Ljava/lang/String;)Ljava/lang/StringBuilder; // method@f881
+561db6: 4604 0102                              |0027: aget-object v4, v1, v2
+561dba: 6e20 81f8 4300                         |0029: invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;.append:(Ljava/lang/String;)Ljava/lang/StringBuilder; // method@f881
+561dc0: 6e10 8bf8 0300                         |002c: invoke-virtual {v3}, Ljava/lang/StringBuilder;.toString:()Ljava/lang/String; // method@f88b
+561dc6: 0c03                                   |002f: move-result-object v3
+561dc8: 7110 96f3 0300                         |0030: invoke-static {v3}, Lhuawei/cust/HwCfgFilePolicy;.getLastVersionItem:(Ljava/lang/String;)Ljava/lang/String; // method@f396
+561dce: 0c03                                   |0033: move-result-object v3
+561dd0: 6e20 81f8 3000                         |0034: invoke-virtual {v0, v3}, Ljava/lang/StringBuilder;.append:(Ljava/lang/String;)Ljava/lang/StringBuilder; // method@f881
+561dd6: 2806                                   |0037: goto 003d // +0006
+561dd8: 4603 0102                              |0038: aget-object v3, v1, v2
+561ddc: 6e20 81f8 3000                         |003a: invoke-virtual {v0, v3}, Ljava/lang/StringBuilder;.append:(Ljava/lang/String;)Ljava/lang/StringBuilder; // method@f881
+561de2: d802 0201                              |003d: add-int/lit8 v2, v2, #int 1 // #01
+561de6: 28cd                                   |003f: goto 000c // -0033
+561de8: 6e10 8bf8 0000                         |0040: invoke-virtual {v0}, Ljava/lang/StringBuilder;.toString:()Ljava/lang/String; // method@f88b
+561dee: 0c02                                   |0043: move-result-object v2
+561df0: 1102                                   |0044: return-object v2
+      catches       : (none)
+      positions     :
+        0x0000 line=527
+        0x0005 line=528
+        0x000b line=529
+        0x0012 line=530
+        0x001d line=531
+        0x0038 line=533
+        0x003d line=529
+        0x0040 line=536
+      locals        :
+        0x000c - 0x0040 reg=2 i I
+        0x0005 - 0x0045 reg=0 sb Ljava/lang/StringBuilder;
+        0x000b - 0x0045 reg=1 dots [Ljava/lang/String;
+        0x0000 - 0x0045 reg=5 dotStr Ljava/lang/String;
+
+    #3              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'getCfgFile'
+      type          : '(Ljava/lang/String;I)Ljava/io/File;'
+      access        : 0x0009 (PUBLIC STATIC)
+      hiddenapi     : 0x0020 (SDK,TEST-API)
+      code          -
+      registers     : 3
+      ins           : 2
+      outs          : 3
+      insns size    : 6 16-bit code units
+561c70:                                        |[561c70] huawei.cust.HwCfgFilePolicy.getCfgFile:(Ljava/lang/String;I)Ljava/io/File;
+561c80: 12e0                                   |0000: const/4 v0, #int -2 // #fe
+561c82: 7130 89f3 2100                         |0001: invoke-static {v1, v2, v0}, Lhuawei/cust/HwCfgFilePolicy;.getCfgFileCommon:(Ljava/lang/String;II)Ljava/io/File; // method@f389
+561c88: 0c00                                   |0004: move-result-object v0
+561c8a: 1100                                   |0005: return-object v0
+      catches       : (none)
+      positions     :
+        0x0000 line=229
+      locals        :
+        0x0000 - 0x0006 reg=1 fileName Ljava/lang/String;
+        0x0000 - 0x0006 reg=2 type I
+
+    #4              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'getCfgFile'
+      type          : '(Ljava/lang/String;II)Ljava/io/File;'
+      access        : 0x0009 (PUBLIC STATIC)
+      hiddenapi     : 0x0020 (SDK,TEST-API)
+      code          -
+      registers     : 4
+      ins           : 3
+      outs          : 3
+      insns size    : 5 16-bit code units
+561c8c:                                        |[561c8c] huawei.cust.HwCfgFilePolicy.getCfgFile:(Ljava/lang/String;II)Ljava/io/File;
+561c9c: 7130 89f3 2103                         |0000: invoke-static {v1, v2, v3}, Lhuawei/cust/HwCfgFilePolicy;.getCfgFileCommon:(Ljava/lang/String;II)Ljava/io/File; // method@f389
+561ca2: 0c00                                   |0003: move-result-object v0
+561ca4: 1100                                   |0004: return-object v0
+      catches       : (none)
+      positions     :
+        0x0000 line=242
+      locals        :
+        0x0000 - 0x0005 reg=1 fileName Ljava/lang/String;
+        0x0000 - 0x0005 reg=2 type I
+        0x0000 - 0x0005 reg=3 slotId I
+
+    #5              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'getCfgFileCommon'
+      type          : '(Ljava/lang/String;II)Ljava/io/File;'
+      access        : 0x000a (PRIVATE STATIC)
+      hiddenapi     : 0x0002 (BLOCKED)
+      code          -
+      registers     : 7
+      ins           : 3
+      outs          : 3
+      insns size    : 28 16-bit code units
+561ca8:                                        |[561ca8] huawei.cust.HwCfgFilePolicy.getCfgFileCommon:(Ljava/lang/String;II)Ljava/io/File;
+561cb8: 7120 8ef3 6500                         |0000: invoke-static {v5, v6}, Lhuawei/cust/HwCfgFilePolicy;.getCfgPolicyDir:(II)[Ljava/lang/String; // method@f38e
+561cbe: 0c00                                   |0003: move-result-object v0
+561cc0: 2101                                   |0004: array-length v1, v0
+561cc2: d801 01ff                              |0005: add-int/lit8 v1, v1, #int -1 // #ff
+561cc6: 3a01 1300                              |0007: if-ltz v1, 001a // +0013
+561cca: 2202 4d1c                              |0009: new-instance v2, Ljava/io/File; // type@1c4d
+561cce: 4603 0001                              |000b: aget-object v3, v0, v1
+561cd2: 7030 8ef6 3204                         |000d: invoke-direct {v2, v3, v4}, Ljava/io/File;.<init>:(Ljava/lang/String;Ljava/lang/String;)V // method@f68e
+561cd8: 6e10 95f6 0200                         |0010: invoke-virtual {v2}, Ljava/io/File;.exists:()Z // method@f695
+561cde: 0a03                                   |0013: move-result v3
+561ce0: 3803 0300                              |0014: if-eqz v3, 0017 // +0003
+561ce4: 1102                                   |0016: return-object v2
+561ce6: d801 01ff                              |0017: add-int/lit8 v1, v1, #int -1 // #ff
+561cea: 28ee                                   |0019: goto 0007 // -0012
+561cec: 1201                                   |001a: const/4 v1, #int 0 // #0
+561cee: 1101                                   |001b: return-object v1
+      catches       : (none)
+      positions     :
+        0x0000 line=246
+        0x0004 line=247
+        0x0009 line=248
+        0x0010 line=249
+        0x0016 line=250
+        0x0017 line=247
+        0x001a line=253
+      locals        :
+        0x0010 - 0x0017 reg=2 file Ljava/io/File;
+        0x0007 - 0x001a reg=1 i I
+        0x0004 - 0x001c reg=0 dirs [Ljava/lang/String;
+        0x0000 - 0x001c reg=4 fileName Ljava/lang/String;
+        0x0000 - 0x001c reg=5 type I
+        0x0000 - 0x001c reg=6 slotId I
+
+    #6              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'getCfgFileList'
+      type          : '(Ljava/lang/String;I)Ljava/util/ArrayList;'
+      access        : 0x0009 (PUBLIC STATIC)
+      hiddenapi     : 0x0020 (SDK,TEST-API)
+      code          -
+      registers     : 3
+      ins           : 2
+      outs          : 3
+      insns size    : 6 16-bit code units
+5623b4:                                        |[5623b4] huawei.cust.HwCfgFilePolicy.getCfgFileList:(Ljava/lang/String;I)Ljava/util/ArrayList;
+5623c4: 12e0                                   |0000: const/4 v0, #int -2 // #fe
+5623c6: 7130 8cf3 2100                         |0001: invoke-static {v1, v2, v0}, Lhuawei/cust/HwCfgFilePolicy;.getCfgFileListCommon:(Ljava/lang/String;II)Ljava/util/ArrayList; // method@f38c
+5623cc: 0c00                                   |0004: move-result-object v0
+5623ce: 1100                                   |0005: return-object v0
+      catches       : (none)
+      positions     :
+        0x0000 line=184
+      locals        :
+        0x0000 - 0x0006 reg=1 fileName Ljava/lang/String;
+        0x0000 - 0x0006 reg=2 type I
+
+    #7              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'getCfgFileList'
+      type          : '(Ljava/lang/String;II)Ljava/util/ArrayList;'
+      access        : 0x0009 (PUBLIC STATIC)
+      hiddenapi     : 0x0020 (SDK,TEST-API)
+      code          -
+      registers     : 4
+      ins           : 3
+      outs          : 3
+      insns size    : 5 16-bit code units
+5623d0:                                        |[5623d0] huawei.cust.HwCfgFilePolicy.getCfgFileList:(Ljava/lang/String;II)Ljava/util/ArrayList;
+5623e0: 7130 8cf3 2103                         |0000: invoke-static {v1, v2, v3}, Lhuawei/cust/HwCfgFilePolicy;.getCfgFileListCommon:(Ljava/lang/String;II)Ljava/util/ArrayList; // method@f38c
+5623e6: 0c00                                   |0003: move-result-object v0
+5623e8: 1100                                   |0004: return-object v0
+      catches       : (none)
+      positions     :
+        0x0000 line=198
+      locals        :
+        0x0000 - 0x0005 reg=1 fileName Ljava/lang/String;
+        0x0000 - 0x0005 reg=2 type I
+        0x0000 - 0x0005 reg=3 slotId I
+
+    #8              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'getCfgFileListCommon'
+      type          : '(Ljava/lang/String;II)Ljava/util/ArrayList;'
+      access        : 0x000a (PRIVATE STATIC)
+      hiddenapi     : 0x0002 (BLOCKED)
+      code          -
+      registers     : 10
+      ins           : 3
+      outs          : 3
+      insns size    : 70 16-bit code units
+5623ec:                                        |[5623ec] huawei.cust.HwCfgFilePolicy.getCfgFileListCommon:(Ljava/lang/String;II)Ljava/util/ArrayList;
+5623fc: 2200 7f1d                              |0000: new-instance v0, Ljava/util/ArrayList; // type@1d7f
+562400: 7010 70fb 0000                         |0002: invoke-direct {v0}, Ljava/util/ArrayList;.<init>:()V // method@fb70
+562406: 3807 2500                              |0005: if-eqz v7, 002a // +0025
+56240a: 6e10 49f8 0700                         |0007: invoke-virtual {v7}, Ljava/lang/String;.length:()I // method@f849
+562410: 0a01                                   |000a: move-result v1
+562412: 3901 0300                              |000b: if-nez v1, 000e // +0003
+562416: 281d                                   |000d: goto 002a // +001d
+562418: 7120 8ef3 9800                         |000e: invoke-static {v8, v9}, Lhuawei/cust/HwCfgFilePolicy;.getCfgPolicyDir:(II)[Ljava/lang/String; // method@f38e
+56241e: 0c01                                   |0011: move-result-object v1
+562420: 2112                                   |0012: array-length v2, v1
+562422: 1203                                   |0013: const/4 v3, #int 0 // #0
+562424: 3523 1500                              |0014: if-ge v3, v2, 0029 // +0015
+562428: 4604 0103                              |0016: aget-object v4, v1, v3
+56242c: 2205 4d1c                              |0018: new-instance v5, Ljava/io/File; // type@1c4d
+562430: 7030 8ef6 4507                         |001a: invoke-direct {v5, v4, v7}, Ljava/io/File;.<init>:(Ljava/lang/String;Ljava/lang/String;)V // method@f68e
+562436: 6e10 95f6 0500                         |001d: invoke-virtual {v5}, Ljava/io/File;.exists:()Z // method@f695
+56243c: 0a06                                   |0020: move-result v6
+56243e: 3806 0500                              |0021: if-eqz v6, 0026 // +0005
+562442: 6e20 74fb 5000                         |0023: invoke-virtual {v0, v5}, Ljava/util/ArrayList;.add:(Ljava/lang/Object;)Z // method@fb74
+562448: d803 0301                              |0026: add-int/lit8 v3, v3, #int 1 // #01
+56244c: 28ec                                   |0028: goto 0014 // -0014
+56244e: 1100                                   |0029: return-object v0
+562450: 2201 a51c                              |002a: new-instance v1, Ljava/lang/StringBuilder; // type@1ca5
+562454: 7010 75f8 0100                         |002c: invoke-direct {v1}, Ljava/lang/StringBuilder;.<init>:()V // method@f875
+56245a: 1a02 0d2a                              |002f: const-string v2, "Error: file = [" // string@2a0d
+56245e: 6e20 81f8 2100                         |0031: invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;.append:(Ljava/lang/String;)Ljava/lang/StringBuilder; // method@f881
+562464: 6e20 81f8 7100                         |0034: invoke-virtual {v1, v7}, Ljava/lang/StringBuilder;.append:(Ljava/lang/String;)Ljava/lang/StringBuilder; // method@f881
+56246a: 1a02 4b9e                              |0037: const-string v2, "]" // string@9e4b
+56246e: 6e20 81f8 2100                         |0039: invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;.append:(Ljava/lang/String;)Ljava/lang/StringBuilder; // method@f881
+562474: 6e10 8bf8 0100                         |003c: invoke-virtual {v1}, Ljava/lang/StringBuilder;.toString:()Ljava/lang/String; // method@f88b
+56247a: 0c01                                   |003f: move-result-object v1
+56247c: 1a02 b91f                              |0040: const-string v2, "CfgFilePolicy" // string@1fb9
+562480: 7120 2f0e 1200                         |0042: invoke-static {v2, v1}, Landroid/util/Log;.e:(Ljava/lang/String;Ljava/lang/String;)I // method@0e2f
+562486: 1100                                   |0045: return-object v0
+      catches       : (none)
+      positions     :
+        0x0000 line=203
+        0x0005 line=204
+        0x000e line=209
+        0x0012 line=211
+        0x0018 line=212
+        0x001d line=213
+        0x0023 line=214
+        0x0026 line=211
+        0x0029 line=217
+        0x002a line=205
+        0x0045 line=206
+      locals        :
+        0x0018 - 0x0026 reg=4 dir Ljava/lang/String;
+        0x001d - 0x0026 reg=5 file Ljava/io/File;
+        0x0012 - 0x002a reg=1 dirs [Ljava/lang/String;
+        0x0005 - 0x0046 reg=0 res Ljava/util/ArrayList; Ljava/util/ArrayList<Ljava/io/File;>;
+        0x0000 - 0x0046 reg=7 fileName Ljava/lang/String;
+        0x0000 - 0x0046 reg=8 type I
+        0x0000 - 0x0046 reg=9 slotId I
+
+    #9              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'getCfgPolicyDir'
+      type          : '(I)[Ljava/lang/String;'
+      access        : 0x0009 (PUBLIC STATIC)
+      hiddenapi     : 0x0020 (SDK,TEST-API)
+      code          -
+      registers     : 2
+      ins           : 1
+      outs          : 2
+      insns size    : 6 16-bit code units
+562054:                                        |[562054] huawei.cust.HwCfgFilePolicy.getCfgPolicyDir:(I)[Ljava/lang/String;
+562064: 12e0                                   |0000: const/4 v0, #int -2 // #fe
+562066: 7120 8ff3 0100                         |0001: invoke-static {v1, v0}, Lhuawei/cust/HwCfgFilePolicy;.getCfgPolicyDirCommon:(II)[Ljava/lang/String; // method@f38f
+56206c: 0c00                                   |0004: move-result-object v0
+56206e: 1100                                   |0005: return-object v0
+      catches       : (none)
+      positions     :
+        0x0000 line=264
+      locals        :
+        0x0000 - 0x0006 reg=1 type I
+
+    #10              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'getCfgPolicyDir'
+      type          : '(II)[Ljava/lang/String;'
+      access        : 0x0009 (PUBLIC STATIC)
+      hiddenapi     : 0x0020 (SDK,TEST-API)
+      code          -
+      registers     : 3
+      ins           : 2
+      outs          : 2
+      insns size    : 5 16-bit code units
+562070:                                        |[562070] huawei.cust.HwCfgFilePolicy.getCfgPolicyDir:(II)[Ljava/lang/String;
+562080: 7120 8ff3 2100                         |0000: invoke-static {v1, v2}, Lhuawei/cust/HwCfgFilePolicy;.getCfgPolicyDirCommon:(II)[Ljava/lang/String; // method@f38f
+562086: 0c00                                   |0003: move-result-object v0
+562088: 1100                                   |0004: return-object v0
+      catches       : (none)
+      positions     :
+        0x0000 line=276
+      locals        :
+        0x0000 - 0x0005 reg=1 type I
+        0x0000 - 0x0005 reg=2 slotId I
+
+    #11              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'getCfgPolicyDirCommon'
+      type          : '(II)[Ljava/lang/String;'
+      access        : 0x000a (PRIVATE STATIC)
+      hiddenapi     : 0x0002 (BLOCKED)
+      code          -
+      registers     : 6
+      ins           : 2
+      outs          : 2
+      insns size    : 77 16-bit code units
+56208c:                                        |[56208c] huawei.cust.HwCfgFilePolicy.getCfgPolicyDirCommon:(II)[Ljava/lang/String;
+56209c: 6000 ebcb                              |0000: sget v0, Lhuawei/cust/HwCfgFilePolicy;.sCotaFlag:I // field@cbeb
+5620a0: 1211                                   |0002: const/4 v1, #int 1 // #1
+5620a2: 3210 1600                              |0003: if-eq v0, v1, 0019 // +0016
+5620a6: 2200 4d1c                              |0005: new-instance v0, Ljava/io/File; // type@1c4d
+5620aa: 1a02 4f07                              |0007: const-string v2, "/data/cota/cota_cfg/cust_policy_dirs.cfg" // string@074f
+5620ae: 7020 8df6 2000                         |0009: invoke-direct {v0, v2}, Ljava/io/File;.<init>:(Ljava/lang/String;)V // method@f68d
+5620b4: 6e10 95f6 0000                         |000c: invoke-virtual {v0}, Ljava/io/File;.exists:()Z // method@f695
+5620ba: 0a02                                   |000f: move-result v2
+5620bc: 3802 0900                              |0010: if-eqz v2, 0019 // +0009
+5620c0: 7110 91f3 0000                         |0012: invoke-static {v0}, Lhuawei/cust/HwCfgFilePolicy;.getCustPolicyDirs:(Ljava/io/File;)Ljava/lang/String; // method@f391
+5620c6: 0c02                                   |0015: move-result-object v2
+5620c8: 7110 a2f3 0200                         |0016: invoke-static {v2}, Lhuawei/cust/HwCfgFilePolicy;.refreshCustDirPolicy:(Ljava/lang/String;)V // method@f3a2
+5620ce: 3314 0b00                              |0019: if-ne v4, v1, 0024 // +000b
+5620d2: 6200 eccb                              |001b: sget-object v0, Lhuawei/cust/HwCfgFilePolicy;.sMediaDirs:[Ljava/lang/String; // field@cbec
+5620d6: 6e10 e4fe 0000                         |001d: invoke-virtual {v0}, [Ljava/lang/String;.clone:()Ljava/lang/Object; // method@fee4
+5620dc: 0c00                                   |0020: move-result-object v0
+5620de: 1f00 9f1f                              |0021: check-cast v0, [Ljava/lang/String; // type@1f9f
+5620e2: 2809                                   |0023: goto 002c // +0009
+5620e4: 6200 e9cb                              |0024: sget-object v0, Lhuawei/cust/HwCfgFilePolicy;.sCfgDirs:[Ljava/lang/String; // field@cbe9
+5620e8: 6e10 e4fe 0000                         |0026: invoke-virtual {v0}, [Ljava/lang/String;.clone:()Ljava/lang/Object; // method@fee4
+5620ee: 0c00                                   |0029: move-result-object v0
+5620f0: 1f00 9f1f                              |002a: check-cast v0, [Ljava/lang/String; // type@1f9f
+5620f4: 12e1                                   |002c: const/4 v1, #int -2 // #fe
+5620f6: 3315 0c00                              |002d: if-ne v5, v1, 0039 // +000c
+5620fa: 7100 97f3 0000                         |002f: invoke-static {}, Lhuawei/cust/HwCfgFilePolicy;.getOpKey:()Ljava/lang/String; // method@f397
+562100: 0c01                                   |0032: move-result-object v1
+562102: 7120 a0f3 1000                         |0033: invoke-static {v0, v1}, Lhuawei/cust/HwCfgFilePolicy;.parseCarrierPath:([Ljava/lang/String;Ljava/lang/String;)[Ljava/lang/String; // method@f3a0
+562108: 0c01                                   |0036: move-result-object v1
+56210a: 0710                                   |0037: move-object v0, v1
+56210c: 280a                                   |0038: goto 0042 // +000a
+56210e: 7110 98f3 0500                         |0039: invoke-static {v5}, Lhuawei/cust/HwCfgFilePolicy;.getOpKey:(I)Ljava/lang/String; // method@f398
+562114: 0c01                                   |003c: move-result-object v1
+562116: 7120 a0f3 1000                         |003d: invoke-static {v0, v1}, Lhuawei/cust/HwCfgFilePolicy;.parseCarrierPath:([Ljava/lang/String;Ljava/lang/String;)[Ljava/lang/String; // method@f3a0
+56211c: 0c01                                   |0040: move-result-object v1
+56211e: 0710                                   |0041: move-object v0, v1
+562120: 280a                                   |0042: goto 004c // +000a
+562122: 0d01                                   |0043: move-exception v1
+562124: 1a02 b91f                              |0044: const-string v2, "CfgFilePolicy" // string@1fb9
+562128: 1b03 303a 0100                         |0046: const-string/jumbo v3, "parseCarrierPath fail." // string@00013a30
+56212e: 7120 2f0e 3200                         |0049: invoke-static {v2, v3}, Landroid/util/Log;.e:(Ljava/lang/String;Ljava/lang/String;)I // method@0e2f
+562134: 1100                                   |004c: return-object v0
+      catches       : 1
+        0x002f - 0x0041
+          Ljava/lang/Exception; -> 0x0043
+      positions     :
+        0x0000 line=280
+        0x0005 line=281
+        0x000c line=282
+        0x0012 line=283
+        0x0019 line=288
+        0x001b line=289
+        0x0024 line=291
+        0x002c line=295
+        0x002f line=296
+        0x0039 line=298
+        0x0042 line=302
+        0x0043 line=300
+        0x0044 line=301
+        0x004c line=303
+      locals        :
+        0x000c - 0x0019 reg=0 custPolicyDirsFile Ljava/io/File;
+        0x0023 - 0x0024 reg=0 dirs [Ljava/lang/String;
+        0x0044 - 0x004c reg=1 e Ljava/lang/Exception;
+        0x002c - 0x004d reg=0 dirs [Ljava/lang/String;
+        0x0000 - 0x004d reg=4 type I
+        0x0000 - 0x004d reg=5 slotId I
+
+    #12              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'getCfgVersion'
+      type          : '(I)Ljava/lang/String;'
+      access        : 0x0009 (PUBLIC STATIC)
+      hiddenapi     : 0x0020 (SDK,TEST-API)
+      code          -
+      registers     : 6
+      ins           : 1
+      outs          : 2
+      insns size    : 116 16-bit code units
+561df4:                                        |[561df4] huawei.cust.HwCfgFilePolicy.getCfgVersion:(I)Ljava/lang/String;
+561e04: 1200                                   |0000: const/4 v0, #int 0 // #0
+561e06: 1211                                   |0001: const/4 v1, #int 1 // #1
+561e08: 1202                                   |0002: const/4 v2, #int 0 // #0
+561e0a: 2b05 5d00 0000                         |0003: packed-switch v5, 00000060 // +0000005d
+561e10: 2859                                   |0006: goto 005f // +0059
+561e12: 1a03 4b07                              |0007: const-string v3, "/cloud/apn" // string@074b
+561e16: 1a04 b3b6                              |0009: const-string v4, "cloud/apn/version.txt" // string@b6b3
+561e1a: 7120 92f3 4300                         |000b: invoke-static {v3, v4}, Lhuawei/cust/HwCfgFilePolicy;.getDownloadCfgFile:(Ljava/lang/String;Ljava/lang/String;)[Ljava/lang/String; // method@f392
+561e20: 0c03                                   |000e: move-result-object v3
+561e22: 3903 0300                              |000f: if-nez v3, 0012 // +0003
+561e26: 2803                                   |0011: goto 0014 // +0003
+561e28: 4602 0301                              |0012: aget-object v2, v3, v1
+561e2c: 0720                                   |0014: move-object v0, v2
+561e2e: 284a                                   |0015: goto 005f // +004a
+561e30: 1a03 4c07                              |0016: const-string v3, "/cloud/dplmn" // string@074c
+561e34: 1a04 b4b6                              |0018: const-string v4, "cloud/dplmn/version.txt" // string@b6b4
+561e38: 7120 92f3 4300                         |001a: invoke-static {v3, v4}, Lhuawei/cust/HwCfgFilePolicy;.getDownloadCfgFile:(Ljava/lang/String;Ljava/lang/String;)[Ljava/lang/String; // method@f392
+561e3e: 0c03                                   |001d: move-result-object v3
+561e40: 3903 0300                              |001e: if-nez v3, 0021 // +0003
+561e44: 2803                                   |0020: goto 0023 // +0003
+561e46: 4602 0301                              |0021: aget-object v2, v3, v1
+561e4a: 0720                                   |0023: move-object v0, v2
+561e4c: 283b                                   |0024: goto 005f // +003b
+561e4e: 1a03 4d07                              |0025: const-string v3, "/cloud/mcc" // string@074d
+561e52: 1a04 b5b6                              |0027: const-string v4, "cloud/mcc/version.txt" // string@b6b5
+561e56: 7120 92f3 4300                         |0029: invoke-static {v3, v4}, Lhuawei/cust/HwCfgFilePolicy;.getDownloadCfgFile:(Ljava/lang/String;Ljava/lang/String;)[Ljava/lang/String; // method@f392
+561e5c: 0c03                                   |002c: move-result-object v3
+561e5e: 3903 0300                              |002d: if-nez v3, 0030 // +0003
+561e62: 2803                                   |002f: goto 0032 // +0003
+561e64: 4602 0301                              |0030: aget-object v2, v3, v1
+561e68: 0720                                   |0032: move-object v0, v2
+561e6a: 282c                                   |0033: goto 005f // +002c
+561e6c: 1b01 6f4b 0100                         |0034: const-string/jumbo v1, "ro.product.BaseVersion" // string@00014b6f
+561e72: 7120 540a 2100                         |0037: invoke-static {v1, v2}, Landroid/os/SystemProperties;.get:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String; // method@0a54
+561e78: 0c00                                   |003a: move-result-object v0
+561e7a: 2824                                   |003b: goto 005f // +0024
+561e7c: 6201 eacb                              |003c: sget-object v1, Lhuawei/cust/HwCfgFilePolicy;.sCfgVersions:Ljava/util/HashMap; // field@cbea
+561e80: 6202 e6cb                              |003e: sget-object v2, Lhuawei/cust/HwCfgFilePolicy;.VERSION_MARKS:[Ljava/lang/String; // field@cbe6
+561e84: 4603 0205                              |0040: aget-object v3, v2, v5
+561e88: 6e20 08fc 3100                         |0042: invoke-virtual {v1, v3}, Ljava/util/HashMap;.containsKey:(Ljava/lang/Object;)Z // method@fc08
+561e8e: 0a01                                   |0045: move-result v1
+561e90: 3901 0d00                              |0046: if-nez v1, 0053 // +000d
+561e94: 1201                                   |0048: const/4 v1, #int 0 // #0
+561e96: 1b03 8173 0100                         |0049: const-string/jumbo v3, "version.txt" // string@00017381
+561e9c: 7120 8af3 1300                         |004c: invoke-static {v3, v1}, Lhuawei/cust/HwCfgFilePolicy;.getCfgFileList:(Ljava/lang/String;I)Ljava/util/ArrayList; // method@f38a
+561ea2: 0c01                                   |004f: move-result-object v1
+561ea4: 7110 9cf3 0100                         |0050: invoke-static {v1}, Lhuawei/cust/HwCfgFilePolicy;.initFileVersions:(Ljava/util/ArrayList;)V // method@f39c
+561eaa: 6201 eacb                              |0053: sget-object v1, Lhuawei/cust/HwCfgFilePolicy;.sCfgVersions:Ljava/util/HashMap; // field@cbea
+561eae: 4602 0205                              |0055: aget-object v2, v2, v5
+561eb2: 6e20 0afc 2100                         |0057: invoke-virtual {v1, v2}, Ljava/util/HashMap;.get:(Ljava/lang/Object;)Ljava/lang/Object; // method@fc0a
+561eb8: 0c01                                   |005a: move-result-object v1
+561eba: 0710                                   |005b: move-object v0, v1
+561ebc: 1f00 a31c                              |005c: check-cast v0, Ljava/lang/String; // type@1ca3
+561ec0: 0000                                   |005e: nop // spacer
+561ec2: 1100                                   |005f: return-object v0
+561ec4: 0001 0800 0000 0000 3900 0000 3900 ... |0060: packed-switch-data (20 units)
+      catches       : (none)
+      positions     :
+        0x0000 line=314
+        0x0001 line=315
+        0x0007 line=337
+        0x000f line=338
+        0x0015 line=339
+        0x0016 line=333
+        0x001e line=334
+        0x0024 line=335
+        0x0025 line=329
+        0x002d line=330
+        0x0033 line=331
+        0x0034 line=326
+        0x003b line=327
+        0x003c line=320
+        0x0048 line=321
+        0x0053 line=323
+        0x005e line=324
+        0x005f line=343
+      locals        :
+        0x000f - 0x0016 reg=3 apnInfos [Ljava/lang/String;
+        0x001e - 0x0025 reg=3 dplmnInfos [Ljava/lang/String;
+        0x002d - 0x0034 reg=3 mccInfos [Ljava/lang/String;
+        0x0001 - 0x0074 reg=0 version Ljava/lang/String;
+        0x0000 - 0x0074 reg=5 cfgType I
+
+    #13              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'getCustPolicyDirs'
+      type          : '(Ljava/io/File;)Ljava/lang/String;'
+      access        : 0x000a (PRIVATE STATIC)
+      hiddenapi     : 0x0002 (BLOCKED)
+      code          -
+      registers     : 7
+      ins           : 1
+      outs          : 3
+      insns size    : 82 16-bit code units
+561eec:                                        |[561eec] huawei.cust.HwCfgFilePolicy.getCustPolicyDirs:(Ljava/io/File;)Ljava/lang/String;
+561efc: 1a00 8321                              |0000: const-string v0, "CustPolicyDirs file format is wrong." // string@2183
+561f00: 1a01 b91f                              |0002: const-string v1, "CfgFilePolicy" // string@1fb9
+561f04: 1202                                   |0004: const/4 v2, #int 0 // #0
+561f06: 1203                                   |0005: const/4 v3, #int 0 // #0
+561f08: 2204 a51d                              |0006: new-instance v4, Ljava/util/Scanner; // type@1da5
+561f0c: 1a05 d690                              |0008: const-string v5, "UTF-8" // string@90d6
+561f10: 7030 c6fc 6405                         |000a: invoke-direct {v4, v6, v5}, Ljava/util/Scanner;.<init>:(Ljava/io/File;Ljava/lang/String;)V // method@fcc6
+561f16: 0742                                   |000d: move-object v2, v4
+561f18: 6e10 c8fc 0200                         |000e: invoke-virtual {v2}, Ljava/util/Scanner;.hasNextLine:()Z // method@fcc8
+561f1e: 0a04                                   |0011: move-result v4
+561f20: 3804 1400                              |0012: if-eqz v4, 0026 // +0014
+561f24: 1214                                   |0014: const/4 v4, #int 1 // #1
+561f26: 6704 ebcb                              |0015: sput v4, Lhuawei/cust/HwCfgFilePolicy;.sCotaFlag:I // field@cbeb
+561f2a: 1a04 8421                              |0017: const-string v4, "CustPolicyDirs file is found" // string@2184
+561f2e: 7120 2d0e 4100                         |0019: invoke-static {v1, v4}, Landroid/util/Log;.d:(Ljava/lang/String;Ljava/lang/String;)I // method@0e2d
+561f34: 6e10 c9fc 0200                         |001c: invoke-virtual {v2}, Ljava/util/Scanner;.nextLine:()Ljava/lang/String; // method@fcc9
+561f3a: 0c00                                   |001f: move-result-object v0
+561f3c: 0000                                   |0020: nop // spacer
+561f3e: 6e10 c7fc 0200                         |0021: invoke-virtual {v2}, Ljava/util/Scanner;.close:()V // method@fcc7
+561f44: 1201                                   |0024: const/4 v1, #int 0 // #0
+561f46: 1100                                   |0025: return-object v0
+561f48: 0000                                   |0026: nop // spacer
+561f4a: 6e10 c7fc 0200                         |0027: invoke-virtual {v2}, Ljava/util/Scanner;.close:()V // method@fcc7
+561f50: 1202                                   |002a: const/4 v2, #int 0 // #0
+561f52: 7120 2f0e 0100                         |002b: invoke-static {v1, v0}, Landroid/util/Log;.e:(Ljava/lang/String;Ljava/lang/String;)I // method@0e2f
+561f58: 1103                                   |002e: return-object v3
+561f5a: 0d00                                   |002f: move-exception v0
+561f5c: 281b                                   |0030: goto 004b // +001b
+561f5e: 0d04                                   |0031: move-exception v4
+561f60: 7120 2f0e 0100                         |0032: invoke-static {v1, v0}, Landroid/util/Log;.e:(Ljava/lang/String;Ljava/lang/String;)I // method@0e2f
+561f66: 0000                                   |0035: nop // spacer
+561f68: 3802 0600                              |0036: if-eqz v2, 003c // +0006
+561f6c: 6e10 c7fc 0200                         |0038: invoke-virtual {v2}, Ljava/util/Scanner;.close:()V // method@fcc7
+561f72: 1202                                   |003b: const/4 v2, #int 0 // #0
+561f74: 1103                                   |003c: return-object v3
+561f76: 0d00                                   |003d: move-exception v0
+561f78: 1a04 8521                              |003e: const-string v4, "CustPolicyDirs file is not found." // string@2185
+561f7c: 7120 2f0e 4100                         |0040: invoke-static {v1, v4}, Landroid/util/Log;.e:(Ljava/lang/String;Ljava/lang/String;)I // method@0e2f
+561f82: 0000                                   |0043: nop // spacer
+561f84: 3802 0600                              |0044: if-eqz v2, 004a // +0006
+561f88: 6e10 c7fc 0200                         |0046: invoke-virtual {v2}, Ljava/util/Scanner;.close:()V // method@fcc7
+561f8e: 1202                                   |0049: const/4 v2, #int 0 // #0
+561f90: 1103                                   |004a: return-object v3
+561f92: 3802 0600                              |004b: if-eqz v2, 0051 // +0006
+561f96: 6e10 c7fc 0200                         |004d: invoke-virtual {v2}, Ljava/util/Scanner;.close:()V // method@fcc7
+561f9c: 1202                                   |0050: const/4 v2, #int 0 // #0
+561f9e: 2700                                   |0051: throw v0
+      catches       : 3
+        0x0006 - 0x0020
+          Ljava/io/FileNotFoundException; -> 0x003d
+          Ljava/lang/Exception; -> 0x0031
+          <any> -> 0x002f
+        0x0032 - 0x0035
+          <any> -> 0x002f
+        0x003e - 0x0043
+          <any> -> 0x002f
+      positions     :
+        0x0000 line=683
+        0x0005 line=685
+        0x000e line=686
+        0x0014 line=687
+        0x0017 line=688
+        0x001c line=689
+        0x0020 line=698
+        0x0021 line=699
+        0x0024 line=700
+        0x0025 line=689
+        0x0026 line=698
+        0x0027 line=699
+        0x002a line=700
+        0x002b line=703
+        0x002e line=704
+        0x002f line=698
+        0x0031 line=694
+        0x0032 line=695
+        0x0035 line=696
+        0x0036 line=698
+        0x0038 line=699
+        0x003b line=700
+        0x003c line=696
+        0x003d line=691
+        0x003e line=692
+        0x0043 line=693
+        0x0044 line=698
+        0x0046 line=699
+        0x0049 line=700
+        0x004a line=693
+        0x004b line=698
+        0x004d line=699
+        0x0050 line=700
+        0x0051 line=702
+      locals        :
+        0x0005 - 0x0025 reg=2 sc Ljava/util/Scanner;
+        0x0025 - 0x0026 reg=1 sc Ljava/util/Scanner;
+        0x0032 - 0x003d reg=4 e Ljava/lang/Exception;
+        0x003e - 0x004b reg=0 e Ljava/io/FileNotFoundException;
+        0x0026 - 0x0052 reg=2 sc Ljava/util/Scanner;
+        0x0000 - 0x0052 reg=6 file Ljava/io/File;
+
+    #14              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'getDownloadCfgFile'
+      type          : '(Ljava/lang/String;Ljava/lang/String;)[Ljava/lang/String;'
+      access        : 0x0009 (PUBLIC STATIC)
+      hiddenapi     : 0x0020 (SDK,TEST-API)
+      code          -
+      registers     : 10
+      ins           : 2
+      outs          : 5
+      insns size    : 42 16-bit code units
+562148:                                        |[562148] huawei.cust.HwCfgFilePolicy.getDownloadCfgFile:(Ljava/lang/String;Ljava/lang/String;)[Ljava/lang/String;
+562158: 1a00 5007                              |0000: const-string v0, "/data/cota/para/" // string@0750
+56215c: 7130 95f3 8009                         |0002: invoke-static {v0, v8, v9}, Lhuawei/cust/HwCfgFilePolicy;.getFileInfo:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)[Ljava/lang/String; // method@f395
+562162: 0c00                                   |0005: move-result-object v0
+562164: 1201                                   |0006: const/4 v1, #int 0 // #0
+562166: 7110 8df3 0100                         |0007: invoke-static {v1}, Lhuawei/cust/HwCfgFilePolicy;.getCfgPolicyDir:(I)[Ljava/lang/String; // method@f38d
+56216c: 0c02                                   |000a: move-result-object v2
+56216e: 2123                                   |000b: array-length v3, v2
+562170: 0114                                   |000c: move v4, v1
+562172: 3534 1200                              |000d: if-ge v4, v3, 001f // +0012
+562176: 4605 0204                              |000f: aget-object v5, v2, v4
+56217a: 7130 95f3 8509                         |0011: invoke-static {v5, v8, v9}, Lhuawei/cust/HwCfgFilePolicy;.getFileInfo:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)[Ljava/lang/String; // method@f395
+562180: 0c06                                   |0014: move-result-object v6
+562182: 7120 9ef3 0600                         |0015: invoke-static {v6, v0}, Lhuawei/cust/HwCfgFilePolicy;.isPresetNewerVersionInfo:([Ljava/lang/String;[Ljava/lang/String;)Z // method@f39e
+562188: 0a07                                   |0018: move-result v7
+56218a: 3807 0300                              |0019: if-eqz v7, 001c // +0003
+56218e: 0760                                   |001b: move-object v0, v6
+562190: d804 0401                              |001c: add-int/lit8 v4, v4, #int 1 // #01
+562194: 28ef                                   |001e: goto 000d // -0011
+562196: 1222                                   |001f: const/4 v2, #int 2 // #2
+562198: 2323 9f1f                              |0020: new-array v3, v2, [Ljava/lang/String; // type@1f9f
+56219c: 3800 0600                              |0022: if-eqz v0, 0028 // +0006
+5621a0: 7152 8cf8 1013                         |0024: invoke-static {v0, v1, v3, v1, v2}, Ljava/lang/System;.arraycopy:(Ljava/lang/Object;ILjava/lang/Object;II)V // method@f88c
+5621a6: 1103                                   |0027: return-object v3
+5621a8: 1201                                   |0028: const/4 v1, #int 0 // #0
+5621aa: 1101                                   |0029: return-object v1
+      catches       : (none)
+      positions     :
+        0x0000 line=483
+        0x0006 line=484
+        0x0011 line=485
+        0x0015 line=487
+        0x001b line=488
+        0x001c line=484
+        0x001f line=491
+        0x0022 line=492
+        0x0024 line=493
+        0x0027 line=494
+        0x0028 line=496
+      locals        :
+        0x0011 - 0x001c reg=5 dir Ljava/lang/String;
+        0x0015 - 0x001c reg=6 presetInfos [Ljava/lang/String;
+        0x0006 - 0x002a reg=0 cotaInfos [Ljava/lang/String;
+        0x0022 - 0x002a reg=3 newerInfos [Ljava/lang/String;
+        0x0000 - 0x002a reg=8 verDir Ljava/lang/String;
+        0x0000 - 0x002a reg=9 filePath Ljava/lang/String;
+
+    #15              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'getFileConfig'
+      type          : '(Ljava/lang/String;)Ljava/util/Map;'
+      access        : 0x0009 (PUBLIC STATIC)
+      hiddenapi     : 0x0020 (SDK,TEST-API)
+      code          -
+      registers     : 3
+      ins           : 1
+      outs          : 2
+      insns size    : 18 16-bit code units
+562568:                                        |[562568] huawei.cust.HwCfgFilePolicy.getFileConfig:(Ljava/lang/String;)Ljava/util/Map;
+562578: 6200 e8cb                              |0000: sget-object v0, Lhuawei/cust/HwCfgFilePolicy;.sCarrierConfigPolicy:Lhuawei/cust/IHwCarrierConfigPolicy; // field@cbe8
+56257c: 3900 0b00                              |0002: if-nez v0, 000d // +000b
+562580: 1a00 b91f                              |0004: const-string v0, "CfgFilePolicy" // string@1fb9
+562584: 1a01 112a                              |0006: const-string v1, "Error: sCarrierConfigPolicy is null" // string@2a11
+562588: 7120 2f0e 1000                         |0008: invoke-static {v0, v1}, Landroid/util/Log;.e:(Ljava/lang/String;Ljava/lang/String;)I // method@0e2f
+56258e: 1200                                   |000b: const/4 v0, #int 0 // #0
+562590: 1100                                   |000c: return-object v0
+562592: 7220 c3f3 2000                         |000d: invoke-interface {v0, v2}, Lhuawei/cust/IHwCarrierConfigPolicy;.getFileConfig:(Ljava/lang/String;)Ljava/util/Map; // method@f3c3
+562598: 0c00                                   |0010: move-result-object v0
+56259a: 1100                                   |0011: return-object v0
+      catches       : (none)
+      positions     :
+        0x0000 line=617
+        0x0004 line=618
+        0x000b line=619
+        0x000d line=621
+      locals        :
+        0x0000 - 0x0012 reg=2 fileName Ljava/lang/String;
+
+    #16              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'getFileConfig'
+      type          : '(Ljava/lang/String;I)Ljava/util/Map;'
+      access        : 0x0009 (PUBLIC STATIC)
+      hiddenapi     : 0x0020 (SDK,TEST-API)
+      code          -
+      registers     : 4
+      ins           : 2
+      outs          : 3
+      insns size    : 18 16-bit code units
+56259c:                                        |[56259c] huawei.cust.HwCfgFilePolicy.getFileConfig:(Ljava/lang/String;I)Ljava/util/Map;
+5625ac: 6200 e8cb                              |0000: sget-object v0, Lhuawei/cust/HwCfgFilePolicy;.sCarrierConfigPolicy:Lhuawei/cust/IHwCarrierConfigPolicy; // field@cbe8
+5625b0: 3900 0b00                              |0002: if-nez v0, 000d // +000b
+5625b4: 1a00 b91f                              |0004: const-string v0, "CfgFilePolicy" // string@1fb9
+5625b8: 1a01 112a                              |0006: const-string v1, "Error: sCarrierConfigPolicy is null" // string@2a11
+5625bc: 7120 2f0e 1000                         |0008: invoke-static {v0, v1}, Landroid/util/Log;.e:(Ljava/lang/String;Ljava/lang/String;)I // method@0e2f
+5625c2: 1200                                   |000b: const/4 v0, #int 0 // #0
+5625c4: 1100                                   |000c: return-object v0
+5625c6: 7230 c4f3 2003                         |000d: invoke-interface {v0, v2, v3}, Lhuawei/cust/IHwCarrierConfigPolicy;.getFileConfig:(Ljava/lang/String;I)Ljava/util/Map; // method@f3c4
+5625cc: 0c00                                   |0010: move-result-object v0
+5625ce: 1100                                   |0011: return-object v0
+      catches       : (none)
+      positions     :
+        0x0000 line=633
+        0x0004 line=634
+        0x000b line=635
+        0x000d line=637
+      locals        :
+        0x0000 - 0x0012 reg=2 fileName Ljava/lang/String;
+        0x0000 - 0x0012 reg=3 slotId I
+
+    #17              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'getFileInfo'
+      type          : '(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)[Ljava/lang/String;'
+      access        : 0x000a (PRIVATE STATIC)
+      hiddenapi     : 0x0002 (BLOCKED)
+      code          -
+      registers     : 12
+      ins           : 3
+      outs          : 3
+      insns size    : 131 16-bit code units
+5621ac:                                        |[5621ac] huawei.cust.HwCfgFilePolicy.getFileInfo:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)[Ljava/lang/String;
+5621bc: 2200 4d1c                              |0000: new-instance v0, Ljava/io/File; // type@1c4d
+5621c0: 7030 8ef6 900b                         |0002: invoke-direct {v0, v9, v11}, Ljava/io/File;.<init>:(Ljava/lang/String;Ljava/lang/String;)V // method@f68e
+5621c6: 6e10 95f6 0000                         |0005: invoke-virtual {v0}, Ljava/io/File;.exists:()Z // method@f695
+5621cc: 0a01                                   |0008: move-result v1
+5621ce: 3901 0400                              |0009: if-nez v1, 000d // +0004
+5621d2: 1201                                   |000b: const/4 v1, #int 0 // #0
+5621d4: 1101                                   |000c: return-object v1
+5621d6: 1251                                   |000d: const/4 v1, #int 5 // #5
+5621d8: 2311 9f1f                              |000e: new-array v1, v1, [Ljava/lang/String; // type@1f9f
+5621dc: 1202                                   |0010: const/4 v2, #int 0 // #0
+5621de: 6e10 9bf6 0000                         |0011: invoke-virtual {v0}, Ljava/io/File;.getPath:()Ljava/lang/String; // method@f69b
+5621e4: 0c03                                   |0014: move-result-object v3
+5621e6: 4d03 0102                              |0015: aput-object v3, v1, v2
+5621ea: 1212                                   |0017: const/4 v2, #int 1 // #1
+5621ec: 1a03 0000                              |0018: const-string v3, "" // string@0000
+5621f0: 4d03 0102                              |001a: aput-object v3, v1, v2
+5621f4: 1224                                   |001c: const/4 v4, #int 2 // #2
+5621f6: 4d03 0104                              |001d: aput-object v3, v1, v4
+5621fa: 1235                                   |001f: const/4 v5, #int 3 // #3
+5621fc: 4d03 0105                              |0020: aput-object v3, v1, v5
+562200: 1246                                   |0022: const/4 v6, #int 4 // #4
+562202: 4d03 0106                              |0023: aput-object v3, v1, v6
+562206: 2203 4d1c                              |0025: new-instance v3, Ljava/io/File; // type@1c4d
+56220a: 2207 a51c                              |0027: new-instance v7, Ljava/lang/StringBuilder; // type@1ca5
+56220e: 7010 75f8 0700                         |0029: invoke-direct {v7}, Ljava/lang/StringBuilder;.<init>:()V // method@f875
+562214: 6e20 81f8 a700                         |002c: invoke-virtual {v7, v10}, Ljava/lang/StringBuilder;.append:(Ljava/lang/String;)Ljava/lang/StringBuilder; // method@f881
+56221a: 1a08 8a07                              |002f: const-string v8, "/version.txt" // string@078a
+56221e: 6e20 81f8 8700                         |0031: invoke-virtual {v7, v8}, Ljava/lang/StringBuilder;.append:(Ljava/lang/String;)Ljava/lang/StringBuilder; // method@f881
+562224: 6e10 8bf8 0700                         |0034: invoke-virtual {v7}, Ljava/lang/StringBuilder;.toString:()Ljava/lang/String; // method@f88b
+56222a: 0c07                                   |0037: move-result-object v7
+56222c: 7030 8ef6 9307                         |0038: invoke-direct {v3, v9, v7}, Ljava/io/File;.<init>:(Ljava/lang/String;Ljava/lang/String;)V // method@f68e
+562232: 7110 a1f3 0300                         |003b: invoke-static {v3}, Lhuawei/cust/HwCfgFilePolicy;.readVersionFile:(Ljava/io/File;)Ljava/util/HashMap; // method@f3a1
+562238: 0c03                                   |003e: move-result-object v3
+56223a: 1b07 7b73 0100                         |003f: const-string/jumbo v7, "version" // string@0001737b
+562240: 6e20 08fc 7300                         |0042: invoke-virtual {v3, v7}, Ljava/util/HashMap;.containsKey:(Ljava/lang/Object;)Z // method@fc08
+562246: 0a08                                   |0045: move-result v8
+562248: 3808 0a00                              |0046: if-eqz v8, 0050 // +000a
+56224c: 6e20 0afc 7300                         |0048: invoke-virtual {v3, v7}, Ljava/util/HashMap;.get:(Ljava/lang/Object;)Ljava/lang/Object; // method@fc0a
+562252: 0c07                                   |004b: move-result-object v7
+562254: 1f07 a31c                              |004c: check-cast v7, Ljava/lang/String; // type@1ca3
+562258: 4d07 0102                              |004e: aput-object v7, v1, v2
+56225c: 1a02 94ba                              |0050: const-string v2, "compatibleVersion" // string@ba94
+562260: 6e20 08fc 2300                         |0052: invoke-virtual {v3, v2}, Ljava/util/HashMap;.containsKey:(Ljava/lang/Object;)Z // method@fc08
+562266: 0a07                                   |0055: move-result v7
+562268: 3807 0a00                              |0056: if-eqz v7, 0060 // +000a
+56226c: 6e20 0afc 2300                         |0058: invoke-virtual {v3, v2}, Ljava/util/HashMap;.get:(Ljava/lang/Object;)Ljava/lang/Object; // method@fc0a
+562272: 0c02                                   |005b: move-result-object v2
+562274: 1f02 a31c                              |005c: check-cast v2, Ljava/lang/String; // type@1ca3
+562278: 4d02 0104                              |005e: aput-object v2, v1, v4
+56227c: 1b02 4f6d 0100                         |0060: const-string/jumbo v2, "type" // string@00016d4f
+562282: 6e20 08fc 2300                         |0063: invoke-virtual {v3, v2}, Ljava/util/HashMap;.containsKey:(Ljava/lang/Object;)Z // method@fc08
+562288: 0a04                                   |0066: move-result v4
+56228a: 3804 0a00                              |0067: if-eqz v4, 0071 // +000a
+56228e: 6e20 0afc 2300                         |0069: invoke-virtual {v3, v2}, Ljava/util/HashMap;.get:(Ljava/lang/Object;)Ljava/lang/Object; // method@fc0a
+562294: 0c02                                   |006c: move-result-object v2
+562296: 1f02 a31c                              |006d: check-cast v2, Ljava/lang/String; // type@1ca3
+56229a: 4d02 0105                              |006f: aput-object v2, v1, v5
+56229e: 1b02 4964 0100                         |0071: const-string/jumbo v2, "subtype" // string@00016449
+5622a4: 6e20 08fc 2300                         |0074: invoke-virtual {v3, v2}, Ljava/util/HashMap;.containsKey:(Ljava/lang/Object;)Z // method@fc08
+5622aa: 0a04                                   |0077: move-result v4
+5622ac: 3804 0a00                              |0078: if-eqz v4, 0082 // +000a
+5622b0: 6e20 0afc 2300                         |007a: invoke-virtual {v3, v2}, Ljava/util/HashMap;.get:(Ljava/lang/Object;)Ljava/lang/Object; // method@fc0a
+5622b6: 0c02                                   |007d: move-result-object v2
+5622b8: 1f02 a31c                              |007e: check-cast v2, Ljava/lang/String; // type@1ca3
+5622bc: 4d02 0106                              |0080: aput-object v2, v1, v6
+5622c0: 1101                                   |0082: return-object v1
+      catches       : (none)
+      positions     :
+        0x0000 line=444
+        0x0005 line=445
+        0x000b line=446
+        0x000d line=450
+        0x0025 line=451
+        0x003f line=452
+        0x0048 line=453
+        0x0050 line=455
+        0x0058 line=456
+        0x0060 line=458
+        0x0069 line=459
+        0x0071 line=461
+        0x007a line=462
+        0x0082 line=464
+      locals        :
+        0x0005 - 0x0083 reg=0 cfgPath Ljava/io/File;
+        0x0025 - 0x0083 reg=1 infos [Ljava/lang/String;
+        0x003f - 0x0083 reg=3 versionInfos Ljava/util/HashMap; Ljava/util/HashMap<Ljava/lang/String;Ljava/lang/String;>;
+        0x0000 - 0x0083 reg=9 baseDir Ljava/lang/String;
+        0x0000 - 0x0083 reg=10 verDir Ljava/lang/String;
+        0x0000 - 0x0083 reg=11 filePath Ljava/lang/String;
+
+    #18              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'getLastVersionItem'
+      type          : '(Ljava/lang/String;)Ljava/lang/String;'
+      access        : 0x000a (PRIVATE STATIC)
+      hiddenapi     : 0x0002 (BLOCKED)
+      code          -
+      registers     : 2
+      ins           : 1
+      outs          : 2
+      insns size    : 11 16-bit code units
+561fc4:                                        |[561fc4] huawei.cust.HwCfgFilePolicy.getLastVersionItem:(Ljava/lang/String;)Ljava/lang/String;
+561fd4: 6e10 49f8 0100                         |0000: invoke-virtual {v1}, Ljava/lang/String;.length:()I // method@f849
+561fda: 0a00                                   |0003: move-result v0
+561fdc: d800 00fd                              |0004: add-int/lit8 v0, v0, #int -3 // #fd
+561fe0: 6e20 54f8 0100                         |0006: invoke-virtual {v1, v0}, Ljava/lang/String;.substring:(I)Ljava/lang/String; // method@f854
+561fe6: 0c00                                   |0009: move-result-object v0
+561fe8: 1100                                   |000a: return-object v0
+      catches       : (none)
+      positions     :
+        0x0000 line=540
+      locals        :
+        0x0000 - 0x000b reg=1 str Ljava/lang/String;
+
+    #19              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'getOpKey'
+      type          : '()Ljava/lang/String;'
+      access        : 0x0009 (PUBLIC STATIC)
+      hiddenapi     : 0x0020 (SDK,TEST-API)
+      code          -
+      registers     : 2
+      ins           : 0
+      outs          : 2
+      insns size    : 18 16-bit code units
+561fec:                                        |[561fec] huawei.cust.HwCfgFilePolicy.getOpKey:()Ljava/lang/String;
+561ffc: 6200 e8cb                              |0000: sget-object v0, Lhuawei/cust/HwCfgFilePolicy;.sCarrierConfigPolicy:Lhuawei/cust/IHwCarrierConfigPolicy; // field@cbe8
+562000: 3900 0b00                              |0002: if-nez v0, 000d // +000b
+562004: 1a00 b91f                              |0004: const-string v0, "CfgFilePolicy" // string@1fb9
+562008: 1a01 112a                              |0006: const-string v1, "Error: sCarrierConfigPolicy is null" // string@2a11
+56200c: 7120 2f0e 1000                         |0008: invoke-static {v0, v1}, Landroid/util/Log;.e:(Ljava/lang/String;Ljava/lang/String;)I // method@0e2f
+562012: 1200                                   |000b: const/4 v0, #int 0 // #0
+562014: 1100                                   |000c: return-object v0
+562016: 7210 c5f3 0000                         |000d: invoke-interface {v0}, Lhuawei/cust/IHwCarrierConfigPolicy;.getOpKey:()Ljava/lang/String; // method@f3c5
+56201c: 0c00                                   |0010: move-result-object v0
+56201e: 1100                                   |0011: return-object v0
+      catches       : (none)
+      positions     :
+        0x0000 line=550
+        0x0004 line=551
+        0x000b line=552
+        0x000d line=554
+      locals        :
+
+    #20              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'getOpKey'
+      type          : '(I)Ljava/lang/String;'
+      access        : 0x0009 (PUBLIC STATIC)
+      hiddenapi     : 0x0020 (SDK,TEST-API)
+      code          -
+      registers     : 3
+      ins           : 1
+      outs          : 2
+      insns size    : 18 16-bit code units
+562020:                                        |[562020] huawei.cust.HwCfgFilePolicy.getOpKey:(I)Ljava/lang/String;
+562030: 6200 e8cb                              |0000: sget-object v0, Lhuawei/cust/HwCfgFilePolicy;.sCarrierConfigPolicy:Lhuawei/cust/IHwCarrierConfigPolicy; // field@cbe8
+562034: 3900 0b00                              |0002: if-nez v0, 000d // +000b
+562038: 1a00 b91f                              |0004: const-string v0, "CfgFilePolicy" // string@1fb9
+56203c: 1a01 112a                              |0006: const-string v1, "Error: sCarrierConfigPolicy is null" // string@2a11
+562040: 7120 2f0e 1000                         |0008: invoke-static {v0, v1}, Landroid/util/Log;.e:(Ljava/lang/String;Ljava/lang/String;)I // method@0e2f
+562046: 1200                                   |000b: const/4 v0, #int 0 // #0
+562048: 1100                                   |000c: return-object v0
+56204a: 7220 c6f3 2000                         |000d: invoke-interface {v0, v2}, Lhuawei/cust/IHwCarrierConfigPolicy;.getOpKey:(I)Ljava/lang/String; // method@f3c6
+562050: 0c00                                   |0010: move-result-object v0
+562052: 1100                                   |0011: return-object v0
+      catches       : (none)
+      positions     :
+        0x0000 line=565
+        0x0004 line=566
+        0x000b line=567
+        0x000d line=569
+      locals        :
+        0x0000 - 0x0012 reg=2 slotId I
+
+    #21              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'getValue'
+      type          : '(Ljava/lang/String;ILjava/lang/Class;)Ljava/lang/Object;'
+      access        : 0x0009 (PUBLIC STATIC)
+      hiddenapi     : 0x0020 (SDK,TEST-API)
+      code          -
+      registers     : 5
+      ins           : 3
+      outs          : 4
+      insns size    : 18 16-bit code units
+561cf0:                                        |[561cf0] huawei.cust.HwCfgFilePolicy.getValue:(Ljava/lang/String;ILjava/lang/Class;)Ljava/lang/Object;
+561d00: 6200 e8cb                              |0000: sget-object v0, Lhuawei/cust/HwCfgFilePolicy;.sCarrierConfigPolicy:Lhuawei/cust/IHwCarrierConfigPolicy; // field@cbe8
+561d04: 3900 0b00                              |0002: if-nez v0, 000d // +000b
+561d08: 1a00 b91f                              |0004: const-string v0, "CfgFilePolicy" // string@1fb9
+561d0c: 1a01 112a                              |0006: const-string v1, "Error: sCarrierConfigPolicy is null" // string@2a11
+561d10: 7120 2f0e 1000                         |0008: invoke-static {v0, v1}, Landroid/util/Log;.e:(Ljava/lang/String;Ljava/lang/String;)I // method@0e2f
+561d16: 1200                                   |000b: const/4 v0, #int 0 // #0
+561d18: 1100                                   |000c: return-object v0
+561d1a: 7240 c7f3 2043                         |000d: invoke-interface {v0, v2, v3, v4}, Lhuawei/cust/IHwCarrierConfigPolicy;.getValue:(Ljava/lang/String;ILjava/lang/Class;)Ljava/lang/Object; // method@f3c7
+561d20: 0c00                                   |0010: move-result-object v0
+561d22: 1100                                   |0011: return-object v0
+      catches       : (none)
+      positions     :
+        0x0000 line=602
+        0x0004 line=603
+        0x000b line=604
+        0x000d line=606
+      locals        :
+        0x0000 - 0x0012 reg=2 key Ljava/lang/String;
+        0x0000 - 0x0012 reg=3 slotId I
+        0x0000 - 0x0012 reg=4 clazz Ljava/lang/Class; Ljava/lang/Class<TT;>;
+
+    #22              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'getValue'
+      type          : '(Ljava/lang/String;Ljava/lang/Class;)Ljava/lang/Object;'
+      access        : 0x0009 (PUBLIC STATIC)
+      hiddenapi     : 0x0020 (SDK,TEST-API)
+      code          -
+      registers     : 4
+      ins           : 2
+      outs          : 3
+      insns size    : 18 16-bit code units
+561d24:                                        |[561d24] huawei.cust.HwCfgFilePolicy.getValue:(Ljava/lang/String;Ljava/lang/Class;)Ljava/lang/Object;
+561d34: 6200 e8cb                              |0000: sget-object v0, Lhuawei/cust/HwCfgFilePolicy;.sCarrierConfigPolicy:Lhuawei/cust/IHwCarrierConfigPolicy; // field@cbe8
+561d38: 3900 0b00                              |0002: if-nez v0, 000d // +000b
+561d3c: 1a00 b91f                              |0004: const-string v0, "CfgFilePolicy" // string@1fb9
+561d40: 1a01 112a                              |0006: const-string v1, "Error: sCarrierConfigPolicy is null" // string@2a11
+561d44: 7120 2f0e 1000                         |0008: invoke-static {v0, v1}, Landroid/util/Log;.e:(Ljava/lang/String;Ljava/lang/String;)I // method@0e2f
+561d4a: 1200                                   |000b: const/4 v0, #int 0 // #0
+561d4c: 1100                                   |000c: return-object v0
+561d4e: 7230 c8f3 2003                         |000d: invoke-interface {v0, v2, v3}, Lhuawei/cust/IHwCarrierConfigPolicy;.getValue:(Ljava/lang/String;Ljava/lang/Class;)Ljava/lang/Object; // method@f3c8
+561d54: 0c00                                   |0010: move-result-object v0
+561d56: 1100                                   |0011: return-object v0
+      catches       : (none)
+      positions     :
+        0x0000 line=583
+        0x0004 line=584
+        0x000b line=585
+        0x000d line=587
+      locals        :
+        0x0000 - 0x0012 reg=2 key Ljava/lang/String;
+        0x0000 - 0x0012 reg=3 clazz Ljava/lang/Class; Ljava/lang/Class<TT;>;
+
+    #23              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'getVersionsFromFile'
+      type          : '(Ljava/io/File;)[Ljava/lang/String;'
+      access        : 0x000a (PRIVATE STATIC)
+      hiddenapi     : 0x0002 (BLOCKED)
+      code          -
+      registers     : 5
+      ins           : 1
+      outs          : 2
+      insns size    : 31 16-bit code units
+5622c4:                                        |[5622c4] huawei.cust.HwCfgFilePolicy.getVersionsFromFile:(Ljava/io/File;)[Ljava/lang/String;
+5622d4: 7110 a1f3 0400                         |0000: invoke-static {v4}, Lhuawei/cust/HwCfgFilePolicy;.readVersionFile:(Ljava/io/File;)Ljava/util/HashMap; // method@f3a1
+5622da: 0c00                                   |0003: move-result-object v0
+5622dc: 1221                                   |0004: const/4 v1, #int 2 // #2
+5622de: 2311 9f1f                              |0005: new-array v1, v1, [Ljava/lang/String; // type@1f9f
+5622e2: 1b02 7b73 0100                         |0007: const-string/jumbo v2, "version" // string@0001737b
+5622e8: 6e20 08fc 2000                         |000a: invoke-virtual {v0, v2}, Ljava/util/HashMap;.containsKey:(Ljava/lang/Object;)Z // method@fc08
+5622ee: 0a03                                   |000d: move-result v3
+5622f0: 3803 0f00                              |000e: if-eqz v3, 001d // +000f
+5622f4: 1203                                   |0010: const/4 v3, #int 0 // #0
+5622f6: 4d02 0103                              |0011: aput-object v2, v1, v3
+5622fa: 1213                                   |0013: const/4 v3, #int 1 // #1
+5622fc: 6e20 0afc 2000                         |0014: invoke-virtual {v0, v2}, Ljava/util/HashMap;.get:(Ljava/lang/Object;)Ljava/lang/Object; // method@fc0a
+562302: 0c02                                   |0017: move-result-object v2
+562304: 1f02 a31c                              |0018: check-cast v2, Ljava/lang/String; // type@1ca3
+562308: 4d02 0103                              |001a: aput-object v2, v1, v3
+56230c: 1101                                   |001c: return-object v1
+56230e: 1202                                   |001d: const/4 v2, #int 0 // #0
+562310: 1102                                   |001e: return-object v2
+      catches       : (none)
+      positions     :
+        0x0000 line=374
+        0x0004 line=376
+        0x0007 line=377
+        0x0010 line=378
+        0x0013 line=379
+        0x001c line=380
+        0x001d line=382
+      locals        :
+        0x0004 - 0x001f reg=0 fileInfos Ljava/util/HashMap; Ljava/util/HashMap<Ljava/lang/String;Ljava/lang/String;>;
+        0x0007 - 0x001f reg=1 versionInfos [Ljava/lang/String;
+        0x0000 - 0x001f reg=4 file Ljava/io/File;
+
+    #24              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'initFileVersions'
+      type          : '(Ljava/util/ArrayList;)V'
+      access        : 0x000a (PRIVATE STATIC)
+      hiddenapi     : 0x0002 (BLOCKED)
+      code          -
+      registers     : 8
+      ins           : 1
+      outs          : 3
+      insns size    : 55 16-bit code units
+562670:                                        |[562670] huawei.cust.HwCfgFilePolicy.initFileVersions:(Ljava/util/ArrayList;)V
+562680: 6e10 7efb 0700                         |0000: invoke-virtual {v7}, Ljava/util/ArrayList;.iterator:()Ljava/util/Iterator; // method@fb7e
+562686: 0c00                                   |0003: move-result-object v0
+562688: 7210 29fc 0000                         |0004: invoke-interface {v0}, Ljava/util/Iterator;.hasNext:()Z // method@fc29
+56268e: 0a01                                   |0007: move-result v1
+562690: 3801 2e00                              |0008: if-eqz v1, 0036 // +002e
+562694: 7210 2afc 0000                         |000a: invoke-interface {v0}, Ljava/util/Iterator;.next:()Ljava/lang/Object; // method@fc2a
+56269a: 0c01                                   |000d: move-result-object v1
+56269c: 1f01 4d1c                              |000e: check-cast v1, Ljava/io/File; // type@1c4d
+5626a0: 7110 9bf3 0100                         |0010: invoke-static {v1}, Lhuawei/cust/HwCfgFilePolicy;.getVersionsFromFile:(Ljava/io/File;)[Ljava/lang/String; // method@f39b
+5626a6: 0c02                                   |0013: move-result-object v2
+5626a8: 3802 2100                              |0014: if-eqz v2, 0035 // +0021
+5626ac: 6203 eacb                              |0016: sget-object v3, Lhuawei/cust/HwCfgFilePolicy;.sCfgVersions:Ljava/util/HashMap; // field@cbea
+5626b0: 1204                                   |0018: const/4 v4, #int 0 // #0
+5626b2: 4605 0204                              |0019: aget-object v5, v2, v4
+5626b6: 6e20 0afc 5300                         |001b: invoke-virtual {v3, v5}, Ljava/util/HashMap;.get:(Ljava/lang/Object;)Ljava/lang/Object; // method@fc0a
+5626bc: 0c03                                   |001e: move-result-object v3
+5626be: 1f03 a31c                              |001f: check-cast v3, Ljava/lang/String; // type@1ca3
+5626c2: 1215                                   |0021: const/4 v5, #int 1 // #1
+5626c4: 3803 0a00                              |0022: if-eqz v3, 002c // +000a
+5626c8: 4606 0205                              |0024: aget-object v6, v2, v5
+5626cc: 6e20 31f8 6300                         |0026: invoke-virtual {v3, v6}, Ljava/lang/String;.compareTo:(Ljava/lang/String;)I // method@f831
+5626d2: 0a06                                   |0029: move-result v6
+5626d4: 3b06 0b00                              |002a: if-gez v6, 0035 // +000b
+5626d8: 6206 eacb                              |002c: sget-object v6, Lhuawei/cust/HwCfgFilePolicy;.sCfgVersions:Ljava/util/HashMap; // field@cbea
+5626dc: 4604 0204                              |002e: aget-object v4, v2, v4
+5626e0: 4605 0205                              |0030: aget-object v5, v2, v5
+5626e4: 6e30 0dfc 4605                         |0032: invoke-virtual {v6, v4, v5}, Ljava/util/HashMap;.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object; // method@fc0d
+5626ea: 28cf                                   |0035: goto 0004 // -0031
+5626ec: 0e00                                   |0036: return-void
+      catches       : (none)
+      positions     :
+        0x0000 line=356
+        0x0010 line=357
+        0x0014 line=358
+        0x0016 line=359
+        0x0021 line=360
+        0x002c line=361
+        0x0035 line=364
+        0x0036 line=365
+      locals        :
+        0x0010 - 0x0035 reg=1 file Ljava/io/File;
+        0x0014 - 0x0035 reg=2 versions [Ljava/lang/String;
+        0x0021 - 0x0035 reg=3 oldversion Ljava/lang/String;
+        0x0000 - 0x0037 reg=7 cfgFileList Ljava/util/ArrayList; Ljava/util/ArrayList<Ljava/io/File;>;
+
+    #25              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'isNumFormat'
+      type          : '([Ljava/lang/String;)Z'
+      access        : 0x000a (PRIVATE STATIC)
+      hiddenapi     : 0x0002 (BLOCKED)
+      code          -
+      registers     : 8
+      ins           : 1
+      outs          : 2
+      insns size    : 29 16-bit code units
+561b04:                                        |[561b04] huawei.cust.HwCfgFilePolicy.isNumFormat:([Ljava/lang/String;)Z
+561b14: 1a00 799c                              |0000: const-string v0, "[0-9]{1,3}$" // string@9c79
+561b18: 7110 8afd 0000                         |0002: invoke-static {v0}, Ljava/util/regex/Pattern;.compile:(Ljava/lang/String;)Ljava/util/regex/Pattern; // method@fd8a
+561b1e: 0c00                                   |0005: move-result-object v0
+561b20: 2171                                   |0006: array-length v1, v7
+561b22: 1202                                   |0007: const/4 v2, #int 0 // #0
+561b24: 0123                                   |0008: move v3, v2
+561b26: 3513 1200                              |0009: if-ge v3, v1, 001b // +0012
+561b2a: 4604 0703                              |000b: aget-object v4, v7, v3
+561b2e: 6e20 8bfd 4000                         |000d: invoke-virtual {v0, v4}, Ljava/util/regex/Pattern;.matcher:(Ljava/lang/CharSequence;)Ljava/util/regex/Matcher; // method@fd8b
+561b34: 0c05                                   |0010: move-result-object v5
+561b36: 6e10 86fd 0500                         |0011: invoke-virtual {v5}, Ljava/util/regex/Matcher;.matches:()Z // method@fd86
+561b3c: 0a06                                   |0014: move-result v6
+561b3e: 3906 0300                              |0015: if-nez v6, 0018 // +0003
+561b42: 0f02                                   |0017: return v2
+561b44: d803 0301                              |0018: add-int/lit8 v3, v3, #int 1 // #01
+561b48: 28ef                                   |001a: goto 0009 // -0011
+561b4a: 1211                                   |001b: const/4 v1, #int 1 // #1
+561b4c: 0f01                                   |001c: return v1
+      catches       : (none)
+      positions     :
+        0x0000 line=429
+        0x0006 line=431
+        0x000d line=432
+        0x0011 line=433
+        0x0017 line=434
+        0x0018 line=431
+        0x001b line=437
+      locals        :
+        0x000d - 0x0018 reg=4 ver Ljava/lang/String;
+        0x0011 - 0x001b reg=5 isNum Ljava/util/regex/Matcher;
+        0x0006 - 0x001d reg=0 pattern Ljava/util/regex/Pattern;
+        0x0000 - 0x001d reg=7 version [Ljava/lang/String;
+
+    #26              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'isPresetNewerVersionInfo'
+      type          : '([Ljava/lang/String;[Ljava/lang/String;)Z'
+      access        : 0x000a (PRIVATE STATIC)
+      hiddenapi     : 0x0002 (BLOCKED)
+      code          -
+      registers     : 11
+      ins           : 2
+      outs          : 2
+      insns size    : 99 16-bit code units
+561b50:                                        |[561b50] huawei.cust.HwCfgFilePolicy.isPresetNewerVersionInfo:([Ljava/lang/String;[Ljava/lang/String;)Z
+561b60: 1200                                   |0000: const/4 v0, #int 0 // #0
+561b62: 3909 0300                              |0001: if-nez v9, 0004 // +0003
+561b66: 0f00                                   |0003: return v0
+561b68: 1211                                   |0004: const/4 v1, #int 1 // #1
+561b6a: 390a 0300                              |0005: if-nez v10, 0008 // +0003
+561b6e: 0f01                                   |0007: return v1
+561b70: 1222                                   |0008: const/4 v2, #int 2 // #2
+561b72: 4603 0902                              |0009: aget-object v3, v9, v2
+561b76: 4602 0a02                              |000b: aget-object v2, v10, v2
+561b7a: 6e20 37f8 2300                         |000d: invoke-virtual {v3, v2}, Ljava/lang/String;.equals:(Ljava/lang/Object;)Z // method@f837
+561b80: 0a02                                   |0010: move-result v2
+561b82: 3802 5100                              |0011: if-eqz v2, 0062 // +0051
+561b86: 1232                                   |0013: const/4 v2, #int 3 // #3
+561b88: 4603 0902                              |0014: aget-object v3, v9, v2
+561b8c: 4602 0a02                              |0016: aget-object v2, v10, v2
+561b90: 6e20 37f8 2300                         |0018: invoke-virtual {v3, v2}, Ljava/lang/String;.equals:(Ljava/lang/Object;)Z // method@f837
+561b96: 0a02                                   |001b: move-result v2
+561b98: 3802 4600                              |001c: if-eqz v2, 0062 // +0046
+561b9c: 1242                                   |001e: const/4 v2, #int 4 // #4
+561b9e: 4603 0902                              |001f: aget-object v3, v9, v2
+561ba2: 4602 0a02                              |0021: aget-object v2, v10, v2
+561ba6: 6e20 37f8 2300                         |0023: invoke-virtual {v3, v2}, Ljava/lang/String;.equals:(Ljava/lang/Object;)Z // method@f837
+561bac: 0a02                                   |0026: move-result v2
+561bae: 3902 0300                              |0027: if-nez v2, 002a // +0003
+561bb2: 2839                                   |0029: goto 0062 // +0039
+561bb4: 4602 0901                              |002a: aget-object v2, v9, v1
+561bb8: 1a03 0000                              |002c: const-string v3, "" // string@0000
+561bbc: 6e20 37f8 2300                         |002e: invoke-virtual {v3, v2}, Ljava/lang/String;.equals:(Ljava/lang/Object;)Z // method@f837
+561bc2: 0a02                                   |0031: move-result v2
+561bc4: 3902 2f00                              |0032: if-nez v2, 0061 // +002f
+561bc8: 4602 0a01                              |0034: aget-object v2, v10, v1
+561bcc: 6e20 37f8 2300                         |0036: invoke-virtual {v3, v2}, Ljava/lang/String;.equals:(Ljava/lang/Object;)Z // method@f837
+561bd2: 0a02                                   |0039: move-result v2
+561bd4: 3802 0300                              |003a: if-eqz v2, 003d // +0003
+561bd8: 2825                                   |003c: goto 0061 // +0025
+561bda: 4602 0901                              |003d: aget-object v2, v9, v1
+561bde: 7110 86f3 0200                         |003f: invoke-static {v2}, Lhuawei/cust/HwCfgFilePolicy;.changeVersionToLongStr:(Ljava/lang/String;)Ljava/lang/String; // method@f386
+561be4: 0c02                                   |0042: move-result-object v2
+561be6: 4603 0a01                              |0043: aget-object v3, v10, v1
+561bea: 7110 86f3 0300                         |0045: invoke-static {v3}, Lhuawei/cust/HwCfgFilePolicy;.changeVersionToLongStr:(Ljava/lang/String;)Ljava/lang/String; // method@f386
+561bf0: 0c03                                   |0048: move-result-object v3
+561bf2: 7110 cdf7 0200                         |0049: invoke-static {v2}, Ljava/lang/Long;.parseLong:(Ljava/lang/String;)J // method@f7cd
+561bf8: 0b04                                   |004c: move-result-wide v4
+561bfa: 7110 cdf7 0300                         |004d: invoke-static {v3}, Ljava/lang/Long;.parseLong:(Ljava/lang/String;)J // method@f7cd
+561c00: 0b06                                   |0050: move-result-wide v6
+561c02: 3108 0406                              |0051: cmp-long v8, v4, v6
+561c06: 3d08 0300                              |0053: if-lez v8, 0056 // +0003
+561c0a: 0110                                   |0055: move v0, v1
+561c0c: 0f00                                   |0056: return v0
+561c0e: 0d00                                   |0057: move-exception v0
+561c10: 1a04 b91f                              |0058: const-string v4, "CfgFilePolicy" // string@1fb9
+561c14: 1b05 7e73 0100                         |005a: const-string/jumbo v5, "version file format is not number type." // string@0001737e
+561c1a: 7120 2f0e 5400                         |005d: invoke-static {v4, v5}, Landroid/util/Log;.e:(Ljava/lang/String;Ljava/lang/String;)I // method@0e2f
+561c20: 0f01                                   |0060: return v1
+561c22: 0f01                                   |0061: return v1
+561c24: 0f01                                   |0062: return v1
+      catches       : 1
+        0x0049 - 0x0051
+          Ljava/lang/NumberFormatException; -> 0x0057
+      positions     :
+        0x0000 line=501
+        0x0003 line=502
+        0x0004 line=504
+        0x0007 line=505
+        0x0008 line=507
+        0x0018 line=508
+        0x002a line=511
+        0x003d line=514
+        0x0043 line=515
+        0x0049 line=517
+        0x004d line=518
+        0x0051 line=519
+        0x0057 line=520
+        0x0058 line=521
+        0x0060 line=523
+        0x0061 line=512
+        0x0062 line=509
+      locals        :
+        0x004d - 0x0057 reg=4 longInfoNum J
+        0x0051 - 0x0057 reg=6 longCotaInfoNum J
+        0x0058 - 0x0060 reg=0 e Ljava/lang/NumberFormatException;
+        0x0043 - 0x0061 reg=2 longInfo Ljava/lang/String;
+        0x0049 - 0x0061 reg=3 longCotaInfo Ljava/lang/String;
+        0x0000 - 0x0063 reg=9 presetInfo [Ljava/lang/String;
+        0x0000 - 0x0063 reg=10 cotaInfos [Ljava/lang/String;
+
+    #27              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'isVersionFourSegments'
+      type          : '(Ljava/lang/String;)Z'
+      access        : 0x000a (PRIVATE STATIC)
+      hiddenapi     : 0x0002 (BLOCKED)
+      code          -
+      registers     : 4
+      ins           : 1
+      outs          : 2
+      insns size    : 20 16-bit code units
+561c38:                                        |[561c38] huawei.cust.HwCfgFilePolicy.isVersionFourSegments:(Ljava/lang/String;)Z
+561c48: 1a00 3c9e                              |0000: const-string v0, "\\." // string@9e3c
+561c4c: 6e20 4ff8 0300                         |0002: invoke-virtual {v3, v0}, Ljava/lang/String;.split:(Ljava/lang/String;)[Ljava/lang/String; // method@f84f
+561c52: 0c00                                   |0005: move-result-object v0
+561c54: 2101                                   |0006: array-length v1, v0
+561c56: 1242                                   |0007: const/4 v2, #int 4 // #4
+561c58: 3321 0a00                              |0008: if-ne v1, v2, 0012 // +000a
+561c5c: 7110 9df3 0000                         |000a: invoke-static {v0}, Lhuawei/cust/HwCfgFilePolicy;.isNumFormat:([Ljava/lang/String;)Z // method@f39d
+561c62: 0a01                                   |000d: move-result v1
+561c64: 3801 0400                              |000e: if-eqz v1, 0012 // +0004
+561c68: 1211                                   |0010: const/4 v1, #int 1 // #1
+561c6a: 0f01                                   |0011: return v1
+561c6c: 1201                                   |0012: const/4 v1, #int 0 // #0
+561c6e: 0f01                                   |0013: return v1
+      catches       : (none)
+      positions     :
+        0x0000 line=417
+        0x0006 line=419
+        0x0010 line=420
+        0x0012 line=422
+      locals        :
+        0x0006 - 0x0014 reg=0 versionInfos [Ljava/lang/String;
+        0x0000 - 0x0014 reg=3 version Ljava/lang/String;
+
+    #28              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'parseCarrierPath'
+      type          : '([Ljava/lang/String;Ljava/lang/String;)[Ljava/lang/String;'
+      access        : 0x000a (PRIVATE STATIC)
+      hiddenapi     : 0x0002 (BLOCKED)
+      code          -
+      registers     : 10
+      ins           : 2
+      outs          : 3
+      insns size    : 72 16-bit code units
+562314:                                        |[562314] huawei.cust.HwCfgFilePolicy.parseCarrierPath:([Ljava/lang/String;Ljava/lang/String;)[Ljava/lang/String;
+562324: 3909 0900                              |0000: if-nez v9, 0009 // +0009
+562328: 6e10 e4fe 0800                         |0002: invoke-virtual {v8}, [Ljava/lang/String;.clone:()Ljava/lang/Object; // method@fee4
+56232e: 0c00                                   |0005: move-result-object v0
+562330: 1f00 9f1f                              |0006: check-cast v0, [Ljava/lang/String; // type@1f9f
+562334: 1100                                   |0008: return-object v0
+562336: 2200 7f1d                              |0009: new-instance v0, Ljava/util/ArrayList; // type@1d7f
+56233a: 7010 70fb 0000                         |000b: invoke-direct {v0}, Ljava/util/ArrayList;.<init>:()V // method@fb70
+562340: 2181                                   |000e: array-length v1, v8
+562342: 1202                                   |000f: const/4 v2, #int 0 // #0
+562344: 0123                                   |0010: move v3, v2
+562346: 3513 2e00                              |0011: if-ge v3, v1, 003f // +002e
+56234a: 4604 0803                              |0013: aget-object v4, v8, v3
+56234e: 6e20 74fb 4000                         |0015: invoke-virtual {v0, v4}, Ljava/util/ArrayList;.add:(Ljava/lang/Object;)Z // method@fb74
+562354: 2205 4d1c                              |0018: new-instance v5, Ljava/io/File; // type@1c4d
+562358: 1a06 99b2                              |001a: const-string v6, "carrier" // string@b299
+56235c: 7030 8ef6 4506                         |001c: invoke-direct {v5, v4, v6}, Ljava/io/File;.<init>:(Ljava/lang/String;Ljava/lang/String;)V // method@f68e
+562362: 6e10 95f6 0500                         |001f: invoke-virtual {v5}, Ljava/io/File;.exists:()Z // method@f695
+562368: 0a06                                   |0022: move-result v6
+56236a: 3806 1900                              |0023: if-eqz v6, 003c // +0019
+56236e: 2206 a51c                              |0025: new-instance v6, Ljava/lang/StringBuilder; // type@1ca5
+562372: 7010 75f8 0600                         |0027: invoke-direct {v6}, Ljava/lang/StringBuilder;.<init>:()V // method@f875
+562378: 6e20 81f8 4600                         |002a: invoke-virtual {v6, v4}, Ljava/lang/StringBuilder;.append:(Ljava/lang/String;)Ljava/lang/StringBuilder; // method@f881
+56237e: 1a07 4a07                              |002d: const-string v7, "/carrier/" // string@074a
+562382: 6e20 81f8 7600                         |002f: invoke-virtual {v6, v7}, Ljava/lang/StringBuilder;.append:(Ljava/lang/String;)Ljava/lang/StringBuilder; // method@f881
+562388: 6e20 81f8 9600                         |0032: invoke-virtual {v6, v9}, Ljava/lang/StringBuilder;.append:(Ljava/lang/String;)Ljava/lang/StringBuilder; // method@f881
+56238e: 6e10 8bf8 0600                         |0035: invoke-virtual {v6}, Ljava/lang/StringBuilder;.toString:()Ljava/lang/String; // method@f88b
+562394: 0c06                                   |0038: move-result-object v6
+562396: 6e20 74fb 6000                         |0039: invoke-virtual {v0, v6}, Ljava/util/ArrayList;.add:(Ljava/lang/Object;)Z // method@fb74
+56239c: d803 0301                              |003c: add-int/lit8 v3, v3, #int 1 // #01
+5623a0: 28d3                                   |003e: goto 0011 // -002d
+5623a2: 2321 9f1f                              |003f: new-array v1, v2, [Ljava/lang/String; // type@1f9f
+5623a6: 6e20 87fb 1000                         |0041: invoke-virtual {v0, v1}, Ljava/util/ArrayList;.toArray:([Ljava/lang/Object;)[Ljava/lang/Object; // method@fb87
+5623ac: 0c01                                   |0044: move-result-object v1
+5623ae: 1f01 9f1f                              |0045: check-cast v1, [Ljava/lang/String; // type@1f9f
+5623b2: 1101                                   |0047: return-object v1
+      catches       : (none)
+      positions     :
+        0x0000 line=641
+        0x0002 line=642
+        0x0009 line=645
+        0x000e line=646
+        0x0015 line=647
+        0x0018 line=648
+        0x001f line=649
+        0x0025 line=650
+        0x003c line=646
+        0x003f line=653
+      locals        :
+        0x0015 - 0x003c reg=4 dir Ljava/lang/String;
+        0x001f - 0x003c reg=5 file Ljava/io/File;
+        0x000e - 0x0048 reg=0 paths Ljava/util/ArrayList; Ljava/util/ArrayList<Ljava/lang/String;>;
+        0x0000 - 0x0048 reg=8 dirs [Ljava/lang/String;
+        0x0000 - 0x0048 reg=9 opKey Ljava/lang/String;
+
+    #29              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'readVersionFile'
+      type          : '(Ljava/io/File;)Ljava/util/HashMap;'
+      access        : 0x000a (PRIVATE STATIC)
+      hiddenapi     : 0x0002 (BLOCKED)
+      code          -
+      registers     : 8
+      ins           : 1
+      outs          : 3
+      insns size    : 91 16-bit code units
+562488:                                        |[562488] huawei.cust.HwCfgFilePolicy.readVersionFile:(Ljava/io/File;)Ljava/util/HashMap;
+562498: 1200                                   |0000: const/4 v0, #int 0 // #0
+56249a: 2201 8b1d                              |0001: new-instance v1, Ljava/util/HashMap; // type@1d8b
+56249e: 7010 04fc 0100                         |0003: invoke-direct {v1}, Ljava/util/HashMap;.<init>:()V // method@fc04
+5624a4: 2202 a51d                              |0006: new-instance v2, Ljava/util/Scanner; // type@1da5
+5624a8: 1a03 d690                              |0008: const-string v3, "UTF-8" // string@90d6
+5624ac: 7030 c6fc 7203                         |000a: invoke-direct {v2, v7, v3}, Ljava/util/Scanner;.<init>:(Ljava/io/File;Ljava/lang/String;)V // method@fcc6
+5624b2: 0720                                   |000d: move-object v0, v2
+5624b4: 6e10 c8fc 0000                         |000e: invoke-virtual {v0}, Ljava/util/Scanner;.hasNextLine:()Z // method@fcc8
+5624ba: 0a02                                   |0011: move-result v2
+5624bc: 3802 2e00                              |0012: if-eqz v2, 0040 // +002e
+5624c0: 6e10 c9fc 0000                         |0014: invoke-virtual {v0}, Ljava/util/Scanner;.nextLine:()Ljava/lang/String; // method@fcc9
+5624c6: 0c02                                   |0017: move-result-object v2
+5624c8: 1a03 920a                              |0018: const-string v3, "=" // string@0a92
+5624cc: 6e20 4ff8 3200                         |001a: invoke-virtual {v2, v3}, Ljava/lang/String;.split:(Ljava/lang/String;)[Ljava/lang/String; // method@f84f
+5624d2: 0c03                                   |001d: move-result-object v3
+5624d4: 2134                                   |001e: array-length v4, v3
+5624d6: 1225                                   |001f: const/4 v5, #int 2 // #2
+5624d8: 3354 1f00                              |0020: if-ne v4, v5, 003f // +001f
+5624dc: 1b04 7b73 0100                         |0022: const-string/jumbo v4, "version" // string@0001737b
+5624e2: 1205                                   |0025: const/4 v5, #int 0 // #0
+5624e4: 4606 0305                              |0026: aget-object v6, v3, v5
+5624e8: 6e20 37f8 6400                         |0028: invoke-virtual {v4, v6}, Ljava/lang/String;.equals:(Ljava/lang/Object;)Z // method@f837
+5624ee: 0a04                                   |002b: move-result v4
+5624f0: 1216                                   |002c: const/4 v6, #int 1 // #1
+5624f2: 3804 0b00                              |002d: if-eqz v4, 0038 // +000b
+5624f6: 4604 0306                              |002f: aget-object v4, v3, v6
+5624fa: 7110 9ff3 0400                         |0031: invoke-static {v4}, Lhuawei/cust/HwCfgFilePolicy;.isVersionFourSegments:(Ljava/lang/String;)Z // method@f39f
+562500: 0a04                                   |0034: move-result v4
+562502: 3904 0300                              |0035: if-nez v4, 0038 // +0003
+562506: 28d7                                   |0037: goto 000e // -0029
+562508: 4604 0305                              |0038: aget-object v4, v3, v5
+56250c: 4605 0306                              |003a: aget-object v5, v3, v6
+562510: 6e30 0dfc 4105                         |003c: invoke-virtual {v1, v4, v5}, Ljava/util/HashMap;.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object; // method@fc0d
+562516: 28cf                                   |003f: goto 000e // -0031
+562518: 280f                                   |0040: goto 004f // +000f
+56251a: 0d02                                   |0041: move-exception v2
+56251c: 2812                                   |0042: goto 0054 // +0012
+56251e: 0d02                                   |0043: move-exception v2
+562520: 1a03 b91f                              |0044: const-string v3, "CfgFilePolicy" // string@1fb9
+562524: 1b04 7f73 0100                         |0046: const-string/jumbo v4, "version file not found." // string@0001737f
+56252a: 7120 2f0e 4300                         |0049: invoke-static {v3, v4}, Landroid/util/Log;.e:(Ljava/lang/String;Ljava/lang/String;)I // method@0e2f
+562530: 0000                                   |004c: nop // spacer
+562532: 3800 0600                              |004d: if-eqz v0, 0053 // +0006
+562536: 6e10 c7fc 0000                         |004f: invoke-virtual {v0}, Ljava/util/Scanner;.close:()V // method@fcc7
+56253c: 1200                                   |0052: const/4 v0, #int 0 // #0
+56253e: 1101                                   |0053: return-object v1
+562540: 3800 0600                              |0054: if-eqz v0, 005a // +0006
+562544: 6e10 c7fc 0000                         |0056: invoke-virtual {v0}, Ljava/util/Scanner;.close:()V // method@fcc7
+56254a: 1200                                   |0059: const/4 v0, #int 0 // #0
+56254c: 2702                                   |005a: throw v2
+      catches       : 2
+        0x0006 - 0x003f
+          Ljava/io/FileNotFoundException; -> 0x0043
+          <any> -> 0x0041
+        0x0044 - 0x004c
+          <any> -> 0x0041
+      positions     :
+        0x0000 line=386
+        0x0001 line=387
+        0x0006 line=389
+        0x000e line=391
+        0x0014 line=392
+        0x0018 line=393
+        0x001e line=394
+        0x0022 line=396
+        0x0037 line=397
+        0x0038 line=399
+        0x003f line=401
+        0x0040 line=405
+        0x0043 line=402
+        0x0044 line=403
+        0x004c line=405
+        0x004f line=406
+        0x0052 line=407
+        0x0053 line=410
+        0x0054 line=405
+        0x0056 line=406
+        0x0059 line=407
+        0x005a line=409
+      locals        :
+        0x0018 - 0x003f reg=2 oneline Ljava/lang/String;
+        0x001e - 0x0040 reg=3 contents [Ljava/lang/String;
+        0x0044 - 0x004d reg=2 e Ljava/io/FileNotFoundException;
+        0x0001 - 0x005b reg=0 scanner Ljava/util/Scanner;
+        0x0006 - 0x005b reg=1 fileInfos Ljava/util/HashMap; Ljava/util/HashMap<Ljava/lang/String;Ljava/lang/String;>;
+        0x0000 - 0x005b reg=7 file Ljava/io/File;
+
+    #30              : (in Lhuawei/cust/HwCfgFilePolicy;)
+      name          : 'refreshCustDirPolicy'
+      type          : '(Ljava/lang/String;)V'
+      access        : 0x000a (PRIVATE STATIC)
+      hiddenapi     : 0x0002 (BLOCKED)
+      code          -
+      registers     : 6
+      ins           : 1
+      outs          : 3
+      insns size    : 64 16-bit code units
+5626f0:                                        |[5626f0] huawei.cust.HwCfgFilePolicy.refreshCustDirPolicy:(Ljava/lang/String;)V
+562700: 7110 250d 0500                         |0000: invoke-static {v5}, Landroid/text/TextUtils;.isEmpty:(Ljava/lang/CharSequence;)Z // method@0d25
+562706: 0a00                                   |0003: move-result v0
+562708: 3900 3b00                              |0004: if-nez v0, 003f // +003b
+56270c: 1a00 150a                              |0006: const-string v0, ":" // string@0a15
+562710: 6e20 4ff8 0500                         |0008: invoke-virtual {v5, v0}, Ljava/lang/String;.split:(Ljava/lang/String;)[Ljava/lang/String; // method@f84f
+562716: 0c00                                   |000b: move-result-object v0
+562718: 6900 e9cb                              |000c: sput-object v0, Lhuawei/cust/HwCfgFilePolicy;.sCfgDirs:[Ljava/lang/String; // field@cbe9
+56271c: 1a01 5407                              |000e: const-string v1, "/etc" // string@0754
+562720: 6e10 e4fe 0000                         |0010: invoke-virtual {v0}, [Ljava/lang/String;.clone:()Ljava/lang/Object; // method@fee4
+562726: 0c00                                   |0013: move-result-object v0
+562728: 1f00 9f1f                              |0014: check-cast v0, [Ljava/lang/String; // type@1f9f
+56272c: 6900 eccb                              |0016: sput-object v0, Lhuawei/cust/HwCfgFilePolicy;.sMediaDirs:[Ljava/lang/String; // field@cbec
+562730: 1200                                   |0018: const/4 v0, #int 0 // #0
+562732: 6202 eccb                              |0019: sget-object v2, Lhuawei/cust/HwCfgFilePolicy;.sMediaDirs:[Ljava/lang/String; // field@cbec
+562736: 2123                                   |001b: array-length v3, v2
+562738: 3530 2300                              |001c: if-ge v0, v3, 003f // +0023
+56273c: 4602 0200                              |001e: aget-object v2, v2, v0
+562740: 6e20 36f8 1200                         |0020: invoke-virtual {v2, v1}, Ljava/lang/String;.endsWith:(Ljava/lang/String;)Z // method@f836
+562746: 0a02                                   |0023: move-result v2
+562748: 3802 1800                              |0024: if-eqz v2, 003c // +0018
+56274c: 6202 eccb                              |0026: sget-object v2, Lhuawei/cust/HwCfgFilePolicy;.sMediaDirs:[Ljava/lang/String; // field@cbec
+562750: 4602 0200                              |0028: aget-object v2, v2, v0
+562754: 6e20 37f8 1200                         |002a: invoke-virtual {v2, v1}, Ljava/lang/String;.equals:(Ljava/lang/Object;)Z // method@f837
+56275a: 0a02                                   |002d: move-result v2
+56275c: 3902 0e00                              |002e: if-nez v2, 003c // +000e
+562760: 6202 eccb                              |0030: sget-object v2, Lhuawei/cust/HwCfgFilePolicy;.sMediaDirs:[Ljava/lang/String; // field@cbec
+562764: 4603 0200                              |0032: aget-object v3, v2, v0
+562768: 1a04 0000                              |0034: const-string v4, "" // string@0000
+56276c: 6e30 4cf8 1304                         |0036: invoke-virtual {v3, v1, v4}, Ljava/lang/String;.replace:(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String; // method@f84c
+562772: 0c03                                   |0039: move-result-object v3
+562774: 4d03 0200                              |003a: aput-object v3, v2, v0
+562778: d800 0001                              |003c: add-int/lit8 v0, v0, #int 1 // #01
+56277c: 28db                                   |003e: goto 0019 // -0025
+56277e: 0e00                                   |003f: return-void
+      catches       : (none)
+      positions     :
+        0x0000 line=670
+        0x0006 line=671
+        0x000e line=672
+        0x0010 line=673
+        0x0018 line=674
+        0x001e line=675
+        0x0030 line=676
+        0x003c line=674
+        0x003f line=680
+      locals        :
+        0x0019 - 0x003f reg=0 i I
+        0x0010 - 0x003f reg=1 cfgSuffix Ljava/lang/String;
+        0x0000 - 0x0040 reg=5 policy Ljava/lang/String;
+
+  Virtual methods   -
+  source_file_idx   : 12884 (HwCfgFilePolicy.java)
+
+Class #2675            -

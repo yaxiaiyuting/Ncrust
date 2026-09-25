@@ -1,0 +1,23 @@
+# settings list global | grep -i media_button_receiver —— 应用=huawei
+# 采集时间与命令原文见 tmp/capture-huawei.log 的「(4)」段
+################ (4) settings list global | grep -i media_button_receiver  [2026-09-25T13:04:13+08:00]
+$ adb -s WVQ6R22124000968 shell settings list global | grep -i media_button_receiver
+exit=1  （exit=1 表示无该设置项）
+$ adb -s WVQ6R22124000968 shell settings list global | grep -iE "media|music"
+awareness_ca_com.android.mediacenter=1
+awareness_ca_com.huawei.music=1
+car_dock_sound=/system/media/audio/ui/Dock.ogg
+car_undock_sound=/system/media/audio/ui/Undock.ogg
+charging_started_sound=/system/media/audio/ui/ChargingStarted.ogg
+desk_dock_sound=/system/media/audio/ui/Dock.ogg
+desk_undock_sound=/system/media/audio/ui/Undock.ogg
+dock_audio_media_enabled=1
+huawei_music=1
+huawei_music_old=1
+lock_sound=/system/media/audio/ui/Lock.ogg
+low_battery_sound=/system/media/audio/ui/LowBattery.ogg
+trusted_sound=/system/media/audio/ui/Trusted.ogg
+unlock_sound=/system/media/audio/ui/Unlock.ogg
+wireless_charging_started_sound=/system/media/audio/ui/WirelessChargingStarted.ogg
+
+################ (5) 控制中心 uiautomator + 截图  [2026-09-25T13:04:13+08:00]

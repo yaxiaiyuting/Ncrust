@@ -1,0 +1,144 @@
+############ capture: huawei (com.huawei.music)  开始时间 2026-09-25T13:02:59+08:00  设备 WVQ6R22124000968
+$ adb -s WVQ6R22124000968 shell am force-stop <四个候选应用>   # 清场，避免别的会话干扰
+$ adb -s WVQ6R22124000968 logcat -c
+$ adb -s WVQ6R22124000968 shell am start -n com.huawei.music/com.android.mediacenter.PageActivity
+Starting: Intent { cmp=com.huawei.music/com.android.mediacenter.PageActivity }
+exit=0
+$ adb -s WVQ6R22124000968 shell input keyevent 126   # KEYCODE_MEDIA_PLAY
+exit=0
+$ adb -s WVQ6R22124000968 shell input keyevent 126   # 第二次（首页可能先要进入播放器）
+exit=0
+## 轮询等待 state=3（最多 60s）
+  t=3s  state=state=2
+  t=6s  state=state=2
+  t=9s  state=state=2
+  t=12s  state=state=2
+  t=15s  state=state=2
+  t=18s  state=state=2
+  t=21s  state=state=2
+  t=24s  state=state=2
+  t=27s  state=state=2
+  t=30s  state=state=2
+  t=33s  state=state=2
+  t=36s  state=state=2
+  t=39s  state=state=2
+  t=42s  state=state=2
+  t=45s  state=state=2
+  t=48s  state=state=2
+  t=51s  state=state=2
+  t=54s  state=state=2
+  t=57s  state=state=2
+  t=60s  state=state=2
+## 最终 state = state=2
+## ⚠️ 未在播放状态，证据无效（state=state=2）
+
+################ (1) dumpsys media_session   [2026-09-25T13:04:13+08:00]
+$ adb -s WVQ6R22124000968 shell dumpsys media_session
+  -> dumpsys-media-session-huawei.txt exit=0  bytes=3748
+  -- Media button session 原文:
+  Media button session is com.netease.cloudmusic/MediaSession (userId=0)
+  -- 本包会话原文:
+      audioAttrs=AudioAttributes: usage=USAGE_MEDIA content=CONTENT_TYPE_UNKNOWN flags=0x800 tags= bundle=null
+      volumeType=1, controlType=2, max=0, current=0
+      metadata: size=11, description=The Final Countdown, Europe, null
+      queueTitle=null, size=0
+    com.android.mediacenter.mediasession com.huawei.music/com.android.mediacenter.mediasession (userId=0)
+      ownerPid=27416, ownerUid=10176, userId=0
+      package=com.huawei.music
+      launchIntent=PendingIntent{911bbd0: PendingIntentRecord{6a687c9 com.huawei.music startActivity}}
+      mediaButtonReceiver=MBR {pi=PendingIntent{bd3ece: PendingIntentRecord{b0ab1ef com.huawei.music broadcastIntent}}, type=1}
+      active=true
+      flags=3
+      rating type=1
+      controllers: 3
+      state=PlaybackState {state=2, position=94908, buffered position=0, speed=1.0, updated=775864, actions=311, custom actions=[], active item id=-1, error=null}
+      audioAttrs=AudioAttributes: usage=USAGE_MEDIA content=CONTENT_TYPE_UNKNOWN flags=0x800 tags= bundle=null
+      volumeType=1, controlType=2, max=0, current=0
+      metadata: size=20, description=喜欢你, BEYOND, 金碟至尊精选
+      queueTitle=null, size=0
+Remote stack size:0
+
+MigrateIn stack size:0
+
+MigrateOut stack size:0
+  -- uid/packages 行:
+  uid=10235 packages=com.netease.cloudmusic 
+
+################ (2) dumpsys notification --noredact  [2026-09-25T13:04:13+08:00]
+$ adb -s WVQ6R22124000968 shell dumpsys notification --noredact
+  -> dumpsys-notification-huawei.txt exit=0 bytes=313348
+  -- 本包通知（含 MediaStyle/style 关键字）:
+556:      AppSettings: com.huawei.music (10176)
+1325:      key='com.huawei.music',
+
+################ (3) logcat -d 过滤  [2026-09-25T13:04:13+08:00]
+$ adb -s WVQ6R22124000968 logcat -d | grep -iE "HwMediaSession|MediaControlUtils|media white list|Media button session|MediaSessionService"
+  -> logcat-hwmediasession-huawei.txt 行数=7
+09-25 13:04:01.601  1639  1876 I HwMediaSessionServiceEx: MediaDisplayEventReceiver onDisplayChanged: 0
+09-25 13:04:04.578  1639  3991 I MediaSessionService: dispatchMediaKeyEvent, pkg=com.android.systemui pid=2267, uid=10072, asSystem=false, event=KeyEvent { action=ACTION_DOWN, keyCode=KEYCODE_MEDIA_PLAY, scanCode=0, metaState=0, flags=0x0, repeatCount=0, eventTime=833913, downTime=833913, deviceId=-1, source=0x0, displayId=-1 }
+09-25 13:04:04.578  1639  3991 I MediaSessionService: Sending KeyEvent { action=ACTION_DOWN, keyCode=KEYCODE_MEDIA_PLAY, scanCode=0, metaState=0, flags=0x0, repeatCount=0, eventTime=833913, downTime=833913, deviceId=-1, source=0x0, displayId=-1 } to com.netease.cloudmusic/MediaSession (userId=0)
+09-25 13:04:04.578  1639  3991 D MediaSessionService: tempAllowlistTargetPkgIfPossible callingPackage:com.android.systemui targetPackage:com.netease.cloudmusic reason:action=ACTION_DOWN;code=KEYCODE_MEDIA_PLAY
+09-25 13:04:04.585  1639  3991 I MediaSessionService: dispatchMediaKeyEvent, pkg=com.android.systemui pid=2267, uid=10072, asSystem=false, event=KeyEvent { action=ACTION_UP, keyCode=KEYCODE_MEDIA_PLAY, scanCode=0, metaState=0, flags=0x0, repeatCount=0, eventTime=833913, downTime=833913, deviceId=-1, source=0x0, displayId=-1 }
+09-25 13:04:04.585  1639  3991 I MediaSessionService: Sending KeyEvent { action=ACTION_UP, keyCode=KEYCODE_MEDIA_PLAY, scanCode=0, metaState=0, flags=0x0, repeatCount=0, eventTime=833913, downTime=833913, deviceId=-1, source=0x0, displayId=-1 } to com.netease.cloudmusic/MediaSession (userId=0)
+09-25 13:04:04.585  1639  3991 D MediaSessionService: tempAllowlistTargetPkgIfPossible callingPackage:com.android.systemui targetPackage:com.netease.cloudmusic reason:action=ACTION_UP;code=KEYCODE_MEDIA_PLAY
+
+################ (4) settings list global | grep -i media_button_receiver  [2026-09-25T13:04:13+08:00]
+$ adb -s WVQ6R22124000968 shell settings list global | grep -i media_button_receiver
+exit=1  （exit=1 表示无该设置项）
+$ adb -s WVQ6R22124000968 shell settings list global | grep -iE "media|music"
+awareness_ca_com.android.mediacenter=1
+awareness_ca_com.huawei.music=1
+car_dock_sound=/system/media/audio/ui/Dock.ogg
+car_undock_sound=/system/media/audio/ui/Undock.ogg
+charging_started_sound=/system/media/audio/ui/ChargingStarted.ogg
+desk_dock_sound=/system/media/audio/ui/Dock.ogg
+desk_undock_sound=/system/media/audio/ui/Undock.ogg
+dock_audio_media_enabled=1
+huawei_music=1
+huawei_music_old=1
+lock_sound=/system/media/audio/ui/Lock.ogg
+low_battery_sound=/system/media/audio/ui/LowBattery.ogg
+trusted_sound=/system/media/audio/ui/Trusted.ogg
+unlock_sound=/system/media/audio/ui/Unlock.ogg
+wireless_charging_started_sound=/system/media/audio/ui/WirelessChargingStarted.ogg
+
+################ (5) 控制中心 uiautomator + 截图  [2026-09-25T13:04:13+08:00]
+$ adb -s WVQ6R22124000968 shell cmd statusbar expand-settings
+exit=0
+$ adb -s WVQ6R22124000968 shell uiautomator dump /sdcard/ui.xml
+UI hierchary dumped to: /sdcard/ui.xml
+exit=0
+/sdcard/ui.xml: 1 file pulled, 0 skipped. 13.9 MB/s (39217 bytes in 0.003s)
+  -> uiautomator-huawei.xml bytes=39217
+  -- 媒体卡文本节点（content-desc / text，过滤空值）:
+content-desc="打开歌词"
+content-desc="开启性能模式"
+content-desc="蓝牙开启。"
+content-desc="切换播放设备"
+content-desc="上一首"
+content-desc="手电筒"
+content-desc="系统,已连接 USB 调试"
+content-desc="下一首"
+content-desc="相机"
+content-desc="已收藏"
+content-desc="暂停"
+content-desc="振铃器静音。"
+content-desc="正在充电，已完成百分之100。"
+content-desc="WLAN 信号强度满格。"
+text="00:53"
+text="05:11"
+text="100"
+text="1:04"
+text="13 分钟前"
+text="9月25日星期五"
+text="八月十五  中秋节"
+text="点击可停用 USB 调试。"
+text="已连接 USB 调试"
+text="Europe"
+text="The Final Countdown"
+$ adb -s WVQ6R22124000968 exec-out screencap -p > screenshots/huawei-controlcenter.png
+  -> screenshots/huawei-controlcenter.png bytes=19838
+$ adb -s WVQ6R22124000968 shell cmd statusbar collapse
+
+## 结束：force-stop com.huawei.music
+############ capture 结束 2026-09-25T13:04:19+08:00

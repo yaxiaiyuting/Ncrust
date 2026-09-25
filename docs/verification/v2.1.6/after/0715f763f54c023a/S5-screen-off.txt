@@ -1,0 +1,11 @@
+# 场景：熄屏后注入媒体键，播放状态是否仍然改变（前台服务 + 媒体会话在息屏可用）
+
+## 先确保在播
+3 3 $ input keyevent 26 (POWER -> 熄屏)
+屏幕状态:   mWakefulness=Asleep
+## 熄屏下注入 PAUSE
+后: 2 2 
+## 熄屏下注入 PLAY
+后: 3 3 
+## 唤醒(不锁屏密码时)
+屏幕状态:   mWakefulness=Awake

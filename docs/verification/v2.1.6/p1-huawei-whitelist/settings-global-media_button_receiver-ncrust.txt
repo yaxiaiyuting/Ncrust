@@ -1,0 +1,25 @@
+# settings list global | grep -i media_button_receiver —— 第三次读取（设备当前状态，Ncrust 未在播放）
+# ⚠️ 本项与播放状态无关：该设置在三次读取中**均不存在**（grep exit=1）。
+#    Ncrust 那一次未重跑播放（与主会话协调，避免抢焦点），故以只读方式补测。
+# 采集时间 2026-09-25T13:07:48+08:00  设备 WVQ6R22124000968
+
+$ adb -s WVQ6R22124000968 shell settings list global | grep -i media_button_receiver
+exit=1
+
+$ adb -s WVQ6R22124000968 shell settings list global | grep -iE "media|music"
+awareness_ca_com.android.mediacenter=1
+awareness_ca_com.huawei.music=1
+car_dock_sound=/system/media/audio/ui/Dock.ogg
+car_undock_sound=/system/media/audio/ui/Undock.ogg
+charging_started_sound=/system/media/audio/ui/ChargingStarted.ogg
+desk_dock_sound=/system/media/audio/ui/Dock.ogg
+desk_undock_sound=/system/media/audio/ui/Undock.ogg
+dock_audio_media_enabled=1
+huawei_music=1
+huawei_music_old=1
+lock_sound=/system/media/audio/ui/Lock.ogg
+low_battery_sound=/system/media/audio/ui/LowBattery.ogg
+trusted_sound=/system/media/audio/ui/Trusted.ogg
+unlock_sound=/system/media/audio/ui/Unlock.ogg
+wireless_charging_started_sound=/system/media/audio/ui/WirelessChargingStarted.ogg
+exit=0

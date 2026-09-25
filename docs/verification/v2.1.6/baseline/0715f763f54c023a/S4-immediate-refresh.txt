@@ -1,0 +1,28 @@
+# 场景：暂停态 -> 播放 -> 暂停 的 position/speed 是否立即反映（不等 2Hz ticker）
+
+## 播放中，连续 3 次 1s 间隔采样（position 应在涨）
+--- 采样 1 ---
+  state=PlaybackState {state=3, position=3346, buffered position=35294, speed=1.0, updated=83132275, actions=7339999, custom actions=[], active item id=0, error=null}
+  state=PlaybackState {state=3, position=2530, buffered position=269746, speed=1.0, updated=83131456, actions=822, custom actions=[], active item id=-1, error=null}
+    state=PlaybackState {state=3, position=2530, buffered position=269746, speed=1.0, updated=83131456, actions=822, custom actions=[], active item id=-1, error=null}
+--- 采样 2 ---
+  state=PlaybackState {state=3, position=3346, buffered position=35294, speed=1.0, updated=83132275, actions=7339999, custom actions=[], active item id=0, error=null}
+  state=PlaybackState {state=3, position=3546, buffered position=269746, speed=1.0, updated=83132471, actions=822, custom actions=[], active item id=-1, error=null}
+    state=PlaybackState {state=3, position=3546, buffered position=269746, speed=1.0, updated=83132471, actions=822, custom actions=[], active item id=-1, error=null}
+--- 采样 3 ---
+  state=PlaybackState {state=3, position=3346, buffered position=35294, speed=1.0, updated=83132275, actions=7339999, custom actions=[], active item id=0, error=null}
+  state=PlaybackState {state=3, position=4597, buffered position=269746, speed=1.0, updated=83133527, actions=822, custom actions=[], active item id=-1, error=null}
+    state=PlaybackState {state=3, position=4597, buffered position=269746, speed=1.0, updated=83133527, actions=822, custom actions=[], active item id=-1, error=null}
+
+## 注入 PAUSE 后 立刻(0.3s) 与 3s 后 的对比
+$ input keyevent 127
+--- 0.3s 后 ---
+  state=PlaybackState {state=2, position=7259, buffered position=35294, speed=0.0, updated=83136183, actions=7339999, custom actions=[], active item id=0, error=null}
+  state=PlaybackState {state=2, position=7259, buffered position=269746, speed=1.0, updated=83136184, actions=822, custom actions=[], active item id=-1, error=null}
+    state=PlaybackState {state=2, position=7259, buffered position=269746, speed=1.0, updated=83136184, actions=822, custom actions=[], active item id=-1, error=null}
+--- 3s 后 ---
+  state=PlaybackState {state=2, position=7259, buffered position=35294, speed=0.0, updated=83136183, actions=7339999, custom actions=[], active item id=0, error=null}
+  state=PlaybackState {state=2, position=7259, buffered position=269746, speed=1.0, updated=83136184, actions=822, custom actions=[], active item id=-1, error=null}
+    state=PlaybackState {state=2, position=7259, buffered position=269746, speed=1.0, updated=83136184, actions=822, custom actions=[], active item id=-1, error=null}
+
+## 恢复播放

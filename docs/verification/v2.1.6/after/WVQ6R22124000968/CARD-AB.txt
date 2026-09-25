@@ -1,0 +1,51 @@
+# 华为控制中心媒体卡 A/B 定点探针 — after
+# 设备: WVQ6R22124000968   2026-09-25T13:27:33+08:00
+
+## 0. ROM 对该应用的白名单判定（本次采集期间的 logcat 原文）
+```
+```
+
+## 1. 隔离：停掉其它媒体应用（force-stop，可逆，不动数据）
+$ adb -s WVQ6R22124000968 shell am force-stop com.netease.cloudmusic
+$ adb -s WVQ6R22124000968 shell am force-stop com.huawei.music
+$ adb -s WVQ6R22124000968 shell am force-stop tv.danmaku.bili
+
+## 2. 让被测应用起播
+$ adb -s WVQ6R22124000968 shell am start -n com.takahashirinta.ncrust/.MainActivity
+Starting: Intent { cmp=com.takahashirinta.ncrust/.MainActivity }
+Warning: Activity not started, its current task has been brought to the front
+  当前帧缓冲 1600x2560（portrait）⇒ mini bar 播放键取 (1462, 2442)
+  （第 1 次起播尝试：tap 1462 2442）
+session states: 3 
+session titles: metadata: size=10, description=不计划太多反而能勇敢冒险, 心墙 · 林俊杰, null|
+  Media button session is com.takahashirinta.ncrust/androidx.media3.session.id. (userId=0)
+
+⇒ 前置成立：  Media button session is com.takahashirinta.ncrust/androidx.media3.session.id. (userId=0)
+
+## 3. 打开控制中心并读取媒体卡文本节点
+$ adb -s WVQ6R22124000968 shell input swipe 1580 3 1580 2240 250   # 帧缓冲 1600x2560，右上角下拉=控制中心
+  手势命中：1580 3 1580 2240 250
+
+### 媒体卡节点（uiautomator 原文整行）
+<node index="0" text="" resource-id="com.android.systemui:id/music_item" class="android.widget.RelativeLayout" package="com.android.systemui" content-desc="未在播放" checkable="false" checked="false" clickable="true" enabled="true" focusable="true" focused="false" scrollable="false" long-clickable="true" password="false" selected="false" bounds="[763,208][1146,497]" xpos="[0,0][0,0]">
+<node index="0" text="未在播放" resource-id="com.android.systemui:id/not_playing" class="android.widget.TextView" package="com.android.systemui" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[787,350][899,388]" xpos="[0,0][0,0]" />
+<node index="1" text="" resource-id="com.android.systemui:id/previous_music" class="android.widget.ImageView" package="com.android.systemui" content-desc="上一首" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[811,425][859,473]" xpos="[0,0][0,0]" />
+<node index="1" text="" resource-id="com.android.systemui:id/pause_music" class="android.widget.ImageView" package="com.android.systemui" content-desc="播放" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[930,425][978,473]" xpos="[0,0][0,0]" />
+<node index="1" text="" resource-id="com.android.systemui:id/next_music" class="android.widget.ImageView" package="com.android.systemui" content-desc="下一首" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[1050,425][1098,473]" xpos="[0,0][0,0]" />
+
+### 判定
+  music_item content-desc="未在播放"
+  ⇒ ❌ 卡片显示「未在播放」（not_playing 节点存在）
+  ⚠️ 该文本属于哪个应用必须与下面第 4 步一起读 —— ROM 可能显示的是别人。
+
+## 4. 采完后复核：被测应用是否仍在播（期间被 ROM 换掉 ⇒ 本次无效）
+session states: 3   titles: metadata: size=10, description=Wooh 第一次遇见阴天遮住你侧脸, 心墙 · 林俊杰, null|
+  Media button session is com.takahashirinta.ncrust/androidx.media3.session.id. (userId=0)
+
+## 5. ROM 对本应用的白名单判定日志（pause/play 重新触发）
+匹配行数 = 1
+```
+09-25 13:28:06.218  1639  3992 V HwMediaSessionServiceInner: this app is not in media white list, pkgName: com.takahashirinta.ncrust
+```
+
+对照：官方网易云 / 抖音（都在 ROM 名单内）在同一台设备上**不会**出现这行。

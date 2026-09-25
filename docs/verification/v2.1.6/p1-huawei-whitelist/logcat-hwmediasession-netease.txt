@@ -1,0 +1,27 @@
+09-25 13:02:44.874  1639  3987 I MediaControlUtils: checkController is true
+09-25 13:02:44.874  1639  3987 I HwMediaSessionServiceEx: player infoList size: 1
+09-25 13:02:44.874  1639  3987 V HwMediaSessionServiceEx: getPlayerInfo, playerId: 147394611,pkgname: com.netease.cloudmusic
+09-25 13:02:44.877  1639  3987 I HwMediaSessionServiceEx: image origin height 422 width 422 compressImageToByte bitmap size: 99292, quality100
+09-25 13:02:44.877  1639  3987 I HwMediaSessionServiceEx:  playbackSpeed: 1.0
+09-25 13:02:44.882  1639  3987 I MediaControlUtils: checkController is true
+09-25 13:02:44.882  1639  3987 I HwMediaSessionServiceEx: player infoList size: 1
+09-25 13:02:44.882  1639  3987 V HwMediaSessionServiceEx: getPlayerInfo, playerId: 147394611,pkgname: com.netease.cloudmusic
+09-25 13:02:44.886  1639  3987 I HwMediaSessionServiceEx: image origin height 422 width 422 compressImageToByte bitmap size: 99292, quality100
+09-25 13:02:44.886  1639  3987 I HwMediaSessionServiceEx:  playbackSpeed: 1.0
+09-25 13:02:44.904  1639  3987 I MediaControlUtils: checkController is true
+09-25 13:02:44.905  1639  3987 I HwMediaSessionServiceEx: player infoList size: 1
+09-25 13:02:44.905  1639  3987 V HwMediaSessionServiceEx: getPlayerInfo, playerId: 147394611,pkgname: com.netease.cloudmusic
+09-25 13:02:44.907  1639  3987 I HwMediaSessionServiceEx: image origin height 422 width 422 compressImageToByte bitmap size: 99292, quality100
+09-25 13:02:44.907  1639  3987 I HwMediaSessionServiceEx:  playbackSpeed: 1.0
+09-25 13:02:45.106  1639  3987 I MediaControlUtils: checkController is true
+09-25 13:02:45.106  1639  3987 I HwMediaSessionServiceEx: player infoList size: 1
+09-25 13:02:45.106  1639  3987 V HwMediaSessionServiceEx: getPlayerInfo, playerId: 147394611,pkgname: com.netease.cloudmusic
+09-25 13:02:45.109  1639  3987 I HwMediaSessionServiceEx: image origin height 422 width 422 compressImageToByte bitmap size: 99292, quality100
+09-25 13:02:45.109  1639  3987 I HwMediaSessionServiceEx:  playbackSpeed: 1.0
+09-25 13:02:45.418  1639  1876 I HwMediaSessionServiceEx: onMetadataChanged begin
+09-25 13:02:45.418  1639  1876 I HwMediaSessionServiceEx: getTitleAndArtist, title: Scarborough Fair / Canticle (斯卡布罗集市), artist: Simon & Garfunkel, playerId: 147394611
+09-25 13:02:45.441  1639  1876 I HwMediaSessionServiceEx: image origin height 422 width 422 compressImageToByte bitmap size: 99292, quality100
+09-25 13:02:45.447  1639  1876 V HwMediaSessionServiceEx: on event EventType: 3, playerId: 147394611
+09-25 13:02:45.448  1639  1876 V HwMediaSessionServiceEx: on event EventType: 3, playerId: 147394611
+09-25 13:02:45.448  1639  1876 V HwMediaSessionServiceEx: on event EventType: 11, playerId: 147394611
+09-25 13:02:45.448  1639  1876 V HwMediaSessionServiceEx: on event EventType: 11, playerId: 147394611

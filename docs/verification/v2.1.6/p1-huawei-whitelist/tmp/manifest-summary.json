@@ -1,0 +1,2225 @@
+{
+ "netease": {
+  "receivers": [
+   {
+    "name": "com.netease.cloudmusic.receiver.AlarmAlertBroadcastReceiver",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 994
+   },
+   {
+    "name": "com.netease.cloudmusic.module.alarmclock.localpush.LocalPushAlarmAlertBroadcastReceiver",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 995
+   },
+   {
+    "name": "com.netease.cloudmusic.music.biz.appwidgets.view.appwidget.fm.provider.PlayFm42AppWidgetProvider",
+    "exported": "true",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "android.appwidget.action.APPWIDGET_UPDATE"
+    ],
+    "srcline": 1690
+   },
+   {
+    "name": "com.netease.cloudmusic.music.biz.appwidgets.view.appwidget.miyou.Miyou44AppwidgetProvider",
+    "exported": "true",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "android.appwidget.action.APPWIDGET_UPDATE"
+    ],
+    "srcline": 1703
+   },
+   {
+    "name": "com.netease.cloudmusic.music.biz.appwidgets.view.appwidget.miyou.Miyou22AppwidgetProvider",
+    "exported": "true",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "android.appwidget.action.APPWIDGET_UPDATE"
+    ],
+    "srcline": 1716
+   },
+   {
+    "name": "com.netease.cloudmusic.music.biz.appwidgets.view.appwidget.heartbeat.provider.HeartBeatLyric42AppWidgetProvider",
+    "exported": "true",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "android.appwidget.action.APPWIDGET_UPDATE"
+    ],
+    "srcline": 1729
+   },
+   {
+    "name": "com.netease.cloudmusic.music.biz.appwidgets.view.appwidget.heartbeat.provider.HeartBeatLyric44AppWidgetProvider",
+    "exported": "true",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "android.appwidget.action.APPWIDGET_UPDATE"
+    ],
+    "srcline": 1742
+   },
+   {
+    "name": "com.netease.cloudmusic.music.biz.appwidgets.view.appwidget.heartbeat.provider.HeartBeatCalendar42AppWidgetProvider",
+    "exported": "true",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "android.appwidget.action.APPWIDGET_UPDATE"
+    ],
+    "srcline": 1755
+   },
+   {
+    "name": "com.netease.cloudmusic.music.biz.appwidgets.view.appwidget.heartbeat.provider.HeartBeatCalendar44AppWidgetProvider",
+    "exported": "true",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "android.appwidget.action.APPWIDGET_UPDATE"
+    ],
+    "srcline": 1768
+   },
+   {
+    "name": "com.netease.cloudmusic.music.biz.appwidgets.view.appwidget.footprint.FootPrintCalendar42AppWidgetProvider",
+    "exported": "true",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "android.appwidget.action.APPWIDGET_UPDATE"
+    ],
+    "srcline": 1781
+   },
+   {
+    "name": "com.netease.cloudmusic.music.biz.appwidgets.view.appwidget.Feature22AppWidgetProvider",
+    "exported": "true",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "android.appwidget.action.APPWIDGET_UPDATE",
+     "miui.appwidget.action.APPWIDGET_UPDATE"
+    ],
+    "srcline": 1794
+   },
+   {
+    "name": "com.netease.cloudmusic.music.biz.appwidgets.view.appwidget.honor.Honor22AppWidgetProvider",
+    "exported": "true",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "android.appwidget.action.APPWIDGET_UPDATE",
+     "miui.appwidget.action.APPWIDGET_UPDATE"
+    ],
+    "srcline": 1822
+   },
+   {
+    "name": "com.netease.cloudmusic.music.biz.appwidgets.view.appwidget.general.Feature22PlayAppWidgetProvider",
+    "exported": "true",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "android.appwidget.action.APPWIDGET_UPDATE"
+    ],
+    "srcline": 1847
+   },
+   {
+    "name": "com.netease.cloudmusic.music.biz.appwidgets.view.appwidget.general.Feature42PlayAppWidgetProvider",
+    "exported": "true",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "android.appwidget.action.APPWIDGET_UPDATE",
+     "miui.appwidget.action.APPWIDGET_UPDATE"
+    ],
+    "srcline": 1863
+   },
+   {
+    "name": "com.netease.cloudmusic.music.biz.appwidgets.view.appwidget.honor.Honor42YoyoAppWidgetProvider",
+    "exported": "true",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "android.appwidget.action.APPWIDGET_UPDATE"
+    ],
+    "srcline": 1886
+   },
+   {
+    "name": "com.netease.cloudmusic.music.biz.appwidgets.view.appwidget.Feature42AppWidgetProvider",
+    "exported": "true",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "android.appwidget.action.APPWIDGET_UPDATE",
+     "miui.appwidget.action.APPWIDGET_UPDATE"
+    ],
+    "srcline": 1902
+   },
+   {
+    "name": "com.netease.cloudmusic.music.biz.appwidgets.view.appwidget.honor.Honor42AppWidgetProvider",
+    "exported": "true",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "android.appwidget.action.APPWIDGET_UPDATE",
+     "miui.appwidget.action.APPWIDGET_UPDATE"
+    ],
+    "srcline": 1930
+   },
+   {
+    "name": "com.netease.cloudmusic.music.biz.appwidgets.view.appwidget.Feature44AppWidgetProvider",
+    "exported": "true",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "android.appwidget.action.APPWIDGET_UPDATE",
+     "miui.appwidget.action.APPWIDGET_UPDATE"
+    ],
+    "srcline": 1955
+   },
+   {
+    "name": "com.netease.cloudmusic.music.biz.appwidgets.view.appwidget.uniwidget.UniWidgetProvider22",
+    "exported": "true",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "android.appwidget.action.APPWIDGET_UPDATE"
+    ],
+    "srcline": 1983
+   },
+   {
+    "name": "com.netease.cloudmusic.music.biz.appwidgets.view.appwidget.uniwidget.UniWidgetProvider42",
+    "exported": "true",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "android.appwidget.action.APPWIDGET_UPDATE"
+    ],
+    "srcline": 2001
+   },
+   {
+    "name": "com.netease.cloudmusic.music.biz.appwidgets.view.appwidget.uniwidget.UniWidgetRecentPlayProvider",
+    "exported": "true",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "android.appwidget.action.APPWIDGET_UPDATE"
+    ],
+    "srcline": 2019
+   },
+   {
+    "name": "com.netease.cloudmusic.receiver.MediaButtonEventReceiver",
+    "exported": "true",
+    "permission": null,
+    "fgsType": null,
+    "priority": "2147483647",
+    "actions": [
+     "android.intent.action.MEDIA_BUTTON"
+    ],
+    "srcline": 2609
+   },
+   {
+    "name": "com.netease.cloudmusic.module.appwidget.PlayerWidget",
+    "exported": "true",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "android.appwidget.action.APPWIDGET_UPDATE",
+     "com.netease.music.action.STAR_MUSIC",
+     "com.netease.cloudmusic.change_widget_musicinfo_action"
+    ],
+    "srcline": 2617
+   },
+   {
+    "name": "com.netease.cloudmusic.module.appwidget.PlayerWidgetFourTwo",
+    "exported": "true",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "android.appwidget.action.APPWIDGET_UPDATE",
+     "com.netease.music.action.STAR_MUSIC",
+     "com.netease.cloudmusic.change_widget_musicinfo_action"
+    ],
+    "srcline": 2631
+   },
+   {
+    "name": "com.netease.cloudmusic.module.appwidget.PlayerWidgetFourFour",
+    "exported": "true",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "android.appwidget.action.APPWIDGET_UPDATE",
+     "com.netease.music.action.STAR_MUSIC",
+     "com.netease.cloudmusic.change_widget_musicinfo_action"
+    ],
+    "srcline": 2645
+   },
+   {
+    "name": "com.netease.cloudmusic.module.iot.sonyearphone.utils.SonyBluetoothA2DPReceiver",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 3773
+   },
+   {
+    "name": "com.netease.cloudmusic.module.webview.audio.WebMediaButtonReceiver",
+    "exported": "true",
+    "permission": null,
+    "fgsType": null,
+    "priority": "2147483647",
+    "actions": [
+     "android.intent.action.MEDIA_BUTTON"
+    ],
+    "srcline": 7989
+   },
+   {
+    "name": "com.xiaomi.push.service.receivers.PingReceiver",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "com.xiaomi.push.PING_TIMER"
+    ],
+    "srcline": 8751
+   },
+   {
+    "name": "com.netease.cloudmusic.push.receiver.MiPushMessageReceiver",
+    "exported": "true",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "com.xiaomi.mipush.RECEIVE_MESSAGE",
+     "com.xiaomi.mipush.MESSAGE_ARRIVED",
+     "com.xiaomi.mipush.ERROR"
+    ],
+    "srcline": 8759
+   },
+   {
+    "name": "com.netease.cloudmusic.push.receiver.VivoPushReceiver",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "com.vivo.pushclient.action.RECEIVE"
+    ],
+    "srcline": 8794
+   },
+   {
+    "name": "androidx.profileinstaller.ProfileInstallReceiver",
+    "exported": "true",
+    "permission": "android.permission.DUMP",
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "androidx.profileinstaller.action.INSTALL_PROFILE",
+     "androidx.profileinstaller.action.SKIP_FILE",
+     "androidx.profileinstaller.action.SAVE_PROFILE",
+     "androidx.profileinstaller.action.BENCHMARK_OPERATION"
+    ],
+    "srcline": 9157
+   },
+   {
+    "name": "org.gux.widget.WidgetBroadcastReceiver",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "org.gux.widget.WIDGET_ACTION"
+    ],
+    "srcline": 9337
+   },
+   {
+    "name": "org.gux.widget.WidgetAddBroadcastReceiver",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "org.gux.widget.WIDGET_ADD_ACTION"
+    ],
+    "srcline": 9346
+   },
+   {
+    "name": "com.oplus.ocs.relaykit.sdk.broadcastreceiver.RelayReceiver",
+    "exported": "true",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "com.oplus.synergy.action.data_relay"
+    ],
+    "srcline": 9370
+   },
+   {
+    "name": "com.netease.nimlib.coexist.service.ResponseReceiver",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 9401
+   },
+   {
+    "name": "com.huawei.hms.support.api.push.PushMsgReceiver",
+    "exported": "true",
+    "permission": "com.netease.cloudmusic.permission.PROCESS_PUSH_MSG",
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "com.huawei.intent.action.PUSH_DELAY_NOTIFY",
+     "com.huawei.intent.action.PUSH"
+    ],
+    "srcline": 9434
+   },
+   {
+    "name": "com.huawei.hms.support.api.push.PushReceiver",
+    "exported": "true",
+    "permission": "com.netease.cloudmusic.permission.PROCESS_PUSH_MSG",
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "com.huawei.android.push.intent.REGISTRATION",
+     "com.huawei.android.push.intent.RECEIVE"
+    ],
+    "srcline": 9444
+   }
+  ],
+  "services": [
+   {
+    "name": "com.netease.cloudmusic.music.biz.voice.tileservice.PopularPodCastService",
+    "exported": "true",
+    "permission": "android.permission.BIND_QUICK_SETTINGS_TILE",
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "android.service.quicksettings.action.QS_TILE"
+    ],
+    "srcline": 885
+   },
+   {
+    "name": "com.netease.cloudmusic.music.biz.voice.tileservice.BroadCastService",
+    "exported": "true",
+    "permission": "android.permission.BIND_QUICK_SETTINGS_TILE",
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "android.service.quicksettings.action.QS_TILE"
+    ],
+    "srcline": 899
+   },
+   {
+    "name": "com.netease.cloudmusic.music.biz.voice.tileservice.SleepAidDecompressionService",
+    "exported": "true",
+    "permission": "android.permission.BIND_QUICK_SETTINGS_TILE",
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "android.service.quicksettings.action.QS_TILE"
+    ],
+    "srcline": 913
+   },
+   {
+    "name": "com.netease.cloudmusic.music.biz.voice.tileservice.ListenBookService",
+    "exported": "true",
+    "permission": "android.permission.BIND_QUICK_SETTINGS_TILE",
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "android.service.quicksettings.action.QS_TILE"
+    ],
+    "srcline": 927
+   },
+   {
+    "name": "com.netease.cloudmusic.music.biz.localmusic.service.LocalMusicMatchService",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 1243
+   },
+   {
+    "name": "com.netease.cloudmusic.music.biz.localmusic.service.LocalMusicTaskService",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 1244
+   },
+   {
+    "name": "com.netease.cloudmusic.music.biz.member.pay.PayCheckIntentService",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 1257
+   },
+   {
+    "name": "com.netease.cloudmusic.music.biz.member.pay.PayVipCheckIntentService",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 1258
+   },
+   {
+    "name": "com.netease.cloudmusic.titleservice.PrivateFmTitleService",
+    "exported": "true",
+    "permission": "android.permission.BIND_QUICK_SETTINGS_TILE",
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "android.service.quicksettings.action.QS_TILE"
+    ],
+    "srcline": 1435
+   },
+   {
+    "name": "com.netease.cloudmusic.titleservice.PrivateRadarTitleService",
+    "exported": "true",
+    "permission": "android.permission.BIND_QUICK_SETTINGS_TILE",
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "android.service.quicksettings.action.QS_TILE"
+    ],
+    "srcline": 1449
+   },
+   {
+    "name": "com.netease.cloudmusic.titleservice.PlayFavoriteMusicTitleService",
+    "exported": "true",
+    "permission": "android.permission.BIND_QUICK_SETTINGS_TILE",
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "android.service.quicksettings.action.QS_TILE"
+    ],
+    "srcline": 1463
+   },
+   {
+    "name": "com.netease.cloudmusic.titleservice.DailyRecommandTitleService",
+    "exported": "true",
+    "permission": "android.permission.BIND_QUICK_SETTINGS_TILE",
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "android.service.quicksettings.action.QS_TILE"
+    ],
+    "srcline": 1477
+   },
+   {
+    "name": "com.netease.cloudmusic.service.RecordUploadService",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 1561
+   },
+   {
+    "name": "com.netease.cloudmusic.music.biz.appwidgets.view.updatejob.UpdateAppWidgetIntentService",
+    "exported": null,
+    "permission": "android.permission.BIND_JOB_SERVICE",
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 2048
+   },
+   {
+    "name": "com.netease.cloudmusic.music.biz.appwidgets.view.appwidget.footprint.FootPrintWidgetService",
+    "exported": null,
+    "permission": "android.permission.BIND_REMOTEVIEWS",
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 2052
+   },
+   {
+    "name": "com.netease.cloudmusic.module.hicar.HiCarMediaOperateMgr",
+    "exported": "true",
+    "permission": "com.huawei.hicar.HICAR_PERMISSION_SYSTEM",
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "com.huawei.hicar.CALLBACK_EVENT"
+    ],
+    "srcline": 2132
+   },
+   {
+    "name": "com.netease.cloudmusic.module.ucar.UCarService",
+    "exported": "true",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "android.media.browse.MediaBrowserService"
+    ],
+    "srcline": 2142
+   },
+   {
+    "name": "com.netease.cloudmusic.module.hicar.HiCarHonorMediaOperateMgr",
+    "exported": "true",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "com.honor.hicar.CALLBACK_EVENT"
+    ],
+    "srcline": 2149
+   },
+   {
+    "name": "com.netease.cloudmusic.service.VBoxService",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 2187
+   },
+   {
+    "name": "com.netease.cloudmusic.music.biz.recognition.service.IdentifyFloatService",
+    "exported": null,
+    "permission": null,
+    "fgsType": "0x000000a0",
+    "priority": null,
+    "actions": [],
+    "srcline": 2222
+   },
+   {
+    "name": "com.netease.cloudmusic.module.look.minibar.PlayMinibarService",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 2238
+   },
+   {
+    "name": "com.netease.cloudmusic.hop.ContinuationService",
+    "exported": "true",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "com.netease.cloudmusic.hop.ContinuationService.action"
+    ],
+    "srcline": 2484
+   },
+   {
+    "name": "com.netease.cloudmusic.CloudMusicFlowService",
+    "exported": "true",
+    "permission": "com.huawei.hicar.HICAR_PERMISSION",
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "com.huawei.aa.action.FLOW_TASK_SERVICE",
+     "com.huawei.aa.action.CAR_TASK_FLOW"
+    ],
+    "srcline": 2496
+   },
+   {
+    "name": "com.xiaomi.dist.handoff.sdk.HandoffClientService",
+    "exported": "true",
+    "permission": "com.xiaomi.dist.permission.ACCESS_HANDOFF_CLIENT",
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "com.xiaomi.dist.intent.action.HANDOFF_CLIENT"
+    ],
+    "srcline": 2515
+   },
+   {
+    "name": "com.netease.cloudmusic.service.MainProcessPlayService",
+    "exported": null,
+    "permission": null,
+    "fgsType": "0x00000002",
+    "priority": null,
+    "actions": [],
+    "srcline": 2660
+   },
+   {
+    "name": "com.netease.cloudmusic.service.MainProcessVideoService",
+    "exported": null,
+    "permission": null,
+    "fgsType": "0x00000002",
+    "priority": null,
+    "actions": [],
+    "srcline": 2663
+   },
+   {
+    "name": "com.netease.cloudmusic.playlive.minibar.PfPlayMinibarService",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 2716
+   },
+   {
+    "name": "com.netease.cloudmusic.biz.watch.downloader.HuaweiSportService",
+    "exported": "true",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "com.netease.cloudmusic.biz.watch.downloader.DOWNLOAD_SERVICE"
+    ],
+    "srcline": 2717
+   },
+   {
+    "name": "com.netease.cloudmusic.music.biz.gamehouse.service.GameRoomService",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 3088
+   },
+   {
+    "name": "com.netease.cloudmusic.third.api.CMApiService",
+    "exported": "true",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "com.netease.cloudmusic.third.api.CMApiService"
+    ],
+    "srcline": 3755
+   },
+   {
+    "name": "com.netease.cloudmusic.module.transfer.apk.ApkManagerService",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 7981
+   },
+   {
+    "name": "com.netease.cloudmusic.module.webview.audio.WebPlayService$WebCommonPlayService",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 7982
+   },
+   {
+    "name": "com.netease.cloudmusic.module.webview.BrowserPreService",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 7985
+   },
+   {
+    "name": "com.netease.cloudmusic.module.webview.audio.WebPlayService$MpPlayService1",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 7998
+   },
+   {
+    "name": "com.netease.cloudmusic.module.webview.audio.WebPlayService$MpPlayService2",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 8001
+   },
+   {
+    "name": "com.netease.cloudmusic.module.webview.audio.WebPlayService$MpPlayService3",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 8004
+   },
+   {
+    "name": "com.netease.cloudmusic.module.webview.audio.WebPlayService$MpPlayService4",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 8007
+   },
+   {
+    "name": "com.netease.cloudmusic.module.webview.audio.WebPlayService$MpPlayService5",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 8010
+   },
+   {
+    "name": "com.netease.cloudmusic.service.PushService",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 8020
+   },
+   {
+    "name": "com.amap.api.location.APSService",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 8021
+   },
+   {
+    "name": "com.netease.cloudmusic.music.biz.rn.util.EncryptUidService",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 8143
+   },
+   {
+    "name": "com.netease.cloudmusic.jskernel.MusicCrossEngineIPCServiceMain",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 8172
+   },
+   {
+    "name": "com.netease.cloudmusic.jskernel.MusicCrossEngineIPCServicePlay",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 8173
+   },
+   {
+    "name": "com.netease.play.party.livepage.preview.service.PreviewPartyService",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 8192
+   },
+   {
+    "name": "com.netease.cloudmusic.nim.NimService",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 8397
+   },
+   {
+    "name": "com.netease.cloudmusic.nim.NimService2",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 8398
+   },
+   {
+    "name": "com.netease.play.preload.LookPreloadService",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 8501
+   },
+   {
+    "name": "com.netease.play.rnlive.LivingService",
+    "exported": null,
+    "permission": null,
+    "fgsType": "0x00000002",
+    "priority": null,
+    "actions": [],
+    "srcline": 8577
+   },
+   {
+    "name": "com.netease.cloudmusic.video.service.VideoPlayService",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 8669
+   },
+   {
+    "name": "com.netease.cloudmusic.log.panel.statistic.SLogService",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 8691
+   },
+   {
+    "name": "com.netease.cloudmusic.core.patch.PatchResultService",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 8705
+   },
+   {
+    "name": "com.netease.cloudmusic.core.mp.dispatch.MpService1",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 8717
+   },
+   {
+    "name": "com.netease.cloudmusic.core.mp.dispatch.MpService2",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 8720
+   },
+   {
+    "name": "com.netease.cloudmusic.core.mp.dispatch.MpService3",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 8723
+   },
+   {
+    "name": "com.netease.cloudmusic.core.mp.dispatch.MpService4",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 8726
+   },
+   {
+    "name": "com.netease.cloudmusic.core.mp.dispatch.MpService5",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 8729
+   },
+   {
+    "name": "com.xiaomi.push.service.XMPushService",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 8732
+   },
+   {
+    "name": "com.xiaomi.push.service.XMJobService",
+    "exported": "false",
+    "permission": "android.permission.BIND_JOB_SERVICE",
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 8736
+   },
+   {
+    "name": "com.xiaomi.mipush.sdk.PushMessageHandler",
+    "exported": "true",
+    "permission": "com.xiaomi.xmsf.permission.MIPUSH_RECEIVE",
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 8742
+   },
+   {
+    "name": "com.xiaomi.mipush.sdk.MessageHandleService",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 8747
+   },
+   {
+    "name": "com.netease.cloudmusic.push.receiver.HuaweiPushService",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "com.huawei.push.action.MESSAGING_EVENT"
+    ],
+    "srcline": 8777
+   },
+   {
+    "name": "com.vivo.push.sdk.service.CommandClientService",
+    "exported": "true",
+    "permission": "com.push.permission.UPSTAGESERVICE",
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 8789
+   },
+   {
+    "name": "com.netease.cloudmusic.push.receiver.oppo.OppoPushReceiverPreQ",
+    "exported": "true",
+    "permission": "com.coloros.mcs.permission.SEND_MCS_MESSAGE",
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "com.coloros.mcs.action.RECEIVE_MCS_MESSAGE"
+    ],
+    "srcline": 8802
+   },
+   {
+    "name": "com.netease.cloudmusic.push.receiver.oppo.OppoPushReceiverQ",
+    "exported": "true",
+    "permission": "com.heytap.mcs.permission.SEND_MCS_MESSAGE",
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "com.heytap.mcs.action.RECEIVE_MCS_MESSAGE",
+     "com.heytap.msp.push.RECEIVE_MCS_MESSAGE"
+    ],
+    "srcline": 8810
+   },
+   {
+    "name": "com.netease.cloudmusic.push.GetuiPushService",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 8860
+   },
+   {
+    "name": "com.netease.cloudmusic.push.GeTuiIntentService",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 8865
+   },
+   {
+    "name": "com.netease.cloudmusic.push.RegisterTokenService",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 8866
+   },
+   {
+    "name": "com.netease.cloudmusic.push.receiver.HonorPushService",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "com.hihonor.push.action.MESSAGING_EVENT"
+    ],
+    "srcline": 8869
+   },
+   {
+    "name": "org.chromium.wow.extension.usage.WowIPCService",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 8876
+   },
+   {
+    "name": "com.kwai.koom.javaoom.monitor.analysis.HeapAnalysisService",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 8882
+   },
+   {
+    "name": "com.netease.cloudmusic.core.safemode.SafeModeService",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 8885
+   },
+   {
+    "name": "com.netease.cloudmusic.diagnose.monitor.NEDTrafficService",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "com.netease.cloudmusic.monitor.TRAFFIC_SERVICE"
+    ],
+    "srcline": 8925
+   },
+   {
+    "name": "com.netease.cloudmusic.diagnose.ipc.NEDIPCService",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "com.netease.cloudmusic.monitor.IPC_SERVICE"
+    ],
+    "srcline": 8932
+   },
+   {
+    "name": "com.netease.nimlib.service.NimService",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 8953
+   },
+   {
+    "name": "com.netease.nimlib.service.NimServiceV2",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 8956
+   },
+   {
+    "name": "androidx.room.MultiInstanceInvalidationService",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 9393
+   },
+   {
+    "name": "com.netease.nimlib.coexist.service.NimService",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 9397
+   },
+   {
+    "name": "com.netease.nimlib.coexist.service.ResponseService",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 9403
+   },
+   {
+    "name": "com.tencent.tinker.lib.service.TinkerPatchForeService",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 9415
+   },
+   {
+    "name": "com.tencent.tinker.lib.service.TinkerPatchService",
+    "exported": "false",
+    "permission": "android.permission.BIND_JOB_SERVICE",
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 9420
+   },
+   {
+    "name": "com.tencent.tinker.lib.service.TinkerPatchService$InnerService",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 9425
+   },
+   {
+    "name": "com.tencent.tinker.lib.service.DefaultTinkerResultService",
+    "exported": "false",
+    "permission": "android.permission.BIND_JOB_SERVICE",
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 9429
+   },
+   {
+    "name": "com.huawei.hms.support.api.push.service.HmsMsgService",
+    "exported": "true",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "com.huawei.push.msg.NOTIFY_MSG",
+     "com.huawei.push.msg.PASSBY_MSG"
+    ],
+    "srcline": 9455
+   },
+   {
+    "name": "com.huawei.agconnect.core.ServiceDiscovery",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 9518
+   },
+   {
+    "name": "com.dtf.wish.evidence.EvidenceService",
+    "exported": "false",
+    "permission": null,
+    "fgsType": "0x00000020",
+    "priority": null,
+    "actions": [],
+    "srcline": 9726
+   },
+   {
+    "name": "com.squareup.leakcanary.internal.HeapAnalyzerService",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 9739
+   },
+   {
+    "name": "com.squareup.leakcanary.DisplayLeakService",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 9743
+   },
+   {
+    "name": "com.squareup.leakcanary.SaveLeakService",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 9747
+   },
+   {
+    "name": "com.igexin.sdk.PushService",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 9776
+   },
+   {
+    "name": "com.igexin.sdk.GTIntentService",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 9799
+   },
+   {
+    "name": "com.igexin.sdk.GService",
+    "exported": "true",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "com.getui.sdk.action"
+    ],
+    "srcline": 9800
+   },
+   {
+    "name": "com.getui.gtc.GtcService",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "com.getui.gtc.sdk.service.action"
+    ],
+    "srcline": 9839
+   },
+   {
+    "name": "com.netease.android.extension.servicekeeper.service.ipc.server.IPCCommunicationAndroidService",
+    "exported": null,
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 9856
+   }
+  ],
+  "permissions": [
+   "android.permission.READ_PHONE_STATE",
+   "com.netease.cloudmusic.permission.OPERATOR_FREE",
+   "android.permission.CAMERA",
+   "android.permission.FLASHLIGHT",
+   "android.permission.BLUETOOTH",
+   "android.permission.BLUETOOTH_ADMIN",
+   "android.permission.BLUETOOTH_SCAN",
+   "android.permission.BLUETOOTH_CONNECT",
+   "android.permission.INTERNET",
+   "android.permission.READ_EXTERNAL_STORAGE",
+   "android.permission.WRITE_EXTERNAL_STORAGE",
+   "android.permission.READ_MEDIA_IMAGES",
+   "android.permission.READ_MEDIA_VIDEO",
+   "android.permission.READ_MEDIA_AUDIO",
+   "android.permission.RECORD_AUDIO",
+   "android.permission.READ_LOGS",
+   "android.permission.WAKE_LOCK",
+   "android.permission.ACCESS_NETWORK_STATE",
+   "android.permission.READ_CONTACTS",
+   "android.permission.ACCESS_FINE_LOCATION",
+   "android.permission.ACCESS_COARSE_LOCATION",
+   "android.permission.ACCESS_WIFI_STATE",
+   "android.permission.MOUNT_UNMOUNT_FILESYSTEMS",
+   "android.permission.WRITE_SETTINGS",
+   "android.permission.SYSTEM_ALERT_WINDOW",
+   "android.permission.GET_TASKS",
+   "android.permission.REORDER_TASKS",
+   "android.permission.MODIFY_AUDIO_SETTINGS",
+   "android.permission.VIBRATE",
+   "com.android.launcher.permission.INSTALL_SHORTCUT",
+   "com.huawei.android.launcher.permission.CHANGE_BADGE",
+   "android.permission.CHANGE_WIFI_STATE",
+   "android.permission.ACCESS_LOCATION_EXTRA_COMMANDS",
+   "android.permission.ACTIVITY_RECOGNITION",
+   "com.sec.android.provider.badge.permission.READ",
+   "com.sec.android.provider.badge.permission.WRITE",
+   "com.htc.launcher.permission.READ_SETTINGS",
+   "com.htc.launcher.permission.UPDATE_SHORTCUT",
+   "com.sonyericsson.home.permission.BROADCAST_BADGE",
+   "com.sonymobile.home.permission.PROVIDER_INSERT_BADGE",
+   "com.anddoes.launcher.permission.UPDATE_COUNT",
+   "com.majeur.launcher.permission.UPDATE_BADGE",
+   "android.permission.READ_APP_BADGE",
+   "com.oppo.launcher.permission.READ_SETTINGS",
+   "com.oppo.launcher.permission.WRITE_SETTINGS",
+   "android.permission.FOREGROUND_SERVICE",
+   "com.netease.cloudmusic.app.permission.READ_FILE",
+   "android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS",
+   "android.permission.POST_NOTIFICATIONS",
+   "android.permission.SCHEDULE_EXACT_ALARM",
+   "oplus.bracketspace.permission.INSERT_PERMISSION",
+   "android.permission.SET_WALLPAPER",
+   "android.permission.WRITE_CONTACTS",
+   "com.miui.personalassistant.permission.WIDGET_READ_SETTINGS",
+   "com.miui.personalassistant.permission.WIDGET_WRITE_SETTINGS",
+   "com.huawei.permission.DISTRIBUTED_DATASYNC",
+   "huawei.permission.DISTRIBUTED_DEVICE_STATE_CHANGE",
+   "com.netease.permission.REQUEST_OPEN_API",
+   "android.permission.WRITE_CALENDAR",
+   "com.netease.cloudmusic.permission.PROCESS_PUSH_MSG",
+   "com.netease.cloudmusic.permission.MIPUSH_RECEIVE",
+   "android.permission.READ_CALENDAR",
+   "android.permission.REQUEST_INSTALL_PACKAGES",
+   "com.coloros.mcs.permission.RECIEVE_MCS_MESSAGE",
+   "com.heytap.mcs.permission.RECIEVE_MCS_MESSAGE",
+   "android.permission.USE_FINGERPRINT",
+   "android.permission.CHANGE_NETWORK_STATE",
+   "com.huawei.hicar.HICAR_PERMISSION",
+   "com.hihonor.brain.permission.KIT_SERVICE_ACCESS",
+   "com.xiaomi.dist.permission.ACCESS_APP_HANDOFF",
+   "com.xiaomi.dist.permission.ACCESS_APP_META",
+   "com.miui.miplay.audio.ACCESS_STATE",
+   "com.netease.cloudmusic.permission.PUSH_PROVIDER",
+   "com.asus.msa.SupplementaryDID.ACCESS",
+   "freemme.permission.msa",
+   "freemme.permission.msa.SECURITY_ACCESS",
+   "oplus.permission.settings.LAUNCH_FOR_EXPORT",
+   "com.vivo.identifier.permission.OAID_STATE_DIALOG",
+   "com.nemu.oaid.permission.read",
+   "com.nemu.oaid.permission.write",
+   "com.asus.permission.READ_SDID_PROVIDER",
+   "getui.permission.GetuiService.com.netease.cloudmusic",
+   "com.vivo.notification.permission.BADGE_ICON",
+   "com.hihonor.push.permission.READ_PUSH_NOTIFICATION_INFO"
+  ],
+  "uses_sdk": {
+   "minSdkVersion": "23",
+   "targetSdkVersion": "33"
+  },
+  "n_activity": 991
+ },
+ "huaweimusic": {
+  "receivers": [
+   {
+    "name": "com.android.mediacenter.openability.hivoice.HiVoiceReceiver",
+    "exported": "true",
+    "permission": "com.android.mediacenter.permission.INTERACTION",
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "com.android.mediacenter.ACTION_HUMSEARCH",
+     "com.android.mediacenter.ACTION_SEARCH"
+    ],
+    "srcline": 1315
+   },
+   {
+    "name": "com.android.mediacenter.openability.quickaction.ShortcutsReceiver",
+    "exported": "true",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "android.intent.action.LOCALE_CHANGED"
+    ],
+    "srcline": 1623
+   },
+   {
+    "name": "com.android.mediacenter.library.wear.WearTransNotificationRemoveReceiver",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 1647
+   },
+   {
+    "name": "com.android.mediacenter.ui.ktsong.KtSongNeedBuyRecevier",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "com.android.mediacenter.current_kt_song_need_pay",
+     "com.android.mediacenter.next_kt_song_need_pay",
+     "com.android.mediacenter.prev_kt_song_need_pay"
+    ],
+    "srcline": 1927
+   },
+   {
+    "name": "com.android.mediacenter.localmusic.NotificationRemoveReceiver",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 2115
+   },
+   {
+    "name": "com.android.mediacenter.ui.player.common.sleepmode.SleepModeReceiver",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 2155
+   },
+   {
+    "name": "com.android.mediacenter.ui.player.common.cleannotification.CleanNotificationReceiver",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 2157
+   },
+   {
+    "name": "com.android.mediacenter.localmusic.MediaAppWidgetProvider",
+    "exported": "true",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "android.appwidget.action.APPWIDGET_UPDATE"
+    ],
+    "srcline": 2161
+   },
+   {
+    "name": "launcherwidget.MediaAppWidgetStyle1Provider",
+    "exported": "true",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "android.appwidget.action.APPWIDGET_UPDATE"
+    ],
+    "srcline": 2173
+   },
+   {
+    "name": "launcherwidget.MediaAppWidgetStyle2Provider",
+    "exported": "true",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "android.appwidget.action.APPWIDGET_UPDATE"
+    ],
+    "srcline": 2185
+   },
+   {
+    "name": "launcherwidget.MediaAppWidgetStyle3Provider",
+    "exported": "true",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "android.appwidget.action.APPWIDGET_UPDATE"
+    ],
+    "srcline": 2197
+   },
+   {
+    "name": "com.android.mediacenter.videoplayer.notification.MiniNotificationRemoveReceiver",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 2509
+   },
+   {
+    "name": "com.android.mediacenter.playback.systeminteract.MediaButtonIntentReceiver",
+    "exported": "true",
+    "permission": null,
+    "fgsType": null,
+    "priority": "999",
+    "actions": [
+     "android.intent.action.MEDIA_BUTTON"
+    ],
+    "srcline": 2571
+   },
+   {
+    "name": "com.huawei.music.platform.commonservice.login.receiver.AccountReceiver",
+    "exported": "true",
+    "permission": null,
+    "fgsType": null,
+    "priority": "999",
+    "actions": [
+     "com.huawei.hwid.ACTION_REMOVE_ACCOUNT"
+    ],
+    "srcline": 2723
+   },
+   {
+    "name": "androidx.work.impl.utils.ForceStopRunnable$BroadcastReceiver",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 3095
+   },
+   {
+    "name": "androidx.work.impl.background.systemalarm.ConstraintProxy$BatteryChargingProxy",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "android.intent.action.ACTION_POWER_CONNECTED",
+     "android.intent.action.ACTION_POWER_DISCONNECTED"
+    ],
+    "srcline": 3097
+   },
+   {
+    "name": "androidx.work.impl.background.systemalarm.ConstraintProxy$BatteryNotLowProxy",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "android.intent.action.BATTERY_OKAY",
+     "android.intent.action.BATTERY_LOW"
+    ],
+    "srcline": 3109
+   },
+   {
+    "name": "androidx.work.impl.background.systemalarm.ConstraintProxy$StorageNotLowProxy",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "android.intent.action.DEVICE_STORAGE_LOW",
+     "android.intent.action.DEVICE_STORAGE_OK"
+    ],
+    "srcline": 3121
+   },
+   {
+    "name": "androidx.work.impl.background.systemalarm.ConstraintProxy$NetworkStateProxy",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "android.net.conn.CONNECTIVITY_CHANGE"
+    ],
+    "srcline": 3133
+   },
+   {
+    "name": "androidx.work.impl.background.systemalarm.RescheduleReceiver",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "android.intent.action.BOOT_COMPLETED",
+     "android.intent.action.TIME_SET",
+     "android.intent.action.TIMEZONE_CHANGED"
+    ],
+    "srcline": 3143
+   },
+   {
+    "name": "androidx.work.impl.background.systemalarm.ConstraintProxyUpdateReceiver",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "androidx.work.impl.background.systemalarm.UpdateProxies"
+    ],
+    "srcline": 3157
+   },
+   {
+    "name": "androidx.work.impl.diagnostics.DiagnosticsReceiver",
+    "exported": "true",
+    "permission": "android.permission.DUMP",
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "androidx.work.diagnostics.REQUEST_DIAGNOSTICS"
+    ],
+    "srcline": 3167
+   },
+   {
+    "name": "com.huawei.appgallery.marketinstallerservice.impl.download.MarketInstallReceiver",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 3217
+   },
+   {
+    "name": "com.huawei.hms.support.api.push.PushMsgReceiver",
+    "exported": "true",
+    "permission": "com.huawei.music.permission.PROCESS_PUSH_MSG",
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "com.huawei.intent.action.PUSH_DELAY_NOTIFY",
+     "com.huawei.intent.action.PUSH"
+    ],
+    "srcline": 3263
+   },
+   {
+    "name": "com.huawei.hms.support.api.push.PushReceiver",
+    "exported": "true",
+    "permission": "com.huawei.music.permission.PROCESS_PUSH_MSG",
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "com.huawei.android.push.intent.REGISTRATION",
+     "com.huawei.android.push.intent.RECEIVE"
+    ],
+    "srcline": 3275
+   },
+   {
+    "name": "androidx.profileinstaller.ProfileInstallReceiver",
+    "exported": "true",
+    "permission": "android.permission.DUMP",
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "androidx.profileinstaller.action.INSTALL_PROFILE",
+     "androidx.profileinstaller.action.SKIP_FILE",
+     "androidx.profileinstaller.action.SAVE_PROFILE",
+     "androidx.profileinstaller.action.BENCHMARK_OPERATION"
+    ],
+    "srcline": 3681
+   }
+  ],
+  "services": [
+   {
+    "name": "com.android.mediacenter.library.services.RepairMp3Service",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 1165
+   },
+   {
+    "name": "com.android.mediacenter.library.ui.cloud.upload.CloudUploadService",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 1167
+   },
+   {
+    "name": "com.android.mediacenter.localmusic.MediaPlaybackService",
+    "exported": "true",
+    "permission": null,
+    "fgsType": "0x00000002",
+    "priority": null,
+    "actions": [],
+    "srcline": 1169
+   },
+   {
+    "name": "com.android.mediacenter.openability.push.MusicPushMessageService",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "com.huawei.push.action.MESSAGING_EVENT"
+    ],
+    "srcline": 1395
+   },
+   {
+    "name": "com.android.mediacenter.library.ui.logic.matchlyric.LyricAndPicMatchingService",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 1733
+   },
+   {
+    "name": "com.android.mediacenter.ui.player.desktoplyric.DesktopLyricService",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 2159
+   },
+   {
+    "name": "com.android.mediacenter.Download.DownloadService",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 2367
+   },
+   {
+    "name": "com.android.mediacenter.components.apireport.ApiReportService",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 2369
+   },
+   {
+    "name": "com.android.mediacenter.healthwear.HealthWearService",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 2411
+   },
+   {
+    "name": "com.huawei.music.download.function.DownloadService",
+    "exported": "false",
+    "permission": null,
+    "fgsType": "0x00000001",
+    "priority": null,
+    "actions": [],
+    "srcline": 2413
+   },
+   {
+    "name": "com.android.mediacenter.openability.ipc.MusicActivationService",
+    "exported": "true",
+    "permission": "com.android.mediacenter.permission.INTERACTION",
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "com.huawei.mediacenter.activation"
+    ],
+    "srcline": 2415
+   },
+   {
+    "name": "com.android.mediacenter.openability.updateApp.UpgradeServiceImp",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 2463
+   },
+   {
+    "name": "com.huawei.music.HilinkPrintBusinessService",
+    "exported": "true",
+    "permission": "com.huawei.music.permission.HilinkPrint",
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "com.huawei.hilink.hilinkmessenger.printbusiness"
+    ],
+    "srcline": 2465
+   },
+   {
+    "name": "com.android.mediacenter.videoplayer.service.VideoBackPlayServiceImp",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 2507
+   },
+   {
+    "name": "com.huawei.music.humsearch.services.HumSearchService",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 2555
+   },
+   {
+    "name": "com.huawei.music.extractaudio.services.AudioExtractNotificationService",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 2557
+   },
+   {
+    "name": "com.huawei.music.karaoke.ui.update.service.KaraokeUpdatePlugServiceImp",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 2567
+   },
+   {
+    "name": "com.android.mediacenter.localmusic.BufferedOneShotPlaybackService",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 2569
+   },
+   {
+    "name": "com.android.mediacenter.musicbase.stepservice.StepRecordService",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 2581
+   },
+   {
+    "name": "com.android.mediacenter.musicbase.stepservice.StepProxyService",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 2583
+   },
+   {
+    "name": "com.huawei.music.hicar.HiCarMediaOperateMgr",
+    "exported": "true",
+    "permission": "com.huawei.hicar.HICAR_PERMISSION_SYSTEM",
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "com.huawei.hicar.CALLBACK_EVENT",
+     "com.huawei.hicar.CALLBACK_HICAR_STOPPED",
+     "com.huawei.hicar.CALLBACK_HICAR_STARTED"
+    ],
+    "srcline": 2601
+   },
+   {
+    "name": "com.huawei.music.desktopcard.CardReceiverService",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 2639
+   },
+   {
+    "name": "com.huawei.music.live.service.impl.LiveBackPlayServiceImpl",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 2713
+   },
+   {
+    "name": "com.huawei.music.live.service.impl.LiveForegroundServiceImpl",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 2715
+   },
+   {
+    "name": "com.huawei.remoteplayer.RemoteService",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 2879
+   },
+   {
+    "name": "com.huawei.remoteplayer.LocalService",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 2881
+   },
+   {
+    "name": "androidx.room.MultiInstanceInvalidationService",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 2891
+   },
+   {
+    "name": "com.huawei.audiodevicekit.ota.service.OTASilentService",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 2945
+   },
+   {
+    "name": "com.huawei.music.cartaskflow.MusicFlowService",
+    "exported": "true",
+    "permission": "com.huawei.hicar.HICAR_PERMISSION",
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "com.huawei.aa.action.FLOW_TASK_SERVICE"
+    ],
+    "srcline": 3027
+   },
+   {
+    "name": "androidx.work.impl.background.systemalarm.SystemAlarmService",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 3089
+   },
+   {
+    "name": "androidx.work.impl.background.systemjob.SystemJobService",
+    "exported": "true",
+    "permission": "android.permission.BIND_JOB_SERVICE",
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 3091
+   },
+   {
+    "name": "androidx.work.impl.foreground.SystemForegroundService",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 3093
+   },
+   {
+    "name": "com.huawei.hms.support.api.push.service.HmsMsgService",
+    "exported": "true",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "com.huawei.push.msg.NOTIFY_MSG",
+     "com.huawei.push.msg.PASSBY_MSG"
+    ],
+    "srcline": 3287
+   },
+   {
+    "name": "com.huawei.allplatform.screencapture.HRTCScreenShareService",
+    "exported": null,
+    "permission": null,
+    "fgsType": "0x00000020",
+    "priority": null,
+    "actions": [],
+    "srcline": 3353
+   },
+   {
+    "name": "com.qq.e.comm.DownloadService",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 3713
+   },
+   {
+    "name": "com.huawei.agconnect.core.ServiceDiscovery",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 3739
+   }
+  ],
+  "permissions": [
+   "android.permission.FOREGROUND_SERVICE",
+   "com.huawei.android.powerkit.permission.BIND",
+   "com.huawei.android.powerkit.permission.STATECHG",
+   "com.huawei.meetime.CAAS_SHARE_SERVICE",
+   "com.huawei.permission.SET_AUDIO_PARAMETERS",
+   "android.permission.WRITE_CALENDAR",
+   "android.permission.READ_CALENDAR",
+   "android.permission.CHANGE_WIFI_STATE",
+   "com.android.launcher.permission.INSTALL_SHORTCUT",
+   "android.permission.INTERNET",
+   "android.permission.ACCESS_NETWORK_STATE",
+   "android.permission.FLASHLIGHT",
+   "android.permission.ACCESS_COARSE_LOCATION",
+   "android.permission.ACCESS_FINE_LOCATION",
+   "com.huawei.decision.permission.ACCESS_PERMISSION",
+   "com.android.deskclock.huawei.permission.UPDATE_ALARM",
+   "com.huawei.contacts.permission.SET_RINGTONE",
+   "huawei.permmisons.mms.CHANGE_MMS_RINGTON_REQUEST",
+   "com.huawei.systemmanager.permission.ACCESS_INTERFACE",
+   "android.permission.WRITE_CONTACTS",
+   "android.permission.CAPTURE_VIDEO_OUTPUT",
+   "android.permission.READ_PHONE_STATE",
+   "android.permission.READ_PRIVILEGED_PHONE_STATE",
+   "android.permission.RECORD_AUDIO",
+   "android.permission.WAKE_LOCK",
+   "android.permission.MODIFY_AUDIO_SETTINGS",
+   "android.permission.BLUETOOTH",
+   "android.permission.BLUETOOTH_ADMIN",
+   "android.permission.BLUETOOTH_CONNECT",
+   "android.permission.BLUETOOTH_SCAN",
+   "android.permission.BLUETOOTH_ADVERTISE",
+   "android.permission.ACCESS_WIFI_STATE",
+   "android.permission.WRITE_EXTERNAL_STORAGE",
+   "android.permission.READ_EXTERNAL_STORAGE",
+   "android.permission.READ_MEDIA_STORAGE",
+   "android.permission.WRITE_MEDIA_STORAGE",
+   "android.permission.USES_LOG_UPLOAD_SERVICE",
+   "android.permission.SYSTEM_ALERT_WINDOW",
+   "com.huawei.permission.HICAR_DISPLAY",
+   "android.permission.WRITE_SETTINGS",
+   "android.permission.GET_ACCOUNTS",
+   "android.permission.MANAGE_ACCOUNTS",
+   "android.permission.USE_CREDENTIALS",
+   "android.permission.EXPAND_STATUS_BAR",
+   "com.huawei.permission.ONEHOP",
+   "com.android.mediacenter.permission.INTERACTION",
+   "com.huawei.hpxsettings.LAUNCH_HPX_SETTINGS",
+   "huawei.permission.CASERVICE",
+   "com.android.keyguard.permission.SHOW_LYRICS",
+   "com.huawei.permission.sec.ACCESS_UDID",
+   "sws.permission.START_SWSHEADPHONE",
+   "dolby.permission.START_DOLBY",
+   "huawei.permission.HIRES_ICON_CHANGE_ACTION",
+   "imcs.permission.MUSIC_CONTROL",
+   "com.huawei.systemmanager.permission.APPLY_TRIM_POLICY",
+   "com.huawei.permission.HANDOFF",
+   "com.huawei.pcassistant.permisssion.HANDOFF_SDK_SERVICE",
+   "android.permission.WRITE_SECURE_SETTINGS",
+   "huawei.android.permission.HW_SIGNATURE_OR_SYSTEM",
+   "com.huawei.android.launcher.permission.ACCESS_INTERFACE",
+   "android.permission.READ_SYNC_SETTINGS",
+   "android.permission.WRITE_SYNC_SETTINGS",
+   "android.permission.REORDER_TASKS",
+   "com.huawei.permission.sec.MDM.v2",
+   " com.hihonor.permission.sec.MDM.v2",
+   "com.android.permission.airsharing_play_interface",
+   "android.permission.REAL_GET_TASKS",
+   "com.huawei.permission.MANAGE_FOLD_SCREEN",
+   "android.permission.MANAGE_USERS",
+   "com.huawei.android.permission.BIND_QUICK_ACTION_SERVICE",
+   "com.huawei.powergenie.receiverPermission",
+   "android.permission.CAMERA",
+   "android.permission.INTERNAL_SYSTEM_WINDOW",
+   "com.huawei.android.launcher.permission.CHANGE_BADGE",
+   "com.huawei.iconnect.permission.RECEIVE_BROADCAST",
+   "huawei.permission.CLICK_STATUSBAR_BROADCAST",
+   "com.huawei.appmarket.service.commondata.permission.GET_COMMON_DATA",
+   "com.huawei.dataprivacycenter.permission.LAUNCH_DATA_PRIVACY_CENTER",
+   "com.huawei.parentcontrol.permission.provider",
+   "com.huawei.permission.music_provider",
+   "ohos.permission.GET_BUNDLE_INFO",
+   "android.permission.READ_SEARCH_INDEXABLES",
+   "com.huawei.permission.external_app_settings.USE_COMPONENT",
+   "com.huawei.permission.ACCESS_HW_KEYSTORE",
+   "com.hihonor.permission.sec.MDM.v2",
+   "com.hihonor.parentcontrol.permission.provider",
+   "hihonor.android.permission.HW_SIGNATURE_OR_SYSTEM",
+   "android.permission.VIBRATE",
+   "com.huawei.hmsauto.permission.audiocontrol.AUDIO_CONTROL",
+   "android.permission.MODIFY_AUDIO_ROUTING",
+   "android.Manifest.permission.MODIFY_AUDIO_ROUTING",
+   "android.permission.HIDE_NON_SYSTEM_OVERLAY_WINDOWS",
+   "android.permission.READ_MEDIA_IMAGES",
+   "com.hihonor.permission.sec.ACCESS_UDID",
+   "com.huawei.music.HEAD_SET_PROVIDER_READ",
+   "com.huawei.music.HEAD_SET_PROVIDER_WRITE",
+   "com.huawei.music.HEAD_SET",
+   "com.huawei.audioaccessorymanager.permission.ACCESS_BIND_AUDIO_INFO_PROVIDER",
+   "com.huawei.audioaccessorymanager.permission.VERSION_CHECK",
+   "android.permission.CHANGE_NETWORK_STATE",
+   "com.huawei.audioaccessorymanager.permission.ACCESS_BIND_AAM_SERVICE",
+   "android.permission.REQUEST_INSTALL_PACKAGES",
+   "android.permission.RECEIVE_BOOT_COMPLETED",
+   "com.huawei.music.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION",
+   "com.huawei.music.permission.PROCESS_PUSH_MSG",
+   "com.huawei.music.permission.PUSH_PROVIDER",
+   "com.huawei.music.com.huawei.openaliance.ad.app.ins",
+   "android.permission.BROADCAST_STICKY",
+   "com.hihonor.permission.MANAGE_FOLD_SCREEN",
+   "com.hihonor.permission.MANAGE_FOLD_SCREEN_PRIVILEGED",
+   "com.huawei.hicar.HICAR_PERMISSION"
+  ],
+  "uses_sdk": {
+   "minSdkVersion": "24",
+   "targetSdkVersion": "29"
+  },
+  "n_activity": 314
+ },
+ "ncrust": {
+  "receivers": [
+   {
+    "name": "androidx.media3.session.MediaButtonReceiver",
+    "exported": "true",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "android.intent.action.MEDIA_BUTTON"
+    ],
+    "srcline": 144
+   },
+   {
+    "name": "androidx.profileinstaller.ProfileInstallReceiver",
+    "exported": "true",
+    "permission": "android.permission.DUMP",
+    "fgsType": null,
+    "priority": null,
+    "actions": [
+     "androidx.profileinstaller.action.INSTALL_PROFILE",
+     "androidx.profileinstaller.action.SKIP_FILE",
+     "androidx.profileinstaller.action.SAVE_PROFILE",
+     "androidx.profileinstaller.action.BENCHMARK_OPERATION"
+    ],
+    "srcline": 176
+   }
+  ],
+  "services": [
+   {
+    "name": "com.takahashirinta.ncrust.player.PlaybackService",
+    "exported": "true",
+    "permission": null,
+    "fgsType": "0x00000002",
+    "priority": null,
+    "actions": [
+     "androidx.media3.session.MediaSessionService",
+     "android.media.browse.MediaBrowserService"
+    ],
+    "srcline": 80
+   },
+   {
+    "name": "androidx.camera.core.impl.MetadataHolderService",
+    "exported": "false",
+    "permission": null,
+    "fgsType": null,
+    "priority": null,
+    "actions": [],
+    "srcline": 152
+   }
+  ],
+  "permissions": [
+   "android.permission.INTERNET",
+   "android.permission.ACCESS_NETWORK_STATE",
+   "android.permission.FOREGROUND_SERVICE",
+   "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK",
+   "android.permission.WAKE_LOCK",
+   "android.permission.POST_NOTIFICATIONS",
+   "android.permission.MODIFY_AUDIO_SETTINGS",
+   "android.permission.POST_PROMOTED_NOTIFICATIONS",
+   "android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS",
+   "android.permission.CAMERA",
+   "com.takahashirinta.ncrust.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+  ],
+  "uses_sdk": {
+   "minSdkVersion": "24",
+   "targetSdkVersion": "36"
+  },
+  "n_activity": 1
+ }
+}

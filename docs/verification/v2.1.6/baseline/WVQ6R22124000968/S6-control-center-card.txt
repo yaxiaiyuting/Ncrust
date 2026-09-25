@@ -1,0 +1,22 @@
+# 场景：控制中心媒体卡文本节点（uiautomator dump，不靠肉眼猜截图）
+
+## 采集时播放状态: 3 3 2 
+
+$ adb -s WVQ6R22124000968 shell input swipe <变体>   # 从右上角下拉 = 控制中心（物理坐标系）
+  $ adb -s WVQ6R22124000968 shell input swipe 2540 3 2540 1400 250
+  手势命中：2540 3 2540 1400 250
+焦点:   mCurrentFocus=Window{59315b6 u0 NotificationShade}
+
+## uiautomator 原文中的媒体卡节点（完整 <node> 行）
+<node index="0" text="" resource-id="com.android.systemui:id/music_item" class="android.widget.RelativeLayout" package="com.android.systemui" content-desc="Dangerous Michael Jackson" checkable="false" checked="false" clickable="true" enabled="true" focusable="true" focused="false" scrollable="false" long-clickable="true" password="false" selected="false" bounds="[1723,208][2106,497]" xpos="[0,0][0,0]">
+<node index="0" text="" resource-id="com.android.systemui:id/qs_music_view" class="android.widget.RelativeLayout" package="com.android.systemui" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[1723,208][2106,497]" xpos="[0,0][0,0]">
+<node index="3" text="" resource-id="com.android.systemui:id/not_playing_view" class="android.widget.RelativeLayout" package="com.android.systemui" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[1723,328][1883,411]" xpos="[0,0][0,0]" />
+<node index="1" text="" resource-id="com.android.systemui:id/previous_music" class="android.widget.ImageView" package="com.android.systemui" content-desc="上一首" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[1771,425][1819,473]" xpos="[0,0][0,0]" />
+<node index="1" text="" resource-id="com.android.systemui:id/pause_music" class="android.widget.ImageView" package="com.android.systemui" content-desc="播放" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[1890,425][1938,473]" xpos="[0,0][0,0]" />
+<node index="1" text="" resource-id="com.android.systemui:id/next_music" class="android.widget.ImageView" package="com.android.systemui" content-desc="下一首" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[2010,425][2058,473]" xpos="[0,0][0,0]" />
+
+## 判定
+  music_item 的 content-desc="Dangerous Michael Jackson"
+  ⇒ ✅ 卡片未处于「未在播放」态（not_playing 节点不存在）
+
+## 关闭面板

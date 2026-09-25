@@ -1,0 +1,6 @@
+id=ncrust_huawei_mediacard
+name=Ncrust Huawei media card whitelist
+version=v2.1.6-20260925
+versionCode=1
+author=ncrust-gpl
+description=把 com.takahashirinta.ncrust 加进华为控制中心媒体卡的 ROM 包名白名单（third_app_filter.xml / mediasession 段）。基于本机原始文件就地插入一行，其余字节不变。**未在真机验证过**。卸载模块即完全还原。

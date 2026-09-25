@@ -1,0 +1,34 @@
+# 静态定位 'not in media white list' 常量所在容器 —— 采集时间 2026-09-25T12:56:46+08:00
+# 设备: WVQ6R22124000968  无 root，但 /system 文件为 0644、shell 域可读（见 01-root-probe.txt）
+
+## (1) /system/framework 下所有 *.jar/*.apk 直接 grep 原始二进制（dex 字符串是连续 modified-UTF8，可直接命中）
+$ adb -s WVQ6R22124000968 shell 'grep -l "not in media white list" /system/framework/*.jar /system/framework/*.apk 2>/dev/null'
+/system/framework/hwEmui.jar
+/system/framework/hwServices.jar
+exit=0
+
+## (2) 同样扫 /system/priv-app /system/app /system_ext（顶层一层 + 两层递归）
+$ adb -s WVQ6R22124000968 shell 'grep -rl "not in media white list" /system/priv-app /system/app /system_ext 2>/dev/null'
+grep: /system_ext: Is a directory
+exit=1
+
+## (3) 同类关键字扫描（white list / whitelist / mediacontrol）
+---- pattern: media white list
+$ adb -s WVQ6R22124000968 shell 'grep -l "media white list" /system/framework/*.jar 2>/dev/null'
+/system/framework/hwEmui.jar
+/system/framework/hwServices.jar
+exit=0
+---- pattern: mediaWhiteList
+$ adb -s WVQ6R22124000968 shell 'grep -l "mediaWhiteList" /system/framework/*.jar 2>/dev/null'
+exit=1
+---- pattern: isInMediaWhiteList
+$ adb -s WVQ6R22124000968 shell 'grep -l "isInMediaWhiteList" /system/framework/*.jar 2>/dev/null'
+/system/framework/hwEmui.jar
+/system/framework/hwServices.jar
+/system/framework/services.jar
+exit=0
+---- pattern: MediaControlUtils
+$ adb -s WVQ6R22124000968 shell 'grep -l "MediaControlUtils" /system/framework/*.jar 2>/dev/null'
+/system/framework/hwEmui.jar
+/system/framework/hwServices.jar
+exit=0

@@ -1,0 +1,557 @@
+--------- beginning of main
+09-25 13:34:16.410  3714  4089 D WifiStateMachine: Current network is: "CMCC-YKPt-5G" , ID is: 0
+09-25 13:34:16.803  5950  6036 D ContactsProvider_EventLog: contents_sample_state: [ contacts(0) data(0) accounts({}) accounts deleted({}) calls([]) countryIso(CN) userId(0)  ]
+09-25 13:34:16.803  5950  6036 D ContactsProvider_EventLog: contents_sample_state: [ agr({})  ]
+09-25 13:34:16.803  5950  6036 D ContactsProvider_EventLog: contents_sample_state: [ actCnt({android.process.acore=1})  ]
+09-25 13:34:16.807  5950  6036 E ContactsProvider_EventLog: Flush buffer to file cnt : 1 size : 0Kb duration : 2ms lastUpdatedAfter : 60101 ms mFlush_time_threasold : 2000 mCurrentSize : 257
+09-25 13:34:16.977 18547 18547 D SecurityManagerNative: SecurityManagerNative v2.7.2.6 On 64bit PLATFORM With BORINGSSL
+09-25 13:34:16.982 18547 18547 I appproc : Enhanced Zygote ASLR: ENABLED! nice_name = zygote64
+09-25 13:34:16.982 18547 18547 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+09-25 13:34:16.985 18547 18547 D AndroidRuntime: CheckJNI is OFF
+09-25 13:34:16.986 18547 18547 D AndroidRuntime: addProductProperty: start
+09-25 13:34:17.030 18547 18547 I [saiv 1.1]: saiv_OnLoadJNI.cpp(38): _init: Version 1.1 Build # 3532
+09-25 13:34:17.030 18547 18547 I [saiv 1.1]: saiv_OnLoadJNI.cpp(43): _init: _init() was called
+09-25 13:34:17.050 18547 18547 I MLDAP   : ================================================
+09-25 13:34:17.050 18547 18547 I MLDAP   :  MLDAP_LIB v1.1.16
+09-25 13:34:17.050 18547 18547 I MLDAP   : ================================================
+09-25 13:34:17.100 18547 18547 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl
+09-25 13:34:17.128 18547 18547 D ICU     : No timezone override file found: /data/misc/zoneinfo/current/icu/icu_tzdata.dat
+09-25 13:34:17.149 18547 18547 I Radio-JNI: register_android_hardware_Radio DONE
+09-25 13:34:17.156 18547 18547 D ReflectionHelper: loadKlass() : caller=android.app.Activity.<clinit>:7555 <bottom of call stack> 
+09-25 13:34:17.156 18547 18547 D ReflectionHelper: Reflecting method.....  class <onScreenChanged>
+09-25 13:34:17.157 18547 18547 E SemAffinityControl: SemAffinityControl: registerfunction enter
+09-25 13:34:17.169 18547 18547 D AndroidRuntime: Calling main entry com.android.commands.input.Input
+09-25 13:34:17.169 18547 18547 I Input   : injectKeyEvent: KeyEvent { action=ACTION_DOWN, keyCode=KEYCODE_MEDIA_PLAY, scanCode=0, metaState=0, flags=0x0, repeatCount=0, eventTime=30317432, downTime=30317432, deviceId=-1, displayId=0, source=0x101 }
+09-25 13:34:17.170  3714  4525 D InputDispatcher: Inject key (18547): action=0, eventTime=30317432000000
+09-25 13:34:17.171  3714  4024 I InputDispatcher: Delivering key to (4657): action: 0x0 (0)
+09-25 13:34:17.172  4657  4657 D ViewRootImpl@64dcb41[StatusBar]: ViewPostImeInputStage processKey 0
+09-25 13:34:17.173  3714  4060 D MediaSessionService: Sending media key to com.takahashirinta.ncrust/androidx.media3.session.id.
+09-25 13:34:17.173 18547 18547 I Input   : injectKeyEvent: KeyEvent { action=ACTION_UP, keyCode=KEYCODE_MEDIA_PLAY, scanCode=0, metaState=0, flags=0x0, repeatCount=0, eventTime=30317432, downTime=30317432, deviceId=-1, displayId=0, source=0x101 }
+09-25 13:34:17.173  3714  4321 D InputDispatcher: Inject key (18547): action=1, eventTime=30317432000000
+09-25 13:34:17.175  3714  4024 I InputDispatcher: Delivering key to (4657): action: 0x1 (0)
+09-25 13:34:17.175  4657  4657 D ViewRootImpl@64dcb41[StatusBar]: ViewPostImeInputStage processKey 1
+09-25 13:34:17.175  3714  6068 D MediaSessionService: Sending media key to com.takahashirinta.ncrust/androidx.media3.session.id.
+09-25 13:34:17.176 18547 18547 D AndroidRuntime: Shutting down VM
+09-25 13:34:17.192 18547 18547 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl::~AcsAndroidVirtualDisplayIntfImpl - Enter
+09-25 13:34:17.192 18547 18547 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl::~AcsAndroidVirtualDisplayIntfImpl - Enter2
+09-25 13:34:17.192 18547 18547 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl::~AcsAndroidVirtualDisplayIntfImpl - mSource2
+09-25 13:34:17.192 18547 18547 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl::~AcsAndroidVirtualDisplayIntfImpl - Exit
+09-25 13:34:17.328  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:34:17.328  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:34:17.328  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+--------- beginning of system
+09-25 13:34:17.346  3714  6959 D SSRM:t  : SIOP:: AP = 370, PST = 348 (W:10), CP = 273, CUR = 42, LCD = 255
+09-25 13:34:18.329  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:34:18.329  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:34:18.329  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:34:18.710  3714  4066 D MediaSessionRecord: setPlaybackState oldState:3, newState:3, packageName:com.takahashirinta.ncrust
+09-25 13:34:18.712  4657  4910 D vol.MediaSessions: onPlaybackStateChanged com.takahashirinta.ncrust STATE_PLAYING PlaybackState {state=3, position=39894, buffered position=55381, speed=1.0, updated=84227243, actions=7340031, custom actions=[], active item id=0, error=null}
+09-25 13:34:18.712  4602  5598 V Avrcp   : updatePlayPauseState, old=3, state=3, currentPosMs=39894
+09-25 13:34:18.712  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:18.712  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:18.712  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:18.712  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:19.064  3714  4525 D ApplicationPolicy: isStatusBarNotificationAllowedAsUser: packageName = com.takahashirinta.ncrust,userId = 0
+09-25 13:34:19.065 15610 15610 D NcrustLyricNotify: re-post on lyric line change: 睡梦中被敲醒我还是不确定
+09-25 13:34:19.074 15610 15610 D NcrustMediaPanel: keys=[TITLE,ARTIST,DURATION,DISPLAY_SUBTITLE] title=睡梦中被敲醒我还是不确定 artist=屋顶 · 周杰伦 displaySubtitle='' line=睡梦中被敲醒我还是不确定 lastAt=84227599 gate[post=75 defer=8 same=2 notStarted=0] notifyBuilds=93
+09-25 13:34:19.081  4602  4602 D Avrcp   : setNPLData [MediaSession.QueueItem {Description=睡梦中被敲醒我还是不确定, 屋顶 · 周杰伦, null, Id=0 }, MediaSession.QueueItem {Description=晴天, 周杰伦, null, Id=1 }]
+09-25 13:34:19.085  4657  4910 D vol.MediaSessions: onQueueChanged com.takahashirinta.ncrust [MediaSession.QueueItem {Description=睡梦中被敲醒我还是不确定, 屋顶 · 周杰伦, null, Id=0 }, MediaSession.QueueItem {Description=晴天, 周杰伦, null, Id=1 }]
+09-25 13:34:19.089  4602  5598 V Avrcp   : updateMetadata
+09-25 13:34:19.089  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:19.089  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:19.089  4657  4910 D vol.MediaSessions: onMetadataChanged com.takahashirinta.ncrust 睡梦中被敲醒我还是不确定, 屋顶 · 周杰伦, null
+09-25 13:34:19.202  5733  5733 D io_stats: !@   8,0 r 101949 4006520 w 134761 9931884 d 11997 7397184 f 46507 46507 iot 202970 137766 th 61440 0 0 pt 0 inp 0 0 30319.464
+09-25 13:34:19.329  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:34:19.329  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:34:19.329  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:34:19.424  3714  4089 D WifiStateMachine: Current network is: "CMCC-YKPt-5G" , ID is: 0
+09-25 13:34:19.582  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:19.582  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:19.582  4602  5598 W Avrcp   : ##event was not sent##
+09-25 13:34:20.330  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:34:20.330  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:34:20.330  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:34:20.565  3714  6959 D TelephonyManager: getAllCellInfo : Caller (PID / UID / TID): 3714 / 1000 / 6959
+09-25 13:34:21.330  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:34:21.330  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:34:21.330  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:34:21.688 18562 18562 D SecurityManagerNative: SecurityManagerNative v2.7.2.6 On 64bit PLATFORM With BORINGSSL
+09-25 13:34:21.692 18562 18562 I appproc : Enhanced Zygote ASLR: ENABLED! nice_name = zygote64
+09-25 13:34:21.692 18562 18562 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+09-25 13:34:21.695 18562 18562 D AndroidRuntime: CheckJNI is OFF
+09-25 13:34:21.697 18562 18562 D AndroidRuntime: addProductProperty: start
+09-25 13:34:21.731  3714  3979 I TLC_TIMA_PKM_measure_kernel: TIMA: response_id = 3
+09-25 13:34:21.731  3714  3979 I TLC_TIMA_PKM_measure_kernel: TIMA: response ret = 0, result_ondemand = MSG=Kernel Verification Success;
+09-25 13:34:21.745 18562 18562 I [saiv 1.1]: saiv_OnLoadJNI.cpp(38): _init: Version 1.1 Build # 3532
+09-25 13:34:21.745 18562 18562 I [saiv 1.1]: saiv_OnLoadJNI.cpp(43): _init: _init() was called
+09-25 13:34:21.765 18562 18562 I MLDAP   : ================================================
+09-25 13:34:21.765 18562 18562 I MLDAP   :  MLDAP_LIB v1.1.16
+09-25 13:34:21.765 18562 18562 I MLDAP   : ================================================
+09-25 13:34:21.815 18562 18562 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl
+09-25 13:34:21.843 18562 18562 D ICU     : No timezone override file found: /data/misc/zoneinfo/current/icu/icu_tzdata.dat
+09-25 13:34:21.863 18562 18562 I Radio-JNI: register_android_hardware_Radio DONE
+09-25 13:34:21.870 18562 18562 D ReflectionHelper: loadKlass() : caller=android.app.Activity.<clinit>:7555 <bottom of call stack> 
+09-25 13:34:21.870 18562 18562 D ReflectionHelper: Reflecting method.....  class <onScreenChanged>
+09-25 13:34:21.871 18562 18562 E SemAffinityControl: SemAffinityControl: registerfunction enter
+09-25 13:34:21.883 18562 18562 D AndroidRuntime: Calling main entry com.android.commands.input.Input
+09-25 13:34:21.883 18562 18562 I Input   : injectKeyEvent: KeyEvent { action=ACTION_DOWN, keyCode=KEYCODE_MEDIA_PLAY, scanCode=0, metaState=0, flags=0x0, repeatCount=0, eventTime=30322146, downTime=30322146, deviceId=-1, displayId=0, source=0x101 }
+09-25 13:34:21.884  3714  5829 D InputDispatcher: Inject key (18562): action=0, eventTime=30322146000000
+09-25 13:34:21.885  3714  4024 I InputDispatcher: Delivering key to (4657): action: 0x0 (0)
+09-25 13:34:21.885  4657  4657 D ViewRootImpl@64dcb41[StatusBar]: ViewPostImeInputStage processKey 0
+09-25 13:34:21.886  3714  3725 D MediaSessionService: Sending media key to com.takahashirinta.ncrust/androidx.media3.session.id.
+09-25 13:34:21.887 18562 18562 I Input   : injectKeyEvent: KeyEvent { action=ACTION_UP, keyCode=KEYCODE_MEDIA_PLAY, scanCode=0, metaState=0, flags=0x0, repeatCount=0, eventTime=30322146, downTime=30322146, deviceId=-1, displayId=0, source=0x101 }
+09-25 13:34:21.887  3714 27900 D InputDispatcher: Inject key (18562): action=1, eventTime=30322146000000
+09-25 13:34:21.888  3714  4024 I InputDispatcher: Delivering key to (4657): action: 0x1 (0)
+09-25 13:34:21.888  4657  4657 D ViewRootImpl@64dcb41[StatusBar]: ViewPostImeInputStage processKey 1
+09-25 13:34:21.889  3714 19519 D MediaSessionService: Sending media key to com.takahashirinta.ncrust/androidx.media3.session.id.
+09-25 13:34:21.889 18562 18562 D AndroidRuntime: Shutting down VM
+09-25 13:34:21.904 18562 18562 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl::~AcsAndroidVirtualDisplayIntfImpl - Enter
+09-25 13:34:21.904 18562 18562 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl::~AcsAndroidVirtualDisplayIntfImpl - Enter2
+09-25 13:34:21.904 18562 18562 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl::~AcsAndroidVirtualDisplayIntfImpl - mSource2
+09-25 13:34:21.904 18562 18562 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl::~AcsAndroidVirtualDisplayIntfImpl - Exit
+09-25 13:34:22.329  3714 19461 D BatteryService: !@BatteryListener : batteryPropertiesChanged!
+09-25 13:34:22.330  3714 19461 D BatteryService: level:93, scale:100, status:2, health:2, present:true, voltage: 4240, temperature: 300, technology: Li-ion, AC powered:false, USB powered:true, POGO powered:false, Wireless powered:false, icon:17303690, invalid charger:0, maxChargingCurrent:0, maxChargingVoltage:0, chargeCounter:0
+09-25 13:34:22.330  3714 19461 D BatteryService: online:4, current avg:74, charge type:1, power sharing:false, high voltage charger:false, capacity:280000, batterySWSelfDischarging:false, misc_event:0, current_now:256
+09-25 13:34:22.330  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:34:22.330  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:34:22.330  3714  3714 D BatteryService: Sending ACTION_BATTERY_CHANGED.
+09-25 13:34:22.330  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:34:22.336  3714  3714 V UiModeManager: updateLocked: null action, mDockState=0, category=null
+09-25 13:34:22.336  3714  3714 D UiModeManager: updateConfigurationLocked: mDockState=0; mCarMode=false; mNightMode=1; uiMode=17
+09-25 13:34:22.338  3714  3714 D GameManagerService: new battery level: 93
+09-25 13:34:22.342  3714  4321 D MediaSessionRecord: setPlaybackState oldState:3, newState:3, packageName:com.takahashirinta.ncrust
+09-25 13:34:22.343  4657  4910 D vol.MediaSessions: onPlaybackStateChanged com.takahashirinta.ncrust STATE_PLAYING PlaybackState {state=3, position=43529, buffered position=62037, speed=1.0, updated=84230875, actions=7340031, custom actions=[], active item id=0, error=null}
+09-25 13:34:22.343  4657  4657 D KeyguardUpdateMonitor: received broadcast android.intent.action.BATTERY_CHANGED
+09-25 13:34:22.344  4602  5598 V Avrcp   : updatePlayPauseState, old=3, state=3, currentPosMs=43529
+09-25 13:34:22.344  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:22.344  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:22.344  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:22.344  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:22.344  4657  4657 D KeyguardUpdateMonitor: handleBatteryUpdate
+09-25 13:34:22.347  4657  4657 D PowerUI : showing power sharing dialogfalse
+09-25 13:34:22.347  4657  4657 D PowerUI : priorPlugType = 2 mPlugType =  2
+09-25 13:34:22.349  4657  4657 D PowerUI.Notification: showChargingNotice oldChargingType : 1 currentChargingType : 1 oldChargingTime : 1394000 mChargingTime : 1394000
+09-25 13:34:22.349  4657  4657 D PowerUI.Notification: There is no change about charging status, so return!
+09-25 13:34:22.352  4657  4657 D BatteryMeterDrawable: isSomethingChanged - false
+09-25 13:34:22.353  4657  4657 D BatteryMeterDrawable: isSomethingChanged - false
+09-25 13:34:22.360  4602  4602 V HeadsetService: HeadsetService - Received Intent.ACTION_BATTERY_CHANGED
+09-25 13:34:22.360  4602  5595 D HeadsetStateMachine: Disconnected process message: 10, size: 0
+09-25 13:34:22.377  4657  4657 D Tile.FlashlightTile: ACTION_BATTERY_CHANGED - Level :: 93, emEnabled :: false
+09-25 13:34:22.435  3714  4089 D WifiStateMachine: Current network is: "CMCC-YKPt-5G" , ID is: 0
+09-25 13:34:22.539  3714  3740 I PowerManagerService: [PWL] On : 30307541 (15262 ms ago)
+09-25 13:34:22.540  3714  3740 I PowerManagerService: [PWL]  mStayOn: true  mWakeLockSummary & WAKE_LOCK_STAY_AWAKE: 0  mUserActivitySummary: 0x4
+09-25 13:34:22.639  3714  3728 I ActivityManager: Waited long enough for: ServiceRecord{61fe96e u0 com.sec.android.daemonapp/.appservice.WeatherService}
+09-25 13:34:22.727  3220  3699 E NetlinkEvent: NetlinkEvent::FindParam(): Parameter 'LABEL' not found
+09-25 13:34:22.727  3220  3699 E NetlinkEvent: NetlinkEvent::FindParam(): Parameter 'UID' not found
+09-25 13:34:23.331  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:34:23.331  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:34:23.331  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:34:23.915  3714  5835 V MARsPolicyManager: updateFromMARsThread
+09-25 13:34:23.917  3714  3735 D MARsDBManager: doUpdateFromMARsToSM : begin --size 4
+09-25 13:34:23.985  3714  3735 D MARsDBManager: doUpdateFromMARsToSM : end
+09-25 13:34:23.985  3714  3735 D MARsDBManager: onChange - mSmartManagerObserver! Uri = content://com.samsung.android.sm/AppFreezer?MARs-self=true&MARs=true
+09-25 13:34:23.985  3714  3735 D MARsDBManager: onChange - mSmartManagerObserver! Uri = content://com.samsung.android.sm/AppFreezer?MARs-self=true&MARs=true
+09-25 13:34:23.985  3714  3735 D MARsDBManager: onChange - mSmartManagerObserver! Uri = content://com.samsung.android.sm/AppFreezer?MARs-self=true&MARs=true
+09-25 13:34:23.985  3714  3735 D MARsDBManager: onChange - mSmartManagerObserver! Uri = content://com.samsung.android.sm/AppFreezer?MARs-self=true&MARs=true
+09-25 13:34:24.204  5733  5733 D io_stats: !@   8,0 r 101949 4006520 w 134791 9932060 d 11997 7397184 f 46540 46540 iot 203000 137774 th 61440 0 0 pt 0 inp 0 0 30324.467
+09-25 13:34:24.331  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:34:24.331  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:34:24.331  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:34:24.608  3714  4060 D ApplicationPolicy: isStatusBarNotificationAllowedAsUser: packageName = com.takahashirinta.ncrust,userId = 0
+09-25 13:34:24.609 15610 15610 D NcrustLyricNotify: re-post on lyric line change: 怎会有动人旋律在对面的屋顶
+09-25 13:34:24.617 15610 15610 D NcrustMediaPanel: keys=[TITLE,ARTIST,DURATION,DISPLAY_SUBTITLE] title=怎会有动人旋律在对面的屋顶 artist=屋顶 · 周杰伦 displaySubtitle='' line=怎会有动人旋律在对面的屋顶 lastAt=84233142 gate[post=76 defer=8 same=2 notStarted=0] notifyBuilds=94
+09-25 13:34:24.626  4657  4910 D vol.MediaSessions: onQueueChanged com.takahashirinta.ncrust [MediaSession.QueueItem {Description=怎会有动人旋律在对面的屋顶, 屋顶 · 周杰伦, null, Id=0 }, MediaSession.QueueItem {Description=晴天, 周杰伦, null, Id=1 }]
+09-25 13:34:24.627  4657  4910 D vol.MediaSessions: onMetadataChanged com.takahashirinta.ncrust 怎会有动人旋律在对面的屋顶, 屋顶 · 周杰伦, null
+09-25 13:34:24.627  4602  4602 D Avrcp   : setNPLData [MediaSession.QueueItem {Description=怎会有动人旋律在对面的屋顶, 屋顶 · 周杰伦, null, Id=0 }, MediaSession.QueueItem {Description=晴天, 周杰伦, null, Id=1 }]
+09-25 13:34:24.627  4602  5598 V Avrcp   : updateMetadata
+09-25 13:34:24.628  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:24.628  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:25.129  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:25.130  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:25.130  4602  5598 W Avrcp   : ##event was not sent##
+09-25 13:34:25.332  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:34:25.332  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:34:25.332  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:34:25.345  3714  4321 D MediaSessionRecord: setPlaybackState oldState:3, newState:3, packageName:com.takahashirinta.ncrust
+09-25 13:34:25.347  4657  4910 D vol.MediaSessions: onPlaybackStateChanged com.takahashirinta.ncrust STATE_PLAYING PlaybackState {state=3, position=46523, buffered position=62037, speed=1.0, updated=84233878, actions=7340031, custom actions=[], active item id=0, error=null}
+09-25 13:34:25.347  4602  5598 V Avrcp   : updatePlayPauseState, old=3, state=3, currentPosMs=46523
+09-25 13:34:25.347  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:25.347  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:25.347  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:25.347  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:25.451  3714  4089 D WifiStateMachine: Current network is: "CMCC-YKPt-5G" , ID is: 0
+09-25 13:34:26.332  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:34:26.332  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:34:26.332  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:34:26.390 18575 18575 D SecurityManagerNative: SecurityManagerNative v2.7.2.6 On 64bit PLATFORM With BORINGSSL
+09-25 13:34:26.394 18575 18575 I appproc : Enhanced Zygote ASLR: ENABLED! nice_name = zygote64
+09-25 13:34:26.394 18575 18575 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+09-25 13:34:26.397 18575 18575 D AndroidRuntime: CheckJNI is OFF
+09-25 13:34:26.398 18575 18575 D AndroidRuntime: addProductProperty: start
+09-25 13:34:26.452 18575 18575 I [saiv 1.1]: saiv_OnLoadJNI.cpp(38): _init: Version 1.1 Build # 3532
+09-25 13:34:26.452 18575 18575 I [saiv 1.1]: saiv_OnLoadJNI.cpp(43): _init: _init() was called
+09-25 13:34:26.472 18575 18575 I MLDAP   : ================================================
+09-25 13:34:26.472 18575 18575 I MLDAP   :  MLDAP_LIB v1.1.16
+09-25 13:34:26.472 18575 18575 I MLDAP   : ================================================
+09-25 13:34:26.529 18575 18575 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl
+09-25 13:34:26.557 18575 18575 D ICU     : No timezone override file found: /data/misc/zoneinfo/current/icu/icu_tzdata.dat
+09-25 13:34:26.578 18575 18575 I Radio-JNI: register_android_hardware_Radio DONE
+09-25 13:34:26.585 18575 18575 D ReflectionHelper: loadKlass() : caller=android.app.Activity.<clinit>:7555 <bottom of call stack> 
+09-25 13:34:26.585 18575 18575 D ReflectionHelper: Reflecting method.....  class <onScreenChanged>
+09-25 13:34:26.586 18575 18575 E SemAffinityControl: SemAffinityControl: registerfunction enter
+09-25 13:34:26.598 18575 18575 D AndroidRuntime: Calling main entry com.android.commands.input.Input
+09-25 13:34:26.598 18575 18575 I Input   : injectKeyEvent: KeyEvent { action=ACTION_DOWN, keyCode=KEYCODE_MEDIA_PLAY, scanCode=0, metaState=0, flags=0x0, repeatCount=0, eventTime=30326862, downTime=30326862, deviceId=-1, displayId=0, source=0x101 }
+09-25 13:34:26.599  3714  6070 D InputDispatcher: Inject key (18575): action=0, eventTime=30326862000000
+09-25 13:34:26.600  3714  4024 I InputDispatcher: Delivering key to (4657): action: 0x0 (0)
+09-25 13:34:26.601  4657  4657 D ViewRootImpl@64dcb41[StatusBar]: ViewPostImeInputStage processKey 0
+09-25 13:34:26.601  3714  4080 D MediaSessionService: Sending media key to com.takahashirinta.ncrust/androidx.media3.session.id.
+09-25 13:34:26.602 18575 18575 I Input   : injectKeyEvent: KeyEvent { action=ACTION_UP, keyCode=KEYCODE_MEDIA_PLAY, scanCode=0, metaState=0, flags=0x0, repeatCount=0, eventTime=30326862, downTime=30326862, deviceId=-1, displayId=0, source=0x101 }
+09-25 13:34:26.602  3714  4066 D InputDispatcher: Inject key (18575): action=1, eventTime=30326862000000
+09-25 13:34:26.603  3714  4024 I InputDispatcher: Delivering key to (4657): action: 0x1 (0)
+09-25 13:34:26.603  4657  4657 D ViewRootImpl@64dcb41[StatusBar]: ViewPostImeInputStage processKey 1
+09-25 13:34:26.603  3714  5829 D MediaSessionService: Sending media key to com.takahashirinta.ncrust/androidx.media3.session.id.
+09-25 13:34:26.604 18575 18575 D AndroidRuntime: Shutting down VM
+09-25 13:34:26.619 18575 18575 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl::~AcsAndroidVirtualDisplayIntfImpl - Enter
+09-25 13:34:26.619 18575 18575 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl::~AcsAndroidVirtualDisplayIntfImpl - Enter2
+09-25 13:34:26.619 18575 18575 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl::~AcsAndroidVirtualDisplayIntfImpl - mSource2
+09-25 13:34:26.619 18575 18575 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl::~AcsAndroidVirtualDisplayIntfImpl - Exit
+09-25 13:34:27.332  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:34:27.333  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:34:27.333  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:34:27.363  3714  6959 D SSRM:t  : SIOP:: AP = 360, PST = 350 (W:10), CP = 274, CUR = 92, LCD = 255
+09-25 13:34:28.333  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:34:28.333  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:34:28.333  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:34:28.461  3714  4089 D WifiStateMachine: Current network is: "CMCC-YKPt-5G" , ID is: 0
+09-25 13:34:29.015  3714  6088 D MediaSessionRecord: setPlaybackState oldState:3, newState:3, packageName:com.takahashirinta.ncrust
+09-25 13:34:29.016  4657  4910 D vol.MediaSessions: onPlaybackStateChanged com.takahashirinta.ncrust STATE_PLAYING PlaybackState {state=3, position=50198, buffered position=68864, speed=1.0, updated=84237548, actions=7340031, custom actions=[], active item id=0, error=null}
+09-25 13:34:29.016  4602  5598 V Avrcp   : updatePlayPauseState, old=3, state=3, currentPosMs=50198
+09-25 13:34:29.016  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:29.017  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:29.017  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:29.017  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:29.206  5733  5733 D io_stats: !@   8,0 r 101949 4006520 w 134816 9932336 d 11999 7397228 f 46574 46574 iot 203030 137783 th 61440 0 0 pt 0 inp 0 0 30329.469
+09-25 13:34:29.333  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:34:29.334  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:34:29.334  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:34:29.335  3714  3961 D SamsungAlarmManager: Expired : 4
+09-25 13:34:29.336  3714  3961 I SamsungAlarmManager: setLocked to kernel - T:2 / 20260925T133629, SetElapsed=84358439, nowELAPSED=84237870
+09-25 13:34:29.337  3714  3961 I SamsungAlarmManager: setLocked to kernel - T:3 / 20260925T133500, SetElapsed=84268534, nowELAPSED=84237870
+09-25 13:34:29.339  3714  3961 V SamsungAlarmManager: Sending to uid : 10038 action=com.sec.spp.push.ACTION_SEND_PING_MESSAGE alarm=Alarm{874a5b8 type 2 when 84237869 com.sec.spp.push}
+09-25 13:34:29.346  3714  3728 D CompatibilityInfo: mCompatibilityFlags - 0
+09-25 13:34:29.346  3714  3728 D CompatibilityInfo: applicationDensity - 640
+09-25 13:34:29.346  3714  3728 D CompatibilityInfo: applicationScale - 1.0
+09-25 13:34:29.371  3714  5830 D CompatibilityInfo: mCompatibilityFlags - 0
+09-25 13:34:29.371  3714  5830 D CompatibilityInfo: applicationDensity - 640
+09-25 13:34:29.371  3714  5830 D CompatibilityInfo: applicationScale - 1.0
+09-25 13:34:29.381  3714  5831 D SamsungAlarmManager: setExact Intent (T:2/F:5/AC:false) 20260925T133609 - CU:10038/CP:8963
+09-25 13:34:29.382  3714  5831 I SamsungAlarmManager: setLocked to kernel - T:2 / 20260925T133609, SetElapsed=84337907, nowELAPSED=84237915
+09-25 13:34:29.398  3714  4525 D MountService: getExternalStorageMountMode : 1
+09-25 13:34:29.398  3714  4525 D MountService: getExternalStorageMountMode : 3
+09-25 13:34:29.398  3714  4525 D MountService: getExternalStorageMountMode : final mountMode=1, uid : 10038, packageName : com.sec.spp.push
+09-25 13:34:29.419 18587 18587 E Zygote  : v2
+09-25 13:34:29.420 18587 18587 I libpersona: KNOX_SDCARD checking this for 10038
+09-25 13:34:29.420 18587 18587 I libpersona: KNOX_SDCARD not a persona
+09-25 13:34:29.420  3714  4525 I ActivityManager: Start proc 18587:com.sec.spp.push:RemoteDlcProcess/u0a38 for broadcast com.sec.spp.push/.dlc.sender.DlcRequestReceiver
+09-25 13:34:29.422 18587 18587 E Zygote  : accessInfo : 0
+09-25 13:34:29.423 18587 18587 W SELinux : SELinux selinux_android_compute_policy_index : Policy Index[2],  Con:u:r:zygote:s0 RAM:SEPF_SECMOBILE_7.0_0010, [-1 -1 -1 -1 0 1]
+09-25 13:34:29.425 18587 18587 I SELinux : SELinux: seapp_context_lookup: seinfo=samsung, level=s0:c512,c768, pkgname=com.sec.spp.push:RemoteDlcProcess 
+09-25 13:34:29.458 18587 18587 D TimaKeyStoreProvider: TimaKeyStore is not enabled: cannot add TimaSignature Service and generateKeyPair Service
+09-25 13:34:29.461  3714 13913 D CompatibilityInfo: mCompatibilityFlags - 0
+09-25 13:34:29.461  3714 13913 D CompatibilityInfo: applicationDensity - 640
+09-25 13:34:29.461  3714 13913 D CompatibilityInfo: applicationScale - 1.0
+09-25 13:34:29.461  3714 13913 I ActivityManager: DSS on for com.sec.spp.push and scale is 1.0
+09-25 13:34:29.462  3714 13913 D CompatibilityInfo: mCompatibilityFlags - 0
+09-25 13:34:29.462  3714 13913 D CompatibilityInfo: applicationDensity - 640
+09-25 13:34:29.462  3714 13913 D CompatibilityInfo: applicationScale - 1.0
+09-25 13:34:29.467  3714 13913 D CompatibilityInfo: mCompatibilityFlags - 0
+09-25 13:34:29.467  3714 13913 D CompatibilityInfo: applicationDensity - 640
+09-25 13:34:29.467  3714 13913 D CompatibilityInfo: applicationScale - 1.0
+09-25 13:34:29.480 18587 18587 W System  : ClassLoader referenced unknown path: /system/priv-app/SPPPushClient_Prod/lib/arm64
+09-25 13:34:29.498 18587 18587 D SPPClientService: Create
+09-25 13:34:29.508 18587 18602 D SPPClientService: Create DLC
+09-25 13:34:29.509 18587 18602 E SPPClientService: ShipBuild Binary : True
+09-25 13:34:29.524  3714  4525 D CompatibilityInfo: mCompatibilityFlags - 0
+09-25 13:34:29.524  3714  4525 D CompatibilityInfo: applicationDensity - 640
+09-25 13:34:29.524  3714  4525 D CompatibilityInfo: applicationScale - 1.0
+09-25 13:34:29.537  3714 13913 D SamsungAlarmManager: Cancel Alarm calling from uid:10038 pid :18587 / op:PendingIntent{6aa6564: PendingIntentRecord{c9d3cd com.sec.spp.push broadcastIntent}}
+09-25 13:34:29.547  3714 19461 D CompatibilityInfo: mCompatibilityFlags - 0
+09-25 13:34:29.547  3714 19461 D CompatibilityInfo: applicationDensity - 640
+09-25 13:34:29.547  3714 19461 D CompatibilityInfo: applicationScale - 1.0
+09-25 13:34:30.152  3714 27900 D ApplicationPolicy: isStatusBarNotificationAllowedAsUser: packageName = com.takahashirinta.ncrust,userId = 0
+09-25 13:34:30.154 15610 15610 D NcrustLyricNotify: re-post on lyric line change: 我悄悄关上门带着希望上去
+09-25 13:34:30.167  4602  4602 D Avrcp   : setNPLData [MediaSession.QueueItem {Description=我悄悄关上门带着希望上去, 屋顶 · 周杰伦, null, Id=0 }, MediaSession.QueueItem {Description=晴天, 周杰伦, null, Id=1 }]
+09-25 13:34:30.169  4657  4910 D vol.MediaSessions: onQueueChanged com.takahashirinta.ncrust [MediaSession.QueueItem {Description=我悄悄关上门带着希望上去, 屋顶 · 周杰伦, null, Id=0 }, MediaSession.QueueItem {Description=晴天, 周杰伦, null, Id=1 }]
+09-25 13:34:30.171 15610 15610 D NcrustMediaPanel: keys=[TITLE,ARTIST,DURATION,DISPLAY_SUBTITLE] title=我悄悄关上门带着希望上去 artist=屋顶 · 周杰伦 displaySubtitle='' line=我悄悄关上门带着希望上去 lastAt=84238687 gate[post=77 defer=8 same=2 notStarted=0] notifyBuilds=95
+09-25 13:34:30.171  4657  4910 D vol.MediaSessions: onMetadataChanged com.takahashirinta.ncrust 我悄悄关上门带着希望上去, 屋顶 · 周杰伦, null
+09-25 13:34:30.172  4602  5598 V Avrcp   : updateMetadata
+09-25 13:34:30.172  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:30.173  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:30.334  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:34:30.334  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:34:30.334  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:34:30.667  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:30.668  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:30.668  4602  5598 W Avrcp   : ##event was not sent##
+09-25 13:34:31.128 18608 18608 D SecurityManagerNative: SecurityManagerNative v2.7.2.6 On 64bit PLATFORM With BORINGSSL
+09-25 13:34:31.132 18608 18608 I appproc : Enhanced Zygote ASLR: ENABLED! nice_name = zygote64
+09-25 13:34:31.132 18608 18608 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+09-25 13:34:31.134 18608 18608 D AndroidRuntime: CheckJNI is OFF
+09-25 13:34:31.136 18608 18608 D AndroidRuntime: addProductProperty: start
+09-25 13:34:31.187 18608 18608 I [saiv 1.1]: saiv_OnLoadJNI.cpp(38): _init: Version 1.1 Build # 3532
+09-25 13:34:31.187 18608 18608 I [saiv 1.1]: saiv_OnLoadJNI.cpp(43): _init: _init() was called
+09-25 13:34:31.207 18608 18608 I MLDAP   : ================================================
+09-25 13:34:31.207 18608 18608 I MLDAP   :  MLDAP_LIB v1.1.16
+09-25 13:34:31.207 18608 18608 I MLDAP   : ================================================
+09-25 13:34:31.258 18608 18608 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl
+09-25 13:34:31.287 18608 18608 D ICU     : No timezone override file found: /data/misc/zoneinfo/current/icu/icu_tzdata.dat
+09-25 13:34:31.307 18608 18608 I Radio-JNI: register_android_hardware_Radio DONE
+09-25 13:34:31.313 18608 18608 D ReflectionHelper: loadKlass() : caller=android.app.Activity.<clinit>:7555 <bottom of call stack> 
+09-25 13:34:31.314 18608 18608 D ReflectionHelper: Reflecting method.....  class <onScreenChanged>
+09-25 13:34:31.315 18608 18608 E SemAffinityControl: SemAffinityControl: registerfunction enter
+09-25 13:34:31.327 18608 18608 D AndroidRuntime: Calling main entry com.android.commands.input.Input
+09-25 13:34:31.327 18608 18608 I Input   : injectKeyEvent: KeyEvent { action=ACTION_DOWN, keyCode=KEYCODE_MEDIA_PLAY, scanCode=0, metaState=0, flags=0x0, repeatCount=0, eventTime=30331591, downTime=30331591, deviceId=-1, displayId=0, source=0x101 }
+09-25 13:34:31.329  3714  4525 D InputDispatcher: Inject key (18608): action=0, eventTime=30331591000000
+09-25 13:34:31.330  3714  4024 I InputDispatcher: Delivering key to (4657): action: 0x0 (0)
+09-25 13:34:31.331  4657  4657 D ViewRootImpl@64dcb41[StatusBar]: ViewPostImeInputStage processKey 0
+09-25 13:34:31.332  3714  3724 D MediaSessionService: Sending media key to com.takahashirinta.ncrust/androidx.media3.session.id.
+09-25 13:34:31.332 18608 18608 I Input   : injectKeyEvent: KeyEvent { action=ACTION_UP, keyCode=KEYCODE_MEDIA_PLAY, scanCode=0, metaState=0, flags=0x0, repeatCount=0, eventTime=30331591, downTime=30331591, deviceId=-1, displayId=0, source=0x101 }
+09-25 13:34:31.332  3714 27900 D InputDispatcher: Inject key (18608): action=1, eventTime=30331591000000
+09-25 13:34:31.334  3714  4024 I InputDispatcher: Delivering key to (4657): action: 0x1 (0)
+09-25 13:34:31.334  4657  4657 D ViewRootImpl@64dcb41[StatusBar]: ViewPostImeInputStage processKey 1
+09-25 13:34:31.334  3714 19519 D MediaSessionService: Sending media key to com.takahashirinta.ncrust/androidx.media3.session.id.
+09-25 13:34:31.334  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:34:31.335  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:34:31.335 18608 18608 D AndroidRuntime: Shutting down VM
+09-25 13:34:31.335  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:34:31.351 18608 18608 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl::~AcsAndroidVirtualDisplayIntfImpl - Enter
+09-25 13:34:31.351 18608 18608 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl::~AcsAndroidVirtualDisplayIntfImpl - Enter2
+09-25 13:34:31.351 18608 18608 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl::~AcsAndroidVirtualDisplayIntfImpl - mSource2
+09-25 13:34:31.351 18608 18608 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl::~AcsAndroidVirtualDisplayIntfImpl - Exit
+09-25 13:34:31.473  3714  4089 D WifiStateMachine: Current network is: "CMCC-YKPt-5G" , ID is: 0
+09-25 13:34:32.018  3714  5831 D MediaSessionRecord: setPlaybackState oldState:3, newState:3, packageName:com.takahashirinta.ncrust
+09-25 13:34:32.020  4657  4910 D vol.MediaSessions: onPlaybackStateChanged com.takahashirinta.ncrust STATE_PLAYING PlaybackState {state=3, position=53205, buffered position=68864, speed=1.0, updated=84240551, actions=7340031, custom actions=[], active item id=0, error=null}
+09-25 13:34:32.020  4602  5598 V Avrcp   : updatePlayPauseState, old=3, state=3, currentPosMs=53205
+09-25 13:34:32.020  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:32.020  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:32.020  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:32.020  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:32.335  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:34:32.335  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:34:32.335  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:34:32.377  3714  4080 D BatteryService: !@BatteryListener : batteryPropertiesChanged!
+09-25 13:34:32.378  3714  4080 D BatteryService: level:93, scale:100, status:2, health:2, present:true, voltage: 4239, temperature: 301, technology: Li-ion, AC powered:false, USB powered:true, POGO powered:false, Wireless powered:false, icon:17303690, invalid charger:0, maxChargingCurrent:0, maxChargingVoltage:0, chargeCounter:0
+09-25 13:34:32.378  3714  4080 D BatteryService: online:4, current avg:97, charge type:1, power sharing:false, high voltage charger:false, capacity:280000, batterySWSelfDischarging:false, misc_event:0, current_now:252
+09-25 13:34:32.378  3714  3714 D BatteryService: Sending ACTION_BATTERY_CHANGED.
+09-25 13:34:32.384  3714  3714 V UiModeManager: updateLocked: null action, mDockState=0, category=null
+09-25 13:34:32.384  3714  3714 D UiModeManager: updateConfigurationLocked: mDockState=0; mCarMode=false; mNightMode=1; uiMode=17
+09-25 13:34:32.385  3714  3714 D GameManagerService: new battery level: 93
+09-25 13:34:32.389  4657  4657 D KeyguardUpdateMonitor: received broadcast android.intent.action.BATTERY_CHANGED
+09-25 13:34:32.389  4657  4657 D KeyguardUpdateMonitor: handleBatteryUpdate
+09-25 13:34:32.392  4657  4657 D PowerUI : showing power sharing dialogfalse
+09-25 13:34:32.392  4657  4657 D PowerUI : priorPlugType = 2 mPlugType =  2
+09-25 13:34:32.394  4657  4657 D PowerUI.Notification: showChargingNotice oldChargingType : 1 currentChargingType : 1 oldChargingTime : 1394000 mChargingTime : 1394000
+09-25 13:34:32.394  4657  4657 D PowerUI.Notification: There is no change about charging status, so return!
+09-25 13:34:32.398  4657  4657 D BatteryMeterDrawable: isSomethingChanged - false
+09-25 13:34:32.398  4657  4657 D BatteryMeterDrawable: isSomethingChanged - false
+09-25 13:34:32.405  4602  4602 V HeadsetService: HeadsetService - Received Intent.ACTION_BATTERY_CHANGED
+09-25 13:34:32.405  4602  5595 D HeadsetStateMachine: Disconnected process message: 10, size: 0
+09-25 13:34:32.417  4657  4657 D Tile.FlashlightTile: ACTION_BATTERY_CHANGED - Level :: 93, emEnabled :: false
+09-25 13:34:33.335  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:34:33.335  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:34:33.335  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:34:34.192  4657  5393 D TileLifecycleManager: Unbinding service Intent { cmp=com.android.settings/com.samsung.android.settings.qstile.PowerSavingTile launchParam=MultiScreenLaunchParams { mDisplayId=0 mFlags=0 } (has extras) } UserHandle{0}
+09-25 13:34:34.209  5733  5733 D io_stats: !@   8,0 r 101958 4006584 w 134840 9932544 d 12000 7397232 f 46608 46608 iot 203040 137792 th 61440 0 0 pt 0 inp 0 0 30334.471
+09-25 13:34:34.335  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:34:34.336  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:34:34.336  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:34:34.487  3714  4089 D WifiStateMachine: Current network is: "CMCC-YKPt-5G" , ID is: 0
+09-25 13:34:35.170  3714  4982 E Watchdog: !@Sync 1010 [2026-09-25 13:34:35.170]
+09-25 13:34:35.336  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:34:35.336  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:34:35.336  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:34:35.695  3714  3724 D ApplicationPolicy: isStatusBarNotificationAllowedAsUser: packageName = com.takahashirinta.ncrust,userId = 0
+09-25 13:34:35.695 15610 15610 D NcrustLyricNotify: re-post on lyric line change: 原来是我梦里常出现的那个人
+09-25 13:34:35.701  4602  4602 D Avrcp   : setNPLData [MediaSession.QueueItem {Description=原来是我梦里常出现的那个人, 屋顶 · 周杰伦, null, Id=0 }, MediaSession.QueueItem {Description=晴天, 周杰伦, null, Id=1 }]
+09-25 13:34:35.701 15610 15610 D NcrustMediaPanel: keys=[TITLE,ARTIST,DURATION,DISPLAY_SUBTITLE] title=原来是我梦里常出现的那个人 artist=屋顶 · 周杰伦 displaySubtitle='' line=原来是我梦里常出现的那个人 lastAt=84244229 gate[post=78 defer=8 same=2 notStarted=0] notifyBuilds=96
+09-25 13:34:35.701  4657  4910 D vol.MediaSessions: onQueueChanged com.takahashirinta.ncrust [MediaSession.QueueItem {Description=原来是我梦里常出现的那个人, 屋顶 · 周杰伦, null, Id=0 }, MediaSession.QueueItem {Description=晴天, 周杰伦, null, Id=1 }]
+09-25 13:34:35.703  4602  5598 V Avrcp   : updateMetadata
+09-25 13:34:35.703  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:35.703  4657  4910 D vol.MediaSessions: onMetadataChanged com.takahashirinta.ncrust 原来是我梦里常出现的那个人, 屋顶 · 周杰伦, null
+09-25 13:34:35.703  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:35.839 18620 18620 D SecurityManagerNative: SecurityManagerNative v2.7.2.6 On 64bit PLATFORM With BORINGSSL
+09-25 13:34:35.843 18620 18620 I appproc : Enhanced Zygote ASLR: ENABLED! nice_name = zygote64
+09-25 13:34:35.843 18620 18620 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+09-25 13:34:35.846 18620 18620 D AndroidRuntime: CheckJNI is OFF
+09-25 13:34:35.848 18620 18620 D AndroidRuntime: addProductProperty: start
+09-25 13:34:35.851  3714 27900 D MediaSessionRecord: setPlaybackState oldState:3, newState:3, packageName:com.takahashirinta.ncrust
+09-25 13:34:35.851  4657  4910 D vol.MediaSessions: onPlaybackStateChanged com.takahashirinta.ncrust STATE_PLAYING PlaybackState {state=3, position=57030, buffered position=75520, speed=1.0, updated=84244384, actions=7340031, custom actions=[], active item id=0, error=null}
+09-25 13:34:35.851  4602  5598 V Avrcp   : updatePlayPauseState, old=3, state=3, currentPosMs=57030
+09-25 13:34:35.851  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:35.851  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:35.851  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:35.851  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:35.896 18620 18620 I [saiv 1.1]: saiv_OnLoadJNI.cpp(38): _init: Version 1.1 Build # 3532
+09-25 13:34:35.896 18620 18620 I [saiv 1.1]: saiv_OnLoadJNI.cpp(43): _init: _init() was called
+09-25 13:34:35.916 18620 18620 I MLDAP   : ================================================
+09-25 13:34:35.916 18620 18620 I MLDAP   :  MLDAP_LIB v1.1.16
+09-25 13:34:35.916 18620 18620 I MLDAP   : ================================================
+09-25 13:34:35.966 18620 18620 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl
+09-25 13:34:35.994 18620 18620 D ICU     : No timezone override file found: /data/misc/zoneinfo/current/icu/icu_tzdata.dat
+09-25 13:34:36.015 18620 18620 I Radio-JNI: register_android_hardware_Radio DONE
+09-25 13:34:36.021 18620 18620 D ReflectionHelper: loadKlass() : caller=android.app.Activity.<clinit>:7555 <bottom of call stack> 
+09-25 13:34:36.021 18620 18620 D ReflectionHelper: Reflecting method.....  class <onScreenChanged>
+09-25 13:34:36.022 18620 18620 E SemAffinityControl: SemAffinityControl: registerfunction enter
+09-25 13:34:36.034 18620 18620 D AndroidRuntime: Calling main entry com.android.commands.input.Input
+09-25 13:34:36.035 18620 18620 I Input   : injectKeyEvent: KeyEvent { action=ACTION_DOWN, keyCode=KEYCODE_MEDIA_PLAY, scanCode=0, metaState=0, flags=0x0, repeatCount=0, eventTime=30336298, downTime=30336298, deviceId=-1, displayId=0, source=0x101 }
+09-25 13:34:36.035  3714 19461 D InputDispatcher: Inject key (18620): action=0, eventTime=30336298000000
+09-25 13:34:36.038  3714  4024 I InputDispatcher: Delivering key to (4657): action: 0x0 (0)
+09-25 13:34:36.038  4657  4657 D ViewRootImpl@64dcb41[StatusBar]: ViewPostImeInputStage processKey 0
+09-25 13:34:36.039  3714  5831 D MediaSessionService: Sending media key to com.takahashirinta.ncrust/androidx.media3.session.id.
+09-25 13:34:36.040 18620 18620 I Input   : injectKeyEvent: KeyEvent { action=ACTION_UP, keyCode=KEYCODE_MEDIA_PLAY, scanCode=0, metaState=0, flags=0x0, repeatCount=0, eventTime=30336298, downTime=30336298, deviceId=-1, displayId=0, source=0x101 }
+09-25 13:34:36.040  3714  6070 D InputDispatcher: Inject key (18620): action=1, eventTime=30336298000000
+09-25 13:34:36.041  3714  4024 I InputDispatcher: Delivering key to (4657): action: 0x1 (0)
+09-25 13:34:36.041  4657  4657 D ViewRootImpl@64dcb41[StatusBar]: ViewPostImeInputStage processKey 1
+09-25 13:34:36.041  3714  4060 D MediaSessionService: Sending media key to com.takahashirinta.ncrust/androidx.media3.session.id.
+09-25 13:34:36.042 18620 18620 D AndroidRuntime: Shutting down VM
+09-25 13:34:36.058 18620 18620 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl::~AcsAndroidVirtualDisplayIntfImpl - Enter
+09-25 13:34:36.058 18620 18620 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl::~AcsAndroidVirtualDisplayIntfImpl - Enter2
+09-25 13:34:36.058 18620 18620 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl::~AcsAndroidVirtualDisplayIntfImpl - mSource2
+09-25 13:34:36.058 18620 18620 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl::~AcsAndroidVirtualDisplayIntfImpl - Exit
+09-25 13:34:36.201  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:36.202  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:36.202  4602  5598 W Avrcp   : ##event was not sent##
+09-25 13:34:36.336  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:34:36.337  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:34:36.337  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:34:36.864  3714  4454 D WifiWatchdogStateMachine:  [|218] []
+09-25 13:34:37.337  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:34:37.337  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:34:37.337  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:34:37.383  3714  6959 D SSRM:t  : SIOP:: AP = 360, PST = 351 (W:10), CP = 275, CUR = 98, LCD = 255
+09-25 13:34:37.496  3714  4089 D WifiStateMachine: Current network is: "CMCC-YKPt-5G" , ID is: 0
+09-25 13:34:37.545  3714  3740 I PowerManagerService: [PWL] On : 30307541 (30267 ms ago)
+09-25 13:34:37.545  3714  3740 I PowerManagerService: [PWL]  mStayOn: true  mWakeLockSummary & WAKE_LOCK_STAY_AWAKE: 0  mUserActivitySummary: 0x4
+09-25 13:34:38.337  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:34:38.337  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:34:38.337  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:34:38.856  3714  6068 D MediaSessionRecord: setPlaybackState oldState:3, newState:3, packageName:com.takahashirinta.ncrust
+09-25 13:34:38.859  4657  4910 D vol.MediaSessions: onPlaybackStateChanged com.takahashirinta.ncrust STATE_PLAYING PlaybackState {state=3, position=60024, buffered position=75520, speed=1.0, updated=84247388, actions=7340031, custom actions=[], active item id=0, error=null}
+09-25 13:34:38.860  4602  5598 V Avrcp   : updatePlayPauseState, old=3, state=3, currentPosMs=60024
+09-25 13:34:38.860  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:38.860  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:38.860  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:38.860  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:39.211  5733  5733 D io_stats: !@   8,0 r 101958 4006584 w 134863 9932740 d 12001 7397236 f 46641 46641 iot 203050 137799 th 61440 0 0 pt 0 inp 0 0 30339.474
+09-25 13:34:39.338  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:34:39.338  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:34:39.338  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:34:39.742  3714  5831 D ApplicationPolicy: isStatusBarNotificationAllowedAsUser: packageName = com.takahashirinta.ncrust,userId = 0
+09-25 13:34:39.743 15610 15610 D NcrustLyricNotify: re-post on lyric line change: 那个人不就是我梦里
+09-25 13:34:39.751 15610 15610 D NcrustMediaPanel: keys=[TITLE,ARTIST,DURATION,DISPLAY_SUBTITLE] title=那个人不就是我梦里 artist=屋顶 · 周杰伦 displaySubtitle='' line=那个人不就是我梦里 lastAt=84248277 gate[post=79 defer=8 same=2 notStarted=0] notifyBuilds=97
+09-25 13:34:39.752  4602  4602 D Avrcp   : setNPLData [MediaSession.QueueItem {Description=那个人不就是我梦里, 屋顶 · 周杰伦, null, Id=0 }, MediaSession.QueueItem {Description=晴天, 周杰伦, null, Id=1 }]
+09-25 13:34:39.753  4657  4910 D vol.MediaSessions: onQueueChanged com.takahashirinta.ncrust [MediaSession.QueueItem {Description=那个人不就是我梦里, 屋顶 · 周杰伦, null, Id=0 }, MediaSession.QueueItem {Description=晴天, 周杰伦, null, Id=1 }]
+09-25 13:34:39.754  4602  5598 V Avrcp   : updateMetadata
+09-25 13:34:39.755  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:39.755  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:39.756  4657  4910 D vol.MediaSessions: onMetadataChanged com.takahashirinta.ncrust 那个人不就是我梦里, 屋顶 · 周杰伦, null
+09-25 13:34:39.890  3714  4454 D WifiWatchdogStateMachine:  [|215] []
+09-25 13:34:40.253  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:40.253  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:40.253  4602  5598 W Avrcp   : ##event was not sent##
+09-25 13:34:40.338  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:34:40.338  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:34:40.338  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:34:40.505  3714  4089 D WifiStateMachine: Current network is: "CMCC-YKPt-5G" , ID is: 0
+09-25 13:34:40.575 18632 18632 D SecurityManagerNative: SecurityManagerNative v2.7.2.6 On 64bit PLATFORM With BORINGSSL
+09-25 13:34:40.579 18632 18632 I appproc : Enhanced Zygote ASLR: ENABLED! nice_name = zygote64
+09-25 13:34:40.579 18632 18632 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+09-25 13:34:40.582 18632 18632 D AndroidRuntime: CheckJNI is OFF
+09-25 13:34:40.583 18632 18632 D AndroidRuntime: addProductProperty: start
+09-25 13:34:40.627 18632 18632 I [saiv 1.1]: saiv_OnLoadJNI.cpp(38): _init: Version 1.1 Build # 3532
+09-25 13:34:40.627 18632 18632 I [saiv 1.1]: saiv_OnLoadJNI.cpp(43): _init: _init() was called
+09-25 13:34:40.647 18632 18632 I MLDAP   : ================================================
+09-25 13:34:40.647 18632 18632 I MLDAP   :  MLDAP_LIB v1.1.16
+09-25 13:34:40.647 18632 18632 I MLDAP   : ================================================
+09-25 13:34:40.697 18632 18632 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl
+09-25 13:34:40.726 18632 18632 D ICU     : No timezone override file found: /data/misc/zoneinfo/current/icu/icu_tzdata.dat
+09-25 13:34:40.746 18632 18632 I Radio-JNI: register_android_hardware_Radio DONE
+09-25 13:34:40.753 18632 18632 D ReflectionHelper: loadKlass() : caller=android.app.Activity.<clinit>:7555 <bottom of call stack> 
+09-25 13:34:40.753 18632 18632 D ReflectionHelper: Reflecting method.....  class <onScreenChanged>
+09-25 13:34:40.754 18632 18632 E SemAffinityControl: SemAffinityControl: registerfunction enter
+09-25 13:34:40.768 18632 18632 D AndroidRuntime: Calling main entry com.android.commands.input.Input
+09-25 13:34:40.769 18632 18632 I Input   : injectKeyEvent: KeyEvent { action=ACTION_DOWN, keyCode=KEYCODE_MEDIA_PLAY, scanCode=0, metaState=0, flags=0x0, repeatCount=0, eventTime=30341032, downTime=30341032, deviceId=-1, displayId=0, source=0x101 }
+09-25 13:34:40.769  3714 13913 D InputDispatcher: Inject key (18632): action=0, eventTime=30341032000000
+09-25 13:34:40.771  3714  4024 I InputDispatcher: Delivering key to (4657): action: 0x0 (0)
+09-25 13:34:40.771  4657  4657 D ViewRootImpl@64dcb41[StatusBar]: ViewPostImeInputStage processKey 0
+09-25 13:34:40.772  3714  4321 D MediaSessionService: Sending media key to com.takahashirinta.ncrust/androidx.media3.session.id.
+09-25 13:34:40.772 18632 18632 I Input   : injectKeyEvent: KeyEvent { action=ACTION_UP, keyCode=KEYCODE_MEDIA_PLAY, scanCode=0, metaState=0, flags=0x0, repeatCount=0, eventTime=30341032, downTime=30341032, deviceId=-1, displayId=0, source=0x101 }
+09-25 13:34:40.772  3714 19519 D InputDispatcher: Inject key (18632): action=1, eventTime=30341032000000
+09-25 13:34:40.773  3714  4024 I InputDispatcher: Delivering key to (4657): action: 0x1 (0)
+09-25 13:34:40.773  4657  4657 D ViewRootImpl@64dcb41[StatusBar]: ViewPostImeInputStage processKey 1
+09-25 13:34:40.774  3714 19461 D MediaSessionService: Sending media key to com.takahashirinta.ncrust/androidx.media3.session.id.
+09-25 13:34:40.774 18632 18632 D AndroidRuntime: Shutting down VM
+09-25 13:34:40.790 18632 18632 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl::~AcsAndroidVirtualDisplayIntfImpl - Enter
+09-25 13:34:40.790 18632 18632 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl::~AcsAndroidVirtualDisplayIntfImpl - Enter2
+09-25 13:34:40.790 18632 18632 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl::~AcsAndroidVirtualDisplayIntfImpl - mSource2
+09-25 13:34:40.790 18632 18632 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl::~AcsAndroidVirtualDisplayIntfImpl - Exit
+09-25 13:34:41.338  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:34:41.338  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:34:41.338  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:34:42.339  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:34:42.339  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:34:42.339  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:34:42.430  3714  3724 D BatteryService: !@BatteryListener : batteryPropertiesChanged!
+09-25 13:34:42.430  3714  3724 D BatteryService: level:93, scale:100, status:2, health:2, present:true, voltage: 4244, temperature: 302, technology: Li-ion, AC powered:false, USB powered:true, POGO powered:false, Wireless powered:false, icon:17303690, invalid charger:0, maxChargingCurrent:0, maxChargingVoltage:0, chargeCounter:0
+09-25 13:34:42.431  3714  3724 D BatteryService: online:4, current avg:93, charge type:1, power sharing:false, high voltage charger:false, capacity:280000, batterySWSelfDischarging:false, misc_event:0, current_now:220
+09-25 13:34:42.431  3714  3714 D BatteryService: Sending ACTION_BATTERY_CHANGED.
+09-25 13:34:42.436  3714  3714 V UiModeManager: updateLocked: null action, mDockState=0, category=null
+09-25 13:34:42.437  3714  3714 D UiModeManager: updateConfigurationLocked: mDockState=0; mCarMode=false; mNightMode=1; uiMode=17
+09-25 13:34:42.439  3714  3714 D GameManagerService: new battery level: 93
+09-25 13:34:42.442  4657  4657 D KeyguardUpdateMonitor: received broadcast android.intent.action.BATTERY_CHANGED
+09-25 13:34:42.443  4657  4657 D KeyguardUpdateMonitor: handleBatteryUpdate
+09-25 13:34:42.446  4657  4657 D PowerUI : showing power sharing dialogfalse
+09-25 13:34:42.446  4657  4657 D PowerUI : priorPlugType = 2 mPlugType =  2
+09-25 13:34:42.449  4657  4657 D PowerUI.Notification: showChargingNotice oldChargingType : 1 currentChargingType : 1 oldChargingTime : 1394000 mChargingTime : 1394000
+09-25 13:34:42.449  4657  4657 D PowerUI.Notification: There is no change about charging status, so return!
+09-25 13:34:42.453  4657  4657 D BatteryMeterDrawable: isSomethingChanged - false
+09-25 13:34:42.455  4657  4657 D BatteryMeterDrawable: isSomethingChanged - false
+09-25 13:34:42.456  4602  4602 V HeadsetService: HeadsetService - Received Intent.ACTION_BATTERY_CHANGED
+09-25 13:34:42.457  4602  5595 D HeadsetStateMachine: Disconnected process message: 10, size: 0
+09-25 13:34:42.459  4657  4657 D Tile.FlashlightTile: ACTION_BATTERY_CHANGED - Level :: 93, emEnabled :: false
+09-25 13:34:42.505  3714  4066 D MediaSessionRecord: setPlaybackState oldState:3, newState:3, packageName:com.takahashirinta.ncrust
+09-25 13:34:42.506  4657  4910 D vol.MediaSessions: onPlaybackStateChanged com.takahashirinta.ncrust STATE_PLAYING PlaybackState {state=3, position=63688, buffered position=82176, speed=1.0, updated=84251038, actions=7340031, custom actions=[], active item id=0, error=null}
+09-25 13:34:42.507  4602  5598 V Avrcp   : updatePlayPauseState, old=3, state=3, currentPosMs=63688
+09-25 13:34:42.507  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:42.507  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:42.507  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:42.507  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:42.775  3714 19461 D ApplicationPolicy: isStatusBarNotificationAllowedAsUser: packageName = com.takahashirinta.ncrust,userId = 0
+09-25 13:34:42.776 15610 15610 D NcrustLyricNotify: re-post on lyric line change: 那模糊的人
+09-25 13:34:42.783 15610 15610 D NcrustMediaPanel: keys=[TITLE,ARTIST,DURATION,DISPLAY_SUBTITLE] title=那模糊的人 artist=屋顶 · 周杰伦 displaySubtitle='' line=那模糊的人 lastAt=84251310 gate[post=80 defer=8 same=2 notStarted=0] notifyBuilds=98
+09-25 13:34:42.783  4602  4602 D Avrcp   : setNPLData [MediaSession.QueueItem {Description=那模糊的人, 屋顶 · 周杰伦, null, Id=0 }, MediaSession.QueueItem {Description=晴天, 周杰伦, null, Id=1 }]
+09-25 13:34:42.786  4657  4910 D vol.MediaSessions: onQueueChanged com.takahashirinta.ncrust [MediaSession.QueueItem {Description=那模糊的人, 屋顶 · 周杰伦, null, Id=0 }, MediaSession.QueueItem {Description=晴天, 周杰伦, null, Id=1 }]
+09-25 13:34:42.786  4657  4910 D vol.MediaSessions: onMetadataChanged com.takahashirinta.ncrust 那模糊的人, 屋顶 · 周杰伦, null
+09-25 13:34:42.788  4602  5598 V Avrcp   : updateMetadata
+09-25 13:34:42.788  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:42.788  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:43.283  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:43.284  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:43.284  4602  5598 W Avrcp   : ##event was not sent##
+09-25 13:34:43.339  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:34:43.339  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:34:43.339  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:34:43.516  3714  4089 D WifiStateMachine: Current network is: "CMCC-YKPt-5G" , ID is: 0
+09-25 13:34:44.214  5733  5733 D io_stats: !@   8,0 r 101958 4006584 w 134889 9932988 d 12003 7397244 f 46678 46678 iot 203090 137820 th 61440 0 0 pt 0 inp 0 0 30344.477
+09-25 13:34:44.339  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:34:44.339  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:34:44.339  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:34:44.805  3714  6070 D ApplicationPolicy: isStatusBarNotificationAllowedAsUser: packageName = com.takahashirinta.ncrust,userId = 0
+09-25 13:34:44.806 15610 15610 D NcrustLyricNotify: re-post on lyric line change: 我们有同样的默契
+09-25 13:34:44.815 15610 15610 D NcrustMediaPanel: keys=[TITLE,ARTIST,DURATION,DISPLAY_SUBTITLE] title=我们有同样的默契 artist=屋顶 · 周杰伦 displaySubtitle='' line=我们有同样的默契 lastAt=84253340 gate[post=81 defer=8 same=2 notStarted=0] notifyBuilds=99
+09-25 13:34:44.822  4602  4602 D Avrcp   : setNPLData [MediaSession.QueueItem {Description=我们有同样的默契, 屋顶 · 周杰伦, null, Id=0 }, MediaSession.QueueItem {Description=晴天, 周杰伦, null, Id=1 }]
+09-25 13:34:44.825  4602  5598 V Avrcp   : updateMetadata
+09-25 13:34:44.825  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:44.825  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:34:44.827  4657  4910 D vol.MediaSessions: onQueueChanged com.takahashirinta.ncrust [MediaSession.QueueItem {Description=我们有同样的默契, 屋顶 · 周杰伦, null, Id=0 }, MediaSession.QueueItem {Description=晴天, 周杰伦, null, Id=1 }]
+09-25 13:34:44.828  4657  4910 D vol.MediaSessions: onMetadataChanged com.takahashirinta.ncrust 我们有同样的默契, 屋顶 · 周杰伦, null

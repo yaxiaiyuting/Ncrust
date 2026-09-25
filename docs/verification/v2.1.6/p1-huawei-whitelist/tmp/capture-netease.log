@@ -1,0 +1,159 @@
+############ capture: netease (com.netease.cloudmusic)  开始时间 2026-09-25T13:02:30+08:00  设备 WVQ6R22124000968
+$ adb -s WVQ6R22124000968 shell am force-stop <四个候选应用>   # 清场，避免别的会话干扰
+$ adb -s WVQ6R22124000968 logcat -c
+$ adb -s WVQ6R22124000968 shell am start -n com.netease.cloudmusic/.activity.IconChangeDefaultAlias
+Starting: Intent { cmp=com.netease.cloudmusic/.activity.IconChangeDefaultAlias }
+exit=0
+$ adb -s WVQ6R22124000968 shell input keyevent 126   # KEYCODE_MEDIA_PLAY
+exit=0
+## 轮询等待 state=3（最多 60s）
+  t=3s  state=state=2
+  t=6s  state=state=6
+  t=9s  state=state=3
+## 最终 state = state=3
+
+################ (1) dumpsys media_session   [2026-09-25T13:02:48+08:00]
+$ adb -s WVQ6R22124000968 shell dumpsys media_session
+  -> dumpsys-media-session-netease.txt exit=0  bytes=2866
+  -- Media button session 原文:
+  Media button session is com.netease.cloudmusic/MediaSession (userId=0)
+  -- 本包会话原文:
+    from com.huawei.hwbluetoothpencilmanager
+  Last MediaButtonReceiver: MBR {pi=PendingIntent{71ee3d4: PendingIntentRecord{d3722f9 com.netease.cloudmusic broadcastIntent}}, type=1}
+  Media button session is com.netease.cloudmusic/MediaSession (userId=0)
+  Sessions Stack - have 1 sessions:
+    MediaSession com.netease.cloudmusic/MediaSession (userId=0)
+      ownerPid=25559, ownerUid=10235, userId=0
+      package=com.netease.cloudmusic
+      launchIntent=PendingIntent{ec34017: PendingIntentRecord{f737c04 com.netease.cloudmusic startActivity}}
+      mediaButtonReceiver=MBR {pi=PendingIntent{71ee3d4: PendingIntentRecord{d3722f9 com.netease.cloudmusic broadcastIntent}}, type=1}
+      active=true
+      flags=7
+      rating type=1
+      controllers: 4
+      state=PlaybackState {state=3, position=0, buffered position=0, speed=1.0, updated=754050, actions=822, custom actions=[Action:mName='收藏, mIcon=2131239514, mExtras=Bundle[mParcelledData.dataSize=72], Action:mName='播放模式, mIcon=2131239574, mExtras=Bundle[mParcelledData.dataSize=72], Action:mName='播放倍速, mIcon=2131238673, mExtras=Bundle[mParcelledData.dataSize=72]], active item id=-1, error=null}
+      audioAttrs=AudioAttributes: usage=USAGE_MEDIA content=CONTENT_TYPE_UNKNOWN flags=0x800 tags= bundle=null
+      volumeType=1, controlType=2, max=0, current=0
+      metadata: size=11, description=Scarborough Fair / Canticle (斯卡布罗集市), Simon & Garfunkel, null
+      queueTitle=null, size=0
+Remote stack size:0
+
+MigrateIn stack size:0
+
+MigrateOut stack size:0
+  -- uid/packages 行:
+  uid=10235 packages=com.netease.cloudmusic 
+
+################ (2) dumpsys notification --noredact  [2026-09-25T13:02:48+08:00]
+$ adb -s WVQ6R22124000968 shell dumpsys notification --noredact
+  -> dumpsys-notification-netease.txt exit=0 bytes=312426
+  -- 本包通知（含 MediaStyle/style 关键字）:
+525:      AppSettings: com.netease.cloudmusic (10235)
+1288:      key='com.netease.cloudmusic',
+
+################ (3) logcat -d 过滤  [2026-09-25T13:02:48+08:00]
+$ adb -s WVQ6R22124000968 logcat -d | grep -iE "HwMediaSession|MediaControlUtils|media white list|Media button session|MediaSessionService"
+  -> logcat-hwmediasession-netease.txt 行数=27
+09-25 13:02:44.874  1639  3987 I MediaControlUtils: checkController is true
+09-25 13:02:44.874  1639  3987 I HwMediaSessionServiceEx: player infoList size: 1
+09-25 13:02:44.874  1639  3987 V HwMediaSessionServiceEx: getPlayerInfo, playerId: 147394611,pkgname: com.netease.cloudmusic
+09-25 13:02:44.877  1639  3987 I HwMediaSessionServiceEx: image origin height 422 width 422 compressImageToByte bitmap size: 99292, quality100
+09-25 13:02:44.877  1639  3987 I HwMediaSessionServiceEx:  playbackSpeed: 1.0
+09-25 13:02:44.882  1639  3987 I MediaControlUtils: checkController is true
+09-25 13:02:44.882  1639  3987 I HwMediaSessionServiceEx: player infoList size: 1
+09-25 13:02:44.882  1639  3987 V HwMediaSessionServiceEx: getPlayerInfo, playerId: 147394611,pkgname: com.netease.cloudmusic
+09-25 13:02:44.886  1639  3987 I HwMediaSessionServiceEx: image origin height 422 width 422 compressImageToByte bitmap size: 99292, quality100
+09-25 13:02:44.886  1639  3987 I HwMediaSessionServiceEx:  playbackSpeed: 1.0
+09-25 13:02:44.904  1639  3987 I MediaControlUtils: checkController is true
+09-25 13:02:44.905  1639  3987 I HwMediaSessionServiceEx: player infoList size: 1
+09-25 13:02:44.905  1639  3987 V HwMediaSessionServiceEx: getPlayerInfo, playerId: 147394611,pkgname: com.netease.cloudmusic
+09-25 13:02:44.907  1639  3987 I HwMediaSessionServiceEx: image origin height 422 width 422 compressImageToByte bitmap size: 99292, quality100
+09-25 13:02:44.907  1639  3987 I HwMediaSessionServiceEx:  playbackSpeed: 1.0
+09-25 13:02:45.106  1639  3987 I MediaControlUtils: checkController is true
+09-25 13:02:45.106  1639  3987 I HwMediaSessionServiceEx: player infoList size: 1
+09-25 13:02:45.106  1639  3987 V HwMediaSessionServiceEx: getPlayerInfo, playerId: 147394611,pkgname: com.netease.cloudmusic
+09-25 13:02:45.109  1639  3987 I HwMediaSessionServiceEx: image origin height 422 width 422 compressImageToByte bitmap size: 99292, quality100
+09-25 13:02:45.109  1639  3987 I HwMediaSessionServiceEx:  playbackSpeed: 1.0
+09-25 13:02:45.418  1639  1876 I HwMediaSessionServiceEx: onMetadataChanged begin
+09-25 13:02:45.418  1639  1876 I HwMediaSessionServiceEx: getTitleAndArtist, title: Scarborough Fair / Canticle (斯卡布罗集市), artist: Simon & Garfunkel, playerId: 147394611
+09-25 13:02:45.441  1639  1876 I HwMediaSessionServiceEx: image origin height 422 width 422 compressImageToByte bitmap size: 99292, quality100
+09-25 13:02:45.447  1639  1876 V HwMediaSessionServiceEx: on event EventType: 3, playerId: 147394611
+09-25 13:02:45.448  1639  1876 V HwMediaSessionServiceEx: on event EventType: 3, playerId: 147394611
+09-25 13:02:45.448  1639  1876 V HwMediaSessionServiceEx: on event EventType: 11, playerId: 147394611
+09-25 13:02:45.448  1639  1876 V HwMediaSessionServiceEx: on event EventType: 11, playerId: 147394611
+
+################ (4) settings list global | grep -i media_button_receiver  [2026-09-25T13:02:48+08:00]
+$ adb -s WVQ6R22124000968 shell settings list global | grep -i media_button_receiver
+exit=1  （exit=1 表示无该设置项）
+$ adb -s WVQ6R22124000968 shell settings list global | grep -iE "media|music"
+awareness_ca_com.android.mediacenter=1
+awareness_ca_com.huawei.music=1
+car_dock_sound=/system/media/audio/ui/Dock.ogg
+car_undock_sound=/system/media/audio/ui/Undock.ogg
+charging_started_sound=/system/media/audio/ui/ChargingStarted.ogg
+desk_dock_sound=/system/media/audio/ui/Dock.ogg
+desk_undock_sound=/system/media/audio/ui/Undock.ogg
+dock_audio_media_enabled=1
+huawei_music=1
+huawei_music_old=1
+lock_sound=/system/media/audio/ui/Lock.ogg
+low_battery_sound=/system/media/audio/ui/LowBattery.ogg
+trusted_sound=/system/media/audio/ui/Trusted.ogg
+unlock_sound=/system/media/audio/ui/Unlock.ogg
+wireless_charging_started_sound=/system/media/audio/ui/WirelessChargingStarted.ogg
+
+################ (5) 控制中心 uiautomator + 截图  [2026-09-25T13:02:48+08:00]
+$ adb -s WVQ6R22124000968 shell cmd statusbar expand-settings
+exit=0
+$ adb -s WVQ6R22124000968 shell uiautomator dump /sdcard/ui.xml
+UI hierchary dumped to: /sdcard/ui.xml
+exit=0
+/sdcard/ui.xml: 1 file pulled, 0 skipped. 14.2 MB/s (76097 bytes in 0.005s)
+  -> uiautomator-netease.xml bytes=76097
+  -- 媒体卡文本节点（content-desc / text，过滤空值）:
+content-desc="查看已配对的设备"
+content-desc="查看 WLAN 列表"
+content-desc="打开设置。"
+content-desc="多屏协同"
+content-desc="关闭"
+content-desc="华为分享"
+content-desc="截屏"
+content-desc="进入超级终端页面"
+content-desc="静音"
+content-desc="开启性能模式"
+content-desc="蓝牙开启。"
+content-desc="蓝牙, 未连接。"
+content-desc="屏幕亮度"
+content-desc="切换播放设备"
+content-desc="上一首"
+content-desc="手机蹲方魂-nova 13未协同"
+content-desc="随行WiFi 3 Pro, 离线, 设备卡片"
+content-desc="位置信息"
+content-desc="下一首"
+content-desc="页面编辑"
+content-desc="暂停"
+content-desc="展开快捷设置"
+content-desc="振铃器静音。"
+content-desc="正在充电，已完成百分之100。"
+content-desc="自动旋转"
+content-desc="FreeBuds Pro, 未连接, 设备卡片"
+content-desc="The Final Countdown Europe"
+content-desc="WLAN 信号强度满格。"
+content-desc="WLAN, CMCC-YKPt-5G, WLAN 信号强度满格。"
+text=" "
+text="100"
+text="超级终端"
+text="蹲方魂-nova 13"
+text="控制中心"
+text="蓝牙"
+text="离线"
+text="屏幕亮度"
+text="随行WiFi 3 Pro"
+text="未连接"
+text="暂无可用的场景，马上去添加"
+$ adb -s WVQ6R22124000968 exec-out screencap -p > screenshots/netease-controlcenter.png
+  -> screenshots/netease-controlcenter.png bytes=625623
+$ adb -s WVQ6R22124000968 shell cmd statusbar collapse
+
+## 结束：force-stop com.netease.cloudmusic
+############ capture 结束 2026-09-25T13:02:54+08:00

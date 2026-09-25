@@ -1,0 +1,934 @@
+--------- beginning of system
+09-25 13:16:42.627  3714  3961 D SamsungAlarmManager: Expired : 4
+09-25 13:16:42.628  3714  3961 I SamsungAlarmManager: setLocked to kernel - T:2 / 20260925T131643, SetElapsed=83172247, nowELAPSED=83171161
+09-25 13:16:42.628  3714  3961 V SamsungAlarmManager: Sending to uid : 1000 listener=android.app.AlarmManager$ListenerWrapper@b82253 alarm=Alarm{62b6320 type 2 when 83168161 android}
+09-25 13:16:42.628  3714  3961 V SamsungAlarmManager: Sending to uid : 1000 listener=android.app.AlarmManager$ListenerWrapper@80e1790 alarm=Alarm{36d24d9 type 2 when 83171161 android}
+09-25 13:16:42.630  3714  3714 D SamsungAlarmManager: setInexact Listener (T:2/F:0/AC:false) 20260925T135532 - CU:1000/CP:3714
+--------- beginning of main
+09-25 13:16:42.635  3714  3714 D CompatibilityInfo: mCompatibilityFlags - 0
+09-25 13:16:42.635  3714  3714 D CompatibilityInfo: applicationDensity - 640
+09-25 13:16:42.635  3714  3714 D CompatibilityInfo: applicationScale - 1.0
+09-25 13:16:42.638  3714  3714 D SamsungAlarmManager: setInexact Listener (T:2/F:0/AC:false) 20260925T151101 - CU:1000/CP:3714
+09-25 13:16:42.641  3714  3714 I BackgroundCompactionService: onStart. jobID=799
+09-25 13:16:42.641  3714  3714 I BackgroundCompactionService: compact_exception
+09-25 13:16:42.641  3714  3714 I BackgroundCompactionService: onStart done. jobID=799
+09-25 13:16:42.832 14511 14511 D SecurityManagerNative: SecurityManagerNative v2.7.2.6 On 64bit PLATFORM With BORINGSSL
+09-25 13:16:42.836 14511 14511 I appproc : Enhanced Zygote ASLR: ENABLED! nice_name = zygote64
+09-25 13:16:42.836 14511 14511 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+09-25 13:16:42.838 14511 14511 D AndroidRuntime: CheckJNI is OFF
+09-25 13:16:42.840 14511 14511 D AndroidRuntime: addProductProperty: start
+09-25 13:16:42.888 14511 14511 I [saiv 1.1]: saiv_OnLoadJNI.cpp(38): _init: Version 1.1 Build # 3532
+09-25 13:16:42.888 14511 14511 I [saiv 1.1]: saiv_OnLoadJNI.cpp(43): _init: _init() was called
+09-25 13:16:42.908 14511 14511 I MLDAP   : ================================================
+09-25 13:16:42.908 14511 14511 I MLDAP   :  MLDAP_LIB v1.1.16
+09-25 13:16:42.908 14511 14511 I MLDAP   : ================================================
+09-25 13:16:42.934  3714  4321 D MediaSessionRecord: setPlaybackState oldState:3, newState:3, packageName:com.takahashirinta.ncrust
+09-25 13:16:42.934  4602  5598 V Avrcp   : updatePlayPauseState, old=3, state=3, currentPosMs=34450
+09-25 13:16:42.934  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:42.934  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:42.934  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:42.934  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:42.935  4657  4910 D vol.MediaSessions: onPlaybackStateChanged com.takahashirinta.ncrust STATE_PLAYING PlaybackState {state=3, position=34450, buffered position=269746, speed=1.0, updated=83171467, actions=822, custom actions=[], active item id=-1, error=null}
+09-25 13:16:42.958 14511 14511 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl
+09-25 13:16:42.986 14511 14511 D ICU     : No timezone override file found: /data/misc/zoneinfo/current/icu/icu_tzdata.dat
+09-25 13:16:43.006 14511 14511 I Radio-JNI: register_android_hardware_Radio DONE
+09-25 13:16:43.013 14511 14511 D ReflectionHelper: loadKlass() : caller=android.app.Activity.<clinit>:7555 <bottom of call stack> 
+09-25 13:16:43.013 14511 14511 D ReflectionHelper: Reflecting method.....  class <onScreenChanged>
+09-25 13:16:43.014 14511 14511 E SemAffinityControl: SemAffinityControl: registerfunction enter
+09-25 13:16:43.026 14511 14511 D AndroidRuntime: Calling main entry com.android.commands.input.Input
+09-25 13:16:43.026 14511 14511 I Input   : injectKeyEvent: KeyEvent { action=ACTION_DOWN, keyCode=KEYCODE_MEDIA_PLAY, scanCode=0, metaState=0, flags=0x0, repeatCount=0, eventTime=29263289, downTime=29263289, deviceId=-1, displayId=0, source=0x101 }
+09-25 13:16:43.027  3714 19519 D InputDispatcher: Inject key (14511): action=0, eventTime=29263289000000
+09-25 13:16:43.028  3714  4024 I InputDispatcher: Delivering key to (4657): action: 0x0 (0)
+09-25 13:16:43.028  4657  4657 D ViewRootImpl@64dcb41[StatusBar]: ViewPostImeInputStage processKey 0
+09-25 13:16:43.029  3714  4060 D MediaSessionService: Sending media key to com.takahashirinta.ncrust/NcrustSession
+09-25 13:16:43.030 14511 14511 I Input   : injectKeyEvent: KeyEvent { action=ACTION_UP, keyCode=KEYCODE_MEDIA_PLAY, scanCode=0, metaState=0, flags=0x0, repeatCount=0, eventTime=29263289, downTime=29263289, deviceId=-1, displayId=0, source=0x101 }
+09-25 13:16:43.030  3714 27900 D InputDispatcher: Inject key (14511): action=1, eventTime=29263289000000
+09-25 13:16:43.031  3714  4024 I InputDispatcher: Delivering key to (4657): action: 0x1 (0)
+09-25 13:16:43.031  4657  4657 D ViewRootImpl@64dcb41[StatusBar]: ViewPostImeInputStage processKey 1
+09-25 13:16:43.031  3714  3724 D MediaSessionService: Sending media key to com.takahashirinta.ncrust/NcrustSession
+09-25 13:16:43.032 14511 14511 D AndroidRuntime: Shutting down VM
+09-25 13:16:43.035  3714  6959 D SSRM:t  : SIOP:: AP = 380, PST = 382 (W:12), CP = 288, CUR = 61, LCD = 255
+09-25 13:16:43.049 14511 14511 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl::~AcsAndroidVirtualDisplayIntfImpl - Enter
+09-25 13:16:43.049 14511 14511 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl::~AcsAndroidVirtualDisplayIntfImpl - Enter2
+09-25 13:16:43.049 14511 14511 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl::~AcsAndroidVirtualDisplayIntfImpl - mSource2
+09-25 13:16:43.049 14511 14511 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl::~AcsAndroidVirtualDisplayIntfImpl - Exit
+09-25 13:16:43.058  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:16:43.058  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:16:43.058  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:16:43.380  4657  5393 D TileLifecycleManager: Unbinding service Intent { cmp=com.android.settings/com.samsung.android.settings.qstile.PowerSavingTile launchParam=MultiScreenLaunchParams { mDisplayId=0 mFlags=0 } (has extras) } UserHandle{0}
+09-25 13:16:43.388  5733  5733 D io_stats: !@   8,0 r 100512 3936108 w 129789 9742716 d 11615 7308576 f 43763 43763 iot 197370 134605 th 61440 0 0 pt 0 inp 0 0 29263.650
+09-25 13:16:43.713  3714  3961 D SamsungAlarmManager: Expired : 4
+09-25 13:16:43.714  3714  3961 I SamsungAlarmManager: setLocked to kernel - T:2 / 20260925T132629, SetElapsed=83758012, nowELAPSED=83172248
+09-25 13:16:43.714  3714  3961 I SamsungAlarmManager: setLocked to kernel - T:3 / 20260925T131700, SetElapsed=83188534, nowELAPSED=83172248
+09-25 13:16:43.715  3714  3961 V SamsungAlarmManager: Sending to uid : 10038 action=null alarm=Alarm{6ae7638 type 0 when 1790313403714 com.sec.spp.push}
+09-25 13:16:43.721  3714  3728 D MountService: getExternalStorageMountMode : 1
+09-25 13:16:43.721  3714  3728 D MountService: getExternalStorageMountMode : 3
+09-25 13:16:43.722  3714  3728 D MountService: getExternalStorageMountMode : final mountMode=1, uid : 10038, packageName : com.sec.spp.push
+09-25 13:16:43.764 14521 14521 E Zygote  : v2
+09-25 13:16:43.764 14521 14521 I libpersona: KNOX_SDCARD checking this for 10038
+09-25 13:16:43.764 14521 14521 I libpersona: KNOX_SDCARD not a persona
+09-25 13:16:43.766  3714  3728 I ActivityManager: Start proc 14521:com.sec.spp.push:RemoteNotiProcess/u0a38 for broadcast com.sec.spp.push/.notisvc.alarm.AlarmEventManager
+09-25 13:16:43.767 14521 14521 E Zygote  : accessInfo : 0
+09-25 13:16:43.768 14521 14521 W SELinux : SELinux selinux_android_compute_policy_index : Policy Index[2],  Con:u:r:zygote:s0 RAM:SEPF_SECMOBILE_7.0_0010, [-1 -1 -1 -1 0 1]
+09-25 13:16:43.770 14521 14521 I SELinux : SELinux: seapp_context_lookup: seinfo=samsung, level=s0:c512,c768, pkgname=com.sec.spp.push:RemoteNotiProcess 
+09-25 13:16:43.813 14521 14521 D TimaKeyStoreProvider: TimaKeyStore is not enabled: cannot add TimaSignature Service and generateKeyPair Service
+09-25 13:16:43.818  3714 19461 D CompatibilityInfo: mCompatibilityFlags - 0
+09-25 13:16:43.819  3714 19461 D CompatibilityInfo: applicationDensity - 640
+09-25 13:16:43.819  3714 19461 D CompatibilityInfo: applicationScale - 1.0
+09-25 13:16:43.819  3714 19461 I ActivityManager: DSS on for com.sec.spp.push and scale is 1.0
+09-25 13:16:43.820  3714 19461 D CompatibilityInfo: mCompatibilityFlags - 0
+09-25 13:16:43.820  3714 19461 D CompatibilityInfo: applicationDensity - 640
+09-25 13:16:43.820  3714 19461 D CompatibilityInfo: applicationScale - 1.0
+09-25 13:16:43.828  3714 19461 D CompatibilityInfo: mCompatibilityFlags - 0
+09-25 13:16:43.828  3714 19461 D CompatibilityInfo: applicationDensity - 640
+09-25 13:16:43.828  3714 19461 D CompatibilityInfo: applicationScale - 1.0
+09-25 13:16:43.849 14521 14521 W System  : ClassLoader referenced unknown path: /system/priv-app/SPPPushClient_Prod/lib/arm64
+09-25 13:16:43.874 14521 14521 D SPPClientService: Create
+09-25 13:16:43.885 14521 14536 D SPPClientService: Create
+09-25 13:16:43.885 14521 14536 E SPPClientService: ShipBuild Binary : True
+09-25 13:16:43.895  3714  4525 D CompatibilityInfo: mCompatibilityFlags - 0
+09-25 13:16:43.895  3714  4525 D CompatibilityInfo: applicationDensity - 640
+09-25 13:16:43.895  3714  4525 D CompatibilityInfo: applicationScale - 1.0
+09-25 13:16:43.908  3714  4060 D MediaSessionRecord: setPlaybackState oldState:3, newState:3, packageName:com.takahashirinta.ncrust
+09-25 13:16:43.909  4657  4910 D vol.MediaSessions: onPlaybackStateChanged com.takahashirinta.ncrust STATE_PLAYING PlaybackState {state=3, position=35423, buffered position=51083, speed=1.0, updated=83172441, actions=7339999, custom actions=[], active item id=0, error=null}
+09-25 13:16:43.939  3714  4525 D MediaSessionRecord: setPlaybackState oldState:3, newState:3, packageName:com.takahashirinta.ncrust
+09-25 13:16:43.941  4657  4910 D vol.MediaSessions: onPlaybackStateChanged com.takahashirinta.ncrust STATE_PLAYING PlaybackState {state=3, position=35460, buffered position=269746, speed=1.0, updated=83172472, actions=822, custom actions=[], active item id=-1, error=null}
+09-25 13:16:43.942  4602  5598 V Avrcp   : updatePlayPauseState, old=3, state=3, currentPosMs=35460
+09-25 13:16:43.942  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:43.942  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:43.942  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:43.942  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:43.971 14521 14539 E LNoti   : [h] null
+09-25 13:16:44.003  3714  4080 D ConnectivityService: filterNetworkStateForUid() uid: 10038 networkInfo: [type: WIFI[] - WIFI, state: CONNECTED/CONNECTED, reason: (unspecified), extra: "CMCC-YKPt-5G", failover: false, available: true, roaming: false, metered: false]
+09-25 13:16:44.004  3714  6068 D ConnectivityService: filterNetworkStateForUid() uid: 10038 networkInfo: [type: WIFI[] - WIFI, state: CONNECTED/CONNECTED, reason: (unspecified), extra: "CMCC-YKPt-5G", failover: false, available: true, roaming: false, metered: false]
+09-25 13:16:44.009 14521 14539 D NetworkSecurityConfig: No Network Security Config specified, using platform default
+09-25 13:16:44.019 14521 14539 I System.out: (HTTPLog)-Static: HongbaoModeServiceAPI: getService class android.os.ServiceManager
+09-25 13:16:44.059  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:16:44.059  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:16:44.059  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:16:44.082 14521 14539 I System.out: (HTTPLog)-Static: isSBSettingEnabled false
+09-25 13:16:44.083 14521 14539 I System.out: (HTTPLog)-Static: isSBSettingEnabled false
+09-25 13:16:44.085  3220  3703 D EnterpriseController: netId is 0
+09-25 13:16:44.086  3220  3703 D Netd    : getNetworkForDns: using netid 506 for uid 10038
+09-25 13:16:44.086  3220  3703 D DnsProxyListener: DNSDBG::dns addrinfo af 0
+09-25 13:16:44.287 14521 14539 E LNoti   : [a] java.net.UnknownHostException: Unable to resolve host "ew1.reg.bigdata.ssp.samsung.com": No address associated with hostname
+09-25 13:16:44.287 14521 14539 E LNoti   : 	at java.net.Inet6AddressImpl.lookupHostByName(Inet6AddressImpl.java:125)
+09-25 13:16:44.287 14521 14539 E LNoti   : 	at java.net.Inet6AddressImpl.lookupAllHostAddr(Inet6AddressImpl.java:74)
+09-25 13:16:44.287 14521 14539 E LNoti   : 	at java.net.InetAddress.getAllByName(InetAddress.java:752)
+09-25 13:16:44.287 14521 14539 E LNoti   : 	at com.android.okhttp.internal.Network$1.resolveInetAddresses(Network.java:29)
+09-25 13:16:44.287 14521 14539 E LNoti   : 	at com.android.okhttp.internal.http.RouteSelector.resetNextInetSocketAddress(RouteSelector.java:209)
+09-25 13:16:44.287 14521 14539 E LNoti   : 	at com.android.okhttp.internal.http.RouteSelector.nextProxy(RouteSelector.java:163)
+09-25 13:16:44.287 14521 14539 E LNoti   : 	at com.android.okhttp.internal.http.RouteSelector.next(RouteSelector.java:105)
+09-25 13:16:44.287 14521 14539 E LNoti   : 	at com.android.okhttp.internal.http.HttpEngine.createNextConnection(HttpEngine.java:489)
+09-25 13:16:44.287 14521 14539 E LNoti   : 	at com.android.okhttp.internal.http.HttpEngine.connect(HttpEngine.java:465)
+09-25 13:16:44.287 14521 14539 E LNoti   : 	at com.android.okhttp.internal.http.HttpEngine.sendRequest(HttpEngine.java:371)
+09-25 13:16:44.287 14521 14539 E LNoti   : 	at com.android.okhttp.internal.huc.HttpURLConnectionImpl.execute(HttpURLConnectionImpl.java:503)
+09-25 13:16:44.287 14521 14539 E LNoti   : 	at com.android.okhttp.internal.huc.HttpURLConnectionImpl.connect(HttpURLConnectionImpl.java:130)
+09-25 13:16:44.287 14521 14539 E LNoti   : 	at com.android.okhttp.internal.huc.DelegatingHttpsURLConnection.connect(DelegatingHttpsURLConnection.java:89)
+09-25 13:16:44.287 14521 14539 E LNoti   : 	at com.android.okhttp.internal.huc.HttpsURLConnectionImpl.connect(HttpsURLConnectionImpl.java)
+09-25 13:16:44.287 14521 14539 E LNoti   : 	at com.sec.spp.push.notisvc.d.a.b(Unknown Source)
+09-25 13:16:44.287 14521 14539 E LNoti   : 	at com.sec.spp.push.notisvc.d.a.a(Unknown Source)
+09-25 13:16:44.287 14521 14539 E LNoti   : 	at com.sec.spp.push.notisvc.registration.k.k(Unknown Source)
+09-25 13:16:44.287 14521 14539 E LNoti   : 	at com.sec.spp.push.notisvc.registration.RegistrationIntentService.onHandleIntent(Unknown Source)
+09-25 13:16:44.287 14521 14539 E LNoti   : 	at android.app.IntentService$ServiceHandler.handleMessage(IntentService.java:67)
+09-25 13:16:44.287 14521 14539 E LNoti   : 	at android.os.Handler.dispatchMessage(Handler.java:102)
+09-25 13:16:44.287 14521 14539 E LNoti   : 	at android.os.Looper.loop(Looper.java:154)
+09-25 13:16:44.287 14521 14539 E LNoti   : 	at android.os.HandlerThread.run(HandlerThread.java:61)
+09-25 13:16:44.287 14521 14539 E LNoti   : Caused by: android.system.GaiException: android_getaddrinfo failed: EAI_NODATA (No address associated with hostname)
+09-25 13:16:44.287 14521 14539 E LNoti   : 	at libcore.io.Posix.android_getaddrinfo(Native Method)
+09-25 13:16:44.287 14521 14539 E LNoti   : 	at libcore.io.ForwardingOs.android_getaddrinfo(ForwardingOs.java:55)
+09-25 13:16:44.287 14521 14539 E LNoti   : 	at java.net.Inet6AddressImpl.lookupHostByName(Inet6AddressImpl.java:106)
+09-25 13:16:44.287 14521 14539 E LNoti   : 	... 21 more
+09-25 13:16:44.289 14521 14539 E LNoti   : [a] HTTPs Transmit : UnknownHostException
+09-25 13:16:44.303  3714  5829 D SamsungAlarmManager: setExact Intent (T:0/F:1/AC:false) 20260925T141644 - CU:10038/CP:14521
+09-25 13:16:44.961  3714 19461 D ApplicationPolicy: isStatusBarNotificationAllowedAsUser: packageName = com.takahashirinta.ncrust,userId = 0
+09-25 13:16:44.962  9156  9156 D NcrustLyricNotify: re-post on lyric line change: 童年的荡秋千
+09-25 13:16:44.967  3714  4080 D MediaSessionRecord: setPlaybackState oldState:3, newState:3, packageName:com.takahashirinta.ncrust
+09-25 13:16:44.973  4602  5598 V Avrcp   : updatePlayPauseState, old=3, state=3, currentPosMs=36468
+09-25 13:16:44.974  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:44.974  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:44.974  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:44.974  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:44.975  4657  4910 D vol.MediaSessions: onPlaybackStateChanged com.takahashirinta.ncrust STATE_PLAYING PlaybackState {state=3, position=36468, buffered position=269746, speed=1.0, updated=83173500, actions=822, custom actions=[], active item id=-1, error=null}
+09-25 13:16:44.977  4657  4910 D vol.MediaSessions: onMetadataChanged com.takahashirinta.ncrust 童年的荡秋千, 晴天 · 周杰伦, null
+09-25 13:16:44.978  4602  5598 V Avrcp   : updateMetadata
+09-25 13:16:44.979  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:44.979  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:45.059  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:16:45.059  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:16:45.059  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:16:45.153  3714  4089 D WifiStateMachine: Current network is: "CMCC-YKPt-5G" , ID is: 0
+09-25 13:16:45.639  3714  6959 D TelephonyManager: getAllCellInfo : Caller (PID / UID / TID): 3714 / 1000 / 6959
+09-25 13:16:45.977  3714  4080 D MediaSessionRecord: setPlaybackState oldState:3, newState:3, packageName:com.takahashirinta.ncrust
+09-25 13:16:45.982  4602  5598 V Avrcp   : updatePlayPauseState, old=3, state=3, currentPosMs=37490
+09-25 13:16:45.982  4657  4910 D vol.MediaSessions: onPlaybackStateChanged com.takahashirinta.ncrust STATE_PLAYING PlaybackState {state=3, position=37490, buffered position=269746, speed=1.0, updated=83174510, actions=822, custom actions=[], active item id=-1, error=null}
+09-25 13:16:45.982  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:45.982  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:45.982  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:45.982  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:46.059  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:16:46.060  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:16:46.060  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:16:46.153  3220  3703 D EnterpriseController: netId is 0
+09-25 13:16:46.153  3220  3703 D Netd    : getNetworkForDns: using netid 506 for uid 10153
+09-25 13:16:46.153  3220  3703 D DnsProxyListener: DNSDBG::dns addrinfo af 0
+09-25 13:16:46.176  3714  4193 D ConnectivityService: updateCapabilities: oldCap = [ Transports: WIFI Capabilities: NOT_METERED&INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN&VALIDATED LinkUpBandwidth>=1048576Kbps LinkDnBandwidth>=1048576Kbps SignalStrength: -63], newCap = [ Transports: WIFI Capabilities: NOT_METERED&INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN LinkUpBandwidth>=1048576Kbps LinkDnBandwidth>=1048576Kbps SignalStrength: -66]
+09-25 13:16:46.177  3714  4193 D ConnectivityService: rematching NetworkAgentInfo [WIFI () - 506]
+09-25 13:16:46.177  3714  4193 D ConnectivityService:  network has: [ Transports: WIFI Capabilities: NOT_METERED&INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN&VALIDATED LinkUpBandwidth>=1048576Kbps LinkDnBandwidth>=1048576Kbps SignalStrength: -66]
+09-25 13:16:46.177  3714  4193 D ConnectivityService: Network NetworkAgentInfo [WIFI () - 506] was already satisfying request 1. No change.
+09-25 13:16:46.177  3714  4193 D ConnectivityService:   checking if request is satisfied: NetworkRequest [ id=3, legacyType=-1, [] ]
+09-25 13:16:46.177  3714  4193 D ConnectivityService:   checking if request is satisfied: NetworkRequest [ id=4, legacyType=-1, [ Transports: CELLULAR Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:46.177  3714  4193 D ConnectivityService: Network NetworkAgentInfo [WIFI () - 506] was already satisfying request 9. No change.
+09-25 13:16:46.177  3714  4193 D ConnectivityService:   checking if request is satisfied: NetworkRequest [ id=7, legacyType=-1, [] ]
+09-25 13:16:46.177  3714  4193 D ConnectivityService:   checking if request is satisfied: NetworkRequest [ id=6, legacyType=-1, [ Transports: CELLULAR|WIFI Capabilities: NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:46.177  3714  4193 D ConnectivityService:   checking if request is satisfied: NetworkRequest [ id=54, legacyType=-1, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:46.178  3714  4193 D ConnectivityService:   checking if request is satisfied: NetworkRequest [ id=5, legacyType=-1, [ Transports: WIFI Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:46.178  3714  4193 D ConnectivityService: notifyType CAP_CHANGED for NetworkAgentInfo [WIFI () - 506]
+09-25 13:16:46.178  3714  4193 D ConnectivityService:  sending notification for NetworkRequest [ id=1, legacyType=-1, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:46.178  3714  4193 D ConnectivityService:  sending notification for NetworkRequest [ id=3, legacyType=-1, [] ]
+09-25 13:16:46.178  3714  4193 D ConnectivityService: sending notification CAP_CHANGED for NetworkRequest [ id=3, legacyType=-1, [] ]
+09-25 13:16:46.178  3714  4193 D ConnectivityService:  sending notification for NetworkRequest [ id=5, legacyType=-1, [ Transports: WIFI Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:46.179  3714  4193 D ConnectivityService: sending notification CAP_CHANGED for NetworkRequest [ id=5, legacyType=-1, [ Transports: WIFI Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:46.179  3714  4193 D ConnectivityService:  sending notification for NetworkRequest [ id=6, legacyType=-1, [ Transports: CELLULAR|WIFI Capabilities: NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:46.179  3714  4193 D ConnectivityService: sending notification CAP_CHANGED for NetworkRequest [ id=6, legacyType=-1, [ Transports: CELLULAR|WIFI Capabilities: NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:46.179  3714  4193 D ConnectivityService:  sending notification for NetworkRequest [ id=7, legacyType=-1, [] ]
+09-25 13:16:46.180  3714  4193 D ConnectivityService: sending notification CAP_CHANGED for NetworkRequest [ id=7, legacyType=-1, [] ]
+09-25 13:16:46.180  3714  4193 D ConnectivityService:  sending notification for NetworkRequest [ id=9, legacyType=-1, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:46.180  3714  4193 D ConnectivityService: sending notification CAP_CHANGED for NetworkRequest [ id=9, legacyType=-1, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:46.182  4657  5331 D NetworkController: onReceive: intent=Intent { act=android.net.wifi.RSSI_CHANGED flg=0x4000010 launchParam=MultiScreenLaunchParams { mDisplayId=0 mFlags=0 } bqHint=1 (has extras) }
+09-25 13:16:46.183  4657  5331 D NetworkController.MobileSignalController(0/-2): getRssiTypeIconCTC : mRssiTypeIconId = 0
+09-25 13:16:46.183  3714  4193 D ConnectivityService:  sending notification for NetworkRequest [ id=54, legacyType=-1, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:46.184  3714  4193 D ConnectivityService: sending notification CAP_CHANGED for NetworkRequest [ id=54, legacyType=-1, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:46.186  4657  4657 E SignalClusterView: setSlotFocusVisible : subId -2
+09-25 13:16:46.186  4657  4657 E SignalClusterView: Unexpected subscription -2
+09-25 13:16:46.186  4657  4657 E SignalClusterView: setSlotFocusVisible : subId -2
+09-25 13:16:46.186  4657  4657 E SignalClusterView: Unexpected subscription -2
+09-25 13:16:46.186  4657  4657 E SignalClusterView: Unexpected subscription -2
+09-25 13:16:46.186  4657  4657 E SignalClusterView: Unexpected subscription -2
+09-25 13:16:46.186  4657  4657 E SignalClusterView: Unexpected subscription -2
+09-25 13:16:46.186  4657  4657 E SignalClusterView: Unexpected subscription -2
+09-25 13:16:46.220  4657  4657 V hong    : mid yDiff = 584
+09-25 13:16:46.220  4657  4657 V hong    : mid yDiff = 584
+09-25 13:16:46.991  3714  4525 D MediaSessionRecord: setPlaybackState oldState:3, newState:3, packageName:com.takahashirinta.ncrust
+09-25 13:16:46.994  4602  5598 V Avrcp   : updatePlayPauseState, old=3, state=3, currentPosMs=38505
+09-25 13:16:46.994  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:46.994  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:46.994  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:46.994  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:46.994  4657  4910 D vol.MediaSessions: onPlaybackStateChanged com.takahashirinta.ncrust STATE_PLAYING PlaybackState {state=3, position=38505, buffered position=269746, speed=1.0, updated=83175523, actions=822, custom actions=[], active item id=-1, error=null}
+09-25 13:16:47.060  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:16:47.060  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:16:47.060  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:16:47.183  3714  4193 D ConnectivityService: updateCapabilities: oldCap = [ Transports: WIFI Capabilities: NOT_METERED&INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN&VALIDATED LinkUpBandwidth>=1048576Kbps LinkDnBandwidth>=1048576Kbps SignalStrength: -66], newCap = [ Transports: WIFI Capabilities: NOT_METERED&INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN LinkUpBandwidth>=1048576Kbps LinkDnBandwidth>=1048576Kbps SignalStrength: -63]
+09-25 13:16:47.183  3714  4193 D ConnectivityService: rematching NetworkAgentInfo [WIFI () - 506]
+09-25 13:16:47.183  3714  4193 D ConnectivityService:  network has: [ Transports: WIFI Capabilities: NOT_METERED&INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN&VALIDATED LinkUpBandwidth>=1048576Kbps LinkDnBandwidth>=1048576Kbps SignalStrength: -63]
+09-25 13:16:47.183  3714  4193 D ConnectivityService: Network NetworkAgentInfo [WIFI () - 506] was already satisfying request 1. No change.
+09-25 13:16:47.183  3714  4193 D ConnectivityService:   checking if request is satisfied: NetworkRequest [ id=3, legacyType=-1, [] ]
+09-25 13:16:47.183  3714  4193 D ConnectivityService:   checking if request is satisfied: NetworkRequest [ id=4, legacyType=-1, [ Transports: CELLULAR Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:47.184  3714  4193 D ConnectivityService: Network NetworkAgentInfo [WIFI () - 506] was already satisfying request 9. No change.
+09-25 13:16:47.184  3714  4193 D ConnectivityService:   checking if request is satisfied: NetworkRequest [ id=7, legacyType=-1, [] ]
+09-25 13:16:47.184  3714  4193 D ConnectivityService:   checking if request is satisfied: NetworkRequest [ id=6, legacyType=-1, [ Transports: CELLULAR|WIFI Capabilities: NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:47.184  3714  4193 D ConnectivityService:   checking if request is satisfied: NetworkRequest [ id=54, legacyType=-1, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:47.184  3714  4193 D ConnectivityService:   checking if request is satisfied: NetworkRequest [ id=5, legacyType=-1, [ Transports: WIFI Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:47.184  3714  4193 D ConnectivityService: notifyType CAP_CHANGED for NetworkAgentInfo [WIFI () - 506]
+09-25 13:16:47.184  3714  4193 D ConnectivityService:  sending notification for NetworkRequest [ id=1, legacyType=-1, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:47.185  3714  4193 D ConnectivityService:  sending notification for NetworkRequest [ id=3, legacyType=-1, [] ]
+09-25 13:16:47.185  3714  4193 D ConnectivityService: sending notification CAP_CHANGED for NetworkRequest [ id=3, legacyType=-1, [] ]
+09-25 13:16:47.185  3714  4193 D ConnectivityService:  sending notification for NetworkRequest [ id=5, legacyType=-1, [ Transports: WIFI Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:47.186  3714  4193 D ConnectivityService: sending notification CAP_CHANGED for NetworkRequest [ id=5, legacyType=-1, [ Transports: WIFI Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:47.186  3714  4193 D ConnectivityService:  sending notification for NetworkRequest [ id=6, legacyType=-1, [ Transports: CELLULAR|WIFI Capabilities: NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:47.186  3714  4193 D ConnectivityService: sending notification CAP_CHANGED for NetworkRequest [ id=6, legacyType=-1, [ Transports: CELLULAR|WIFI Capabilities: NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:47.187  4657  5331 D NetworkController: onReceive: intent=Intent { act=android.net.wifi.RSSI_CHANGED flg=0x4000010 launchParam=MultiScreenLaunchParams { mDisplayId=0 mFlags=0 } bqHint=1 (has extras) }
+09-25 13:16:47.187  3714  4193 D ConnectivityService:  sending notification for NetworkRequest [ id=7, legacyType=-1, [] ]
+09-25 13:16:47.187  3714  4193 D ConnectivityService: sending notification CAP_CHANGED for NetworkRequest [ id=7, legacyType=-1, [] ]
+09-25 13:16:47.187  3714  4193 D ConnectivityService:  sending notification for NetworkRequest [ id=9, legacyType=-1, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:47.187  4657  5331 D NetworkController.MobileSignalController(0/-2): getRssiTypeIconCTC : mRssiTypeIconId = 0
+09-25 13:16:47.188  3714  4193 D ConnectivityService: sending notification CAP_CHANGED for NetworkRequest [ id=9, legacyType=-1, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:47.188  3714  4193 D ConnectivityService:  sending notification for NetworkRequest [ id=54, legacyType=-1, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:47.188  3714  4193 D ConnectivityService: sending notification CAP_CHANGED for NetworkRequest [ id=54, legacyType=-1, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:47.192  4657  4657 E SignalClusterView: setSlotFocusVisible : subId -2
+09-25 13:16:47.192  4657  4657 E SignalClusterView: Unexpected subscription -2
+09-25 13:16:47.192  4657  4657 E SignalClusterView: setSlotFocusVisible : subId -2
+09-25 13:16:47.192  4657  4657 E SignalClusterView: Unexpected subscription -2
+09-25 13:16:47.192  4657  4657 E SignalClusterView: Unexpected subscription -2
+09-25 13:16:47.192  4657  4657 E SignalClusterView: Unexpected subscription -2
+09-25 13:16:47.192  4657  4657 E SignalClusterView: Unexpected subscription -2
+09-25 13:16:47.192  4657  4657 E SignalClusterView: Unexpected subscription -2
+09-25 13:16:47.213  4657  4657 V hong    : mid yDiff = 584
+09-25 13:16:47.213  4657  4657 V hong    : mid yDiff = 584
+09-25 13:16:47.272  3714 19461 D BatteryService: !@BatteryListener : batteryPropertiesChanged!
+09-25 13:16:47.273  3714 19461 D BatteryService: level:91, scale:100, status:2, health:2, present:true, voltage: 4215, temperature: 310, technology: Li-ion, AC powered:false, USB powered:true, POGO powered:false, Wireless powered:false, icon:17303690, invalid charger:0, maxChargingCurrent:0, maxChargingVoltage:0, chargeCounter:0
+09-25 13:16:47.273  3714 19461 D BatteryService: online:4, current avg:87, charge type:1, power sharing:false, high voltage charger:false, capacity:280000, batterySWSelfDischarging:false, misc_event:0, current_now:36
+09-25 13:16:47.273  3714  3714 D BatteryService: Sending ACTION_BATTERY_CHANGED.
+09-25 13:16:47.276  3714  3714 V UiModeManager: updateLocked: null action, mDockState=0, category=null
+09-25 13:16:47.276  3714  3714 D UiModeManager: updateConfigurationLocked: mDockState=0; mCarMode=false; mNightMode=1; uiMode=17
+09-25 13:16:47.278  3714  3714 D GameManagerService: new battery level: 91
+09-25 13:16:47.281  4657  4657 D KeyguardUpdateMonitor: received broadcast android.intent.action.BATTERY_CHANGED
+09-25 13:16:47.281  4657  4657 D KeyguardUpdateMonitor: handleBatteryUpdate
+09-25 13:16:47.283  4657  4657 D PowerUI : showing power sharing dialogfalse
+09-25 13:16:47.283  4657  4657 D PowerUI : priorPlugType = 2 mPlugType =  2
+09-25 13:16:47.285  4657  4657 D PowerUI.Notification: showChargingNotice oldChargingType : 1 currentChargingType : 1 oldChargingTime : 1826000 mChargingTime : 1826000
+09-25 13:16:47.285  4657  4657 D PowerUI.Notification: There is no change about charging status, so return!
+09-25 13:16:47.287  4657  4657 D BatteryMeterDrawable: isSomethingChanged - false
+09-25 13:16:47.287  4657  4657 D BatteryMeterDrawable: isSomethingChanged - false
+09-25 13:16:47.289  4602  4602 V HeadsetService: HeadsetService - Received Intent.ACTION_BATTERY_CHANGED
+09-25 13:16:47.290  4602  5595 D HeadsetStateMachine: Disconnected process message: 10, size: 0
+09-25 13:16:47.299  4657  4657 D Tile.FlashlightTile: ACTION_BATTERY_CHANGED - Level :: 91, emEnabled :: false
+09-25 13:16:47.568 14551 14551 D SecurityManagerNative: SecurityManagerNative v2.7.2.6 On 64bit PLATFORM With BORINGSSL
+09-25 13:16:47.572 14551 14551 I appproc : Enhanced Zygote ASLR: ENABLED! nice_name = zygote64
+09-25 13:16:47.572 14551 14551 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+09-25 13:16:47.575 14551 14551 D AndroidRuntime: CheckJNI is OFF
+09-25 13:16:47.577 14551 14551 D AndroidRuntime: addProductProperty: start
+09-25 13:16:47.634 14551 14551 I [saiv 1.1]: saiv_OnLoadJNI.cpp(38): _init: Version 1.1 Build # 3532
+09-25 13:16:47.634 14551 14551 I [saiv 1.1]: saiv_OnLoadJNI.cpp(43): _init: _init() was called
+09-25 13:16:47.654 14551 14551 I MLDAP   : ================================================
+09-25 13:16:47.654 14551 14551 I MLDAP   :  MLDAP_LIB v1.1.16
+09-25 13:16:47.654 14551 14551 I MLDAP   : ================================================
+09-25 13:16:47.704 14551 14551 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl
+09-25 13:16:47.733 14551 14551 D ICU     : No timezone override file found: /data/misc/zoneinfo/current/icu/icu_tzdata.dat
+09-25 13:16:47.753 14551 14551 I Radio-JNI: register_android_hardware_Radio DONE
+09-25 13:16:47.760 14551 14551 D ReflectionHelper: loadKlass() : caller=android.app.Activity.<clinit>:7555 <bottom of call stack> 
+09-25 13:16:47.760 14551 14551 D ReflectionHelper: Reflecting method.....  class <onScreenChanged>
+09-25 13:16:47.761 14551 14551 E SemAffinityControl: SemAffinityControl: registerfunction enter
+09-25 13:16:47.769  3714 19519 D MediaSessionRecord: setPlaybackState oldState:3, newState:3, packageName:com.takahashirinta.ncrust
+09-25 13:16:47.770  4657  4910 D vol.MediaSessions: onPlaybackStateChanged com.takahashirinta.ncrust STATE_PLAYING PlaybackState {state=3, position=39293, buffered position=66873, speed=1.0, updated=83176303, actions=7339999, custom actions=[], active item id=0, error=null}
+09-25 13:16:47.773 14551 14551 D AndroidRuntime: Calling main entry com.android.commands.input.Input
+09-25 13:16:47.773 14551 14551 I Input   : injectKeyEvent: KeyEvent { action=ACTION_DOWN, keyCode=KEYCODE_MEDIA_PLAY, scanCode=0, metaState=0, flags=0x0, repeatCount=0, eventTime=29268037, downTime=29268037, deviceId=-1, displayId=0, source=0x101 }
+09-25 13:16:47.774  3714  4060 D InputDispatcher: Inject key (14551): action=0, eventTime=29268037000000
+09-25 13:16:47.776  3714  4024 I InputDispatcher: Delivering key to (4657): action: 0x0 (0)
+09-25 13:16:47.776  4657  4657 D ViewRootImpl@64dcb41[StatusBar]: ViewPostImeInputStage processKey 0
+09-25 13:16:47.777  3714  3725 D MediaSessionService: Sending media key to com.takahashirinta.ncrust/NcrustSession
+09-25 13:16:47.778 14551 14551 I Input   : injectKeyEvent: KeyEvent { action=ACTION_UP, keyCode=KEYCODE_MEDIA_PLAY, scanCode=0, metaState=0, flags=0x0, repeatCount=0, eventTime=29268037, downTime=29268037, deviceId=-1, displayId=0, source=0x101 }
+09-25 13:16:47.778  3714  4080 D InputDispatcher: Inject key (14551): action=1, eventTime=29268037000000
+09-25 13:16:47.779  3714  4024 I InputDispatcher: Delivering key to (4657): action: 0x1 (0)
+09-25 13:16:47.779  4657  4657 D ViewRootImpl@64dcb41[StatusBar]: ViewPostImeInputStage processKey 1
+09-25 13:16:47.780  3714  5830 D MediaSessionService: Sending media key to com.takahashirinta.ncrust/NcrustSession
+09-25 13:16:47.780 14551 14551 D AndroidRuntime: Shutting down VM
+09-25 13:16:47.795 14551 14551 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl::~AcsAndroidVirtualDisplayIntfImpl - Enter
+09-25 13:16:47.795 14551 14551 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl::~AcsAndroidVirtualDisplayIntfImpl - Enter2
+09-25 13:16:47.795 14551 14551 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl::~AcsAndroidVirtualDisplayIntfImpl - mSource2
+09-25 13:16:47.795 14551 14551 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl::~AcsAndroidVirtualDisplayIntfImpl - Exit
+09-25 13:16:48.004  3714  6070 D MediaSessionRecord: setPlaybackState oldState:3, newState:3, packageName:com.takahashirinta.ncrust
+09-25 13:16:48.007  4602  5598 V Avrcp   : updatePlayPauseState, old=3, state=3, currentPosMs=39519
+09-25 13:16:48.007  4657  4910 D vol.MediaSessions: onPlaybackStateChanged com.takahashirinta.ncrust STATE_PLAYING PlaybackState {state=3, position=39519, buffered position=269746, speed=1.0, updated=83176536, actions=822, custom actions=[], active item id=-1, error=null}
+09-25 13:16:48.007  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:48.007  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:48.007  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:48.007  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:48.060  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:16:48.060  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:16:48.060  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:16:48.168  3714  4089 D WifiStateMachine: Current network is: "CMCC-YKPt-5G" , ID is: 0
+09-25 13:16:48.289  3714  3740 I PowerManagerService: [PWL] On : 29253248 (15303 ms ago)
+09-25 13:16:48.289  3714  3740 I PowerManagerService: [PWL]  mStayOn: true  mWakeLockSummary & WAKE_LOCK_STAY_AWAKE: 0  mUserActivitySummary: 0x4
+09-25 13:16:48.391  5733  5733 D io_stats: !@   8,0 r 100513 3936112 w 129810 9742896 d 11615 7308576 f 43796 43796 iot 197390 134613 th 61440 0 0 pt 0 inp 0 0 29268.654
+09-25 13:16:48.401  3714  3728 I ActivityManager: Waited long enough for: ServiceRecord{525a91c u0 com.sec.android.daemonapp/.appservice.WeatherService}
+09-25 13:16:48.525  3714  6070 D ApplicationPolicy: isStatusBarNotificationAllowedAsUser: packageName = com.takahashirinta.ncrust,userId = 0
+09-25 13:16:48.527  9156  9156 D NcrustLyricNotify: re-post on lyric line change: 随记忆一直晃到现在
+09-25 13:16:48.540  4602  5598 V Avrcp   : updateMetadata
+09-25 13:16:48.540  4657  4910 D vol.MediaSessions: onMetadataChanged com.takahashirinta.ncrust 随记忆一直晃到现在, 晴天 · 周杰伦, null
+09-25 13:16:48.540  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:48.540  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:49.038  3714  5830 D MediaSessionRecord: setPlaybackState oldState:3, newState:3, packageName:com.takahashirinta.ncrust
+09-25 13:16:49.043  4602  5598 V Avrcp   : updatePlayPauseState, old=3, state=3, currentPosMs=40549
+09-25 13:16:49.044  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:49.044  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:49.044  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:49.044  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:49.047  4657  4910 D vol.MediaSessions: onPlaybackStateChanged com.takahashirinta.ncrust STATE_PLAYING PlaybackState {state=3, position=40549, buffered position=269746, speed=1.0, updated=83177568, actions=822, custom actions=[], active item id=-1, error=null}
+09-25 13:16:49.061  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:16:49.061  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:16:49.061  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:16:49.189  3714  4193 D ConnectivityService: updateCapabilities: oldCap = [ Transports: WIFI Capabilities: NOT_METERED&INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN&VALIDATED LinkUpBandwidth>=1048576Kbps LinkDnBandwidth>=1048576Kbps SignalStrength: -63], newCap = [ Transports: WIFI Capabilities: NOT_METERED&INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN LinkUpBandwidth>=1048576Kbps LinkDnBandwidth>=1048576Kbps SignalStrength: -64]
+09-25 13:16:49.189  3714  4193 D ConnectivityService: rematching NetworkAgentInfo [WIFI () - 506]
+09-25 13:16:49.189  3714  4193 D ConnectivityService:  network has: [ Transports: WIFI Capabilities: NOT_METERED&INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN&VALIDATED LinkUpBandwidth>=1048576Kbps LinkDnBandwidth>=1048576Kbps SignalStrength: -64]
+09-25 13:16:49.189  3714  4193 D ConnectivityService: Network NetworkAgentInfo [WIFI () - 506] was already satisfying request 1. No change.
+09-25 13:16:49.189  3714  4193 D ConnectivityService:   checking if request is satisfied: NetworkRequest [ id=3, legacyType=-1, [] ]
+09-25 13:16:49.194  3714  4193 D ConnectivityService:   checking if request is satisfied: NetworkRequest [ id=4, legacyType=-1, [ Transports: CELLULAR Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:49.194  3714  4193 D ConnectivityService: Network NetworkAgentInfo [WIFI () - 506] was already satisfying request 9. No change.
+09-25 13:16:49.195  3714  4193 D ConnectivityService:   checking if request is satisfied: NetworkRequest [ id=7, legacyType=-1, [] ]
+09-25 13:16:49.195  3714  4193 D ConnectivityService:   checking if request is satisfied: NetworkRequest [ id=6, legacyType=-1, [ Transports: CELLULAR|WIFI Capabilities: NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:49.195  3714  4193 D ConnectivityService:   checking if request is satisfied: NetworkRequest [ id=54, legacyType=-1, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:49.195  3714  4193 D ConnectivityService:   checking if request is satisfied: NetworkRequest [ id=5, legacyType=-1, [ Transports: WIFI Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:49.196  3714  4193 D ConnectivityService: notifyType CAP_CHANGED for NetworkAgentInfo [WIFI () - 506]
+09-25 13:16:49.196  3714  4193 D ConnectivityService:  sending notification for NetworkRequest [ id=1, legacyType=-1, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:49.196  3714  4193 D ConnectivityService:  sending notification for NetworkRequest [ id=3, legacyType=-1, [] ]
+09-25 13:16:49.197  3714  4193 D ConnectivityService: sending notification CAP_CHANGED for NetworkRequest [ id=3, legacyType=-1, [] ]
+09-25 13:16:49.197  3714  4193 D ConnectivityService:  sending notification for NetworkRequest [ id=5, legacyType=-1, [ Transports: WIFI Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:49.198  3714  4193 D ConnectivityService: sending notification CAP_CHANGED for NetworkRequest [ id=5, legacyType=-1, [ Transports: WIFI Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:49.199  3714  4193 D ConnectivityService:  sending notification for NetworkRequest [ id=6, legacyType=-1, [ Transports: CELLULAR|WIFI Capabilities: NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:49.199  3714  4193 D ConnectivityService: sending notification CAP_CHANGED for NetworkRequest [ id=6, legacyType=-1, [ Transports: CELLULAR|WIFI Capabilities: NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:49.204  3714  4193 D ConnectivityService:  sending notification for NetworkRequest [ id=7, legacyType=-1, [] ]
+09-25 13:16:49.205  3714  4193 D ConnectivityService: sending notification CAP_CHANGED for NetworkRequest [ id=7, legacyType=-1, [] ]
+09-25 13:16:49.207  4657  5331 D NetworkController: onReceive: intent=Intent { act=android.net.wifi.RSSI_CHANGED flg=0x4000010 launchParam=MultiScreenLaunchParams { mDisplayId=0 mFlags=0 } bqHint=1 (has extras) }
+09-25 13:16:49.209  4657  5331 D NetworkController.MobileSignalController(0/-2): getRssiTypeIconCTC : mRssiTypeIconId = 0
+09-25 13:16:49.210  3714  4193 D ConnectivityService:  sending notification for NetworkRequest [ id=9, legacyType=-1, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:49.210  3714  4193 D ConnectivityService: sending notification CAP_CHANGED for NetworkRequest [ id=9, legacyType=-1, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:49.210  3714  4193 D ConnectivityService:  sending notification for NetworkRequest [ id=54, legacyType=-1, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:49.211  3714  4193 D ConnectivityService: sending notification CAP_CHANGED for NetworkRequest [ id=54, legacyType=-1, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:49.211  4657  4657 E SignalClusterView: setSlotFocusVisible : subId -2
+09-25 13:16:49.211  4657  4657 E SignalClusterView: Unexpected subscription -2
+09-25 13:16:49.211  4657  4657 E SignalClusterView: setSlotFocusVisible : subId -2
+09-25 13:16:49.211  4657  4657 E SignalClusterView: Unexpected subscription -2
+09-25 13:16:49.211  4657  4657 E SignalClusterView: Unexpected subscription -2
+09-25 13:16:49.211  4657  4657 E SignalClusterView: Unexpected subscription -2
+09-25 13:16:49.211  4657  4657 E SignalClusterView: Unexpected subscription -2
+09-25 13:16:49.211  4657  4657 E SignalClusterView: Unexpected subscription -2
+09-25 13:16:49.229  4657  4657 V hong    : mid yDiff = 584
+09-25 13:16:49.230  4657  4657 V hong    : mid yDiff = 584
+09-25 13:16:50.050  3714  6088 D MediaSessionRecord: setPlaybackState oldState:3, newState:3, packageName:com.takahashirinta.ncrust
+09-25 13:16:50.055  4657  4910 D vol.MediaSessions: onPlaybackStateChanged com.takahashirinta.ncrust STATE_PLAYING PlaybackState {state=3, position=41566, buffered position=269746, speed=1.0, updated=83178582, actions=822, custom actions=[], active item id=-1, error=null}
+09-25 13:16:50.058  4602  5598 V Avrcp   : updatePlayPauseState, old=3, state=3, currentPosMs=41566
+09-25 13:16:50.059  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:50.059  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:50.059  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:50.059  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:50.061  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:16:50.061  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:16:50.061  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:16:50.187  3714  4193 D ConnectivityService: updateCapabilities: oldCap = [ Transports: WIFI Capabilities: NOT_METERED&INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN&VALIDATED LinkUpBandwidth>=1048576Kbps LinkDnBandwidth>=1048576Kbps SignalStrength: -64], newCap = [ Transports: WIFI Capabilities: NOT_METERED&INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN LinkUpBandwidth>=1048576Kbps LinkDnBandwidth>=1048576Kbps SignalStrength: -63]
+09-25 13:16:50.188  3714  4193 D ConnectivityService: rematching NetworkAgentInfo [WIFI () - 506]
+09-25 13:16:50.188  3714  4193 D ConnectivityService:  network has: [ Transports: WIFI Capabilities: NOT_METERED&INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN&VALIDATED LinkUpBandwidth>=1048576Kbps LinkDnBandwidth>=1048576Kbps SignalStrength: -63]
+09-25 13:16:50.188  3714  4193 D ConnectivityService: Network NetworkAgentInfo [WIFI () - 506] was already satisfying request 1. No change.
+09-25 13:16:50.188  3714  4193 D ConnectivityService:   checking if request is satisfied: NetworkRequest [ id=3, legacyType=-1, [] ]
+09-25 13:16:50.188  3714  4193 D ConnectivityService:   checking if request is satisfied: NetworkRequest [ id=4, legacyType=-1, [ Transports: CELLULAR Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:50.188  3714  4193 D ConnectivityService: Network NetworkAgentInfo [WIFI () - 506] was already satisfying request 9. No change.
+09-25 13:16:50.188  3714  4193 D ConnectivityService:   checking if request is satisfied: NetworkRequest [ id=7, legacyType=-1, [] ]
+09-25 13:16:50.188  3714  4193 D ConnectivityService:   checking if request is satisfied: NetworkRequest [ id=6, legacyType=-1, [ Transports: CELLULAR|WIFI Capabilities: NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:50.188  3714  4193 D ConnectivityService:   checking if request is satisfied: NetworkRequest [ id=54, legacyType=-1, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:50.189  3714  4193 D ConnectivityService:   checking if request is satisfied: NetworkRequest [ id=5, legacyType=-1, [ Transports: WIFI Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:50.189  3714  4193 D ConnectivityService: notifyType CAP_CHANGED for NetworkAgentInfo [WIFI () - 506]
+09-25 13:16:50.189  3714  4193 D ConnectivityService:  sending notification for NetworkRequest [ id=1, legacyType=-1, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:50.189  3714  4193 D ConnectivityService:  sending notification for NetworkRequest [ id=3, legacyType=-1, [] ]
+09-25 13:16:50.189  3714  4193 D ConnectivityService: sending notification CAP_CHANGED for NetworkRequest [ id=3, legacyType=-1, [] ]
+09-25 13:16:50.192  3714  4193 D ConnectivityService:  sending notification for NetworkRequest [ id=5, legacyType=-1, [ Transports: WIFI Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:50.193  3714  4193 D ConnectivityService: sending notification CAP_CHANGED for NetworkRequest [ id=5, legacyType=-1, [ Transports: WIFI Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:50.193  3714  4193 D ConnectivityService:  sending notification for NetworkRequest [ id=6, legacyType=-1, [ Transports: CELLULAR|WIFI Capabilities: NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:50.193  3714  4193 D ConnectivityService: sending notification CAP_CHANGED for NetworkRequest [ id=6, legacyType=-1, [ Transports: CELLULAR|WIFI Capabilities: NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:50.194  3714  4193 D ConnectivityService:  sending notification for NetworkRequest [ id=7, legacyType=-1, [] ]
+09-25 13:16:50.195  4657  5331 D NetworkController: onReceive: intent=Intent { act=android.net.wifi.RSSI_CHANGED flg=0x4000010 launchParam=MultiScreenLaunchParams { mDisplayId=0 mFlags=0 } bqHint=1 (has extras) }
+09-25 13:16:50.197  3714  4193 D ConnectivityService: sending notification CAP_CHANGED for NetworkRequest [ id=7, legacyType=-1, [] ]
+09-25 13:16:50.197  3714  4193 D ConnectivityService:  sending notification for NetworkRequest [ id=9, legacyType=-1, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:50.198  3714  4193 D ConnectivityService: sending notification CAP_CHANGED for NetworkRequest [ id=9, legacyType=-1, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:50.199  4657  5331 D NetworkController.MobileSignalController(0/-2): getRssiTypeIconCTC : mRssiTypeIconId = 0
+09-25 13:16:50.200  3714  4193 D ConnectivityService:  sending notification for NetworkRequest [ id=54, legacyType=-1, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:50.200  3714  4193 D ConnectivityService: sending notification CAP_CHANGED for NetworkRequest [ id=54, legacyType=-1, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+09-25 13:16:50.216  4657  4657 E SignalClusterView: setSlotFocusVisible : subId -2
+09-25 13:16:50.216  4657  4657 E SignalClusterView: Unexpected subscription -2
+09-25 13:16:50.216  4657  4657 E SignalClusterView: setSlotFocusVisible : subId -2
+09-25 13:16:50.216  4657  4657 E SignalClusterView: Unexpected subscription -2
+09-25 13:16:50.216  4657  4657 E SignalClusterView: Unexpected subscription -2
+09-25 13:16:50.216  4657  4657 E SignalClusterView: Unexpected subscription -2
+09-25 13:16:50.216  4657  4657 E SignalClusterView: Unexpected subscription -2
+09-25 13:16:50.216  4657  4657 E SignalClusterView: Unexpected subscription -2
+09-25 13:16:50.236  4657  4657 V hong    : mid yDiff = 584
+09-25 13:16:50.236  4657  4657 V hong    : mid yDiff = 584
+09-25 13:16:50.775  3714  4080 D MediaSessionRecord: setPlaybackState oldState:3, newState:3, packageName:com.takahashirinta.ncrust
+09-25 13:16:50.781  4657  4910 D vol.MediaSessions: onPlaybackStateChanged com.takahashirinta.ncrust STATE_PLAYING PlaybackState {state=3, position=42290, buffered position=66873, speed=1.0, updated=83179306, actions=7339999, custom actions=[], active item id=0, error=null}
+09-25 13:16:51.062  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:16:51.062  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:16:51.062  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:16:51.068  3714  6068 D MediaSessionRecord: setPlaybackState oldState:3, newState:3, packageName:com.takahashirinta.ncrust
+09-25 13:16:51.072  4657  4910 D vol.MediaSessions: onPlaybackStateChanged com.takahashirinta.ncrust STATE_PLAYING PlaybackState {state=3, position=42583, buffered position=269746, speed=1.0, updated=83179600, actions=822, custom actions=[], active item id=-1, error=null}
+09-25 13:16:51.073  4602  5598 V Avrcp   : updatePlayPauseState, old=3, state=3, currentPosMs=42583
+09-25 13:16:51.074  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:51.074  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:51.074  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:51.074  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:51.190  3714  4089 D WifiStateMachine: Current network is: "CMCC-YKPt-5G" , ID is: 0
+09-25 13:16:51.589  3714 27900 D ApplicationPolicy: isStatusBarNotificationAllowedAsUser: packageName = com.takahashirinta.ncrust,userId = 0
+09-25 13:16:51.591  9156  9156 D NcrustLyricNotify: re-post on lyric line change: Re So So Si Do Si La
+09-25 13:16:51.616  4602  5598 V Avrcp   : updateMetadata
+09-25 13:16:51.622  4657  4910 D vol.MediaSessions: onMetadataChanged com.takahashirinta.ncrust Re So So Si Do Si La, 晴天 · 周杰伦, null
+09-25 13:16:51.622  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:51.622  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:52.062  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:16:52.062  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:16:52.062  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:16:52.101  3714  6070 D MediaSessionRecord: setPlaybackState oldState:3, newState:3, packageName:com.takahashirinta.ncrust
+09-25 13:16:52.102  4602  5598 V Avrcp   : updatePlayPauseState, old=3, state=3, currentPosMs=43617
+09-25 13:16:52.102  4657  4910 D vol.MediaSessions: onPlaybackStateChanged com.takahashirinta.ncrust STATE_PLAYING PlaybackState {state=3, position=43617, buffered position=269746, speed=1.0, updated=83180635, actions=822, custom actions=[], active item id=-1, error=null}
+09-25 13:16:52.102  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:52.102  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:52.102  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:52.102  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:52.335 14563 14563 D SecurityManagerNative: SecurityManagerNative v2.7.2.6 On 64bit PLATFORM With BORINGSSL
+09-25 13:16:52.339 14563 14563 I appproc : Enhanced Zygote ASLR: ENABLED! nice_name = zygote64
+09-25 13:16:52.339 14563 14563 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+09-25 13:16:52.342 14563 14563 D AndroidRuntime: CheckJNI is OFF
+09-25 13:16:52.344 14563 14563 D AndroidRuntime: addProductProperty: start
+09-25 13:16:52.397 14563 14563 I [saiv 1.1]: saiv_OnLoadJNI.cpp(38): _init: Version 1.1 Build # 3532
+09-25 13:16:52.397 14563 14563 I [saiv 1.1]: saiv_OnLoadJNI.cpp(43): _init: _init() was called
+09-25 13:16:52.417 14563 14563 I MLDAP   : ================================================
+09-25 13:16:52.417 14563 14563 I MLDAP   :  MLDAP_LIB v1.1.16
+09-25 13:16:52.417 14563 14563 I MLDAP   : ================================================
+09-25 13:16:52.467 14563 14563 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl
+09-25 13:16:52.494 14563 14563 D ICU     : No timezone override file found: /data/misc/zoneinfo/current/icu/icu_tzdata.dat
+09-25 13:16:52.514 14563 14563 I Radio-JNI: register_android_hardware_Radio DONE
+09-25 13:16:52.521 14563 14563 D ReflectionHelper: loadKlass() : caller=android.app.Activity.<clinit>:7555 <bottom of call stack> 
+09-25 13:16:52.521 14563 14563 D ReflectionHelper: Reflecting method.....  class <onScreenChanged>
+09-25 13:16:52.522 14563 14563 E SemAffinityControl: SemAffinityControl: registerfunction enter
+09-25 13:16:52.534 14563 14563 D AndroidRuntime: Calling main entry com.android.commands.input.Input
+09-25 13:16:52.535 14563 14563 I Input   : injectKeyEvent: KeyEvent { action=ACTION_DOWN, keyCode=KEYCODE_MEDIA_PLAY, scanCode=0, metaState=0, flags=0x0, repeatCount=0, eventTime=29272798, downTime=29272798, deviceId=-1, displayId=0, source=0x101 }
+09-25 13:16:52.535  3714 19519 D InputDispatcher: Inject key (14563): action=0, eventTime=29272798000000
+09-25 13:16:52.537  3714  4024 I InputDispatcher: Delivering key to (4657): action: 0x0 (0)
+09-25 13:16:52.537  4657  4657 D ViewRootImpl@64dcb41[StatusBar]: ViewPostImeInputStage processKey 0
+09-25 13:16:52.538  3714  6088 D MediaSessionService: Sending media key to com.takahashirinta.ncrust/NcrustSession
+09-25 13:16:52.538 14563 14563 I Input   : injectKeyEvent: KeyEvent { action=ACTION_UP, keyCode=KEYCODE_MEDIA_PLAY, scanCode=0, metaState=0, flags=0x0, repeatCount=0, eventTime=29272798, downTime=29272798, deviceId=-1, displayId=0, source=0x101 }
+09-25 13:16:52.538  3714 19461 D InputDispatcher: Inject key (14563): action=1, eventTime=29272798000000
+09-25 13:16:52.540  3714  4024 I InputDispatcher: Delivering key to (4657): action: 0x1 (0)
+09-25 13:16:52.540  4657  4657 D ViewRootImpl@64dcb41[StatusBar]: ViewPostImeInputStage processKey 1
+09-25 13:16:52.540  3714  4066 D MediaSessionService: Sending media key to com.takahashirinta.ncrust/NcrustSession
+09-25 13:16:52.540 14563 14563 D AndroidRuntime: Shutting down VM
+09-25 13:16:52.556 14563 14563 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl::~AcsAndroidVirtualDisplayIntfImpl - Enter
+09-25 13:16:52.556 14563 14563 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl::~AcsAndroidVirtualDisplayIntfImpl - Enter2
+09-25 13:16:52.556 14563 14563 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl::~AcsAndroidVirtualDisplayIntfImpl - mSource2
+09-25 13:16:52.556 14563 14563 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl::~AcsAndroidVirtualDisplayIntfImpl - Exit
+09-25 13:16:53.053  3714  6959 D SSRM:t  : SIOP:: AP = 370, PST = 380 (W:12), CP = 288, CUR = 107, LCD = 255
+09-25 13:16:53.063  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:16:53.063  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:16:53.063  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:16:53.106  3714  5829 D MediaSessionRecord: setPlaybackState oldState:3, newState:3, packageName:com.takahashirinta.ncrust
+09-25 13:16:53.107  4657  4910 D vol.MediaSessions: onPlaybackStateChanged com.takahashirinta.ncrust STATE_PLAYING PlaybackState {state=3, position=44624, buffered position=269746, speed=1.0, updated=83181638, actions=822, custom actions=[], active item id=-1, error=null}
+09-25 13:16:53.107  4602  5598 V Avrcp   : updatePlayPauseState, old=3, state=3, currentPosMs=44624
+09-25 13:16:53.107  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:53.107  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:53.107  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:53.107  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:53.397  5733  5733 D io_stats: !@   8,0 r 100513 3936112 w 129838 9743136 d 11617 7308584 f 43833 43833 iot 197430 134624 th 61440 0 0 pt 0 inp 0 0 29273.658
+09-25 13:16:53.782  3714  6088 D MediaSessionRecord: setPlaybackState oldState:3, newState:3, packageName:com.takahashirinta.ncrust
+09-25 13:16:53.786  4657  4910 D vol.MediaSessions: onPlaybackStateChanged com.takahashirinta.ncrust STATE_PLAYING PlaybackState {state=3, position=45290, buffered position=66873, speed=1.0, updated=83182313, actions=7339999, custom actions=[], active item id=0, error=null}
+09-25 13:16:54.063  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:16:54.063  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:16:54.063  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:16:54.112  3714 19519 D MediaSessionRecord: setPlaybackState oldState:3, newState:3, packageName:com.takahashirinta.ncrust
+09-25 13:16:54.114  4657  4910 D vol.MediaSessions: onPlaybackStateChanged com.takahashirinta.ncrust STATE_PLAYING PlaybackState {state=3, position=45632, buffered position=269746, speed=1.0, updated=83182644, actions=822, custom actions=[], active item id=-1, error=null}
+09-25 13:16:54.116  4602  5598 V Avrcp   : updatePlayPauseState, old=3, state=3, currentPosMs=45632
+09-25 13:16:54.116  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:54.116  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:54.116  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:54.116  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:54.219  3714  4089 D WifiStateMachine: Current network is: "CMCC-YKPt-5G" , ID is: 0
+09-25 13:16:54.631  3714  4080 D ApplicationPolicy: isStatusBarNotificationAllowedAsUser: packageName = com.takahashirinta.ncrust,userId = 0
+09-25 13:16:54.632  9156  9156 D NcrustLyricNotify: re-post on lyric line change: So La Si Si Si Si La Si La So
+09-25 13:16:54.642  4657  4910 D vol.MediaSessions: onMetadataChanged com.takahashirinta.ncrust So La Si Si Si Si La Si La So, 晴天 · 周杰伦, null
+09-25 13:16:54.642  4602  5598 V Avrcp   : updateMetadata
+09-25 13:16:54.642  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:54.643  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:55.064  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:16:55.064  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:16:55.064  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:16:55.138  3714  3725 D MediaSessionRecord: setPlaybackState oldState:3, newState:3, packageName:com.takahashirinta.ncrust
+09-25 13:16:55.141  4657  4910 D vol.MediaSessions: onPlaybackStateChanged com.takahashirinta.ncrust STATE_PLAYING PlaybackState {state=3, position=46659, buffered position=269746, speed=1.0, updated=83183671, actions=822, custom actions=[], active item id=-1, error=null}
+09-25 13:16:55.141  4602  5598 V Avrcp   : updatePlayPauseState, old=3, state=3, currentPosMs=46659
+09-25 13:16:55.141  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:55.141  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:55.141  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:55.141  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:56.064  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:16:56.064  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:16:56.065  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:16:56.152  3714 19519 D MediaSessionRecord: setPlaybackState oldState:3, newState:3, packageName:com.takahashirinta.ncrust
+09-25 13:16:56.153  4602  5598 V Avrcp   : updatePlayPauseState, old=3, state=3, currentPosMs=47669
+09-25 13:16:56.153  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:56.153  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:56.154  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:56.154  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:56.154  4657  4910 D vol.MediaSessions: onPlaybackStateChanged com.takahashirinta.ncrust STATE_PLAYING PlaybackState {state=3, position=47669, buffered position=269746, speed=1.0, updated=83184685, actions=822, custom actions=[], active item id=-1, error=null}
+09-25 13:16:56.784  3714  4080 D MediaSessionRecord: setPlaybackState oldState:3, newState:3, packageName:com.takahashirinta.ncrust
+09-25 13:16:56.785  4657  4910 D vol.MediaSessions: onPlaybackStateChanged com.takahashirinta.ncrust STATE_PLAYING PlaybackState {state=3, position=48308, buffered position=66873, speed=1.0, updated=83185317, actions=7339999, custom actions=[], active item id=0, error=null}
+09-25 13:16:57.065  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:16:57.065  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:16:57.065  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:16:57.072 14574 14574 D SecurityManagerNative: SecurityManagerNative v2.7.2.6 On 64bit PLATFORM With BORINGSSL
+09-25 13:16:57.076 14574 14574 I appproc : Enhanced Zygote ASLR: ENABLED! nice_name = zygote64
+09-25 13:16:57.076 14574 14574 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+09-25 13:16:57.079 14574 14574 D AndroidRuntime: CheckJNI is OFF
+09-25 13:16:57.080 14574 14574 D AndroidRuntime: addProductProperty: start
+09-25 13:16:57.135 14574 14574 I [saiv 1.1]: saiv_OnLoadJNI.cpp(38): _init: Version 1.1 Build # 3532
+09-25 13:16:57.135 14574 14574 I [saiv 1.1]: saiv_OnLoadJNI.cpp(43): _init: _init() was called
+09-25 13:16:57.155 14574 14574 I MLDAP   : ================================================
+09-25 13:16:57.155 14574 14574 I MLDAP   :  MLDAP_LIB v1.1.16
+09-25 13:16:57.155 14574 14574 I MLDAP   : ================================================
+09-25 13:16:57.159  3714  6068 D MediaSessionRecord: setPlaybackState oldState:3, newState:3, packageName:com.takahashirinta.ncrust
+09-25 13:16:57.160  4602  5598 V Avrcp   : updatePlayPauseState, old=3, state=3, currentPosMs=48679
+09-25 13:16:57.160  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:57.160  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:57.160  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:57.160  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:57.160  4657  4910 D vol.MediaSessions: onPlaybackStateChanged com.takahashirinta.ncrust STATE_PLAYING PlaybackState {state=3, position=48679, buffered position=269746, speed=1.0, updated=83185693, actions=822, custom actions=[], active item id=-1, error=null}
+09-25 13:16:57.211 14574 14574 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl
+09-25 13:16:57.224  3714  4089 D WifiStateMachine: Current network is: "CMCC-YKPt-5G" , ID is: 0
+09-25 13:16:57.241 14574 14574 D ICU     : No timezone override file found: /data/misc/zoneinfo/current/icu/icu_tzdata.dat
+09-25 13:16:57.262 14574 14574 I Radio-JNI: register_android_hardware_Radio DONE
+09-25 13:16:57.268 14574 14574 D ReflectionHelper: loadKlass() : caller=android.app.Activity.<clinit>:7555 <bottom of call stack> 
+09-25 13:16:57.268 14574 14574 D ReflectionHelper: Reflecting method.....  class <onScreenChanged>
+09-25 13:16:57.269 14574 14574 E SemAffinityControl: SemAffinityControl: registerfunction enter
+09-25 13:16:57.283 14574 14574 D AndroidRuntime: Calling main entry com.android.commands.input.Input
+09-25 13:16:57.283 14574 14574 I Input   : injectKeyEvent: KeyEvent { action=ACTION_DOWN, keyCode=KEYCODE_MEDIA_PLAY, scanCode=0, metaState=0, flags=0x0, repeatCount=0, eventTime=29277546, downTime=29277546, deviceId=-1, displayId=0, source=0x101 }
+09-25 13:16:57.284  3714  3725 D InputDispatcher: Inject key (14574): action=0, eventTime=29277546000000
+09-25 13:16:57.285  3714  4024 I InputDispatcher: Delivering key to (4657): action: 0x0 (0)
+09-25 13:16:57.285  4657  4657 D ViewRootImpl@64dcb41[StatusBar]: ViewPostImeInputStage processKey 0
+09-25 13:16:57.286  3714  6088 D MediaSessionService: Sending media key to com.takahashirinta.ncrust/NcrustSession
+09-25 13:16:57.286 14574 14574 I Input   : injectKeyEvent: KeyEvent { action=ACTION_UP, keyCode=KEYCODE_MEDIA_PLAY, scanCode=0, metaState=0, flags=0x0, repeatCount=0, eventTime=29277546, downTime=29277546, deviceId=-1, displayId=0, source=0x101 }
+09-25 13:16:57.286  3714  4060 D InputDispatcher: Inject key (14574): action=1, eventTime=29277546000000
+09-25 13:16:57.288  3714  4024 I InputDispatcher: Delivering key to (4657): action: 0x1 (0)
+09-25 13:16:57.288  4657  4657 D ViewRootImpl@64dcb41[StatusBar]: ViewPostImeInputStage processKey 1
+09-25 13:16:57.288  3714 19461 D MediaSessionService: Sending media key to com.takahashirinta.ncrust/NcrustSession
+09-25 13:16:57.288 14574 14574 D AndroidRuntime: Shutting down VM
+09-25 13:16:57.305 14574 14574 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl::~AcsAndroidVirtualDisplayIntfImpl - Enter
+09-25 13:16:57.305 14574 14574 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl::~AcsAndroidVirtualDisplayIntfImpl - Enter2
+09-25 13:16:57.305 14574 14574 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl::~AcsAndroidVirtualDisplayIntfImpl - mSource2
+09-25 13:16:57.305 14574 14574 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl::~AcsAndroidVirtualDisplayIntfImpl - Exit
+09-25 13:16:57.310  3714 13913 D BatteryService: !@BatteryListener : batteryPropertiesChanged!
+09-25 13:16:57.311  3714 13913 D BatteryService: level:91, scale:100, status:2, health:2, present:true, voltage: 4161, temperature: 312, technology: Li-ion, AC powered:false, USB powered:true, POGO powered:false, Wireless powered:false, icon:17303690, invalid charger:0, maxChargingCurrent:0, maxChargingVoltage:0, chargeCounter:0
+09-25 13:16:57.311  3714 13913 D BatteryService: online:4, current avg:124, charge type:1, power sharing:false, high voltage charger:false, capacity:280000, batterySWSelfDischarging:false, misc_event:0, current_now:-206
+09-25 13:16:57.311  3714  3714 D BatteryService: Sending ACTION_BATTERY_CHANGED.
+09-25 13:16:57.312  3714  3714 V UiModeManager: updateLocked: null action, mDockState=0, category=null
+09-25 13:16:57.312  3714  3714 D UiModeManager: updateConfigurationLocked: mDockState=0; mCarMode=false; mNightMode=1; uiMode=17
+09-25 13:16:57.312  3714  3714 D GameManagerService: new battery level: 91
+09-25 13:16:57.312  4657  4657 D KeyguardUpdateMonitor: received broadcast android.intent.action.BATTERY_CHANGED
+09-25 13:16:57.313  4657  4657 D PowerUI : showing power sharing dialogfalse
+09-25 13:16:57.313  4657  4657 D PowerUI : priorPlugType = 2 mPlugType =  2
+09-25 13:16:57.315  4657  4657 D PowerUI.Notification: showChargingNotice oldChargingType : 1 currentChargingType : 1 oldChargingTime : 1826000 mChargingTime : 1801000
+09-25 13:16:57.315  4657  4657 D PowerUI.Notification: showChargingNotification()
+09-25 13:16:57.315  4602  4602 V HeadsetService: HeadsetService - Received Intent.ACTION_BATTERY_CHANGED
+09-25 13:16:57.315  4602  5595 D HeadsetStateMachine: Disconnected process message: 10, size: 0
+09-25 13:16:57.317  3714  4321 D ApplicationPolicy: isStatusBarNotificationAllowedAsUser: packageName = com.android.systemui,userId = -1
+09-25 13:16:57.317  4657  4657 D KeyguardUpdateMonitor: handleBatteryUpdate
+09-25 13:16:57.318  4657  4657 D BatteryMeterDrawable: isSomethingChanged - false
+09-25 13:16:57.318  4657  4657 D BatteryMeterDrawable: isSomethingChanged - false
+09-25 13:16:57.319  4657  4657 D Tile.FlashlightTile: ACTION_BATTERY_CHANGED - Level :: 91, emEnabled :: false
+09-25 13:16:58.065  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:16:58.065  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:16:58.065  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:16:58.165  3714  4066 D MediaSessionRecord: setPlaybackState oldState:3, newState:3, packageName:com.takahashirinta.ncrust
+09-25 13:16:58.167  4602  5598 V Avrcp   : updatePlayPauseState, old=3, state=3, currentPosMs=49688
+09-25 13:16:58.167  4657  4910 D vol.MediaSessions: onPlaybackStateChanged com.takahashirinta.ncrust STATE_PLAYING PlaybackState {state=3, position=49688, buffered position=269746, speed=1.0, updated=83186698, actions=822, custom actions=[], active item id=-1, error=null}
+09-25 13:16:58.167  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:58.168  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:58.168  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:58.168  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:58.403  5733  5733 D io_stats: !@   8,0 r 100513 3936112 w 129857 9743312 d 11618 7308588 f 43870 43870 iot 197450 134636 th 61440 0 0 pt 0 inp 0 0 29278.665
+09-25 13:16:58.702  3714  4080 D ApplicationPolicy: isStatusBarNotificationAllowedAsUser: packageName = com.takahashirinta.ncrust,userId = 0
+09-25 13:16:58.705  9156  9156 D NcrustLyricNotify: re-post on lyric line change: 吹着前奏望着天空
+09-25 13:16:58.720  4602  5598 V Avrcp   : updateMetadata
+09-25 13:16:58.720  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:58.720  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:58.721  4657  4910 D vol.MediaSessions: onMetadataChanged com.takahashirinta.ncrust 吹着前奏望着天空, 晴天 · 周杰伦, null
+09-25 13:16:59.066  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:16:59.067  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:16:59.067  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:16:59.217  3714 27900 D MediaSessionRecord: setPlaybackState oldState:3, newState:3, packageName:com.takahashirinta.ncrust
+09-25 13:16:59.218  4602  5598 V Avrcp   : updatePlayPauseState, old=3, state=3, currentPosMs=50741
+09-25 13:16:59.219  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:59.219  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:59.219  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:59.219  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:16:59.219  4657  4910 D vol.MediaSessions: onPlaybackStateChanged com.takahashirinta.ncrust STATE_PLAYING PlaybackState {state=3, position=50741, buffered position=269746, speed=1.0, updated=83187749, actions=822, custom actions=[], active item id=-1, error=null}
+09-25 13:16:59.790  3714  4060 D MediaSessionRecord: setPlaybackState oldState:3, newState:3, packageName:com.takahashirinta.ncrust
+09-25 13:16:59.793  4657  4910 D vol.MediaSessions: onPlaybackStateChanged com.takahashirinta.ncrust STATE_PLAYING PlaybackState {state=3, position=51303, buffered position=66873, speed=1.0, updated=83188321, actions=7339999, custom actions=[], active item id=0, error=null}
+09-25 13:17:00.000  3714  3961 D SamsungAlarmManager: Expired : 8
+09-25 13:17:00.001  3714  3961 I SamsungAlarmManager: setLocked to kernel - T:3 / 20260925T132033, SetElapsed=83402377, nowELAPSED=83188535
+09-25 13:17:00.001  3714  3961 V SamsungAlarmManager: Sending to uid : 1000 action=android.intent.action.TIME_TICK alarm=Alarm{3f84376 type 3 when 83188534 android}
+09-25 13:17:00.006  3714  3714 D SamsungAlarmManager: setExact Intent (T:3/F:1/AC:false) 20260925T131759 - CU:1000/CP:3714
+09-25 13:17:00.007  3714  3714 I SamsungAlarmManager: setLocked to kernel - T:3 / 20260925T131759, SetElapsed=83248533, nowELAPSED=83188540
+09-25 13:17:00.009  4657  4657 D KeyguardUpdateMonitor: received broadcast android.intent.action.TIME_TICK
+09-25 13:17:00.010  4657  4657 D KeyguardUpdateMonitor: handleTimeUpdate#start
+09-25 13:17:00.010  4657  4657 I KeyguardClockPage: refreshTime(): DefaultSingle2016 hometime:null locale:zh_CN_#Hans hasBG?false, Roaming:false
+09-25 13:17:00.028  4657  4657 D KeyguardUpdateMonitor: handleTimeUpdate#end
+09-25 13:17:00.037  4657  4657 D SystemUI_Clock: Clock received ACTION_TIME_TICK : start
+09-25 13:17:00.040  4657  4657 D SystemUI_Clock: Clock received ACTION_TIME_TICK : end
+09-25 13:17:00.043  4657  4657 D TextClock: TextClock received ACTION_TIME_TICK : start
+09-25 13:17:00.048  4657  4657 D TextClock: TextClock received ACTION_TIME_TICK : end
+09-25 13:17:00.052  4657  4657 D TextClock: TextClock received ACTION_TIME_TICK : start
+09-25 13:17:00.055  4657  4657 D TextClock: TextClock received ACTION_TIME_TICK : end
+09-25 13:17:00.066  4657  4657 D TextClock: TextClock received ACTION_TIME_TICK : start
+09-25 13:17:00.067  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:17:00.067  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:17:00.067  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:17:00.068  4657  4657 D TextClock: TextClock received ACTION_TIME_TICK : end
+09-25 13:17:00.070  4657  4657 V hong    : mid yDiff = 584
+09-25 13:17:00.070  4657  4657 V hong    : mid yDiff = 584
+09-25 13:17:00.071  4657  4657 D SystemUI_DateView: DateView received ACTION_TIME_TICK : start
+09-25 13:17:00.071  4657  4657 D SystemUI_DateView: DateView received ACTION_TIME_TICK : end
+09-25 13:17:00.075  4657  4657 D TextClock: TextClock received ACTION_TIME_TICK : start
+09-25 13:17:00.076  4657  4657 D TextClock: TextClock received ACTION_TIME_TICK : end
+09-25 13:17:00.088  4657  4657 D TextClock: TextClock received ACTION_TIME_TICK : start
+09-25 13:17:00.089  4657  4657 D TextClock: TextClock received ACTION_TIME_TICK : end
+09-25 13:17:00.092  5974  5974 D TextClock: TextClock received ACTION_TIME_TICK : start
+09-25 13:17:00.092  5974  5974 D TextClock: TextClock received ACTION_TIME_TICK : end
+09-25 13:17:00.096  5974  5974 D TextClock: TextClock received ACTION_TIME_TICK : start
+09-25 13:17:00.096  5974  5974 D TextClock: TextClock received ACTION_TIME_TICK : end
+09-25 13:17:00.100  5974  5974 D TextClock: TextClock received ACTION_TIME_TICK : start
+09-25 13:17:00.100  5974  5974 D TextClock: TextClock received ACTION_TIME_TICK : end
+09-25 13:17:00.102  5974  5974 D TextClock: TextClock received ACTION_TIME_TICK : start
+09-25 13:17:00.108  5974  5974 D TextClock: TextClock received ACTION_TIME_TICK : end
+09-25 13:17:00.110  5974  5974 D TextClock: TextClock received ACTION_TIME_TICK : start
+09-25 13:17:00.111  5974  5974 D TextClock: TextClock received ACTION_TIME_TICK : end
+09-25 13:17:00.113  5974  5974 D TextClock: TextClock received ACTION_TIME_TICK : start
+09-25 13:17:00.114  5974  5974 D TextClock: TextClock received ACTION_TIME_TICK : end
+09-25 13:17:00.116  5974  5974 D TextClock: TextClock received ACTION_TIME_TICK : start
+09-25 13:17:00.116  5974  5974 D TextClock: TextClock received ACTION_TIME_TICK : end
+09-25 13:17:00.119  5974  5974 D TextClock: TextClock received ACTION_TIME_TICK : start
+09-25 13:17:00.120  5974  5974 D TextClock: TextClock received ACTION_TIME_TICK : end
+09-25 13:17:00.122  5974  5974 D TextClock: TextClock received ACTION_TIME_TICK : start
+09-25 13:17:00.122  5974  5974 D TextClock: TextClock received ACTION_TIME_TICK : end
+09-25 13:17:00.125  4657  4657 D DateTimeView: DateTimeView received ACTION_TIME_TICK : start
+09-25 13:17:00.127  4657  4657 D DateTimeView: DateTimeView received ACTION_TIME_TICK : end
+09-25 13:17:00.131 12917 12917 D [WeatherWidget(15503)]  WeatherService: {[B73D43639EB27FAA34EF41A6129C1FA787B8DDA06B4FC8C3DFFF289A8228DE1D07957C4CB0877FB29CB85D37C68D39BF076A5D6720D2DA7CE46EF7EA2858EC07]}
+09-25 13:17:00.133 12917 12917 D [WeatherWidget(15503)]  : {[3AE6950019B083611567B0F9442DB03E36B37708FCADB7FDDBA670B1362D994454BFFFDA2568816BBDDA6DD60F644DCF]}
+09-25 13:17:00.135 12917 12917 D [WeatherWidget(15503)]  DB L2: {[610591C4E30FED4A153FF198DAC84EFEE3319B0D622FD4A19809E90ED3C1398368D658B139FCCB8B9564F5B4E9CB634EFB0C05FAA74A49C0E4E7AE87B4FEEF47]}
+09-25 13:17:00.136 12917 12917 D [WeatherWidget(15503)]  : {[E9BDC1AC9F9B078A92B3F309630276C89F9B6E52C087A495B97355481F2FDE5B4FEF3B24831E1ED7D40375B900600272201B7E2D81775D59CD80110C510E681E]}
+09-25 13:17:00.137 12917 12917 D [WeatherWidget(15503)]  DB L2: {[610591C4E30FED4A153FF198DAC84EFE89A6E224C02E8A83ACCF55D6C9B30C810D133EC2E912EEB0D3A811F3C218B14D29B149573DDC0677536A2458CA868085]}
+09-25 13:17:00.138 12917 12917 D [WeatherWidget(15503)]  : {[236FFFA4FE6D378EDABD8749C406D4B6704CAD26277FEC44C7E31C0D1A0DCCA7B2EEFD5C2A539946454EEEABA00B149BD184FB3A0A14BDC44C5FB2E09811FB16]}
+09-25 13:17:00.140 12917 12917 D [WeatherWidget(15503)]  DB L1: {[AAC4384C35CA6909274880C63FD2B8C5C23F90F1E4FCAD3137C9B25E5485CF6C43F2DA7946F5EC2137385A1108A935A6DEE180ACB180CEBC258B1D94A7B51C9C301BB1E603A6CA6308611BCE73C3F388F80B0A6D4BF2BD2DC6BA2B9B14A5E79D]}
+09-25 13:17:00.144 12917 12917 D [WeatherWidget(15503)]  DB L1: {[AAC4384C35CA6909274880C63FD2B8C5F3473DC40E6BFBFEF531799BEDAB65BCF9D2204BD2D3A4DD9C281DFA4511ECB9B9F6CBD8816CB7B1ECEA67908A72D9D7]}
+09-25 13:17:00.146 12917 12917 D [WeatherWidget(15503)]  : {[236FFFA4FE6D378EDABD8749C406D4B6C3E299AD21769432BF8416C202AC04BA3864F2B5FBACF81A1EB2698D7EE71CF5500D433C65402387485173CAB1D13370CEF86483D5B90FCF0C1FC84FB088797A]}
+09-25 13:17:00.147 12917 12917 D [WeatherWidget(15503)]  : {[236FFFA4FE6D378EDABD8749C406D4B64B793469AAAB814F09EF09823656386F8F67FA4894CC01AED0479C6D493C8E4D1EBA3E514A7FBCD219517576263339B15992946B3C5C9549AAB7ADDA926DA48CF1976FC4DEE0FC98F62A2EBDE48EF306]}
+09-25 13:17:00.148 12917 12917 D [WeatherWidget(15503)]  : {[A1AF0F6A1A65A89C43D705938923D0FEF0F5A3266A349FBDC156568DF32B6E4948D3BBEA91743F0961D92F100A454644303B4DF5A9ED56EC34C3D27B46CEEF9E]}
+09-25 13:17:00.148 12917 12917 D [WeatherWidget(15503)]  : {[3AE6950019B083611567B0F9442DB03E93676E5321DC467A2890BE4DBE179F194DD9B1D0C70B1FE7DAC48B7D7ECE7CE019F6813D704FB11171C644CF27A46ABE83CAC17A40A0BA97A665D55C58F5853C]}
+09-25 13:17:00.149 12917 12917 D [WeatherWidget(15503)]  : {[3AE6950019B083611567B0F9442DB03EC34F1B83ED404D4E6435E3FFBF715B1014A019772F45A5616FB49439C6453D04]}
+09-25 13:17:00.150 12917 12917 D [WeatherWidget(15503)]  DB L2: {[610591C4E30FED4A153FF198DAC84EFE91ED32EFEA7D734C6C9656FF251B8ABD1F6CEB0D3CE7525A72979BB41971408F]}
+09-25 13:17:00.152 12917 12917 D [WeatherWidget(15503)]  DB L1: {[AAC4384C35CA6909274880C63FD2B8C5C23F90F1E4FCAD3137C9B25E5485CF6CB632EDF72175B7C1A44DCDF78F73272B9C696C9B9479D10B5383EB071606A5B45F86B81CEDDD7AA3C3AAC7C7D3FA341FE87067F4CF5203BC2B4345D83BC96C29]}
+09-25 13:17:00.155 12917 12917 D [WeatherWidget(15503)]  DB L1: {[AAC4384C35CA6909274880C63FD2B8C5F3473DC40E6BFBFEF531799BEDAB65BCF9D2204BD2D3A4DD9C281DFA4511ECB9B9F6CBD8816CB7B1ECEA67908A72D9D7]}
+09-25 13:17:00.156 12917 12917 D [WeatherWidget(15503)]  : {[3AE6950019B083611567B0F9442DB03EFB3D49C53D0C4EC1AB9163466004074C9258C20A31C8A81316E38D2A701C7D7FFEF1262ACCF089C64D5602F1C50565D5]}
+09-25 13:17:00.158 12917 12917 D [WeatherWidget(15503)]  : {[A1AF0F6A1A65A89C43D705938923D0FE0259CBA56E4484DDAF167EE897E0098DE850AA1CD21F02772909809D64B9BF9A2525E171717923FAD2DDA18006169E846E67690DCE1567F34D493B300F86B100B1B6DE50F797AE34A558F0012E4904C44A82C7E5D8FBA3BFBA2DB347F85970F4]}
+09-25 13:17:00.159 12917 12917 D [WeatherWidget(15503)]  : {[4810067B331AEB927B0DC383B6712F65772A0E73580FEDE068758C590E19C3F3]}
+09-25 13:17:00.223  3714 13913 D MediaSessionRecord: setPlaybackState oldState:3, newState:3, packageName:com.takahashirinta.ncrust
+09-25 13:17:00.225  4657  4910 D vol.MediaSessions: onPlaybackStateChanged com.takahashirinta.ncrust STATE_PLAYING PlaybackState {state=3, position=51744, buffered position=269746, speed=1.0, updated=83188756, actions=822, custom actions=[], active item id=-1, error=null}
+09-25 13:17:00.225  4602  5598 V Avrcp   : updatePlayPauseState, old=3, state=3, currentPosMs=51744
+09-25 13:17:00.225  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:00.225  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:00.225  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:00.225  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:00.239  3714  4089 D WifiStateMachine: Current network is: "CMCC-YKPt-5G" , ID is: 0
+09-25 13:17:01.067  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:17:01.067  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:17:01.067  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:17:01.233  3714 27900 D MediaSessionRecord: setPlaybackState oldState:3, newState:3, packageName:com.takahashirinta.ncrust
+09-25 13:17:01.235  4602  5598 V Avrcp   : updatePlayPauseState, old=3, state=3, currentPosMs=52755
+09-25 13:17:01.236  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:01.236  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:01.236  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:01.236  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:01.236  4657  4910 D vol.MediaSessions: onPlaybackStateChanged com.takahashirinta.ncrust STATE_PLAYING PlaybackState {state=3, position=52755, buffered position=269746, speed=1.0, updated=83189767, actions=822, custom actions=[], active item id=-1, error=null}
+09-25 13:17:01.537  3220  3699 E NetlinkEvent: NetlinkEvent::FindParam(): Parameter 'LABEL' not found
+09-25 13:17:01.537  3220  3699 E NetlinkEvent: NetlinkEvent::FindParam(): Parameter 'UID' not found
+09-25 13:17:01.740  3714  5831 D ApplicationPolicy: isStatusBarNotificationAllowedAsUser: packageName = com.takahashirinta.ncrust,userId = 0
+09-25 13:17:01.741  9156  9156 D NcrustLyricNotify: re-post on lyric line change: 我想起花瓣试着掉落
+09-25 13:17:01.743  4657  4910 D vol.MediaSessions: onMetadataChanged com.takahashirinta.ncrust 我想起花瓣试着掉落, 晴天 · 周杰伦, null
+09-25 13:17:01.743  4602  5598 V Avrcp   : updateMetadata
+09-25 13:17:01.743  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:01.743  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:01.838 14587 14587 D SecurityManagerNative: SecurityManagerNative v2.7.2.6 On 64bit PLATFORM With BORINGSSL
+09-25 13:17:01.842 14587 14587 I appproc : Enhanced Zygote ASLR: ENABLED! nice_name = zygote64
+09-25 13:17:01.842 14587 14587 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+09-25 13:17:01.845 14587 14587 D AndroidRuntime: CheckJNI is OFF
+09-25 13:17:01.847 14587 14587 D AndroidRuntime: addProductProperty: start
+09-25 13:17:01.905 14587 14587 I [saiv 1.1]: saiv_OnLoadJNI.cpp(38): _init: Version 1.1 Build # 3532
+09-25 13:17:01.905 14587 14587 I [saiv 1.1]: saiv_OnLoadJNI.cpp(43): _init: _init() was called
+09-25 13:17:01.926 14587 14587 I MLDAP   : ================================================
+09-25 13:17:01.926 14587 14587 I MLDAP   :  MLDAP_LIB v1.1.16
+09-25 13:17:01.926 14587 14587 I MLDAP   : ================================================
+09-25 13:17:01.975 14587 14587 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl
+09-25 13:17:02.003 14587 14587 D ICU     : No timezone override file found: /data/misc/zoneinfo/current/icu/icu_tzdata.dat
+09-25 13:17:02.024 14587 14587 I Radio-JNI: register_android_hardware_Radio DONE
+09-25 13:17:02.030 14587 14587 D ReflectionHelper: loadKlass() : caller=android.app.Activity.<clinit>:7555 <bottom of call stack> 
+09-25 13:17:02.030 14587 14587 D ReflectionHelper: Reflecting method.....  class <onScreenChanged>
+09-25 13:17:02.031 14587 14587 E SemAffinityControl: SemAffinityControl: registerfunction enter
+09-25 13:17:02.044 14587 14587 D AndroidRuntime: Calling main entry com.android.commands.input.Input
+09-25 13:17:02.044 14587 14587 I Input   : injectKeyEvent: KeyEvent { action=ACTION_DOWN, keyCode=KEYCODE_MEDIA_PLAY, scanCode=0, metaState=0, flags=0x0, repeatCount=0, eventTime=29282307, downTime=29282307, deviceId=-1, displayId=0, source=0x101 }
+09-25 13:17:02.045  3714  6070 D InputDispatcher: Inject key (14587): action=0, eventTime=29282307000000
+09-25 13:17:02.046  3714  4024 I InputDispatcher: Delivering key to (4657): action: 0x0 (0)
+09-25 13:17:02.046  4657  4657 D ViewRootImpl@64dcb41[StatusBar]: ViewPostImeInputStage processKey 0
+09-25 13:17:02.047  3714  6088 D MediaSessionService: Sending media key to com.takahashirinta.ncrust/NcrustSession
+09-25 13:17:02.048 14587 14587 I Input   : injectKeyEvent: KeyEvent { action=ACTION_UP, keyCode=KEYCODE_MEDIA_PLAY, scanCode=0, metaState=0, flags=0x0, repeatCount=0, eventTime=29282307, downTime=29282307, deviceId=-1, displayId=0, source=0x101 }
+09-25 13:17:02.048  3714  3725 D InputDispatcher: Inject key (14587): action=1, eventTime=29282307000000
+09-25 13:17:02.049  3714  4024 I InputDispatcher: Delivering key to (4657): action: 0x1 (0)
+09-25 13:17:02.049  4657  4657 D ViewRootImpl@64dcb41[StatusBar]: ViewPostImeInputStage processKey 1
+09-25 13:17:02.050  3714  4066 D MediaSessionService: Sending media key to com.takahashirinta.ncrust/NcrustSession
+09-25 13:17:02.050 14587 14587 D AndroidRuntime: Shutting down VM
+09-25 13:17:02.066 14587 14587 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl::~AcsAndroidVirtualDisplayIntfImpl - Enter
+09-25 13:17:02.066 14587 14587 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl::~AcsAndroidVirtualDisplayIntfImpl - Enter2
+09-25 13:17:02.066 14587 14587 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl::~AcsAndroidVirtualDisplayIntfImpl - mSource2
+09-25 13:17:02.066 14587 14587 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl::~AcsAndroidVirtualDisplayIntfImpl - Exit
+09-25 13:17:02.067  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:17:02.067  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:17:02.067  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:17:02.244  3714  4080 D MediaSessionRecord: setPlaybackState oldState:3, newState:3, packageName:com.takahashirinta.ncrust
+09-25 13:17:02.245  4602  5598 V Avrcp   : updatePlayPauseState, old=3, state=3, currentPosMs=53763
+09-25 13:17:02.246  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:02.246  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:02.246  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:02.246  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:02.246  4657  4910 D vol.MediaSessions: onPlaybackStateChanged com.takahashirinta.ncrust STATE_PLAYING PlaybackState {state=3, position=53763, buffered position=269746, speed=1.0, updated=83190777, actions=822, custom actions=[], active item id=-1, error=null}
+09-25 13:17:03.068  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:17:03.068  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:17:03.068  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:17:03.082  3714  6959 D SSRM:t  : SIOP:: AP = 370, PST = 378 (W:12), CP = 289, CUR = 129, LCD = 255
+09-25 13:17:03.157  9156  9168 I art     : Background sticky concurrent mark sweep GC freed 786057(15MB) AllocSpace objects, 2(40KB) LOS objects, 29% free, 36MB/52MB, paused 1.922ms total 104.833ms
+09-25 13:17:03.252  3714  4321 D MediaSessionRecord: setPlaybackState oldState:3, newState:3, packageName:com.takahashirinta.ncrust
+09-25 13:17:03.257  4657  4910 D vol.MediaSessions: onPlaybackStateChanged com.takahashirinta.ncrust STATE_PLAYING PlaybackState {state=3, position=54747, buffered position=269746, speed=1.0, updated=83191784, actions=822, custom actions=[], active item id=-1, error=null}
+09-25 13:17:03.260  4602  5598 V Avrcp   : updatePlayPauseState, old=3, state=3, currentPosMs=54747
+09-25 13:17:03.260  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:03.260  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:03.260  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:03.260  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:03.264  3714  4089 D WifiStateMachine: Current network is: "CMCC-YKPt-5G" , ID is: 0
+09-25 13:17:03.292  3714  3740 I PowerManagerService: [PWL] On : 29253248 (30307 ms ago)
+09-25 13:17:03.292  3714  3740 I PowerManagerService: [PWL]  mStayOn: true  mWakeLockSummary & WAKE_LOCK_STAY_AWAKE: 0  mUserActivitySummary: 0x4
+09-25 13:17:03.409  5733  5733 D io_stats: !@   8,0 r 100513 3936112 w 129883 9743512 d 11619 7308592 f 43907 43907 iot 197460 134646 th 61440 0 0 pt 0 inp 0 0 29283.671
+09-25 13:17:03.507  3714  3724 D MediaSessionRecord: setPlaybackState oldState:3, newState:3, packageName:com.takahashirinta.ncrust
+09-25 13:17:03.510  4657  4910 D vol.MediaSessions: onPlaybackStateChanged com.takahashirinta.ncrust STATE_PLAYING PlaybackState {state=3, position=55030, buffered position=82848, speed=1.0, updated=83192038, actions=7339999, custom actions=[], active item id=0, error=null}
+09-25 13:17:04.069  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:17:04.069  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:17:04.069  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:17:04.269  3714  4066 D MediaSessionRecord: setPlaybackState oldState:3, newState:3, packageName:com.takahashirinta.ncrust
+09-25 13:17:04.271  4602  5598 V Avrcp   : updatePlayPauseState, old=3, state=3, currentPosMs=55784
+09-25 13:17:04.271  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:04.271  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:04.271  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:04.271  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:04.271  4657  4910 D vol.MediaSessions: onPlaybackStateChanged com.takahashirinta.ncrust STATE_PLAYING PlaybackState {state=3, position=55784, buffered position=269746, speed=1.0, updated=83192798, actions=822, custom actions=[], active item id=-1, error=null}
+09-25 13:17:04.800  3714  4982 E Watchdog: !@Sync 975 [2026-09-25 13:17:04.800]
+09-25 13:17:05.070  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:17:05.070  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:17:05.070  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:17:05.302  3714  6068 D ApplicationPolicy: isStatusBarNotificationAllowedAsUser: packageName = com.takahashirinta.ncrust,userId = 0
+09-25 13:17:05.303  9156  9156 D NcrustLyricNotify: re-post on lyric line change: 为你翘课的那一天
+09-25 13:17:05.305  3714  5829 D MediaSessionRecord: setPlaybackState oldState:3, newState:3, packageName:com.takahashirinta.ncrust
+09-25 13:17:05.313  4602  5598 V Avrcp   : updatePlayPauseState, old=3, state=3, currentPosMs=56811
+09-25 13:17:05.313  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:05.313  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:05.313  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:05.313  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:05.315  4657  4910 D vol.MediaSessions: onPlaybackStateChanged com.takahashirinta.ncrust STATE_PLAYING PlaybackState {state=3, position=56811, buffered position=269746, speed=1.0, updated=83193838, actions=822, custom actions=[], active item id=-1, error=null}
+09-25 13:17:05.317  4602  5598 V Avrcp   : updateMetadata
+09-25 13:17:05.317  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:05.317  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:05.318  4657  4910 D vol.MediaSessions: onMetadataChanged com.takahashirinta.ncrust 为你翘课的那一天, 晴天 · 周杰伦, null
+09-25 13:17:06.070  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:17:06.070  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:17:06.070  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:17:06.278  3714  4089 D WifiStateMachine: Current network is: "CMCC-YKPt-5G" , ID is: 0
+09-25 13:17:06.313  3714 19461 D MediaSessionRecord: setPlaybackState oldState:3, newState:3, packageName:com.takahashirinta.ncrust
+09-25 13:17:06.314  4657  4910 D vol.MediaSessions: onPlaybackStateChanged com.takahashirinta.ncrust STATE_PLAYING PlaybackState {state=3, position=57827, buffered position=269746, speed=1.0, updated=83194846, actions=822, custom actions=[], active item id=-1, error=null}
+09-25 13:17:06.314  4602  5598 V Avrcp   : updatePlayPauseState, old=3, state=3, currentPosMs=57827
+09-25 13:17:06.315  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:06.315  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:06.315  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:06.315  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:06.509  3714  5831 D MediaSessionRecord: setPlaybackState oldState:3, newState:3, packageName:com.takahashirinta.ncrust
+09-25 13:17:06.510  4657  4910 D vol.MediaSessions: onPlaybackStateChanged com.takahashirinta.ncrust STATE_PLAYING PlaybackState {state=3, position=58028, buffered position=82848, speed=1.0, updated=83195043, actions=7339999, custom actions=[], active item id=0, error=null}
+09-25 13:17:06.590 14599 14599 D SecurityManagerNative: SecurityManagerNative v2.7.2.6 On 64bit PLATFORM With BORINGSSL
+09-25 13:17:06.594 14599 14599 I appproc : Enhanced Zygote ASLR: ENABLED! nice_name = zygote64
+09-25 13:17:06.594 14599 14599 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+09-25 13:17:06.597 14599 14599 D AndroidRuntime: CheckJNI is OFF
+09-25 13:17:06.599 14599 14599 D AndroidRuntime: addProductProperty: start
+09-25 13:17:06.651 14599 14599 I [saiv 1.1]: saiv_OnLoadJNI.cpp(38): _init: Version 1.1 Build # 3532
+09-25 13:17:06.651 14599 14599 I [saiv 1.1]: saiv_OnLoadJNI.cpp(43): _init: _init() was called
+09-25 13:17:06.671 14599 14599 I MLDAP   : ================================================
+09-25 13:17:06.671 14599 14599 I MLDAP   :  MLDAP_LIB v1.1.16
+09-25 13:17:06.671 14599 14599 I MLDAP   : ================================================
+09-25 13:17:06.721 14599 14599 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl
+09-25 13:17:06.749 14599 14599 D ICU     : No timezone override file found: /data/misc/zoneinfo/current/icu/icu_tzdata.dat
+09-25 13:17:06.770 14599 14599 I Radio-JNI: register_android_hardware_Radio DONE
+09-25 13:17:06.777 14599 14599 D ReflectionHelper: loadKlass() : caller=android.app.Activity.<clinit>:7555 <bottom of call stack> 
+09-25 13:17:06.777 14599 14599 D ReflectionHelper: Reflecting method.....  class <onScreenChanged>
+09-25 13:17:06.778 14599 14599 E SemAffinityControl: SemAffinityControl: registerfunction enter
+09-25 13:17:06.790 14599 14599 D AndroidRuntime: Calling main entry com.android.commands.input.Input
+09-25 13:17:06.790 14599 14599 I Input   : injectKeyEvent: KeyEvent { action=ACTION_DOWN, keyCode=KEYCODE_MEDIA_PLAY, scanCode=0, metaState=0, flags=0x0, repeatCount=0, eventTime=29287054, downTime=29287054, deviceId=-1, displayId=0, source=0x101 }
+09-25 13:17:06.791  3714  4080 D InputDispatcher: Inject key (14599): action=0, eventTime=29287054000000
+09-25 13:17:06.792  3714  4024 I InputDispatcher: Delivering key to (4657): action: 0x0 (0)
+09-25 13:17:06.792  4657  4657 D ViewRootImpl@64dcb41[StatusBar]: ViewPostImeInputStage processKey 0
+09-25 13:17:06.793  3714 13913 D MediaSessionService: Sending media key to com.takahashirinta.ncrust/NcrustSession
+09-25 13:17:06.794 14599 14599 I Input   : injectKeyEvent: KeyEvent { action=ACTION_UP, keyCode=KEYCODE_MEDIA_PLAY, scanCode=0, metaState=0, flags=0x0, repeatCount=0, eventTime=29287054, downTime=29287054, deviceId=-1, displayId=0, source=0x101 }
+09-25 13:17:06.794  3714  6068 D InputDispatcher: Inject key (14599): action=1, eventTime=29287054000000
+09-25 13:17:06.795  3714  4024 I InputDispatcher: Delivering key to (4657): action: 0x1 (0)
+09-25 13:17:06.795  4657  4657 D ViewRootImpl@64dcb41[StatusBar]: ViewPostImeInputStage processKey 1
+09-25 13:17:06.795  3714  6088 D MediaSessionService: Sending media key to com.takahashirinta.ncrust/NcrustSession
+09-25 13:17:06.796 14599 14599 D AndroidRuntime: Shutting down VM
+09-25 13:17:06.811 14599 14599 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl::~AcsAndroidVirtualDisplayIntfImpl - Enter
+09-25 13:17:06.811 14599 14599 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl::~AcsAndroidVirtualDisplayIntfImpl - Enter2
+09-25 13:17:06.811 14599 14599 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl::~AcsAndroidVirtualDisplayIntfImpl - mSource2
+09-25 13:17:06.811 14599 14599 I TMSDISP : AcsAndroidVirtualDisplayIntfImpl::~AcsAndroidVirtualDisplayIntfImpl - Exit
+09-25 13:17:07.071  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:17:07.071  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:17:07.071  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:17:07.321  3714  4066 D MediaSessionRecord: setPlaybackState oldState:3, newState:3, packageName:com.takahashirinta.ncrust
+09-25 13:17:07.323  4602  5598 V Avrcp   : updatePlayPauseState, old=3, state=3, currentPosMs=58820
+09-25 13:17:07.323  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:07.323  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:07.323  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:07.323  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:07.324  4657  4910 D vol.MediaSessions: onPlaybackStateChanged com.takahashirinta.ncrust STATE_PLAYING PlaybackState {state=3, position=58820, buffered position=269746, speed=1.0, updated=83195854, actions=822, custom actions=[], active item id=-1, error=null}
+09-25 13:17:07.370  3714  4060 D BatteryService: !@BatteryListener : batteryPropertiesChanged!
+09-25 13:17:07.370  3714  4060 D BatteryService: level:91, scale:100, status:2, health:2, present:true, voltage: 4220, temperature: 313, technology: Li-ion, AC powered:false, USB powered:true, POGO powered:false, Wireless powered:false, icon:17303690, invalid charger:0, maxChargingCurrent:0, maxChargingVoltage:0, chargeCounter:0
+09-25 13:17:07.370  3714  4060 D BatteryService: online:4, current avg:137, charge type:1, power sharing:false, high voltage charger:false, capacity:280000, batterySWSelfDischarging:false, misc_event:0, current_now:254
+09-25 13:17:07.371  3714  3714 D BatteryService: Sending ACTION_BATTERY_CHANGED.
+09-25 13:17:07.376  3714  3714 V UiModeManager: updateLocked: null action, mDockState=0, category=null
+09-25 13:17:07.376  3714  3714 D UiModeManager: updateConfigurationLocked: mDockState=0; mCarMode=false; mNightMode=1; uiMode=17
+09-25 13:17:07.378  3714  3714 D GameManagerService: new battery level: 91
+09-25 13:17:07.382  4657  4657 D KeyguardUpdateMonitor: received broadcast android.intent.action.BATTERY_CHANGED
+09-25 13:17:07.382  4657  4657 D KeyguardUpdateMonitor: handleBatteryUpdate
+09-25 13:17:07.385  4657  4657 D PowerUI : showing power sharing dialogfalse
+09-25 13:17:07.385  4657  4657 D PowerUI : priorPlugType = 2 mPlugType =  2
+09-25 13:17:07.387  4657  4657 D PowerUI.Notification: showChargingNotice oldChargingType : 1 currentChargingType : 1 oldChargingTime : 1801000 mChargingTime : 1801000
+09-25 13:17:07.387  4657  4657 D PowerUI.Notification: There is no change about charging status, so return!
+09-25 13:17:07.389  4657  4657 D BatteryMeterDrawable: isSomethingChanged - false
+09-25 13:17:07.390  4657  4657 D BatteryMeterDrawable: isSomethingChanged - false
+09-25 13:17:07.396  4602  4602 V HeadsetService: HeadsetService - Received Intent.ACTION_BATTERY_CHANGED
+09-25 13:17:07.397  4602  5595 D HeadsetStateMachine: Disconnected process message: 10, size: 0
+09-25 13:17:07.420  4657  4657 D Tile.FlashlightTile: ACTION_BATTERY_CHANGED - Level :: 91, emEnabled :: false
+09-25 13:17:07.666  3220  3699 E NetlinkEvent: NetlinkEvent::FindParam(): Parameter 'LABEL' not found
+09-25 13:17:07.666  3220  3699 E NetlinkEvent: NetlinkEvent::FindParam(): Parameter 'UID' not found
+09-25 13:17:07.837  3714 19461 D ApplicationPolicy: isStatusBarNotificationAllowedAsUser: packageName = com.takahashirinta.ncrust,userId = 0
+09-25 13:17:07.838  9156  9156 D NcrustLyricNotify: re-post on lyric line change: 花落的那一天
+09-25 13:17:07.844  4602  5598 V Avrcp   : updateMetadata
+09-25 13:17:07.844  4657  4910 D vol.MediaSessions: onMetadataChanged com.takahashirinta.ncrust 花落的那一天, 晴天 · 周杰伦, null
+09-25 13:17:07.844  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:07.844  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:08.071  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:17:08.072  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:17:08.072  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:17:08.345  3714  3724 D MediaSessionRecord: setPlaybackState oldState:3, newState:3, packageName:com.takahashirinta.ncrust
+09-25 13:17:08.347  4602  5598 V Avrcp   : updatePlayPauseState, old=3, state=3, currentPosMs=59867
+09-25 13:17:08.347  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:08.347  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:08.347  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:08.347  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:08.347  4657  4910 D vol.MediaSessions: onPlaybackStateChanged com.takahashirinta.ncrust STATE_PLAYING PlaybackState {state=3, position=59867, buffered position=269746, speed=1.0, updated=83196877, actions=822, custom actions=[], active item id=-1, error=null}
+09-25 13:17:08.412  5733  5733 D io_stats: !@   8,0 r 100513 3936112 w 129901 9743680 d 11620 7308596 f 43944 43944 iot 197480 134655 th 61440 0 0 pt 0 inp 0 0 29288.675
+09-25 13:17:08.578  3714  4449 D WifiWatchdogStateMachine:  [|212] []
+09-25 13:17:09.072  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:17:09.072  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:17:09.072  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:17:09.296  3714  4089 D WifiStateMachine: Current network is: "CMCC-YKPt-5G" , ID is: 0
+09-25 13:17:09.372  3714  5831 D ApplicationPolicy: isStatusBarNotificationAllowedAsUser: packageName = com.takahashirinta.ncrust,userId = 0
+09-25 13:17:09.373  9156  9156 D NcrustLyricNotify: re-post on lyric line change: 教室的那一间
+09-25 13:17:09.386  3714  6068 D MediaSessionRecord: setPlaybackState oldState:3, newState:3, packageName:com.takahashirinta.ncrust
+09-25 13:17:09.388  4602  5598 V Avrcp   : updatePlayPauseState, old=3, state=3, currentPosMs=60890
+09-25 13:17:09.389  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:09.389  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:09.389  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:09.389  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:09.391  4657  4910 D vol.MediaSessions: onPlaybackStateChanged com.takahashirinta.ncrust STATE_PLAYING PlaybackState {state=3, position=60890, buffered position=269746, speed=1.0, updated=83197912, actions=822, custom actions=[], active item id=-1, error=null}
+09-25 13:17:09.399  4602  5598 V Avrcp   : updateMetadata
+09-25 13:17:09.399  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:09.399  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:09.400  4657  4910 D vol.MediaSessions: onMetadataChanged com.takahashirinta.ncrust 教室的那一间, 晴天 · 周杰伦, null
+09-25 13:17:09.511  3714 19519 D MediaSessionRecord: setPlaybackState oldState:3, newState:3, packageName:com.takahashirinta.ncrust
+09-25 13:17:09.513  4657  4910 D vol.MediaSessions: onPlaybackStateChanged com.takahashirinta.ncrust STATE_PLAYING PlaybackState {state=3, position=61027, buffered position=82848, speed=1.0, updated=83198044, actions=7339999, custom actions=[], active item id=0, error=null}
+09-25 13:17:10.073  3223  5676 D bauth_FPBAuthService: pcf : 0x1012
+09-25 13:17:10.073  3223  5676 D bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0
+09-25 13:17:10.073  3223  5676 D bauth_FPBAuthService: FPBAuthService, 7265
+09-25 13:17:10.401  3714 13913 D MediaSessionRecord: setPlaybackState oldState:3, newState:3, packageName:com.takahashirinta.ncrust
+09-25 13:17:10.402  4657  4910 D vol.MediaSessions: onPlaybackStateChanged com.takahashirinta.ncrust STATE_PLAYING PlaybackState {state=3, position=61897, buffered position=269746, speed=1.0, updated=83198934, actions=822, custom actions=[], active item id=-1, error=null}
+09-25 13:17:10.402  4602  5598 V Avrcp   : updatePlayPauseState, old=3, state=3, currentPosMs=61897
+09-25 13:17:10.402  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:10.402  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:10.402  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:10.402  4602  5598 W Avrcp   : compareEventFlag : no matched device
+09-25 13:17:10.913  3714  6070 D ApplicationPolicy: isStatusBarNotificationAllowedAsUser: packageName = com.takahashirinta.ncrust,userId = 0
+09-25 13:17:10.914  9156  9156 D NcrustLyricNotify: re-post on lyric line change: 我怎么看不见

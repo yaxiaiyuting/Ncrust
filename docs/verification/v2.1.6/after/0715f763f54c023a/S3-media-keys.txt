@@ -1,0 +1,61 @@
+# 媒体按键矩阵
+# 注入方式: adb shell input keyevent <code>（InputManager -> MediaSessionService -> media button session）
+# 每次都是  前状态 -> 注入 -> 后状态，证明因果。
+# KEYCODE: 85=HEADSETHOOK/PLAY_PAUSE 86=STOP 87=NEXT 88=PREVIOUS 126=PLAY 127=PAUSE
+
+---------- PAUSE(127) (keyevent 127) ----------
+前 state : 3 3 
+前 titles: metadata:size=0, description=null|metadata:size=6, description=但故事的最后你好像还是说了拜, 晴天 · 周杰伦, 叶惠美|metadata:size=6, description=但故事的最后你好像还是说了拜, 晴天 · 周杰伦, 叶惠美|metadata:size=0, description=null|
+$ adb -s 0715f763f54c023a shell input keyevent 127
+后 state : 2 2 
+后 titles: metadata:size=0, description=null|metadata:size=6, description=但故事的最后你好像还是说了拜, 晴天 · 周杰伦, 叶惠美|metadata:size=6, description=但故事的最后你好像还是说了拜, 晴天 · 周杰伦, 叶惠美|metadata:size=0, description=null|
+media button session: 
+
+---------- PLAY(126) (keyevent 126) ----------
+前 state : 2 2 
+前 titles: metadata:size=0, description=null|metadata:size=6, description=但故事的最后你好像还是说了拜, 晴天 · 周杰伦, 叶惠美|metadata:size=6, description=但故事的最后你好像还是说了拜, 晴天 · 周杰伦, 叶惠美|metadata:size=0, description=null|
+$ adb -s 0715f763f54c023a shell input keyevent 126
+后 state : 3 3 
+后 titles: metadata:size=0, description=null|metadata:size=8, description=作词 : 周杰伦, 屋顶 · 周杰伦, null|metadata:size=8, description=作词 : 周杰伦, 屋顶 · 周杰伦, null|metadata:size=0, description=null|
+media button session: 
+
+---------- PLAY_PAUSE(85) (keyevent 85) ----------
+前 state : 3 3 
+前 titles: metadata:size=0, description=null|metadata:size=8, description=作词 : 周杰伦, 屋顶 · 周杰伦, null|metadata:size=8, description=作词 : 周杰伦, 屋顶 · 周杰伦, null|metadata:size=0, description=null|
+$ adb -s 0715f763f54c023a shell input keyevent 85
+后 state : 2 2 
+后 titles: metadata:size=0, description=null|metadata:size=8, description=编曲 : 屠颖, 屋顶 · 周杰伦, null|metadata:size=8, description=编曲 : 屠颖, 屋顶 · 周杰伦, null|metadata:size=0, description=null|
+media button session: 
+
+---------- PLAY_PAUSE(85) 第二次 (keyevent 85) ----------
+前 state : 2 2 
+前 titles: metadata:size=0, description=null|metadata:size=8, description=编曲 : 屠颖, 屋顶 · 周杰伦, null|metadata:size=8, description=编曲 : 屠颖, 屋顶 · 周杰伦, null|metadata:size=0, description=null|
+$ adb -s 0715f763f54c023a shell input keyevent 85
+后 state : 3 3 
+后 titles: metadata:size=0, description=null|metadata:size=8, description=编曲 : 屠颖, 屋顶 · 周杰伦, null|metadata:size=8, description=编曲 : 屠颖, 屋顶 · 周杰伦, null|metadata:size=0, description=null|
+media button session: 
+
+---------- NEXT(87) (keyevent 87) ----------
+前 state : 3 3 
+前 titles: metadata:size=0, description=null|metadata:size=8, description=编曲 : 屠颖, 屋顶 · 周杰伦, null|metadata:size=8, description=编曲 : 屠颖, 屋顶 · 周杰伦, null|metadata:size=0, description=null|
+$ adb -s 0715f763f54c023a shell input keyevent 87
+后 state : 6 6 
+后 titles: metadata:size=0, description=null|metadata:size=4, description=晴天, 周杰伦, null|metadata:size=4, description=晴天, 周杰伦, null|metadata:size=0, description=null|
+media button session: 
+
+---------- PREVIOUS(88) (keyevent 88) ----------
+前 state : 6 6 
+前 titles: metadata:size=0, description=null|metadata:size=4, description=晴天, 周杰伦, null|metadata:size=4, description=晴天, 周杰伦, null|metadata:size=0, description=null|
+$ adb -s 0715f763f54c023a shell input keyevent 88
+后 state : 3 3 
+后 titles: metadata:size=0, description=null|metadata:size=5, description=编曲 : 屠颖, 屋顶 · 周杰伦, null|metadata:size=5, description=编曲 : 屠颖, 屋顶 · 周杰伦, null|metadata:size=0, description=null|
+media button session: 
+
+---------- HEADSETHOOK(79) (keyevent 79) ----------
+前 state : 3 3 
+前 titles: metadata:size=0, description=null|metadata:size=5, description=编曲 : 屠颖, 屋顶 · 周杰伦, null|metadata:size=5, description=编曲 : 屠颖, 屋顶 · 周杰伦, null|metadata:size=0, description=null|
+$ adb -s 0715f763f54c023a shell input keyevent 79
+后 state : 2 2 
+后 titles: metadata:size=0, description=null|metadata:size=5, description=编曲 : 屠颖, 屋顶 · 周杰伦, null|metadata:size=5, description=编曲 : 屠颖, 屋顶 · 周杰伦, null|metadata:size=0, description=null|
+media button session: 
+

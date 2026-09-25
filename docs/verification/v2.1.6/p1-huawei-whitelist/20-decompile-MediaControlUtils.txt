@@ -1,0 +1,1772 @@
+# 反汇编原文 —— com.huawei.android.media.session.MediaControlUtils
+# 来源：/system/framework/hwEmui.jar ! classes.dex（设备 shell 可直接读，无需 root）
+# 提取命令：
+#   adb -s WVQ6R22124000968 pull /system/framework/hwEmui.jar tmp/rom/
+#   (cd tmp/rom/x && unzip -o -q ../../hwEmui.jar 'classes*.dex')
+#   /home/duanjb666/Android/sdk/build-tools/35.0.0/dexdump -d tmp/rom/x/hwEmui/classes.dex   # 再用 awk 只抽目标方法
+# 反汇编器：/home/duanjb666/Android/sdk/build-tools/35.0.0/dexdump  (Android SDK build-tools 35.0.0)
+# 采集时间：2026-09-25T13:06:11+08:00
+# 抽取脚本：tmp/extract_all.awk（已落盘）
+
+## 静态字段与初始值（含白名单文件名常量）
+$ grep -E '^      name          :|^      value         :' tmp/rom/x/hwEmui.MediaControlUtils.dis.txt
+      'BETA_CN'	      3
+      'BETA_OVERSEA'	      5
+      'BLACK_APP_FLAG'	      "0"
+      'BLACK_LIST_THRESHOLD_NUM'	      2
+      'BUBEI_HICAR_TAG'	      "tingshu_media"
+      'BUBEI_PKGNAME'	      "bubei.tingshu"
+      'CALL_APP'	      "callapp"
+      'CONFIG_FILE_WHITE_BLACK_APP'	      "hw_mediaplaybackcontroller_app_config.xml"
+      'COTA_LOCAL_THIRD_APP_FILTER_PATH'	      "/system/emui/base/thirdappfilter/third_app_filter.xml"
+      'CUST_TYPE_CONFIG'	      0
+      'DEFAULT_PENDING_INTENT_RESULT_CODE'	      -1
+      'DISPLAY_STATE_CONNECTED'	      2
+      'DISPLAY_STATE_CONNECTING'	      1
+      'DURATION_ALLOW_START_SERVICE'	      10000
+      'IS_IN_MEDIA_SESSION_WHITE_LIST'	      0
+      'IS_IN_MEDIA_STYLE_BLACK_LIST'	      1
+      'IS_IN_MEDIA_WHITE_LIST_SERVICE_EX'	      2
+      'LOCK'	      null
+      'MEDIA_CONTROL_PROP'	      "hwouc.media_controller_enable"
+      'MEDIA_CONTROL_PROP_ENABLED'	      "enable"
+      'MEDIA_SESSION'	      "mediasession"
+      'MEDIA_STYLE'	      "mediastyle"
+      'MUSIC_VIDEO_TAG'	      "com.android.mediacenter.videoplayer.videomediasession"
+      'NODE_ATTR_APP_NAME'	      "name"
+      'NODE_ATTR_OPTION'	      "options"
+      'NODE_ATTR_PACKAGE'	      "package"
+      'NODE_ATTR_VERSION'	      "version"
+      'NODE_ENABLE_APP'	      "enable"
+      'NODE_FEATURE'	      "feature"
+      'NODE_FEATURES'	      "features"
+      'NODE_FEATURE_NAME'	      "mediaplaybackcontroller"
+      'NODE_FUNCTION'	      "function"
+      'NODE_FUNCTIONS'	      "functions"
+      'SYSTEM_CONFIG_MUSIC_LOCAL'	      "com.huawei.music.local"
+      'SYSTEM_CONFIG_MUSIC_NEW'	      "com.huawei.music"
+      'SYSTEM_CONFIG_MUSIC_OLD'	      "com.android.mediacenter"
+      'TAG'	      "MediaControlUtils"
+      'TASK_MAX_NUM'	      100
+      'TEST_PACK'	      "com.huawei.mediacontroller.plrdtest"
+      'USER_TYPE_BETA'	      "1"
+      'WHITE_LIST_THRESHOLD_NUM'	      2
+      'mAudioService'	      name          : 'sCallAppWhiteList'
+      'sFileMap'	      name          : 'sMediaControllerWhiteList'
+      'sMediaStyleBlackList'	      name          : '<clinit>'
+      '<init>'	      name          : 'adjustMediaStreamVolume'
+      'checkCallAppParam'	      name          : 'checkController'
+      'checkMediaWhiteInfo'	      name          : 'checkOption'
+      'checkVersion'	      name          : 'getCotaXmlFile'
+      'getHwCfgFileList'	      name          : 'getMediaControllerWhiteList'
+      'getParseString'	      name          : 'getPath'
+      'getVersionName'	      name          : 'getVolumeInfoData'
+      'getVolumeInfoData'	      name          : 'handleCallWhiteAppXml'
+      'handleMediaPlayBackXml'	      name          : 'handleMediaSessionWhiteApp'
+      'handleMediaSessionWhiteAppXml'	      name          : 'handleMediaSessionXml'
+      'handleMediaStyleBlackApp'	      name          : 'handleMediaStyleBlackAppXml'
+      'hasMediaPermission'	      name          : 'initAudioService'
+      'initHwMediaControllerWhiteList'	      name          : 'initHwMediaControllerWhiteListFromCota'
+      'isInCallList'	      name          : 'isInMediaBlackListInner'
+      'isInMediaBlackListInner_l'	      name          : 'isInMediaSessionOrStyleList'
+      'isInMediaWhiteListInner'	      name          : 'isMiracastScreening'
+      'isMusicActivityAlive'	      name          : 'isScreenCollConn'
+      'isSystemApp'	      name          : 'isValidCharSequence'
+      'setMediaStreamVolume'	      name          : 'volumeInfoControl'
+
+## checkController
+----- METHOD checkController -----
+    #4              : (in Lcom/huawei/android/media/session/MediaControlUtils;)
+      name          : 'checkController'
+      type          : '(Landroid/media/session/MediaController;Landroid/content/Context;I)Z'
+      access        : 0x0009 (PUBLIC STATIC)
+      hiddenapi     : 0x0002 (BLOCKED)
+      code          -
+      registers     : 9
+      ins           : 3
+      outs          : 4
+      insns size    : 194 16-bit code units
+105d8c:                                        |[105d8c] com.huawei.android.media.session.MediaControlUtils.checkController:(Landroid/media/session/MediaController;Landroid/content/Context;I)Z
+105d9c: 1200                                   |0000: const/4 v0, #int 0 // #0
+105d9e: 1a01 c32a                              |0001: const-string v1, "MediaControlUtils" // string@2ac3
+105da2: 3906 0800                              |0003: if-nez v6, 000b // +0008
+105da6: 1a02 8246                              |0005: const-string v2, "controller is null" // string@4682
+105daa: 7120 a515 2100                         |0007: invoke-static {v1, v2}, Landroid/util/Log;.i:(Ljava/lang/String;Ljava/lang/String;)I // method@15a5
+105db0: 0f00                                   |000a: return v0
+105db2: 6e10 560e 0600                         |000b: invoke-virtual {v6}, Landroid/media/session/MediaController;.getPackageName:()Ljava/lang/String; // method@0e56
+105db8: 0c02                                   |000e: move-result-object v2
+105dba: 1223                                   |000f: const/4 v3, #int 2 // #2
+105dbc: 7140 3927 7238                         |0010: invoke-static {v2, v7, v8, v3}, Lcom/huawei/android/media/session/MediaControlUtils;.isInMediaSessionOrStyleList:(Ljava/lang/String;Landroid/content/Context;II)Z // method@2739
+105dc2: 0a02                                   |0013: move-result v2
+105dc4: 3902 1b00                              |0014: if-nez v2, 002f // +001b
+105dc8: 2202 6a0d                              |0016: new-instance v2, Ljava/lang/StringBuilder; // type@0d6a
+105dcc: 7010 9259 0200                         |0018: invoke-direct {v2}, Ljava/lang/StringBuilder;.<init>:()V // method@5992
+105dd2: 1a03 328a                              |001b: const-string v3, "this app is not in media white list, pkgName: " // string@8a32
+105dd6: 6e20 9d59 3200                         |001d: invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;.append:(Ljava/lang/String;)Ljava/lang/StringBuilder; // method@599d
+105ddc: 6e10 560e 0600                         |0020: invoke-virtual {v6}, Landroid/media/session/MediaController;.getPackageName:()Ljava/lang/String; // method@0e56
+105de2: 0c03                                   |0023: move-result-object v3
+105de4: 6e20 9d59 3200                         |0024: invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;.append:(Ljava/lang/String;)Ljava/lang/StringBuilder; // method@599d
+105dea: 6e10 a659 0200                         |0027: invoke-virtual {v2}, Ljava/lang/StringBuilder;.toString:()Ljava/lang/String; // method@59a6
+105df0: 0c02                                   |002a: move-result-object v2
+105df2: 7120 a715 2100                         |002b: invoke-static {v1, v2}, Landroid/util/Log;.v:(Ljava/lang/String;Ljava/lang/String;)I // method@15a7
+105df8: 0f00                                   |002e: return v0
+105dfa: 6e10 560e 0600                         |002f: invoke-virtual {v6}, Landroid/media/session/MediaController;.getPackageName:()Ljava/lang/String; // method@0e56
+105e00: 0c02                                   |0032: move-result-object v2
+105e02: 1a03 7e41                              |0033: const-string v3, "bubei.tingshu" // string@417e
+105e06: 6e20 6359 2300                         |0035: invoke-virtual {v3, v2}, Ljava/lang/String;.equals:(Ljava/lang/Object;)Z // method@5963
+105e0c: 0a02                                   |0038: move-result v2
+105e0e: 3802 1400                              |0039: if-eqz v2, 004d // +0014
+105e12: 6e10 5b0e 0600                         |003b: invoke-virtual {v6}, Landroid/media/session/MediaController;.getTag:()Ljava/lang/String; // method@0e5b
+105e18: 0c02                                   |003e: move-result-object v2
+105e1a: 1a03 898a                              |003f: const-string v3, "tingshu_media" // string@8a89
+105e1e: 6e20 6359 2300                         |0041: invoke-virtual {v3, v2}, Ljava/lang/String;.equals:(Ljava/lang/Object;)Z // method@5963
+105e24: 0a02                                   |0044: move-result v2
+105e26: 3802 0800                              |0045: if-eqz v2, 004d // +0008
+105e2a: 1a02 368a                              |0047: const-string v2, "this controller is used to hicar" // string@8a36
+105e2e: 7120 a515 2100                         |0049: invoke-static {v1, v2}, Landroid/util/Log;.i:(Ljava/lang/String;Ljava/lang/String;)I // method@15a5
+105e34: 0f00                                   |004c: return v0
+105e36: 6e10 560e 0600                         |004d: invoke-virtual {v6}, Landroid/media/session/MediaController;.getPackageName:()Ljava/lang/String; // method@0e56
+105e3c: 0c02                                   |0050: move-result-object v2
+105e3e: 1a03 1a45                              |0051: const-string v3, "com.huawei.music" // string@451a
+105e42: 6e20 6359 2300                         |0053: invoke-virtual {v3, v2}, Ljava/lang/String;.equals:(Ljava/lang/Object;)Z // method@5963
+105e48: 0a02                                   |0056: move-result v2
+105e4a: 1a04 ab44                              |0057: const-string v4, "com.android.mediacenter" // string@44ab
+105e4e: 3902 0c00                              |0059: if-nez v2, 0065 // +000c
+105e52: 6e10 560e 0600                         |005b: invoke-virtual {v6}, Landroid/media/session/MediaController;.getPackageName:()Ljava/lang/String; // method@0e56
+105e58: 0c02                                   |005e: move-result-object v2
+105e5a: 6e20 6359 2400                         |005f: invoke-virtual {v4, v2}, Ljava/lang/String;.equals:(Ljava/lang/Object;)Z // method@5963
+105e60: 0a02                                   |0062: move-result v2
+105e62: 3802 1500                              |0063: if-eqz v2, 0078 // +0015
+105e66: 0000                                   |0065: nop // spacer
+105e68: 6e10 5b0e 0600                         |0066: invoke-virtual {v6}, Landroid/media/session/MediaController;.getTag:()Ljava/lang/String; // method@0e5b
+105e6e: 0c02                                   |0069: move-result-object v2
+105e70: 1a05 ac44                              |006a: const-string v5, "com.android.mediacenter.videoplayer.videomediasession" // string@44ac
+105e74: 6e20 6359 2500                         |006c: invoke-virtual {v5, v2}, Ljava/lang/String;.equals:(Ljava/lang/Object;)Z // method@5963
+105e7a: 0a02                                   |006f: move-result v2
+105e7c: 3802 0800                              |0070: if-eqz v2, 0078 // +0008
+105e80: 1a02 348a                              |0072: const-string v2, "this controller is hwmusic video" // string@8a34
+105e84: 7120 a515 2100                         |0074: invoke-static {v1, v2}, Landroid/util/Log;.i:(Ljava/lang/String;Ljava/lang/String;)I // method@15a5
+105e8a: 0f00                                   |0077: return v0
+105e8c: 6e10 560e 0600                         |0078: invoke-virtual {v6}, Landroid/media/session/MediaController;.getPackageName:()Ljava/lang/String; // method@0e56
+105e92: 0c02                                   |007b: move-result-object v2
+105e94: 6e20 6359 2300                         |007c: invoke-virtual {v3, v2}, Ljava/lang/String;.equals:(Ljava/lang/Object;)Z // method@5963
+105e9a: 0a02                                   |007f: move-result v2
+105e9c: 3902 3b00                              |0080: if-nez v2, 00bb // +003b
+105ea0: 6e10 560e 0600                         |0082: invoke-virtual {v6}, Landroid/media/session/MediaController;.getPackageName:()Ljava/lang/String; // method@0e56
+105ea6: 0c02                                   |0085: move-result-object v2
+105ea8: 6e20 6359 2400                         |0086: invoke-virtual {v4, v2}, Ljava/lang/String;.equals:(Ljava/lang/Object;)Z // method@5963
+105eae: 0a02                                   |0089: move-result v2
+105eb0: 3902 3100                              |008a: if-nez v2, 00bb // +0031
+105eb4: 6e10 560e 0600                         |008c: invoke-virtual {v6}, Landroid/media/session/MediaController;.getPackageName:()Ljava/lang/String; // method@0e56
+105eba: 0c02                                   |008f: move-result-object v2
+105ebc: 1a03 1b45                              |0090: const-string v3, "com.huawei.music.local" // string@451b
+105ec0: 6e20 6359 2300                         |0092: invoke-virtual {v3, v2}, Ljava/lang/String;.equals:(Ljava/lang/Object;)Z // method@5963
+105ec6: 0a02                                   |0095: move-result v2
+105ec8: 3902 2500                              |0096: if-nez v2, 00bb // +0025
+105ecc: 3808 2300                              |0098: if-eqz v8, 00bb // +0023
+105ed0: 2202 6a0d                              |009a: new-instance v2, Ljava/lang/StringBuilder; // type@0d6a
+105ed4: 7010 9259 0200                         |009c: invoke-direct {v2}, Ljava/lang/StringBuilder;.<init>:()V // method@5992
+105eda: 1a03 358a                              |009f: const-string v3, "this controller is not support pkgName: " // string@8a35
+105ede: 6e20 9d59 3200                         |00a1: invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;.append:(Ljava/lang/String;)Ljava/lang/StringBuilder; // method@599d
+105ee4: 6e10 560e 0600                         |00a4: invoke-virtual {v6}, Landroid/media/session/MediaController;.getPackageName:()Ljava/lang/String; // method@0e56
+105eea: 0c03                                   |00a7: move-result-object v3
+105eec: 6e20 9d59 3200                         |00a8: invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;.append:(Ljava/lang/String;)Ljava/lang/StringBuilder; // method@599d
+105ef2: 1a03 b603                              |00ab: const-string v3, ", userId: " // string@03b6
+105ef6: 6e20 9d59 3200                         |00ad: invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;.append:(Ljava/lang/String;)Ljava/lang/StringBuilder; // method@599d
+105efc: 6e20 9959 8200                         |00b0: invoke-virtual {v2, v8}, Ljava/lang/StringBuilder;.append:(I)Ljava/lang/StringBuilder; // method@5999
+105f02: 6e10 a659 0200                         |00b3: invoke-virtual {v2}, Ljava/lang/StringBuilder;.toString:()Ljava/lang/String; // method@59a6
+105f08: 0c02                                   |00b6: move-result-object v2
+105f0a: 7120 a715 2100                         |00b7: invoke-static {v1, v2}, Landroid/util/Log;.v:(Ljava/lang/String;Ljava/lang/String;)I // method@15a7
+105f10: 0f00                                   |00ba: return v0
+105f12: 1a00 2e43                              |00bb: const-string v0, "checkController is true" // string@432e
+105f16: 7120 a515 0100                         |00bd: invoke-static {v1, v0}, Landroid/util/Log;.i:(Ljava/lang/String;Ljava/lang/String;)I // method@15a5
+105f1c: 1210                                   |00c0: const/4 v0, #int 1 // #1
+105f1e: 0f00                                   |00c1: return v0
+      catches       : (none)
+      positions     :
+        0x0000 line=972
+        0x0005 line=973
+        0x000a line=974
+        0x000b line=976
+        0x0016 line=978
+        0x002e line=979
+        0x002f line=981
+        0x0047 line=982
+        0x004c line=983
+        0x004d line=985
+        0x005b line=986
+        0x0066 line=987
+        0x0072 line=988
+        0x0077 line=989
+        0x0078 line=991
+        0x0082 line=992
+        0x008c line=993
+        0x009a line=994
+        0x00a4 line=995
+        0x00b7 line=994
+        0x00ba line=996
+        0x00bb line=998
+        0x00c0 line=999
+      locals        :
+        0x0000 - 0x00c2 reg=6 controller Landroid/media/session/MediaController;
+        0x0000 - 0x00c2 reg=7 context Landroid/content/Context;
+        0x0000 - 0x00c2 reg=8 userId I
+
+
+## isInMediaSessionOrStyleList
+----- METHOD isInMediaSessionOrStyleList -----
+    #30              : (in Lcom/huawei/android/media/session/MediaControlUtils;)
+      name          : 'isInMediaSessionOrStyleList'
+      type          : '(Ljava/lang/String;Landroid/content/Context;II)Z'
+      access        : 0x0009 (PUBLIC STATIC)
+      hiddenapi     : 0x0002 (BLOCKED)
+      code          -
+      registers     : 9
+      ins           : 4
+      outs          : 4
+      insns size    : 72 16-bit code units
+106458:                                        |[106458] com.huawei.android.media.session.MediaControlUtils.isInMediaSessionOrStyleList:(Ljava/lang/String;Landroid/content/Context;II)Z
+106468: 1200                                   |0000: const/4 v0, #int 0 // #0
+10646a: 1a01 c32a                              |0001: const-string v1, "MediaControlUtils" // string@2ac3
+10646e: 3805 3f00                              |0003: if-eqz v5, 0042 // +003f
+106472: 3906 0300                              |0005: if-nez v6, 0008 // +0003
+106476: 283b                                   |0007: goto 0042 // +003b
+106478: 7120 3227 7600                         |0008: invoke-static {v6, v7}, Lcom/huawei/android/media/session/MediaControlUtils;.hasMediaPermission:(Landroid/content/Context;I)Z // method@2732
+10647e: 0a02                                   |000b: move-result v2
+106480: 1213                                   |000c: const/4 v3, #int 1 // #1
+106482: 3802 0800                              |000d: if-eqz v2, 0015 // +0008
+106486: 1a00 2860                              |000f: const-string v0, "isInMediaSessionOrStyleList has plrd" // string@6028
+10648a: 7120 a515 0100                         |0011: invoke-static {v1, v0}, Landroid/util/Log;.i:(Ljava/lang/String;Ljava/lang/String;)I // method@15a5
+106490: 0f03                                   |0014: return v3
+106492: 1a02 ca7d                              |0015: const-string v2, "ro.board.platform" // string@7dca
+106496: 1a04 0000                              |0017: const-string v4, "" // string@0000
+10649a: 7120 5710 4200                         |0019: invoke-static {v2, v4}, Landroid/os/SystemProperties;.get:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String; // method@1057
+1064a0: 0c02                                   |001c: move-result-object v2
+1064a2: 1a04 d65a                              |001d: const-string v4, "hmos_emulator" // string@5ad6
+1064a6: 6e20 6359 2400                         |001f: invoke-virtual {v4, v2}, Ljava/lang/String;.equals:(Ljava/lang/Object;)Z // method@5963
+1064ac: 0a02                                   |0022: move-result v2
+1064ae: 3802 0300                              |0023: if-eqz v2, 0026 // +0003
+1064b2: 0f03                                   |0025: return v3
+1064b4: 3908 0700                              |0026: if-nez v8, 002d // +0007
+1064b8: 7140 3a27 6587                         |0028: invoke-static {v5, v6, v7, v8}, Lcom/huawei/android/media/session/MediaControlUtils;.isInMediaWhiteListInner:(Ljava/lang/String;Landroid/content/Context;II)Z // method@273a
+1064be: 0a00                                   |002b: move-result v0
+1064c0: 0f00                                   |002c: return v0
+1064c2: 3338 0700                              |002d: if-ne v8, v3, 0034 // +0007
+1064c6: 7130 3727 6507                         |002f: invoke-static {v5, v6, v7}, Lcom/huawei/android/media/session/MediaControlUtils;.isInMediaBlackListInner:(Ljava/lang/String;Landroid/content/Context;I)Z // method@2737
+1064cc: 0a00                                   |0032: move-result v0
+1064ce: 0f00                                   |0033: return v0
+1064d0: 1222                                   |0034: const/4 v2, #int 2 // #2
+1064d2: 3328 0700                              |0035: if-ne v8, v2, 003c // +0007
+1064d6: 7140 3a27 6587                         |0037: invoke-static {v5, v6, v7, v8}, Lcom/huawei/android/media/session/MediaControlUtils;.isInMediaWhiteListInner:(Ljava/lang/String;Landroid/content/Context;II)Z // method@273a
+1064dc: 0a00                                   |003a: move-result v0
+1064de: 0f00                                   |003b: return v0
+1064e0: 1a02 255e                              |003c: const-string v2, "invalid queryType input in isInMediaWhiteList" // string@5e25
+1064e4: 7120 a215 2100                         |003e: invoke-static {v1, v2}, Landroid/util/Log;.e:(Ljava/lang/String;Ljava/lang/String;)I // method@15a2
+1064ea: 0f00                                   |0041: return v0
+1064ec: 1a02 d777                              |0042: const-string v2, "pkgName or context is null" // string@77d7
+1064f0: 7120 a215 2100                         |0044: invoke-static {v1, v2}, Landroid/util/Log;.e:(Ljava/lang/String;Ljava/lang/String;)I // method@15a2
+1064f6: 0f00                                   |0047: return v0
+      catches       : (none)
+      positions     :
+        0x0000 line=184
+        0x0008 line=188
+        0x000f line=189
+        0x0014 line=190
+        0x0015 line=192
+        0x0025 line=193
+        0x0026 line=194
+        0x0028 line=195
+        0x002d line=196
+        0x002f line=197
+        0x0034 line=198
+        0x0037 line=199
+        0x003c line=201
+        0x0041 line=202
+        0x0042 line=185
+        0x0047 line=186
+      locals        :
+        0x0000 - 0x0048 reg=5 pkgName Ljava/lang/String;
+        0x0000 - 0x0048 reg=6 context Landroid/content/Context;
+        0x0000 - 0x0048 reg=7 userId I
+        0x0000 - 0x0048 reg=8 queryType I
+
+
+## isInMediaWhiteListInner
+----- METHOD isInMediaWhiteListInner -----
+    #31              : (in Lcom/huawei/android/media/session/MediaControlUtils;)
+      name          : 'isInMediaWhiteListInner'
+      type          : '(Ljava/lang/String;Landroid/content/Context;II)Z'
+      access        : 0x000a (PRIVATE STATIC)
+      hiddenapi     : 0x0002 (BLOCKED)
+      code          -
+      registers     : 10
+      ins           : 4
+      outs          : 5
+      insns size    : 66 16-bit code units
+1064f8:                                        |[1064f8] com.huawei.android.media.session.MediaControlUtils.isInMediaWhiteListInner:(Ljava/lang/String;Landroid/content/Context;II)Z
+106508: 7130 2827 7608                         |0000: invoke-static {v6, v7, v8}, Lcom/huawei/android/media/session/MediaControlUtils;.getVersionName:(Ljava/lang/String;Landroid/content/Context;I)Ljava/lang/String; // method@2728
+10650e: 0c00                                   |0003: move-result-object v0
+106510: 1201                                   |0004: const/4 v1, #int 0 // #0
+106512: 3800 1800                              |0005: if-eqz v0, 001d // +0018
+106516: 1a02 0000                              |0007: const-string v2, "" // string@0000
+10651a: 6e20 6359 0200                         |0009: invoke-virtual {v2, v0}, Ljava/lang/String;.equals:(Ljava/lang/Object;)Z // method@5963
+106520: 0a02                                   |000c: move-result v2
+106522: 3902 1000                              |000d: if-nez v2, 001d // +0010
+106526: 1a02 ea3b                              |000f: const-string v2, "[^(0-9.)]" // string@3bea
+10652a: 1a03 0000                              |0011: const-string v3, "" // string@0000
+10652e: 6e30 7559 2003                         |0013: invoke-virtual {v0, v2, v3}, Ljava/lang/String;.replaceAll:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String; // method@5975
+106534: 0c02                                   |0016: move-result-object v2
+106536: 1a03 203c                              |0017: const-string v3, "\\." // string@3c20
+10653a: 6e20 7759 3200                         |0019: invoke-virtual {v2, v3}, Ljava/lang/String;.split:(Ljava/lang/String;)[Ljava/lang/String; // method@5977
+106540: 0c01                                   |001c: move-result-object v1
+106542: 6202 0912                              |001d: sget-object v2, Lcom/huawei/android/media/session/MediaControlUtils;.LOCK:Ljava/lang/Object; // field@1209
+106546: 1d02                                   |001f: monitor-enter v2
+106548: 6203 2412                              |0020: sget-object v3, Lcom/huawei/android/media/session/MediaControlUtils;.sMediaControllerWhiteList:Ljava/util/List; // field@1224
+10654c: 7210 ba5a 0300                         |0022: invoke-interface {v3}, Ljava/util/List;.iterator:()Ljava/util/Iterator; // method@5aba
+106552: 0c03                                   |0025: move-result-object v3
+106554: 7210 a25a 0300                         |0026: invoke-interface {v3}, Ljava/util/Iterator;.hasNext:()Z // method@5aa2
+10655a: 0a04                                   |0029: move-result v4
+10655c: 3804 1200                              |002a: if-eqz v4, 003c // +0012
+106560: 7210 a35a 0300                         |002c: invoke-interface {v3}, Ljava/util/Iterator;.next:()Ljava/lang/Object; // method@5aa3
+106566: 0c04                                   |002f: move-result-object v4
+106568: 1f04 d70d                              |0030: check-cast v4, Ljava/util/Map; // type@0dd7
+10656c: 7159 2027 6410                         |0032: invoke-static {v4, v6, v0, v1, v9}, Lcom/huawei/android/media/session/MediaControlUtils;.checkMediaWhiteInfo:(Ljava/util/Map;Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;I)Z // method@2720
+106572: 0a05                                   |0035: move-result v5
+106574: 3805 0500                              |0036: if-eqz v5, 003b // +0005
+106578: 1213                                   |0038: const/4 v3, #int 1 // #1
+10657a: 1e02                                   |0039: monitor-exit v2
+10657c: 0f03                                   |003a: return v3
+10657e: 28eb                                   |003b: goto 0026 // -0015
+106580: 1e02                                   |003c: monitor-exit v2
+106582: 1202                                   |003d: const/4 v2, #int 0 // #0
+106584: 0f02                                   |003e: return v2
+106586: 0d03                                   |003f: move-exception v3
+106588: 1e02                                   |0040: monitor-exit v2
+10658a: 2703                                   |0041: throw v3
+      catches       : 1
+        0x0020 - 0x0041
+          <any> -> 0x003f
+      positions     :
+        0x0000 line=335
+        0x0004 line=336
+        0x0005 line=337
+        0x000f line=338
+        0x0017 line=339
+        0x001d line=341
+        0x0020 line=342
+        0x0032 line=343
+        0x0038 line=344
+        0x003b line=346
+        0x003c line=347
+        0x003d line=348
+        0x003f line=347
+      locals        :
+        0x0017 - 0x001d reg=2 currentVersionName Ljava/lang/String;
+        0x0032 - 0x003b reg=4 map Ljava/util/Map; Ljava/util/Map<Ljava/lang/String;Ljava/lang/String;>;
+        0x0004 - 0x0042 reg=0 versionName Ljava/lang/String;
+        0x0005 - 0x0042 reg=1 versions [Ljava/lang/String;
+        0x0000 - 0x0042 reg=6 pkgName Ljava/lang/String;
+        0x0000 - 0x0042 reg=7 context Landroid/content/Context;
+        0x0000 - 0x0042 reg=8 userId I
+        0x0000 - 0x0042 reg=9 queryType I
+
+
+## checkMediaWhiteInfo
+----- METHOD checkMediaWhiteInfo -----
+    #5              : (in Lcom/huawei/android/media/session/MediaControlUtils;)
+      name          : 'checkMediaWhiteInfo'
+      type          : '(Ljava/util/Map;Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;I)Z'
+      access        : 0x000a (PRIVATE STATIC)
+      hiddenapi     : 0x0002 (BLOCKED)
+      code          -
+      registers     : 16
+      ins           : 5
+      outs          : 2
+      insns size    : 135 16-bit code units
+105f20:                                        |[105f20] com.huawei.android.media.session.MediaControlUtils.checkMediaWhiteInfo:(Ljava/util/Map;Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;I)Z
+105f30: 1200                                   |0000: const/4 v0, #int 0 // #0
+105f32: 1211                                   |0001: const/4 v1, #int 1 // #1
+105f34: 7210 e15a 0b00                         |0002: invoke-interface {v11}, Ljava/util/Map;.entrySet:()Ljava/util/Set; // method@5ae1
+105f3a: 0c02                                   |0005: move-result-object v2
+105f3c: 7210 045b 0200                         |0006: invoke-interface {v2}, Ljava/util/Set;.iterator:()Ljava/util/Iterator; // method@5b04
+105f42: 0c02                                   |0009: move-result-object v2
+105f44: 7210 a25a 0200                         |000a: invoke-interface {v2}, Ljava/util/Iterator;.hasNext:()Z // method@5aa2
+105f4a: 0a03                                   |000d: move-result v3
+105f4c: 1204                                   |000e: const/4 v4, #int 0 // #0
+105f4e: 1225                                   |000f: const/4 v5, #int 2 // #2
+105f50: 3803 7300                              |0010: if-eqz v3, 0083 // +0073
+105f54: 7210 a35a 0200                         |0012: invoke-interface {v2}, Ljava/util/Iterator;.next:()Ljava/lang/Object; // method@5aa3
+105f5a: 0c03                                   |0015: move-result-object v3
+105f5c: 1f03 d60d                              |0016: check-cast v3, Ljava/util/Map$Entry; // type@0dd6
+105f60: 7210 dd5a 0300                         |0018: invoke-interface {v3}, Ljava/util/Map$Entry;.getKey:()Ljava/lang/Object; // method@5add
+105f66: 0c06                                   |001b: move-result-object v6
+105f68: 1f06 680d                              |001c: check-cast v6, Ljava/lang/String; // type@0d68
+105f6c: 7210 de5a 0300                         |001e: invoke-interface {v3}, Ljava/util/Map$Entry;.getValue:()Ljava/lang/Object; // method@5ade
+105f72: 0c07                                   |0021: move-result-object v7
+105f74: 1f07 680d                              |0022: check-cast v7, Ljava/lang/String; // type@0d68
+105f78: 6e10 8159 0700                         |0024: invoke-virtual {v7}, Ljava/lang/String;.trim:()Ljava/lang/String; // method@5981
+105f7e: 0c07                                   |0027: move-result-object v7
+105f80: 1a08 cf75                              |0028: const-string v8, "package" // string@75cf
+105f84: 6e20 6359 6800                         |002a: invoke-virtual {v8, v6}, Ljava/lang/String;.equals:(Ljava/lang/Object;)Z // method@5963
+105f8a: 0a08                                   |002d: move-result v8
+105f8c: 1219                                   |002e: const/4 v9, #int 1 // #1
+105f8e: 3808 1e00                              |002f: if-eqz v8, 004d // +001e
+105f92: 6e20 6359 7c00                         |0031: invoke-virtual {v12, v7}, Ljava/lang/String;.equals:(Ljava/lang/Object;)Z // method@5963
+105f98: 0a08                                   |0034: move-result v8
+105f9a: 3808 1800                              |0035: if-eqz v8, 004d // +0018
+105f9e: 380d 0e00                              |0037: if-eqz v13, 0045 // +000e
+105fa2: 1a08 0000                              |0039: const-string v8, "" // string@0000
+105fa6: 6e20 6359 d800                         |003b: invoke-virtual {v8, v13}, Ljava/lang/String;.equals:(Ljava/lang/Object;)Z // method@5963
+105fac: 0a08                                   |003e: move-result v8
+105fae: 3808 0300                              |003f: if-eqz v8, 0042 // +0003
+105fb2: 2804                                   |0041: goto 0045 // +0004
+105fb4: d800 0001                              |0042: add-int/lit8 v0, v0, #int 1 // #01
+105fb8: 2809                                   |0044: goto 004d // +0009
+105fba: 1a02 c32a                              |0045: const-string v2, "MediaControlUtils" // string@2ac3
+105fbe: 1a04 3b8e                              |0047: const-string v4, "versionName is null, but in media white list" // string@8e3b
+105fc2: 7120 a515 4200                         |0049: invoke-static {v2, v4}, Landroid/util/Log;.i:(Ljava/lang/String;Ljava/lang/String;)I // method@15a5
+105fc8: 0f09                                   |004c: return v9
+105fca: 1a08 2d8e                              |004d: const-string v8, "version" // string@8e2d
+105fce: 6e20 6359 6800                         |004f: invoke-virtual {v8, v6}, Ljava/lang/String;.equals:(Ljava/lang/Object;)Z // method@5963
+105fd4: 0a08                                   |0052: move-result v8
+105fd6: 3808 1d00                              |0053: if-eqz v8, 0070 // +001d
+105fda: 380e 1b00                              |0055: if-eqz v14, 0070 // +001b
+105fde: 1a08 6c04                              |0057: const-string v8, "0" // string@046c
+105fe2: 6e20 6359 7800                         |0059: invoke-virtual {v8, v7}, Ljava/lang/String;.equals:(Ljava/lang/Object;)Z // method@5963
+105fe8: 0a08                                   |005c: move-result v8
+105fea: 390f 0c00                              |005d: if-nez v15, 0069 // +000c
+105fee: 7120 2227 e700                         |005f: invoke-static {v7, v14}, Lcom/huawei/android/media/session/MediaControlUtils;.checkVersion:(Ljava/lang/String;[Ljava/lang/String;)Z // method@2722
+105ff4: 0a0a                                   |0062: move-result v10
+105ff6: 390a 0400                              |0063: if-nez v10, 0067 // +0004
+105ffa: 3808 0300                              |0065: if-eqz v8, 0068 // +0003
+105ffe: 0194                                   |0067: move v4, v9
+106000: b040                                   |0068: add-int/2addr v0, v4
+106002: 335f 0700                              |0069: if-ne v15, v5, 0070 // +0007
+106006: 7120 2227 e700                         |006b: invoke-static {v7, v14}, Lcom/huawei/android/media/session/MediaControlUtils;.checkVersion:(Ljava/lang/String;[Ljava/lang/String;)Z // method@2722
+10600c: 0a04                                   |006e: move-result v4
+10600e: b040                                   |006f: add-int/2addr v0, v4
+106010: 1a04 1e75                              |0070: const-string v4, "options" // string@751e
+106014: 6e20 6359 6400                         |0072: invoke-virtual {v4, v6}, Ljava/lang/String;.equals:(Ljava/lang/Object;)Z // method@5963
+10601a: 0a04                                   |0075: move-result v4
+10601c: 3804 0c00                              |0076: if-eqz v4, 0082 // +000c
+106020: 7110 dd13 0700                         |0078: invoke-static {v7}, Landroid/text/TextUtils;.isEmpty:(Ljava/lang/CharSequence;)Z // method@13dd
+106026: 0a04                                   |007b: move-result v4
+106028: 3904 0600                              |007c: if-nez v4, 0082 // +0006
+10602c: 7110 2127 0700                         |007e: invoke-static {v7}, Lcom/huawei/android/media/session/MediaControlUtils;.checkOption:(Ljava/lang/String;)Z // method@2721
+106032: 0a01                                   |0081: move-result v1
+106034: 2888                                   |0082: goto 000a // -0078
+106036: 3350 0300                              |0083: if-ne v0, v5, 0086 // +0003
+10603a: 0f01                                   |0085: return v1
+10603c: 0f04                                   |0086: return v4
+      catches       : (none)
+      positions     :
+        0x0000 line=353
+        0x0001 line=354
+        0x0002 line=355
+        0x0018 line=356
+        0x001e line=357
+        0x0028 line=358
+        0x0037 line=359
+        0x0042 line=363
+        0x0045 line=360
+        0x004c line=361
+        0x004d line=365
+        0x0057 line=366
+        0x005d line=367
+        0x005f line=368
+        0x0069 line=370
+        0x006b line=371
+        0x0070 line=374
+        0x007e line=375
+        0x0082 line=377
+        0x0083 line=378
+        0x0085 line=379
+        0x0086 line=381
+      locals        :
+        0x005d - 0x0070 reg=8 isVersionForZero Z
+        0x0018 - 0x0082 reg=3 entry Ljava/util/Map$Entry; Ljava/util/Map$Entry<Ljava/lang/String;Ljava/lang/String;>;
+        0x001e - 0x0082 reg=6 key Ljava/lang/String;
+        0x0028 - 0x0082 reg=7 value Ljava/lang/String;
+        0x0001 - 0x0087 reg=0 appInfoCount I
+        0x0002 - 0x0087 reg=1 isOptionRight Z
+        0x0000 - 0x0087 reg=11 map Ljava/util/Map; Ljava/util/Map<Ljava/lang/String;Ljava/lang/String;>;
+        0x0000 - 0x0087 reg=12 pkgName Ljava/lang/String;
+        0x0000 - 0x0087 reg=13 versionName Ljava/lang/String;
+        0x0000 - 0x0087 reg=14 versions [Ljava/lang/String;
+        0x0000 - 0x0087 reg=15 queryType I
+
+
+## checkVersion
+----- METHOD checkVersion -----
+    #7              : (in Lcom/huawei/android/media/session/MediaControlUtils;)
+      name          : 'checkVersion'
+      type          : '(Ljava/lang/String;[Ljava/lang/String;)Z'
+      access        : 0x000a (PRIVATE STATIC)
+      hiddenapi     : 0x0002 (BLOCKED)
+      code          -
+      registers     : 11
+      ins           : 2
+      outs          : 3
+      insns size    : 70 16-bit code units
+1060a4:                                        |[1060a4] com.huawei.android.media.session.MediaControlUtils.checkVersion:(Ljava/lang/String;[Ljava/lang/String;)Z
+1060b4: 1a00 c32a                              |0000: const-string v0, "MediaControlUtils" // string@2ac3
+1060b8: 1201                                   |0002: const/4 v1, #int 0 // #0
+1060ba: 3909 0800                              |0003: if-nez v9, 000b // +0008
+1060be: 1a02 398e                              |0005: const-string v2, "versionName is null" // string@8e39
+1060c2: 7120 a215 2000                         |0007: invoke-static {v0, v2}, Landroid/util/Log;.e:(Ljava/lang/String;Ljava/lang/String;)I // method@15a2
+1060c8: 0f01                                   |000a: return v1
+1060ca: 1a02 ea3b                              |000b: const-string v2, "[^(0-9.)]" // string@3bea
+1060ce: 1a03 0000                              |000d: const-string v3, "" // string@0000
+1060d2: 6e30 7559 2903                         |000f: invoke-virtual {v9, v2, v3}, Ljava/lang/String;.replaceAll:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String; // method@5975
+1060d8: 0c02                                   |0012: move-result-object v2
+1060da: 1a03 203c                              |0013: const-string v3, "\\." // string@3c20
+1060de: 6e20 7759 3200                         |0015: invoke-virtual {v2, v3}, Ljava/lang/String;.split:(Ljava/lang/String;)[Ljava/lang/String; // method@5977
+1060e4: 0c03                                   |0018: move-result-object v3
+1060e6: 2134                                   |0019: array-length v4, v3
+1060e8: 21a5                                   |001a: array-length v5, v10
+1060ea: 7120 2859 5400                         |001b: invoke-static {v4, v5}, Ljava/lang/Math;.min:(II)I // method@5928
+1060f0: 0a04                                   |001e: move-result v4
+1060f2: 1205                                   |001f: const/4 v5, #int 0 // #0
+1060f4: 1216                                   |0020: const/4 v6, #int 1 // #1
+1060f6: 3545 1f00                              |0021: if-ge v5, v4, 0040 // +001f
+1060fa: 4607 0305                              |0023: aget-object v7, v3, v5
+1060fe: 7110 0359 0700                         |0025: invoke-static {v7}, Ljava/lang/Integer;.parseInt:(Ljava/lang/String;)I // method@5903
+106104: 0a07                                   |0028: move-result v7
+106106: 4608 0a05                              |0029: aget-object v8, v10, v5
+10610a: 7110 0359 0800                         |002b: invoke-static {v8}, Ljava/lang/Integer;.parseInt:(Ljava/lang/String;)I // method@5903
+106110: 0a08                                   |002e: move-result v8
+106112: 3378 0600                              |002f: if-ne v8, v7, 0035 // +0006
+106116: 0000                                   |0031: nop // spacer
+106118: d805 0501                              |0032: add-int/lit8 v5, v5, #int 1 // #01
+10611c: 28ec                                   |0034: goto 0020 // -0014
+10611e: 3778 0300                              |0035: if-le v8, v7, 0038 // +0003
+106122: 0161                                   |0037: move v1, v6
+106124: 0f01                                   |0038: return v1
+106126: 0d06                                   |0039: move-exception v6
+106128: 1a07 8d76                              |003a: const-string v7, "parseInt failed." // string@768d
+10612c: 7120 a815 7000                         |003c: invoke-static {v0, v7}, Landroid/util/Log;.w:(Ljava/lang/String;Ljava/lang/String;)I // method@15a8
+106132: 0f01                                   |003f: return v1
+106134: 2130                                   |0040: array-length v0, v3
+106136: 21a5                                   |0041: array-length v5, v10
+106138: 3650 0300                              |0042: if-gt v0, v5, 0045 // +0003
+10613c: 0161                                   |0044: move v1, v6
+10613e: 0f01                                   |0045: return v1
+      catches       : 1
+        0x0023 - 0x002f
+          Ljava/lang/NumberFormatException; -> 0x0039
+      positions     :
+        0x0000 line=440
+        0x0005 line=441
+        0x000a line=442
+        0x000b line=444
+        0x0013 line=445
+        0x0019 line=446
+        0x001f line=447
+        0x0023 line=449
+        0x0029 line=450
+        0x002f line=451
+        0x0031 line=452
+        0x0032 line=447
+        0x0035 line=454
+        0x0039 line=455
+        0x003a line=456
+        0x003f line=457
+        0x0040 line=460
+      locals        :
+        0x0029 - 0x0032 reg=7 minVersionNum I
+        0x002f - 0x0032 reg=8 versionNum I
+        0x0035 - 0x0039 reg=7 minVersionNum I
+        0x0035 - 0x0039 reg=8 versionNum I
+        0x0020 - 0x0040 reg=5 i I
+        0x003a - 0x0040 reg=6 e Ljava/lang/NumberFormatException;
+        0x0013 - 0x0046 reg=2 minVersionName Ljava/lang/String;
+        0x0019 - 0x0046 reg=3 minVersions [Ljava/lang/String;
+        0x001f - 0x0046 reg=4 versionLength I
+        0x0000 - 0x0046 reg=9 versionName Ljava/lang/String;
+        0x0000 - 0x0046 reg=10 versions [Ljava/lang/String;
+
+
+## getVersionName
+----- METHOD getVersionName -----
+    #13              : (in Lcom/huawei/android/media/session/MediaControlUtils;)
+      name          : 'getVersionName'
+      type          : '(Ljava/lang/String;Landroid/content/Context;I)Ljava/lang/String;'
+      access        : 0x000a (PRIVATE STATIC)
+      hiddenapi     : 0x0002 (BLOCKED)
+      code          -
+      registers     : 10
+      ins           : 3
+      outs          : 4
+      insns size    : 60 16-bit code units
+106c84:                                        |[106c84] com.huawei.android.media.session.MediaControlUtils.getVersionName:(Ljava/lang/String;Landroid/content/Context;I)Ljava/lang/String;
+106c94: 6e10 cf03 0800                         |0000: invoke-virtual {v8}, Landroid/content/Context;.getPackageManager:()Landroid/content/pm/PackageManager; // method@03cf
+106c9a: 0c00                                   |0003: move-result-object v0
+106c9c: 1a01 0000                              |0004: const-string v1, "" // string@0000
+106ca0: 1a02 c32a                              |0006: const-string v2, "MediaControlUtils" // string@2ac3
+106ca4: 3900 0800                              |0008: if-nez v0, 0010 // +0008
+106ca8: 1a03 db75                              |000a: const-string v3, "packageManager is null" // string@75db
+106cac: 7120 a215 3200                         |000c: invoke-static {v2, v3}, Landroid/util/Log;.e:(Ljava/lang/String;Ljava/lang/String;)I // method@15a2
+106cb2: 1101                                   |000f: return-object v1
+106cb4: 1203                                   |0010: const/4 v3, #int 0 // #0
+106cb6: 7100 090f 0000                         |0011: invoke-static {}, Landroid/os/Binder;.clearCallingIdentity:()J // method@0f09
+106cbc: 0b04                                   |0014: move-result-wide v4
+106cbe: 1206                                   |0015: const/4 v6, #int 0 // #0
+106cc0: 6e40 4304 7096                         |0016: invoke-virtual {v0, v7, v6, v9}, Landroid/content/pm/PackageManager;.getPackageInfoAsUser:(Ljava/lang/String;II)Landroid/content/pm/PackageInfo; // method@0443
+106cc6: 0c06                                   |0019: move-result-object v6
+106cc8: 0763                                   |001a: move-object v3, v6
+106cca: 7120 0d0f 5400                         |001b: invoke-static {v4, v5}, Landroid/os/Binder;.restoreCallingIdentity:(J)V // method@0f0d
+106cd0: 0000                                   |001e: nop // spacer
+106cd2: 1a01 0000                              |001f: const-string v1, "" // string@0000
+106cd6: 3803 0400                              |0021: if-eqz v3, 0025 // +0004
+106cda: 5431 7c01                              |0023: iget-object v1, v3, Landroid/content/pm/PackageInfo;.versionName:Ljava/lang/String; // field@017c
+106cde: 1101                                   |0025: return-object v1
+106ce0: 0d04                                   |0026: move-exception v4
+106ce2: 2205 6a0d                              |0027: new-instance v5, Ljava/lang/StringBuilder; // type@0d6a
+106ce6: 7010 9259 0500                         |0029: invoke-direct {v5}, Ljava/lang/StringBuilder;.<init>:()V // method@5992
+106cec: 1a06 338a                              |002c: const-string v6, "this app not found: " // string@8a33
+106cf0: 6e20 9d59 6500                         |002e: invoke-virtual {v5, v6}, Ljava/lang/StringBuilder;.append:(Ljava/lang/String;)Ljava/lang/StringBuilder; // method@599d
+106cf6: 6e20 9959 9500                         |0031: invoke-virtual {v5, v9}, Ljava/lang/StringBuilder;.append:(I)Ljava/lang/StringBuilder; // method@5999
+106cfc: 6e10 a659 0500                         |0034: invoke-virtual {v5}, Ljava/lang/StringBuilder;.toString:()Ljava/lang/String; // method@59a6
+106d02: 0c05                                   |0037: move-result-object v5
+106d04: 7120 a515 5200                         |0038: invoke-static {v2, v5}, Landroid/util/Log;.i:(Ljava/lang/String;Ljava/lang/String;)I // method@15a5
+106d0a: 1101                                   |003b: return-object v1
+      catches       : 1
+        0x0011 - 0x001e
+          Landroid/content/pm/PackageManager$NameNotFoundException; -> 0x0026
+      positions     :
+        0x0000 line=418
+        0x0004 line=419
+        0x000a line=420
+        0x000f line=421
+        0x0010 line=423
+        0x0011 line=425
+        0x0015 line=426
+        0x001b line=427
+        0x001e line=431
+        0x001f line=432
+        0x0021 line=433
+        0x0023 line=434
+        0x0025 line=436
+        0x0026 line=428
+        0x0027 line=429
+        0x003b line=430
+      locals        :
+        0x0015 - 0x001e reg=4 identity J
+        0x0021 - 0x0026 reg=1 versionName Ljava/lang/String;
+        0x0004 - 0x003c reg=0 pm Landroid/content/pm/PackageManager;
+        0x0011 - 0x003c reg=3 info Landroid/content/pm/PackageInfo;
+        0x0027 - 0x003c reg=4 e Landroid/content/pm/PackageManager$NameNotFoundException;
+        0x0000 - 0x003c reg=7 pkgName Ljava/lang/String;
+        0x0000 - 0x003c reg=8 context Landroid/content/Context;
+        0x0000 - 0x003c reg=9 userId I
+
+
+## getCotaXmlFile
+----- METHOD getCotaXmlFile -----
+    #8              : (in Lcom/huawei/android/media/session/MediaControlUtils;)
+      name          : 'getCotaXmlFile'
+      type          : '()Ljava/lang/String;'
+      access        : 0x000a (PRIVATE STATIC)
+      hiddenapi     : 0x0002 (BLOCKED)
+      code          -
+      registers     : 8
+      ins           : 0
+      outs          : 2
+      insns size    : 77 16-bit code units
+106a94:                                        |[106a94] com.huawei.android.media.session.MediaControlUtils.getCotaXmlFile:()Ljava/lang/String;
+106aa4: 2200 6a0d                              |0000: new-instance v0, Ljava/lang/StringBuilder; // type@0d6a
+106aa8: 7010 9259 0000                         |0002: invoke-direct {v0}, Ljava/lang/StringBuilder;.<init>:()V // method@5992
+106aae: 1a01 2f8a                              |0005: const-string v1, "thirdappfilter" // string@8a2f
+106ab2: 6e20 9d59 1000                         |0007: invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;.append:(Ljava/lang/String;)Ljava/lang/StringBuilder; // method@599d
+106ab8: 6202 6931                              |000a: sget-object v2, Ljava/io/File;.separator:Ljava/lang/String; // field@3169
+106abc: 6e20 9d59 2000                         |000c: invoke-virtual {v0, v2}, Ljava/lang/StringBuilder;.append:(Ljava/lang/String;)Ljava/lang/StringBuilder; // method@599d
+106ac2: 1a02 2c8a                              |000f: const-string v2, "third_app_filter.xml" // string@8a2c
+106ac6: 6e20 9d59 2000                         |0011: invoke-virtual {v0, v2}, Ljava/lang/StringBuilder;.append:(Ljava/lang/String;)Ljava/lang/StringBuilder; // method@599d
+106acc: 6e10 a659 0000                         |0014: invoke-virtual {v0}, Ljava/lang/StringBuilder;.toString:()Ljava/lang/String; // method@59a6
+106ad2: 0c00                                   |0017: move-result-object v0
+106ad4: 7120 3157 0100                         |0018: invoke-static {v1, v0}, Lhuawei/cust/HwCfgFilePolicy;.getDownloadCfgFile:(Ljava/lang/String;Ljava/lang/String;)[Ljava/lang/String; // method@5731
+106ada: 0c00                                   |001b: move-result-object v0
+106adc: 1a01 c32a                              |001c: const-string v1, "MediaControlUtils" // string@2ac3
+106ae0: 3800 2700                              |001e: if-eqz v0, 0045 // +0027
+106ae4: 2102                                   |0020: array-length v2, v0
+106ae6: 3902 0300                              |0021: if-nez v2, 0024 // +0003
+106aea: 2822                                   |0023: goto 0045 // +0022
+106aec: 2102                                   |0024: array-length v2, v0
+106aee: 1203                                   |0025: const/4 v3, #int 0 // #0
+106af0: 0134                                   |0026: move v4, v3
+106af2: 3524 1b00                              |0027: if-ge v4, v2, 0042 // +001b
+106af6: 4605 0004                              |0029: aget-object v5, v0, v4
+106afa: 2206 6a0d                              |002b: new-instance v6, Ljava/lang/StringBuilder; // type@0d6a
+106afe: 7010 9259 0600                         |002d: invoke-direct {v6}, Ljava/lang/StringBuilder;.<init>:()V // method@5992
+106b04: 1a07 9f51                              |0030: const-string v7, "getDownloadCfgFile dir:" // string@519f
+106b08: 6e20 9d59 7600                         |0032: invoke-virtual {v6, v7}, Ljava/lang/StringBuilder;.append:(Ljava/lang/String;)Ljava/lang/StringBuilder; // method@599d
+106b0e: 6e20 9d59 5600                         |0035: invoke-virtual {v6, v5}, Ljava/lang/StringBuilder;.append:(Ljava/lang/String;)Ljava/lang/StringBuilder; // method@599d
+106b14: 6e10 a659 0600                         |0038: invoke-virtual {v6}, Ljava/lang/StringBuilder;.toString:()Ljava/lang/String; // method@59a6
+106b1a: 0c06                                   |003b: move-result-object v6
+106b1c: 7120 a515 6100                         |003c: invoke-static {v1, v6}, Landroid/util/Log;.i:(Ljava/lang/String;Ljava/lang/String;)I // method@15a5
+106b22: d804 0401                              |003f: add-int/lit8 v4, v4, #int 1 // #01
+106b26: 28e6                                   |0041: goto 0027 // -001a
+106b28: 4601 0003                              |0042: aget-object v1, v0, v3
+106b2c: 1101                                   |0044: return-object v1
+106b2e: 1a02 8e64                              |0045: const-string v2, "loadCotaConfig getDownloadCfgFile return null" // string@648e
+106b32: 7120 a515 2100                         |0047: invoke-static {v1, v2}, Landroid/util/Log;.i:(Ljava/lang/String;Ljava/lang/String;)I // method@15a5
+106b38: 1a01 0000                              |004a: const-string v1, "" // string@0000
+106b3c: 1101                                   |004c: return-object v1
+      catches       : (none)
+      positions     :
+        0x0000 line=577
+        0x001c line=579
+        0x0024 line=583
+        0x002b line=584
+        0x003f line=583
+        0x0042 line=586
+        0x0045 line=580
+        0x004a line=581
+      locals        :
+        0x002b - 0x003f reg=5 dir Ljava/lang/String;
+        0x001c - 0x004d reg=0 dirs [Ljava/lang/String;
+
+
+## getHwCfgFileList
+----- METHOD getHwCfgFileList -----
+    #9              : (in Lcom/huawei/android/media/session/MediaControlUtils;)
+      name          : 'getHwCfgFileList'
+      type          : '(Ljava/lang/String;I)Ljava/util/ArrayList;'
+      access        : 0x000a (PRIVATE STATIC)
+      hiddenapi     : 0x0002 (BLOCKED)
+      code          -
+      registers     : 11
+      ins           : 2
+      outs          : 3
+      insns size    : 122 16-bit code units
+106d1c:                                        |[106d1c] com.huawei.android.media.session.MediaControlUtils.getHwCfgFileList:(Ljava/lang/String;I)Ljava/util/ArrayList;
+106d2c: 1a00 c32a                              |0000: const-string v0, "MediaControlUtils" // string@2ac3
+106d30: 2201 b20d                              |0002: new-instance v1, Ljava/util/ArrayList; // type@0db2
+106d34: 7010 345a 0100                         |0004: invoke-direct {v1}, Ljava/util/ArrayList;.<init>:()V // method@5a34
+106d3a: 1a02 f244                              |0007: const-string v2, "com.huawei.cust.HwCfgFilePolicy" // string@44f2
+106d3e: 7110 c758 0200                         |0009: invoke-static {v2}, Ljava/lang/Class;.forName:(Ljava/lang/String;)Ljava/lang/Class; // method@58c7
+106d44: 0c02                                   |000c: move-result-object v2
+106d46: 1a03 5950                              |000d: const-string v3, "getCfgFileList" // string@5059
+106d4a: 1224                                   |000f: const/4 v4, #int 2 // #2
+106d4c: 2345 160f                              |0010: new-array v5, v4, [Ljava/lang/Class; // type@0f16
+106d50: 1c06 680d                              |0012: const-class v6, Ljava/lang/String; // type@0d68
+106d54: 1207                                   |0014: const/4 v7, #int 0 // #0
+106d56: 4d06 0507                              |0015: aput-object v6, v5, v7
+106d5a: 6206 7931                              |0017: sget-object v6, Ljava/lang/Integer;.TYPE:Ljava/lang/Class; // field@3179
+106d5e: 1218                                   |0019: const/4 v8, #int 1 // #1
+106d60: 4d06 0508                              |001a: aput-object v6, v5, v8
+106d64: 6e30 d158 3205                         |001c: invoke-virtual {v2, v3, v5}, Ljava/lang/Class;.getMethod:(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method; // method@58d1
+106d6a: 0c03                                   |001f: move-result-object v3
+106d6c: 3803 2700                              |0020: if-eqz v3, 0047 // +0027
+106d70: 2345 190f                              |0022: new-array v5, v4, [Ljava/lang/Object; // type@0f19
+106d74: 4d09 0507                              |0024: aput-object v9, v5, v7
+106d78: 7110 0859 0a00                         |0026: invoke-static {v10}, Ljava/lang/Integer;.valueOf:(I)Ljava/lang/Integer; // method@5908
+106d7e: 0c06                                   |0029: move-result-object v6
+106d80: 4d06 0508                              |002a: aput-object v6, v5, v8
+106d84: 1206                                   |002c: const/4 v6, #int 0 // #0
+106d86: 6e30 d159 6305                         |002d: invoke-virtual {v3, v6, v5}, Ljava/lang/reflect/Method;.invoke:(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object; // method@59d1
+106d8c: 0c05                                   |0030: move-result-object v5
+106d8e: 2055 b20d                              |0031: instance-of v5, v5, Ljava/util/ArrayList; // type@0db2
+106d92: 3805 1400                              |0033: if-eqz v5, 0047 // +0014
+106d96: 2344 190f                              |0035: new-array v4, v4, [Ljava/lang/Object; // type@0f19
+106d9a: 4d09 0407                              |0037: aput-object v9, v4, v7
+106d9e: 7110 0859 0a00                         |0039: invoke-static {v10}, Ljava/lang/Integer;.valueOf:(I)Ljava/lang/Integer; // method@5908
+106da4: 0c05                                   |003c: move-result-object v5
+106da6: 4d05 0408                              |003d: aput-object v5, v4, v8
+106daa: 6e30 d159 6304                         |003f: invoke-virtual {v3, v6, v4}, Ljava/lang/reflect/Method;.invoke:(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object; // method@59d1
+106db0: 0c04                                   |0042: move-result-object v4
+106db2: 1f04 b20d                              |0043: check-cast v4, Ljava/util/ArrayList; // type@0db2
+106db6: 0740                                   |0045: move-object v0, v4
+106db8: 0701                                   |0046: move-object v1, v0
+106dba: 2832                                   |0047: goto 0079 // +0032
+106dbc: 0d02                                   |0048: move-exception v2
+106dbe: 1a03 7571                              |0049: const-string v3, "noClassDefFoundError: HwCfgFilePolicy fileList not exists." // string@7175
+106dc2: 7120 a215 3000                         |004b: invoke-static {v0, v3}, Landroid/util/Log;.e:(Ljava/lang/String;Ljava/lang/String;)I // method@15a2
+106dc8: 282b                                   |004e: goto 0079 // +002b
+106dca: 0d02                                   |004f: move-exception v2
+106dcc: 1a03 5b5c                              |0050: const-string v3, "illegalAccessException." // string@5c5b
+106dd0: 7120 a215 3000                         |0052: invoke-static {v0, v3}, Landroid/util/Log;.e:(Ljava/lang/String;Ljava/lang/String;)I // method@15a2
+106dd6: 28f2                                   |0055: goto 0047 // -000e
+106dd8: 0d02                                   |0056: move-exception v2
+106dda: 1a03 5c5c                              |0057: const-string v3, "illegalArgumentException." // string@5c5c
+106dde: 7120 a215 3000                         |0059: invoke-static {v0, v3}, Landroid/util/Log;.e:(Ljava/lang/String;Ljava/lang/String;)I // method@15a2
+106de4: 28eb                                   |005c: goto 0047 // -0015
+106de6: 0d02                                   |005d: move-exception v2
+106de8: 1a03 365e                              |005e: const-string v3, "invocationTargetException." // string@5e36
+106dec: 7120 a215 3000                         |0060: invoke-static {v0, v3}, Landroid/util/Log;.e:(Ljava/lang/String;Ljava/lang/String;)I // method@15a2
+106df2: 28e4                                   |0063: goto 0047 // -001c
+106df4: 0d02                                   |0064: move-exception v2
+106df6: 1a03 798c                              |0065: const-string v3, "unsupportedOperationException." // string@8c79
+106dfa: 7120 a215 3000                         |0067: invoke-static {v0, v3}, Landroid/util/Log;.e:(Ljava/lang/String;Ljava/lang/String;)I // method@15a2
+106e00: 28dd                                   |006a: goto 0047 // -0023
+106e02: 0d02                                   |006b: move-exception v2
+106e04: 1a03 7871                              |006c: const-string v3, "noSuchMethodException " // string@7178
+106e08: 7120 a215 3000                         |006e: invoke-static {v0, v3}, Landroid/util/Log;.e:(Ljava/lang/String;Ljava/lang/String;)I // method@15a2
+106e0e: 28d6                                   |0071: goto 0047 // -002a
+106e10: 0d02                                   |0072: move-exception v2
+106e12: 1a03 d343                              |0073: const-string v3, "classNotFoundException." // string@43d3
+106e16: 7120 a215 3000                         |0075: invoke-static {v0, v3}, Landroid/util/Log;.e:(Ljava/lang/String;Ljava/lang/String;)I // method@15a2
+106e1c: 28cf                                   |0078: goto 0047 // -0031
+106e1e: 1101                                   |0079: return-object v1
+      catches       : 1
+        0x0007 - 0x0045
+          Ljava/lang/ClassNotFoundException; -> 0x0072
+          Ljava/lang/NoSuchMethodException; -> 0x006b
+          Ljava/lang/UnsupportedOperationException; -> 0x0064
+          Ljava/lang/reflect/InvocationTargetException; -> 0x005d
+          Ljava/lang/IllegalArgumentException; -> 0x0056
+          Ljava/lang/IllegalAccessException; -> 0x004f
+          Ljava/lang/NoClassDefFoundError; -> 0x0048
+      positions     :
+        0x0000 line=551
+        0x0007 line=553
+        0x000d line=554
+        0x0020 line=555
+        0x0035 line=556
+        0x0047 line=572
+        0x0048 line=570
+        0x0049 line=571
+        0x004f line=568
+        0x0050 line=569
+        0x0056 line=566
+        0x0057 line=567
+        0x005d line=564
+        0x005e line=565
+        0x0064 line=562
+        0x0065 line=563
+        0x006b line=560
+        0x006c line=561
+        0x0072 line=558
+        0x0073 line=559
+        0x0079 line=573
+      locals        :
+        0x000d - 0x0047 reg=2 cfg Ljava/lang/Class; Ljava/lang/Class<*>;
+        0x0020 - 0x0047 reg=3 method Ljava/lang/reflect/Method;
+        0x0049 - 0x004f reg=2 e Ljava/lang/NoClassDefFoundError;
+        0x0050 - 0x0055 reg=2 e Ljava/lang/IllegalAccessException;
+        0x0057 - 0x005c reg=2 e Ljava/lang/IllegalArgumentException;
+        0x005e - 0x0063 reg=2 e Ljava/lang/reflect/InvocationTargetException;
+        0x0065 - 0x006a reg=2 e Ljava/lang/UnsupportedOperationException;
+        0x006c - 0x0071 reg=2 e Ljava/lang/NoSuchMethodException;
+        0x0073 - 0x0078 reg=2 e Ljava/lang/ClassNotFoundException;
+        0x0007 - 0x007a reg=1 fileList Ljava/util/ArrayList; Ljava/util/ArrayList<Ljava/io/File;>;
+        0x0000 - 0x007a reg=9 fileName Ljava/lang/String;
+        0x0000 - 0x007a reg=10 type I
+
+
+## initHwMediaControllerWhiteList
+----- METHOD initHwMediaControllerWhiteList -----
+    #25              : (in Lcom/huawei/android/media/session/MediaControlUtils;)
+      name          : 'initHwMediaControllerWhiteList'
+      type          : '()V'
+      access        : 0x0009 (PUBLIC STATIC)
+      hiddenapi     : 0x0002 (BLOCKED)
+      code          -
+      registers     : 4
+      ins           : 0
+      outs          : 2
+      insns size    : 57 16-bit code units
+107464:                                        |[107464] com.huawei.android.media.session.MediaControlUtils.initHwMediaControllerWhiteList:()V
+107474: 7100 2327 0000                         |0000: invoke-static {}, Lcom/huawei/android/media/session/MediaControlUtils;.getCotaXmlFile:()Ljava/lang/String; // method@2723
+10747a: 0c00                                   |0003: move-result-object v0
+10747c: 7110 dd13 0000                         |0004: invoke-static {v0}, Landroid/text/TextUtils;.isEmpty:(Ljava/lang/CharSequence;)Z // method@13dd
+107482: 0a01                                   |0007: move-result v1
+107484: 3801 0a00                              |0008: if-eqz v1, 0012 // +000a
+107488: 1a01 c32a                              |000a: const-string v1, "MediaControlUtils" // string@2ac3
+10748c: 1a02 2c5d                              |000c: const-string v2, "initHwMediaControllerWhiteList get file path error!" // string@5d2c
+107490: 7120 a215 2100                         |000e: invoke-static {v1, v2}, Landroid/util/Log;.e:(Ljava/lang/String;Ljava/lang/String;)I // method@15a2
+107496: 0e00                                   |0011: return-void
+107498: 7110 3527 0000                         |0012: invoke-static {v0}, Lcom/huawei/android/media/session/MediaControlUtils;.initHwMediaControllerWhiteListFromCota:(Ljava/lang/String;)V // method@2735
+10749e: 6201 0912                              |0015: sget-object v1, Lcom/huawei/android/media/session/MediaControlUtils;.LOCK:Ljava/lang/Object; // field@1209
+1074a2: 1d01                                   |0017: monitor-enter v1
+1074a4: 6202 2412                              |0018: sget-object v2, Lcom/huawei/android/media/session/MediaControlUtils;.sMediaControllerWhiteList:Ljava/util/List; // field@1224
+1074a8: 7210 c15a 0200                         |001a: invoke-interface {v2}, Ljava/util/List;.size:()I // method@5ac1
+1074ae: 0a02                                   |001d: move-result v2
+1074b0: 3c02 1600                              |001e: if-gtz v2, 0034 // +0016
+1074b4: 1a02 6004                              |0020: const-string v2, "/system/emui/base/thirdappfilter/third_app_filter.xml" // string@0460
+1074b8: 6e20 6359 0200                         |0022: invoke-virtual {v2, v0}, Ljava/lang/String;.equals:(Ljava/lang/Object;)Z // method@5963
+1074be: 0a02                                   |0025: move-result v2
+1074c0: 3902 0e00                              |0026: if-nez v2, 0034 // +000e
+1074c4: 1a02 c32a                              |0028: const-string v2, "MediaControlUtils" // string@2ac3
+1074c8: 1a03 2b5d                              |002a: const-string v3, "initHwMediaControllerWhiteList from cota path fail,try local file path" // string@5d2b
+1074cc: 7120 a215 3200                         |002c: invoke-static {v2, v3}, Landroid/util/Log;.e:(Ljava/lang/String;Ljava/lang/String;)I // method@15a2
+1074d2: 1a02 6004                              |002f: const-string v2, "/system/emui/base/thirdappfilter/third_app_filter.xml" // string@0460
+1074d6: 7110 3527 0200                         |0031: invoke-static {v2}, Lcom/huawei/android/media/session/MediaControlUtils;.initHwMediaControllerWhiteListFromCota:(Ljava/lang/String;)V // method@2735
+1074dc: 1e01                                   |0034: monitor-exit v1
+1074de: 0e00                                   |0035: return-void
+1074e0: 0d02                                   |0036: move-exception v2
+1074e2: 1e01                                   |0037: monitor-exit v1
+1074e4: 2702                                   |0038: throw v2
+      catches       : 1
+        0x0018 - 0x0038
+          <any> -> 0x0036
+      positions     :
+        0x0000 line=475
+        0x0004 line=476
+        0x000a line=477
+        0x0011 line=478
+        0x0012 line=480
+        0x0015 line=481
+        0x0018 line=482
+        0x0028 line=483
+        0x002f line=484
+        0x0034 line=486
+        0x0035 line=487
+        0x0036 line=486
+      locals        :
+        0x0004 - 0x0039 reg=0 thirdAppfilePath Ljava/lang/String;
+
+
+## initHwMediaControllerWhiteListFromCota
+----- METHOD initHwMediaControllerWhiteListFromCota -----
+    #26              : (in Lcom/huawei/android/media/session/MediaControlUtils;)
+      name          : 'initHwMediaControllerWhiteListFromCota'
+      type          : '(Ljava/lang/String;)V'
+      access        : 0x000a (PRIVATE STATIC)
+      hiddenapi     : 0x0002 (BLOCKED)
+      code          -
+      registers     : 7
+      ins           : 1
+      outs          : 3
+      insns size    : 135 16-bit code units
+1074f4:                                        |[1074f4] com.huawei.android.media.session.MediaControlUtils.initHwMediaControllerWhiteListFromCota:(Ljava/lang/String;)V
+107504: 1a00 8d4d                              |0000: const-string v0, "finally initThirdAppFilterList: xml IOException" // string@4d8d
+107508: 7110 dd13 0600                         |0002: invoke-static {v6}, Landroid/text/TextUtils;.isEmpty:(Ljava/lang/CharSequence;)Z // method@13dd
+10750e: 0a01                                   |0005: move-result v1
+107510: 1a02 c32a                              |0006: const-string v2, "MediaControlUtils" // string@2ac3
+107514: 3801 0800                              |0008: if-eqz v1, 0010 // +0008
+107518: 1a00 825d                              |000a: const-string v0, "initThirdAppFilterList get file path error!" // string@5d82
+10751c: 7120 a215 0200                         |000c: invoke-static {v2, v0}, Landroid/util/Log;.e:(Ljava/lang/String;Ljava/lang/String;)I // method@15a2
+107522: 0e00                                   |000f: return-void
+107524: 1201                                   |0010: const/4 v1, #int 0 // #0
+107526: 2203 210d                              |0011: new-instance v3, Ljava/io/File; // type@0d21
+10752a: 7020 6f58 6300                         |0013: invoke-direct {v3, v6}, Ljava/io/File;.<init>:(Ljava/lang/String;)V // method@586f
+107530: 6e10 7358 0300                         |0016: invoke-virtual {v3}, Ljava/io/File;.exists:()Z // method@5873
+107536: 0a04                                   |0019: move-result v4
+107538: 3904 1200                              |001a: if-nez v4, 002c // +0012
+10753c: 1a04 815d                              |001c: const-string v4, "initThirdAppFilterList file is not exists!" // string@5d81
+107540: 7120 a215 4200                         |001e: invoke-static {v2, v4}, Landroid/util/Log;.e:(Ljava/lang/String;Ljava/lang/String;)I // method@15a2
+107546: 3801 0a00                              |0021: if-eqz v1, 002b // +000a
+10754a: 6e10 9358 0100                         |0023: invoke-virtual {v1}, Ljava/io/InputStream;.close:()V // method@5893
+107550: 2805                                   |0026: goto 002b // +0005
+107552: 0d04                                   |0027: move-exception v4
+107554: 7120 a215 0200                         |0028: invoke-static {v2, v0}, Landroid/util/Log;.e:(Ljava/lang/String;Ljava/lang/String;)I // method@15a2
+10755a: 0e00                                   |002b: return-void
+10755c: 2204 230d                              |002c: new-instance v4, Ljava/io/FileInputStream; // type@0d23
+107560: 7020 8358 3400                         |002e: invoke-direct {v4, v3}, Ljava/io/FileInputStream;.<init>:(Ljava/io/File;)V // method@5883
+107566: 0741                                   |0031: move-object v1, v4
+107568: 7100 ee15 0000                         |0032: invoke-static {}, Landroid/util/Xml;.newPullParser:()Lorg/xmlpull/v1/XmlPullParser; // method@15ee
+10756e: 0c04                                   |0035: move-result-object v4
+107570: 3804 1200                              |0036: if-eqz v4, 0048 // +0012
+107574: 6205 8231                              |0038: sget-object v5, Ljava/nio/charset/StandardCharsets;.UTF_8:Ljava/nio/charset/Charset; // field@3182
+107578: 6e10 0b5a 0500                         |003a: invoke-virtual {v5}, Ljava/nio/charset/Charset;.name:()Ljava/lang/String; // method@5a0b
+10757e: 0c05                                   |003d: move-result-object v5
+107580: 7230 b75b 1405                         |003e: invoke-interface {v4, v1, v5}, Lorg/xmlpull/v1/XmlPullParser;.setInput:(Ljava/io/InputStream;Ljava/lang/String;)V // method@5bb7
+107586: 7210 b15b 0400                         |0041: invoke-interface {v4}, Lorg/xmlpull/v1/XmlPullParser;.getEventType:()I // method@5bb1
+10758c: 0a05                                   |0044: move-result v5
+10758e: 7120 2c27 5400                         |0045: invoke-static {v4, v5}, Lcom/huawei/android/media/session/MediaControlUtils;.handleMediaPlayBackXml:(Lorg/xmlpull/v1/XmlPullParser;I)V // method@272c
+107594: 0000                                   |0048: nop // spacer
+107596: 6e10 9358 0100                         |0049: invoke-virtual {v1}, Ljava/io/InputStream;.close:()V // method@5893
+10759c: 282f                                   |004c: goto 007b // +002f
+10759e: 0d03                                   |004d: move-exception v3
+1075a0: 7120 a215 0200                         |004e: invoke-static {v2, v0}, Landroid/util/Log;.e:(Ljava/lang/String;Ljava/lang/String;)I // method@15a2
+1075a6: 28fb                                   |0051: goto 004c // -0005
+1075a8: 0d03                                   |0052: move-exception v3
+1075aa: 2829                                   |0053: goto 007c // +0029
+1075ac: 0d03                                   |0054: move-exception v3
+1075ae: 1a04 845d                              |0055: const-string v4, "initThirdAppFilterList: xml IOException" // string@5d84
+1075b2: 7120 a215 4200                         |0057: invoke-static {v2, v4}, Landroid/util/Log;.e:(Ljava/lang/String;Ljava/lang/String;)I // method@15a2
+1075b8: 0000                                   |005a: nop // spacer
+1075ba: 3801 2000                              |005b: if-eqz v1, 007b // +0020
+1075be: 6e10 9358 0100                         |005d: invoke-virtual {v1}, Ljava/io/InputStream;.close:()V // method@5893
+1075c4: 28ec                                   |0060: goto 004c // -0014
+1075c6: 0d03                                   |0061: move-exception v3
+1075c8: 1a04 855d                              |0062: const-string v4, "initThirdAppFilterList: xml XmlPullParserException" // string@5d85
+1075cc: 7120 a215 4200                         |0064: invoke-static {v2, v4}, Landroid/util/Log;.e:(Ljava/lang/String;Ljava/lang/String;)I // method@15a2
+1075d2: 0000                                   |0067: nop // spacer
+1075d4: 3801 1300                              |0068: if-eqz v1, 007b // +0013
+1075d8: 6e10 9358 0100                         |006a: invoke-virtual {v1}, Ljava/io/InputStream;.close:()V // method@5893
+1075de: 28df                                   |006d: goto 004c // -0021
+1075e0: 0d03                                   |006e: move-exception v3
+1075e2: 1a04 835d                              |006f: const-string v4, "initThirdAppFilterList: xml FileNotFoundException" // string@5d83
+1075e6: 7120 a215 4200                         |0071: invoke-static {v2, v4}, Landroid/util/Log;.e:(Ljava/lang/String;Ljava/lang/String;)I // method@15a2
+1075ec: 0000                                   |0074: nop // spacer
+1075ee: 3801 0600                              |0075: if-eqz v1, 007b // +0006
+1075f2: 6e10 9358 0100                         |0077: invoke-virtual {v1}, Ljava/io/InputStream;.close:()V // method@5893
+1075f8: 28d2                                   |007a: goto 004c // -002e
+1075fa: 0e00                                   |007b: return-void
+1075fc: 3801 0a00                              |007c: if-eqz v1, 0086 // +000a
+107600: 6e10 9358 0100                         |007e: invoke-virtual {v1}, Ljava/io/InputStream;.close:()V // method@5893
+107606: 2805                                   |0081: goto 0086 // +0005
+107608: 0d04                                   |0082: move-exception v4
+10760a: 7120 a215 0200                         |0083: invoke-static {v2, v0}, Landroid/util/Log;.e:(Ljava/lang/String;Ljava/lang/String;)I // method@15a2
+107610: 2703                                   |0086: throw v3
+      catches       : 11
+        0x0011 - 0x0021
+          Ljava/io/FileNotFoundException; -> 0x006e
+          Lorg/xmlpull/v1/XmlPullParserException; -> 0x0061
+          Ljava/io/IOException; -> 0x0054
+          <any> -> 0x0052
+        0x0023 - 0x0026
+          Ljava/io/IOException; -> 0x0027
+        0x002c - 0x0048
+          Ljava/io/FileNotFoundException; -> 0x006e
+          Lorg/xmlpull/v1/XmlPullParserException; -> 0x0061
+          Ljava/io/IOException; -> 0x0054
+          <any> -> 0x0052
+        0x0049 - 0x004c
+          Ljava/io/IOException; -> 0x004d
+        0x0055 - 0x005a
+          <any> -> 0x0052
+        0x005d - 0x0060
+          Ljava/io/IOException; -> 0x004d
+        0x0062 - 0x0067
+          <any> -> 0x0052
+        0x006a - 0x006d
+          Ljava/io/IOException; -> 0x004d
+        0x006f - 0x0074
+          <any> -> 0x0052
+        0x0077 - 0x007a
+          Ljava/io/IOException; -> 0x004d
+        0x007e - 0x0081
+          Ljava/io/IOException; -> 0x0082
+      positions     :
+        0x0000 line=595
+        0x000a line=596
+        0x000f line=597
+        0x0010 line=599
+        0x0011 line=601
+        0x0016 line=602
+        0x001c line=603
+        0x0021 line=620
+        0x0023 line=622
+        0x0026 line=625
+        0x0027 line=623
+        0x0028 line=624
+        0x002b line=604
+        0x002c line=606
+        0x0032 line=607
+        0x0036 line=608
+        0x0038 line=609
+        0x0041 line=610
+        0x0045 line=611
+        0x0048 line=620
+        0x0049 line=622
+        0x004c line=625
+        0x004d line=623
+        0x004e line=624
+        0x0052 line=620
+        0x0054 line=617
+        0x0055 line=618
+        0x005a line=620
+        0x005d line=622
+        0x0061 line=615
+        0x0062 line=616
+        0x0067 line=620
+        0x006a line=622
+        0x006e line=613
+        0x006f line=614
+        0x0074 line=620
+        0x0077 line=622
+        0x007b line=628
+        0x007c line=620
+        0x007e line=622
+        0x0081 line=625
+        0x0082 line=623
+        0x0083 line=624
+        0x0086 line=627
+      locals        :
+        0x0028 - 0x002b reg=4 e Ljava/io/IOException;
+        0x0016 - 0x0048 reg=3 whiteAppFile Ljava/io/File;
+        0x0036 - 0x0048 reg=4 xmlParser Lorg/xmlpull/v1/XmlPullParser;
+        0x0045 - 0x0048 reg=5 eventType I
+        0x004e - 0x0051 reg=3 e Ljava/io/IOException;
+        0x0055 - 0x005b reg=3 e Ljava/io/IOException;
+        0x0062 - 0x0068 reg=3 e Lorg/xmlpull/v1/XmlPullParserException;
+        0x006f - 0x0075 reg=3 e Ljava/io/FileNotFoundException;
+        0x0083 - 0x0086 reg=4 e Ljava/io/IOException;
+        0x0011 - 0x0087 reg=1 inputStream Ljava/io/InputStream;
+        0x0000 - 0x0087 reg=6 filePath Ljava/lang/String;
+
+
+## handleMediaPlayBackXml
+----- METHOD handleMediaPlayBackXml -----
+    #17              : (in Lcom/huawei/android/media/session/MediaControlUtils;)
+      name          : 'handleMediaPlayBackXml'
+      type          : '(Lorg/xmlpull/v1/XmlPullParser;I)V'
+      access        : 0x000a (PRIVATE STATIC)
+      hiddenapi     : 0x0002 (BLOCKED)
+      code          -
+      registers     : 6
+      ins           : 2
+      outs          : 3
+      insns size    : 84 16-bit code units
+107068:                                        |[107068] com.huawei.android.media.session.MediaControlUtils.handleMediaPlayBackXml:(Lorg/xmlpull/v1/XmlPullParser;I)V
+107078: 6200 0912                              |0000: sget-object v0, Lcom/huawei/android/media/session/MediaControlUtils;.LOCK:Ljava/lang/Object; // field@1209
+10707c: 1d00                                   |0002: monitor-enter v0
+10707e: 6201 2412                              |0003: sget-object v1, Lcom/huawei/android/media/session/MediaControlUtils;.sMediaControllerWhiteList:Ljava/util/List; // field@1224
+107082: 7210 b35a 0100                         |0005: invoke-interface {v1}, Ljava/util/List;.clear:()V // method@5ab3
+107088: 6201 2512                              |0008: sget-object v1, Lcom/huawei/android/media/session/MediaControlUtils;.sMediaStyleBlackList:Ljava/util/List; // field@1225
+10708c: 7210 b35a 0100                         |000a: invoke-interface {v1}, Ljava/util/List;.clear:()V // method@5ab3
+107092: 6201 2212                              |000d: sget-object v1, Lcom/huawei/android/media/session/MediaControlUtils;.sCallAppWhiteList:Ljava/util/List; // field@1222
+107096: 7210 b35a 0100                         |000f: invoke-interface {v1}, Ljava/util/List;.clear:()V // method@5ab3
+10709c: 1e00                                   |0012: monitor-exit v0
+10709e: 1200                                   |0013: const/4 v0, #int 0 // #0
+1070a0: 0151                                   |0014: move v1, v5
+1070a2: 1212                                   |0015: const/4 v2, #int 1 // #1
+1070a4: 3221 3a00                              |0016: if-eq v1, v2, 0050 // +003a
+1070a8: 1222                                   |0018: const/4 v2, #int 2 // #2
+1070aa: 3321 2100                              |0019: if-ne v1, v2, 003a // +0021
+1070ae: 1a02 1f4d                              |001b: const-string v2, "feature" // string@4d1f
+1070b2: 7210 b25b 0400                         |001d: invoke-interface {v4}, Lorg/xmlpull/v1/XmlPullParser;.getName:()Ljava/lang/String; // method@5bb2
+1070b8: 0c03                                   |0020: move-result-object v3
+1070ba: 6e20 6359 3200                         |0021: invoke-virtual {v2, v3}, Ljava/lang/String;.equals:(Ljava/lang/Object;)Z // method@5963
+1070c0: 0a02                                   |0024: move-result v2
+1070c2: 3802 1500                              |0025: if-eqz v2, 003a // +0015
+1070c6: 1202                                   |0027: const/4 v2, #int 0 // #0
+1070c8: 1a03 2770                              |0028: const-string v3, "name" // string@7027
+1070cc: 7230 af5b 2403                         |002a: invoke-interface {v4, v2, v3}, Lorg/xmlpull/v1/XmlPullParser;.getAttributeValue:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String; // method@5baf
+1070d2: 0c02                                   |002d: move-result-object v2
+1070d4: 1a03 df6e                              |002e: const-string v3, "mediaplaybackcontroller" // string@6edf
+1070d8: 6e20 6359 2300                         |0030: invoke-virtual {v3, v2}, Ljava/lang/String;.equals:(Ljava/lang/Object;)Z // method@5963
+1070de: 0a03                                   |0033: move-result v3
+1070e0: 3803 0600                              |0034: if-eqz v3, 003a // +0006
+1070e4: 1210                                   |0036: const/4 v0, #int 1 // #1
+1070e6: 7120 2f27 1400                         |0037: invoke-static {v4, v1}, Lcom/huawei/android/media/session/MediaControlUtils;.handleMediaSessionXml:(Lorg/xmlpull/v1/XmlPullParser;I)V // method@272f
+1070ec: 7210 b45b 0400                         |003a: invoke-interface {v4}, Lorg/xmlpull/v1/XmlPullParser;.next:()I // method@5bb4
+1070f2: 0a01                                   |003d: move-result v1
+1070f4: 3800 d7ff                              |003e: if-eqz v0, 0015 // -0029
+1070f8: 1232                                   |0040: const/4 v2, #int 3 // #3
+1070fa: 3321 d4ff                              |0041: if-ne v1, v2, 0015 // -002c
+1070fe: 1a02 1f4d                              |0043: const-string v2, "feature" // string@4d1f
+107102: 7210 b25b 0400                         |0045: invoke-interface {v4}, Lorg/xmlpull/v1/XmlPullParser;.getName:()Ljava/lang/String; // method@5bb2
+107108: 0c03                                   |0048: move-result-object v3
+10710a: 6e20 6359 3200                         |0049: invoke-virtual {v2, v3}, Ljava/lang/String;.equals:(Ljava/lang/Object;)Z // method@5963
+107110: 0a02                                   |004c: move-result v2
+107112: 3802 c8ff                              |004d: if-eqz v2, 0015 // -0038
+107116: 0e00                                   |004f: return-void
+107118: 0e00                                   |0050: return-void
+10711a: 0d01                                   |0051: move-exception v1
+10711c: 1e00                                   |0052: monitor-exit v0
+10711e: 2701                                   |0053: throw v1
+      catches       : 2
+        0x0003 - 0x0013
+          <any> -> 0x0051
+        0x0052 - 0x0053
+          <any> -> 0x0051
+      positions     :
+        0x0000 line=632
+        0x0003 line=633
+        0x0008 line=634
+        0x000d line=635
+        0x0012 line=636
+        0x0013 line=637
+        0x0014 line=638
+        0x0015 line=639
+        0x0018 line=640
+        0x0027 line=641
+        0x002e line=642
+        0x0036 line=643
+        0x0037 line=644
+        0x003a line=647
+        0x003e line=648
+        0x004f line=649
+        0x0050 line=652
+        0x0051 line=636
+      locals        :
+        0x002e - 0x003a reg=2 featureName Ljava/lang/String;
+        0x0014 - 0x0051 reg=0 isMediaPlayback Z
+        0x0015 - 0x0051 reg=1 eventType I
+        0x0000 - 0x0054 reg=4 parser Lorg/xmlpull/v1/XmlPullParser;
+        0x0000 - 0x0054 reg=5 type I
+
+
+## handleMediaSessionWhiteAppXml
+----- METHOD handleMediaSessionWhiteAppXml -----
+    #19              : (in Lcom/huawei/android/media/session/MediaControlUtils;)
+      name          : 'handleMediaSessionWhiteAppXml'
+      type          : '(Lorg/xmlpull/v1/XmlPullParser;I)V'
+      access        : 0x000a (PRIVATE STATIC)
+      hiddenapi     : 0x0002 (BLOCKED)
+      code          -
+      registers     : 8
+      ins           : 2
+      outs          : 4
+      insns size    : 68 16-bit code units
+1071cc:                                        |[1071cc] com.huawei.android.media.session.MediaControlUtils.handleMediaSessionWhiteAppXml:(Lorg/xmlpull/v1/XmlPullParser;I)V
+1071dc: 0170                                   |0000: move v0, v7
+1071de: 1211                                   |0001: const/4 v1, #int 1 // #1
+1071e0: 3210 4100                              |0002: if-eq v0, v1, 0043 // +0041
+1071e4: 1221                                   |0004: const/4 v1, #int 2 // #2
+1071e6: 3310 2a00                              |0005: if-ne v0, v1, 002f // +002a
+1071ea: 7210 b25b 0600                         |0007: invoke-interface {v6}, Lorg/xmlpull/v1/XmlPullParser;.getName:()Ljava/lang/String; // method@5bb2
+1071f0: 0c01                                   |000a: move-result-object v1
+1071f2: 1a02 8f4b                              |000b: const-string v2, "enable" // string@4b8f
+1071f6: 6e20 6359 1200                         |000d: invoke-virtual {v2, v1}, Ljava/lang/String;.equals:(Ljava/lang/Object;)Z // method@5963
+1071fc: 0a01                                   |0010: move-result v1
+1071fe: 3801 1e00                              |0011: if-eqz v1, 002f // +001e
+107202: 1201                                   |0013: const/4 v1, #int 0 // #0
+107204: 1a02 2770                              |0014: const-string v2, "name" // string@7027
+107208: 7230 af5b 1602                         |0016: invoke-interface {v6, v1, v2}, Lorg/xmlpull/v1/XmlPullParser;.getAttributeValue:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String; // method@5baf
+10720e: 0c02                                   |0019: move-result-object v2
+107210: 1a03 cf75                              |001a: const-string v3, "package" // string@75cf
+107214: 7230 af5b 1603                         |001c: invoke-interface {v6, v1, v3}, Lorg/xmlpull/v1/XmlPullParser;.getAttributeValue:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String; // method@5baf
+10721a: 0c03                                   |001f: move-result-object v3
+10721c: 1a04 2d8e                              |0020: const-string v4, "version" // string@8e2d
+107220: 7230 af5b 1604                         |0022: invoke-interface {v6, v1, v4}, Lorg/xmlpull/v1/XmlPullParser;.getAttributeValue:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String; // method@5baf
+107226: 0c04                                   |0025: move-result-object v4
+107228: 1a05 1e75                              |0026: const-string v5, "options" // string@751e
+10722c: 7230 af5b 1605                         |0028: invoke-interface {v6, v1, v5}, Lorg/xmlpull/v1/XmlPullParser;.getAttributeValue:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String; // method@5baf
+107232: 0c01                                   |002b: move-result-object v1
+107234: 7140 2d27 3214                         |002c: invoke-static {v2, v3, v4, v1}, Lcom/huawei/android/media/session/MediaControlUtils;.handleMediaSessionWhiteApp:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V // method@272d
+10723a: 7210 b45b 0600                         |002f: invoke-interface {v6}, Lorg/xmlpull/v1/XmlPullParser;.next:()I // method@5bb4
+107240: 0a00                                   |0032: move-result v0
+107242: 1231                                   |0033: const/4 v1, #int 3 // #3
+107244: 3310 cdff                              |0034: if-ne v0, v1, 0001 // -0033
+107248: 7210 b25b 0600                         |0036: invoke-interface {v6}, Lorg/xmlpull/v1/XmlPullParser;.getName:()Ljava/lang/String; // method@5bb2
+10724e: 0c01                                   |0039: move-result-object v1
+107250: 1a02 9f4e                              |003a: const-string v2, "function" // string@4e9f
+107254: 6e20 6359 1200                         |003c: invoke-virtual {v2, v1}, Ljava/lang/String;.equals:(Ljava/lang/Object;)Z // method@5963
+10725a: 0a01                                   |003f: move-result v1
+10725c: 3801 c1ff                              |0040: if-eqz v1, 0001 // -003f
+107260: 0e00                                   |0042: return-void
+107262: 0e00                                   |0043: return-void
+      catches       : (none)
+      positions     :
+        0x0000 line=679
+        0x0001 line=680
+        0x0004 line=681
+        0x0013 line=682
+        0x001a line=683
+        0x0020 line=684
+        0x0026 line=685
+        0x002c line=686
+        0x002f line=688
+        0x0033 line=689
+        0x0042 line=690
+        0x0043 line=693
+      locals        :
+        0x002c - 0x002f reg=1 options Ljava/lang/String;
+        0x001a - 0x002f reg=2 appName Ljava/lang/String;
+        0x0020 - 0x002f reg=3 packageName Ljava/lang/String;
+        0x0026 - 0x002f reg=4 version Ljava/lang/String;
+        0x0001 - 0x0044 reg=0 eventType I
+        0x0000 - 0x0044 reg=6 parser Lorg/xmlpull/v1/XmlPullParser;
+        0x0000 - 0x0044 reg=7 type I
+
+
+## handleMediaSessionWhiteApp
+----- METHOD handleMediaSessionWhiteApp -----
+    #18              : (in Lcom/huawei/android/media/session/MediaControlUtils;)
+      name          : 'handleMediaSessionWhiteApp'
+      type          : '(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V'
+      access        : 0x000a (PRIVATE STATIC)
+      hiddenapi     : 0x0002 (BLOCKED)
+      code          -
+      registers     : 7
+      ins           : 4
+      outs          : 3
+      insns size    : 62 16-bit code units
+107134:                                        |[107134] com.huawei.android.media.session.MediaControlUtils.handleMediaSessionWhiteApp:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+107144: 2200 c40d                              |0000: new-instance v0, Ljava/util/HashMap; // type@0dc4
+107148: 7010 825a 0000                         |0002: invoke-direct {v0}, Ljava/util/HashMap;.<init>:()V // method@5a82
+10714e: 7110 3f27 0300                         |0005: invoke-static {v3}, Lcom/huawei/android/media/session/MediaControlUtils;.isValidCharSequence:(Ljava/lang/CharSequence;)Z // method@273f
+107154: 0a01                                   |0008: move-result v1
+107156: 3801 0700                              |0009: if-eqz v1, 0010 // +0007
+10715a: 1a01 2770                              |000b: const-string v1, "name" // string@7027
+10715e: 7230 e65a 1003                         |000d: invoke-interface {v0, v1, v3}, Ljava/util/Map;.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object; // method@5ae6
+107164: 7110 3f27 0400                         |0010: invoke-static {v4}, Lcom/huawei/android/media/session/MediaControlUtils;.isValidCharSequence:(Ljava/lang/CharSequence;)Z // method@273f
+10716a: 0a01                                   |0013: move-result v1
+10716c: 3801 0700                              |0014: if-eqz v1, 001b // +0007
+107170: 1a01 cf75                              |0016: const-string v1, "package" // string@75cf
+107174: 7230 e65a 1004                         |0018: invoke-interface {v0, v1, v4}, Ljava/util/Map;.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object; // method@5ae6
+10717a: 7110 3f27 0500                         |001b: invoke-static {v5}, Lcom/huawei/android/media/session/MediaControlUtils;.isValidCharSequence:(Ljava/lang/CharSequence;)Z // method@273f
+107180: 0a01                                   |001e: move-result v1
+107182: 3801 0700                              |001f: if-eqz v1, 0026 // +0007
+107186: 1a01 2d8e                              |0021: const-string v1, "version" // string@8e2d
+10718a: 7230 e65a 1005                         |0023: invoke-interface {v0, v1, v5}, Ljava/util/Map;.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object; // method@5ae6
+107190: 7110 3f27 0600                         |0026: invoke-static {v6}, Lcom/huawei/android/media/session/MediaControlUtils;.isValidCharSequence:(Ljava/lang/CharSequence;)Z // method@273f
+107196: 0a01                                   |0029: move-result v1
+107198: 3801 0700                              |002a: if-eqz v1, 0031 // +0007
+10719c: 1a01 1e75                              |002c: const-string v1, "options" // string@751e
+1071a0: 7230 e65a 1006                         |002e: invoke-interface {v0, v1, v6}, Ljava/util/Map;.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object; // method@5ae6
+1071a6: 6201 0912                              |0031: sget-object v1, Lcom/huawei/android/media/session/MediaControlUtils;.LOCK:Ljava/lang/Object; // field@1209
+1071aa: 1d01                                   |0033: monitor-enter v1
+1071ac: 6202 2412                              |0034: sget-object v2, Lcom/huawei/android/media/session/MediaControlUtils;.sMediaControllerWhiteList:Ljava/util/List; // field@1224
+1071b0: 7220 b15a 0200                         |0036: invoke-interface {v2, v0}, Ljava/util/List;.add:(Ljava/lang/Object;)Z // method@5ab1
+1071b6: 1e01                                   |0039: monitor-exit v1
+1071b8: 0e00                                   |003a: return-void
+1071ba: 0d02                                   |003b: move-exception v2
+1071bc: 1e01                                   |003c: monitor-exit v1
+1071be: 2702                                   |003d: throw v2
+      catches       : 1
+        0x0034 - 0x003d
+          <any> -> 0x003b
+      positions     :
+        0x0000 line=507
+        0x0005 line=508
+        0x000b line=509
+        0x0010 line=511
+        0x0016 line=512
+        0x001b line=514
+        0x0021 line=515
+        0x0026 line=517
+        0x002c line=518
+        0x0031 line=520
+        0x0034 line=521
+        0x0039 line=522
+        0x003a line=523
+        0x003b line=522
+      locals        :
+        0x0005 - 0x003e reg=0 appInfo Ljava/util/Map; Ljava/util/Map<Ljava/lang/String;Ljava/lang/String;>;
+        0x0000 - 0x003e reg=3 appName Ljava/lang/String;
+        0x0000 - 0x003e reg=4 packageName Ljava/lang/String;
+        0x0000 - 0x003e reg=5 version Ljava/lang/String;
+        0x0000 - 0x003e reg=6 options Ljava/lang/String;
+
+
+## getMediaControllerWhiteList
+----- METHOD getMediaControllerWhiteList -----
+    #10              : (in Lcom/huawei/android/media/session/MediaControlUtils;)
+      name          : 'getMediaControllerWhiteList'
+      type          : '()Ljava/util/List;'
+      access        : 0x0009 (PUBLIC STATIC)
+      hiddenapi     : 0x0002 (BLOCKED)
+      code          -
+      registers     : 1
+      ins           : 0
+      outs          : 1
+      insns size    : 11 16-bit code units
+106e40:                                        |[106e40] com.huawei.android.media.session.MediaControlUtils.getMediaControllerWhiteList:()Ljava/util/List;
+106e50: 6200 2412                              |0000: sget-object v0, Lcom/huawei/android/media/session/MediaControlUtils;.sMediaControllerWhiteList:Ljava/util/List; // field@1224
+106e54: 3900 0800                              |0002: if-nez v0, 000a // +0008
+106e58: 2200 b20d                              |0004: new-instance v0, Ljava/util/ArrayList; // type@0db2
+106e5c: 7010 345a 0000                         |0006: invoke-direct {v0}, Ljava/util/ArrayList;.<init>:()V // method@5a34
+106e62: 1100                                   |0009: return-object v0
+106e64: 1100                                   |000a: return-object v0
+      catches       : (none)
+      positions     :
+        0x0000 line=309
+        0x0004 line=310
+        0x000a line=312
+      locals        :
+
+
+## hasMediaPermission
+----- METHOD hasMediaPermission -----
+    #23              : (in Lcom/huawei/android/media/session/MediaControlUtils;)
+      name          : 'hasMediaPermission'
+      type          : '(Landroid/content/Context;I)Z'
+      access        : 0x000a (PRIVATE STATIC)
+      hiddenapi     : 0x0002 (BLOCKED)
+      code          -
+      registers     : 8
+      ins           : 2
+      outs          : 3
+      insns size    : 84 16-bit code units
+106150:                                        |[106150] com.huawei.android.media.session.MediaControlUtils.hasMediaPermission:(Landroid/content/Context;I)Z
+106160: 1a00 c65b                              |0000: const-string v0, "hwouc.media_controller_enable" // string@5bc6
+106164: 1a01 0000                              |0002: const-string v1, "" // string@0000
+106168: 7120 5710 1000                         |0004: invoke-static {v0, v1}, Landroid/os/SystemProperties;.get:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String; // method@1057
+10616e: 0c00                                   |0007: move-result-object v0
+106170: 1a01 8f4b                              |0008: const-string v1, "enable" // string@4b8f
+106174: 6e20 6359 0100                         |000a: invoke-virtual {v1, v0}, Ljava/lang/String;.equals:(Ljava/lang/Object;)Z // method@5963
+10617a: 0a00                                   |000d: move-result v0
+10617c: 1201                                   |000e: const/4 v1, #int 0 // #0
+10617e: 3900 0300                              |000f: if-nez v0, 0012 // +0003
+106182: 0f01                                   |0011: return v1
+106184: 6e10 cf03 0600                         |0012: invoke-virtual {v6}, Landroid/content/Context;.getPackageManager:()Landroid/content/pm/PackageManager; // method@03cf
+10618a: 0c00                                   |0015: move-result-object v0
+10618c: 1a02 c32a                              |0016: const-string v2, "MediaControlUtils" // string@2ac3
+106190: 3900 0800                              |0018: if-nez v0, 0020 // +0008
+106194: 1a03 a22d                              |001a: const-string v3, "PackageManager is null" // string@2da2
+106198: 7120 a815 3200                         |001c: invoke-static {v2, v3}, Landroid/util/Log;.w:(Ljava/lang/String;Ljava/lang/String;)I // method@15a8
+10619e: 0f01                                   |001f: return v1
+1061a0: 1203                                   |0020: const/4 v3, #int 0 // #0
+1061a2: 1a04 1745                              |0021: const-string v4, "com.huawei.mediacontroller.plrdtest" // string@4517
+1061a6: 6e30 3a04 4001                         |0023: invoke-virtual {v0, v4, v1}, Landroid/content/pm/PackageManager;.getApplicationInfo:(Ljava/lang/String;I)Landroid/content/pm/ApplicationInfo; // method@043a
+1061ac: 0c01                                   |0026: move-result-object v1
+1061ae: 3801 2b00                              |0027: if-eqz v1, 0052 // +002b
+1061b2: 5214 6e01                              |0029: iget v4, v1, Landroid/content/pm/ApplicationInfo;.uid:I // field@016e
+1061b6: 7130 3e27 4607                         |002b: invoke-static {v6, v4, v7}, Lcom/huawei/android/media/session/MediaControlUtils;.isSystemApp:(Landroid/content/Context;II)Z // method@273e
+1061bc: 0a04                                   |002e: move-result v4
+1061be: 0143                                   |002f: move v3, v4
+1061c0: 2204 6a0d                              |0030: new-instance v4, Ljava/lang/StringBuilder; // type@0d6a
+1061c4: 7010 9259 0400                         |0032: invoke-direct {v4}, Ljava/lang/StringBuilder;.<init>:()V // method@5992
+1061ca: 1a05 6900                              |0035: const-string v5, " hasMediaPerssion: isSystemApp: " // string@0069
+1061ce: 6e20 9d59 5400                         |0037: invoke-virtual {v4, v5}, Ljava/lang/StringBuilder;.append:(Ljava/lang/String;)Ljava/lang/StringBuilder; // method@599d
+1061d4: 6e20 9e59 3400                         |003a: invoke-virtual {v4, v3}, Ljava/lang/StringBuilder;.append:(Z)Ljava/lang/StringBuilder; // method@599e
+1061da: 6e10 a659 0400                         |003d: invoke-virtual {v4}, Ljava/lang/StringBuilder;.toString:()Ljava/lang/String; // method@59a6
+1061e0: 0c04                                   |0040: move-result-object v4
+1061e2: 7120 a515 4200                         |0041: invoke-static {v2, v4}, Landroid/util/Log;.i:(Ljava/lang/String;Ljava/lang/String;)I // method@15a5
+1061e8: 280e                                   |0044: goto 0052 // +000e
+1061ea: 0d01                                   |0045: move-exception v1
+1061ec: 1a04 455a                              |0046: const-string v4, "hasMediaPermission Exception" // string@5a45
+1061f0: 7120 a215 4200                         |0048: invoke-static {v2, v4}, Landroid/util/Log;.e:(Ljava/lang/String;Ljava/lang/String;)I // method@15a2
+1061f6: 2808                                   |004b: goto 0053 // +0008
+1061f8: 0d01                                   |004c: move-exception v1
+1061fa: 1a04 a32d                              |004d: const-string v4, "PackageManager not found for hasMediaPerssion" // string@2da3
+1061fe: 7120 a215 4200                         |004f: invoke-static {v2, v4}, Landroid/util/Log;.e:(Ljava/lang/String;Ljava/lang/String;)I // method@15a2
+106204: 0000                                   |0052: nop // spacer
+106206: 0f03                                   |0053: return v3
+      catches       : 1
+        0x0021 - 0x0044
+          Landroid/content/pm/PackageManager$NameNotFoundException; -> 0x004c
+          Ljava/lang/Exception; -> 0x0045
+      positions     :
+        0x0000 line=214
+        0x0011 line=215
+        0x0012 line=217
+        0x0016 line=218
+        0x001a line=219
+        0x001f line=220
+        0x0020 line=222
+        0x0021 line=224
+        0x0027 line=225
+        0x0029 line=226
+        0x0030 line=227
+        0x0045 line=231
+        0x0046 line=232
+        0x004c line=229
+        0x004d line=230
+        0x0052 line=233
+        0x0053 line=234
+      locals        :
+        0x0027 - 0x0045 reg=1 info Landroid/content/pm/ApplicationInfo;
+        0x0046 - 0x004c reg=1 e Ljava/lang/Exception;
+        0x004d - 0x0052 reg=1 e Landroid/content/pm/PackageManager$NameNotFoundException;
+        0x0016 - 0x0054 reg=0 pm Landroid/content/pm/PackageManager;
+        0x0021 - 0x0054 reg=3 isTestSys Z
+        0x0000 - 0x0054 reg=6 context Landroid/content/Context;
+        0x0000 - 0x0054 reg=7 userId I
+
+
+## handleMediaSessionXml
+----- METHOD handleMediaSessionXml -----
+    #20              : (in Lcom/huawei/android/media/session/MediaControlUtils;)
+      name          : 'handleMediaSessionXml'
+      type          : '(Lorg/xmlpull/v1/XmlPullParser;I)V'
+      access        : 0x000a (PRIVATE STATIC)
+      hiddenapi     : 0x0002 (BLOCKED)
+      code          -
+      registers     : 6
+      ins           : 2
+      outs          : 3
+      insns size    : 90 16-bit code units
+107264:                                        |[107264] com.huawei.android.media.session.MediaControlUtils.handleMediaSessionXml:(Lorg/xmlpull/v1/XmlPullParser;I)V
+107274: 0150                                   |0000: move v0, v5
+107276: 1211                                   |0001: const/4 v1, #int 1 // #1
+107278: 3210 5700                              |0002: if-eq v0, v1, 0059 // +0057
+10727c: 1221                                   |0004: const/4 v1, #int 2 // #2
+10727e: 3310 4000                              |0005: if-ne v0, v1, 0045 // +0040
+107282: 7210 b25b 0400                         |0007: invoke-interface {v4}, Lorg/xmlpull/v1/XmlPullParser;.getName:()Ljava/lang/String; // method@5bb2
+107288: 0c01                                   |000a: move-result-object v1
+10728a: 1a02 9f4e                              |000b: const-string v2, "function" // string@4e9f
+10728e: 6e20 6359 1200                         |000d: invoke-virtual {v2, v1}, Ljava/lang/String;.equals:(Ljava/lang/Object;)Z // method@5963
+107294: 0a01                                   |0010: move-result v1
+107296: 3801 3400                              |0011: if-eqz v1, 0045 // +0034
+10729a: 1201                                   |0013: const/4 v1, #int 0 // #0
+10729c: 1a02 2770                              |0014: const-string v2, "name" // string@7027
+1072a0: 7230 af5b 1402                         |0016: invoke-interface {v4, v1, v2}, Lorg/xmlpull/v1/XmlPullParser;.getAttributeValue:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String; // method@5baf
+1072a6: 0c01                                   |0019: move-result-object v1
+1072a8: 1a02 e06e                              |001a: const-string v2, "mediasession" // string@6ee0
+1072ac: 6e20 6359 1200                         |001c: invoke-virtual {v2, v1}, Ljava/lang/String;.equals:(Ljava/lang/Object;)Z // method@5963
+1072b2: 0a02                                   |001f: move-result v2
+1072b4: 3802 0600                              |0020: if-eqz v2, 0026 // +0006
+1072b8: 7120 2e27 0400                         |0022: invoke-static {v4, v0}, Lcom/huawei/android/media/session/MediaControlUtils;.handleMediaSessionWhiteAppXml:(Lorg/xmlpull/v1/XmlPullParser;I)V // method@272e
+1072be: 2820                                   |0025: goto 0045 // +0020
+1072c0: 1a02 e16e                              |0026: const-string v2, "mediastyle" // string@6ee1
+1072c4: 6e20 6359 1200                         |0028: invoke-virtual {v2, v1}, Ljava/lang/String;.equals:(Ljava/lang/Object;)Z // method@5963
+1072ca: 0a02                                   |002b: move-result v2
+1072cc: 3802 0600                              |002c: if-eqz v2, 0032 // +0006
+1072d0: 7120 3127 0400                         |002e: invoke-static {v4, v0}, Lcom/huawei/android/media/session/MediaControlUtils;.handleMediaStyleBlackAppXml:(Lorg/xmlpull/v1/XmlPullParser;I)V // method@2731
+1072d6: 2814                                   |0031: goto 0045 // +0014
+1072d8: 1a02 1142                              |0032: const-string v2, "callapp" // string@4211
+1072dc: 6e20 6359 1200                         |0034: invoke-virtual {v2, v1}, Ljava/lang/String;.equals:(Ljava/lang/Object;)Z // method@5963
+1072e2: 0a02                                   |0037: move-result v2
+1072e4: 3802 0600                              |0038: if-eqz v2, 003e // +0006
+1072e8: 7120 2b27 0400                         |003a: invoke-static {v4, v0}, Lcom/huawei/android/media/session/MediaControlUtils;.handleCallWhiteAppXml:(Lorg/xmlpull/v1/XmlPullParser;I)V // method@272b
+1072ee: 2808                                   |003d: goto 0045 // +0008
+1072f0: 1a02 c32a                              |003e: const-string v2, "MediaControlUtils" // string@2ac3
+1072f4: 1a03 b559                              |0040: const-string v3, "handleMediaSessionXml others" // string@59b5
+1072f8: 7120 a515 3200                         |0042: invoke-static {v2, v3}, Landroid/util/Log;.i:(Ljava/lang/String;Ljava/lang/String;)I // method@15a5
+1072fe: 7210 b45b 0400                         |0045: invoke-interface {v4}, Lorg/xmlpull/v1/XmlPullParser;.next:()I // method@5bb4
+107304: 0a00                                   |0048: move-result v0
+107306: 1231                                   |0049: const/4 v1, #int 3 // #3
+107308: 3310 b7ff                              |004a: if-ne v0, v1, 0001 // -0049
+10730c: 7210 b25b 0400                         |004c: invoke-interface {v4}, Lorg/xmlpull/v1/XmlPullParser;.getName:()Ljava/lang/String; // method@5bb2
+107312: 0c01                                   |004f: move-result-object v1
+107314: 1a02 a14e                              |0050: const-string v2, "functions" // string@4ea1
+107318: 6e20 6359 1200                         |0052: invoke-virtual {v2, v1}, Ljava/lang/String;.equals:(Ljava/lang/Object;)Z // method@5963
+10731e: 0a01                                   |0055: move-result v1
+107320: 3801 abff                              |0056: if-eqz v1, 0001 // -0055
+107324: 0e00                                   |0058: return-void
+107326: 0e00                                   |0059: return-void
+      catches       : (none)
+      positions     :
+        0x0000 line=656
+        0x0001 line=657
+        0x0004 line=658
+        0x0013 line=659
+        0x001a line=660
+        0x0022 line=661
+        0x0026 line=662
+        0x002e line=663
+        0x0032 line=664
+        0x003a line=665
+        0x003e line=667
+        0x0045 line=670
+        0x0049 line=671
+        0x0058 line=672
+        0x0059 line=675
+      locals        :
+        0x001a - 0x0045 reg=1 functionName Ljava/lang/String;
+        0x0001 - 0x005a reg=0 eventType I
+        0x0000 - 0x005a reg=4 parser Lorg/xmlpull/v1/XmlPullParser;
+        0x0000 - 0x005a reg=5 type I
+
+
+## checkOption
+----- METHOD checkOption -----
+    #6              : (in Lcom/huawei/android/media/session/MediaControlUtils;)
+      name          : 'checkOption'
+      type          : '(Ljava/lang/String;)Z'
+      access        : 0x000a (PRIVATE STATIC)
+      hiddenapi     : 0x0002 (BLOCKED)
+      code          -
+      registers     : 7
+      ins           : 1
+      outs          : 3
+      insns size    : 41 16-bit code units
+106040:                                        |[106040] com.huawei.android.media.session.MediaControlUtils.checkOption:(Ljava/lang/String;)Z
+106050: 1a00 e93b                              |0000: const-string v0, "[^(0-9,)]" // string@3be9
+106054: 1a01 0000                              |0002: const-string v1, "" // string@0000
+106058: 6e30 7559 0601                         |0004: invoke-virtual {v6, v0, v1}, Ljava/lang/String;.replaceAll:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String; // method@5975
+10605e: 0c00                                   |0007: move-result-object v0
+106060: 1a01 1f3c                              |0008: const-string v1, "\\," // string@3c1f
+106064: 6e20 7759 1000                         |000a: invoke-virtual {v0, v1}, Ljava/lang/String;.split:(Ljava/lang/String;)[Ljava/lang/String; // method@5977
+10606a: 0c01                                   |000d: move-result-object v1
+10606c: 1202                                   |000e: const/4 v2, #int 0 // #0
+10606e: 4603 0102                              |000f: aget-object v3, v1, v2
+106072: 1a04 7a04                              |0011: const-string v4, "1" // string@047a
+106076: 6e20 6359 4300                         |0013: invoke-virtual {v3, v4}, Ljava/lang/String;.equals:(Ljava/lang/Object;)Z // method@5963
+10607c: 0a03                                   |0016: move-result v3
+10607e: 1214                                   |0017: const/4 v4, #int 1 // #1
+106080: 3803 1000                              |0018: if-eqz v3, 0028 // +0010
+106084: 1a03 097e                              |001a: const-string v3, "ro.logsystem.usertype" // string@7e09
+106088: 7120 5910 4300                         |001c: invoke-static {v3, v4}, Landroid/os/SystemProperties;.getInt:(Ljava/lang/String;I)I // method@1059
+10608e: 0a03                                   |001f: move-result v3
+106090: 1235                                   |0020: const/4 v5, #int 3 // #3
+106092: 3253 0500                              |0021: if-eq v3, v5, 0026 // +0005
+106096: 1255                                   |0023: const/4 v5, #int 5 // #5
+106098: 3353 0300                              |0024: if-ne v3, v5, 0027 // +0003
+10609c: 0142                                   |0026: move v2, v4
+10609e: 0f02                                   |0027: return v2
+1060a0: 0f04                                   |0028: return v4
+      catches       : (none)
+      positions     :
+        0x0000 line=294
+        0x0008 line=295
+        0x000e line=296
+        0x001a line=297
+        0x0020 line=298
+        0x0028 line=300
+      locals        :
+        0x0020 - 0x0028 reg=3 userType I
+        0x0008 - 0x0029 reg=0 currentOptions Ljava/lang/String;
+        0x000e - 0x0029 reg=1 optionArr [Ljava/lang/String;
+        0x0000 - 0x0029 reg=6 option Ljava/lang/String;
+
+
+## isSystemApp
+----- METHOD isSystemApp -----
+    #35              : (in Lcom/huawei/android/media/session/MediaControlUtils;)
+      name          : 'isSystemApp'
+      type          : '(Landroid/content/Context;II)Z'
+      access        : 0x0009 (PUBLIC STATIC)
+      hiddenapi     : 0x0002 (BLOCKED)
+      code          -
+      registers     : 13
+      ins           : 3
+      outs          : 4
+      insns size    : 146 16-bit code units
+106830:                                        |[106830] com.huawei.android.media.session.MediaControlUtils.isSystemApp:(Landroid/content/Context;II)Z
+106840: 1a00 b703                              |0000: const-string v0, ", userid: " // string@03b7
+106844: 7110 6510 0b00                         |0002: invoke-static {v11}, Landroid/os/UserHandle;.getAppId:(I)I // method@1065
+10684a: 0a01                                   |0005: move-result v1
+10684c: 1212                                   |0006: const/4 v2, #int 1 // #1
+10684e: 1303 e803                              |0007: const/16 v3, #int 1000 // #3e8
+106852: 3331 0300                              |0009: if-ne v1, v3, 000c // +0003
+106856: 0f02                                   |000b: return v2
+106858: 1a01 c32a                              |000c: const-string v1, "MediaControlUtils" // string@2ac3
+10685c: 1204                                   |000e: const/4 v4, #int 0 // #0
+10685e: 390a 0800                              |000f: if-nez v10, 0017 // +0008
+106862: 1a00 5e46                              |0011: const-string v0, "context is null" // string@465e
+106866: 7120 a215 0100                         |0013: invoke-static {v1, v0}, Landroid/util/Log;.e:(Ljava/lang/String;Ljava/lang/String;)I // method@15a2
+10686c: 0f04                                   |0016: return v4
+10686e: 6e10 cf03 0a00                         |0017: invoke-virtual {v10}, Landroid/content/Context;.getPackageManager:()Landroid/content/pm/PackageManager; // method@03cf
+106874: 0c05                                   |001a: move-result-object v5
+106876: 3905 0800                              |001b: if-nez v5, 0023 // +0008
+10687a: 1a00 a22d                              |001d: const-string v0, "PackageManager is null" // string@2da2
+10687e: 7120 a815 0100                         |001f: invoke-static {v1, v0}, Landroid/util/Log;.w:(Ljava/lang/String;Ljava/lang/String;)I // method@15a8
+106884: 0f04                                   |0022: return v4
+106886: 6e20 4504 b500                         |0023: invoke-virtual {v5, v11}, Landroid/content/pm/PackageManager;.getPackagesForUid:(I)[Ljava/lang/String; // method@0445
+10688c: 0c06                                   |0026: move-result-object v6
+10688e: 3806 1d00                              |0027: if-eqz v6, 0044 // +001d
+106892: 2167                                   |0029: array-length v7, v6
+106894: 3c07 0300                              |002a: if-gtz v7, 002d // +0003
+106898: 2818                                   |002c: goto 0044 // +0018
+10689a: 4607 0604                              |002d: aget-object v7, v6, v4
+10689e: 6e40 3b04 75c4                         |002f: invoke-virtual {v5, v7, v4, v12}, Landroid/content/pm/PackageManager;.getApplicationInfoAsUser:(Ljava/lang/String;II)Landroid/content/pm/ApplicationInfo; // method@043b
+1068a4: 0c07                                   |0032: move-result-object v7
+1068a6: 1308 8900                              |0033: const/16 v8, #int 137 // #89
+1068aa: 3807 0700                              |0035: if-eqz v7, 003c // +0007
+1068ae: 5279 5e01                              |0037: iget v9, v7, Landroid/content/pm/ApplicationInfo;.flags:I // field@015e
+1068b2: b589                                   |0039: and-int/2addr v9, v8
+1068b4: 3909 0800                              |003a: if-nez v9, 0042 // +0008
+1068b8: 6e30 3704 b503                         |003c: invoke-virtual {v5, v11, v3}, Landroid/content/pm/PackageManager;.checkSignatures:(II)I // method@0437
+1068be: 0a00                                   |003f: move-result v0
+1068c0: 3900 0300                              |0040: if-nez v0, 0043 // +0003
+1068c4: 0f02                                   |0042: return v2
+1068c6: 284d                                   |0043: goto 0090 // +004d
+1068c8: 2202 6a0d                              |0044: new-instance v2, Ljava/lang/StringBuilder; // type@0d6a
+1068cc: 7010 9259 0200                         |0046: invoke-direct {v2}, Ljava/lang/StringBuilder;.<init>:()V // method@5992
+1068d2: 1a03 da77                              |0049: const-string v3, "pkgNames is empty for uid: " // string@77da
+1068d6: 6e20 9d59 3200                         |004b: invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;.append:(Ljava/lang/String;)Ljava/lang/StringBuilder; // method@599d
+1068dc: 6e20 9959 b200                         |004e: invoke-virtual {v2, v11}, Ljava/lang/StringBuilder;.append:(I)Ljava/lang/StringBuilder; // method@5999
+1068e2: 6e10 a659 0200                         |0051: invoke-virtual {v2}, Ljava/lang/StringBuilder;.toString:()Ljava/lang/String; // method@59a6
+1068e8: 0c02                                   |0054: move-result-object v2
+1068ea: 7120 a815 2100                         |0055: invoke-static {v1, v2}, Landroid/util/Log;.w:(Ljava/lang/String;Ljava/lang/String;)I // method@15a8
+1068f0: 0f04                                   |0058: return v4
+1068f2: 0d02                                   |0059: move-exception v2
+1068f4: 2203 6a0d                              |005a: new-instance v3, Ljava/lang/StringBuilder; // type@0d6a
+1068f8: 7010 9259 0300                         |005c: invoke-direct {v3}, Ljava/lang/StringBuilder;.<init>:()V // method@5992
+1068fe: 1a06 3307                              |005f: const-string v6, "AudioException for uid:" // string@0733
+106902: 6e20 9d59 6300                         |0061: invoke-virtual {v3, v6}, Ljava/lang/StringBuilder;.append:(Ljava/lang/String;)Ljava/lang/StringBuilder; // method@599d
+106908: 6e20 9959 b300                         |0064: invoke-virtual {v3, v11}, Ljava/lang/StringBuilder;.append:(I)Ljava/lang/StringBuilder; // method@5999
+10690e: 6e20 9d59 0300                         |0067: invoke-virtual {v3, v0}, Ljava/lang/StringBuilder;.append:(Ljava/lang/String;)Ljava/lang/StringBuilder; // method@599d
+106914: 6e20 9959 c300                         |006a: invoke-virtual {v3, v12}, Ljava/lang/StringBuilder;.append:(I)Ljava/lang/StringBuilder; // method@5999
+10691a: 6e10 a659 0300                         |006d: invoke-virtual {v3}, Ljava/lang/StringBuilder;.toString:()Ljava/lang/String; // method@59a6
+106920: 0c00                                   |0070: move-result-object v0
+106922: 7120 a215 0100                         |0071: invoke-static {v1, v0}, Landroid/util/Log;.e:(Ljava/lang/String;Ljava/lang/String;)I // method@15a2
+106928: 281d                                   |0074: goto 0091 // +001d
+10692a: 0d02                                   |0075: move-exception v2
+10692c: 2203 6a0d                              |0076: new-instance v3, Ljava/lang/StringBuilder; // type@0d6a
+106930: 7010 9259 0300                         |0078: invoke-direct {v3}, Ljava/lang/StringBuilder;.<init>:()V // method@5992
+106936: 1a06 3407                              |007b: const-string v6, "AudioException not found for uid:" // string@0734
+10693a: 6e20 9d59 6300                         |007d: invoke-virtual {v3, v6}, Ljava/lang/StringBuilder;.append:(Ljava/lang/String;)Ljava/lang/StringBuilder; // method@599d
+106940: 6e20 9959 b300                         |0080: invoke-virtual {v3, v11}, Ljava/lang/StringBuilder;.append:(I)Ljava/lang/StringBuilder; // method@5999
+106946: 6e20 9d59 0300                         |0083: invoke-virtual {v3, v0}, Ljava/lang/StringBuilder;.append:(Ljava/lang/String;)Ljava/lang/StringBuilder; // method@599d
+10694c: 6e20 9959 c300                         |0086: invoke-virtual {v3, v12}, Ljava/lang/StringBuilder;.append:(I)Ljava/lang/StringBuilder; // method@5999
+106952: 6e10 a659 0300                         |0089: invoke-virtual {v3}, Ljava/lang/StringBuilder;.toString:()Ljava/lang/String; // method@59a6
+106958: 0c00                                   |008c: move-result-object v0
+10695a: 7120 a215 0100                         |008d: invoke-static {v1, v0}, Landroid/util/Log;.e:(Ljava/lang/String;Ljava/lang/String;)I // method@15a2
+106960: 0000                                   |0090: nop // spacer
+106962: 0f04                                   |0091: return v4
+      catches       : 1
+        0x0023 - 0x0058
+          Landroid/content/pm/PackageManager$NameNotFoundException; -> 0x0075
+          Ljava/lang/Exception; -> 0x0059
+      positions     :
+        0x0000 line=930
+        0x000b line=931
+        0x000c line=933
+        0x0011 line=934
+        0x0016 line=935
+        0x0017 line=937
+        0x001b line=938
+        0x001d line=939
+        0x0022 line=940
+        0x0023 line=943
+        0x0027 line=944
+        0x002d line=948
+        0x0033 line=949
+        0x0035 line=951
+        0x003c line=952
+        0x0042 line=953
+        0x0043 line=952
+        0x0044 line=945
+        0x0058 line=946
+        0x0059 line=957
+        0x005a line=958
+        0x0075 line=955
+        0x0076 line=956
+        0x0090 line=959
+        0x0091 line=960
+      locals        :
+        0x0027 - 0x0043 reg=6 pkgNames [Ljava/lang/String;
+        0x0033 - 0x0043 reg=7 info Landroid/content/pm/ApplicationInfo;
+        0x0035 - 0x0043 reg=8 applicationInfoFlag I
+        0x0044 - 0x0059 reg=6 pkgNames [Ljava/lang/String;
+        0x005a - 0x0075 reg=2 e Ljava/lang/Exception;
+        0x0076 - 0x0090 reg=2 e Landroid/content/pm/PackageManager$NameNotFoundException;
+        0x001b - 0x0092 reg=5 pm Landroid/content/pm/PackageManager;
+        0x0000 - 0x0092 reg=10 context Landroid/content/Context;
+        0x0000 - 0x0092 reg=11 uid I
+        0x0000 - 0x0092 reg=12 userId I
+
+
+## isInMediaBlackListInner
+----- METHOD isInMediaBlackListInner -----
+    #28              : (in Lcom/huawei/android/media/session/MediaControlUtils;)
+      name          : 'isInMediaBlackListInner'
+      type          : '(Ljava/lang/String;Landroid/content/Context;I)Z'
+      access        : 0x000a (PRIVATE STATIC)
+      hiddenapi     : 0x0002 (BLOCKED)
+      code          -
+      registers     : 5
+      ins           : 3
+      outs          : 3
+      insns size    : 12 16-bit code units
+106310:                                        |[106310] com.huawei.android.media.session.MediaControlUtils.isInMediaBlackListInner:(Ljava/lang/String;Landroid/content/Context;I)Z
+106320: 6200 0912                              |0000: sget-object v0, Lcom/huawei/android/media/session/MediaControlUtils;.LOCK:Ljava/lang/Object; // field@1209
+106324: 1d00                                   |0002: monitor-enter v0
+106326: 7130 3827 3204                         |0003: invoke-static {v2, v3, v4}, Lcom/huawei/android/media/session/MediaControlUtils;.isInMediaBlackListInner_l:(Ljava/lang/String;Landroid/content/Context;I)Z // method@2738
+10632c: 0a01                                   |0006: move-result v1
+10632e: 1e00                                   |0007: monitor-exit v0
+106330: 0f01                                   |0008: return v1
+106332: 0d01                                   |0009: move-exception v1
+106334: 1e00                                   |000a: monitor-exit v0
+106336: 2701                                   |000b: throw v1
+      catches       : 1
+        0x0003 - 0x000b
+          <any> -> 0x0009
+      positions     :
+        0x0000 line=385
+        0x0003 line=386
+        0x0009 line=387
+      locals        :
+        0x0000 - 0x000c reg=2 pkgName Ljava/lang/String;
+        0x0000 - 0x000c reg=3 context Landroid/content/Context;
+        0x0000 - 0x000c reg=4 userId I
+
+
+## isValidCharSequence
+----- METHOD isValidCharSequence -----
+    #36              : (in Lcom/huawei/android/media/session/MediaControlUtils;)
+      name          : 'isValidCharSequence'
+      type          : '(Ljava/lang/CharSequence;)Z'
+      access        : 0x000a (PRIVATE STATIC)
+      hiddenapi     : 0x0002 (BLOCKED)
+      code          -
+      registers     : 2
+      ins           : 1
+      outs          : 1
+      insns size    : 12 16-bit code units
+106974:                                        |[106974] com.huawei.android.media.session.MediaControlUtils.isValidCharSequence:(Ljava/lang/CharSequence;)Z
+106984: 3801 0a00                              |0000: if-eqz v1, 000a // +000a
+106988: 7210 b258 0100                         |0002: invoke-interface {v1}, Ljava/lang/CharSequence;.length:()I // method@58b2
+10698e: 0a00                                   |0005: move-result v0
+106990: 3800 0400                              |0006: if-eqz v0, 000a // +0004
+106994: 1210                                   |0008: const/4 v0, #int 1 // #1
+106996: 0f00                                   |0009: return v0
+106998: 1200                                   |000a: const/4 v0, #int 0 // #0
+10699a: 0f00                                   |000b: return v0
+      catches       : (none)
+      positions     :
+        0x0000 line=526
+        0x0008 line=527
+        0x000a line=529
+      locals        :
+        0x0000 - 0x000c reg=1 charSeq Ljava/lang/CharSequence;
+

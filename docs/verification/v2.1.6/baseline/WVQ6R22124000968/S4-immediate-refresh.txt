@@ -1,0 +1,28 @@
+# 场景：暂停态 -> 播放 -> 暂停 的 position/speed 是否立即反映（不等 2Hz ticker）
+
+## 播放中，连续 3 次 1s 间隔采样（position 应在涨）
+--- 采样 1 ---
+      state=PlaybackState {state=3, position=6296, buffered position=233506, speed=1.0, updated=1665221, actions=822, custom actions=[], active item id=-1, error=null}
+      state=PlaybackState {state=3, position=7155, buffered position=23637, speed=1.0, updated=1666078, actions=7339999, custom actions=[], active item id=0, error=null}
+      state=PlaybackState {state=2, position=20181, buffered position=0, speed=1.0, updated=1526813, actions=822, custom actions=[Action:mName='收藏, mIcon=2131239514, mExtras=Bundle[mParcelledData.dataSize=72], Action:mName='播放模式, mIcon=2131239574, mExtras=Bundle[mParcelledData.dataSize=72], Action:mName='播放倍速, mIcon=2131238673, mExtras=Bundle[mParcelledData.dataSize=72]], active item id=-1, error=null}
+--- 采样 2 ---
+      state=PlaybackState {state=3, position=7300, buffered position=233506, speed=1.0, updated=1666225, actions=822, custom actions=[], active item id=-1, error=null}
+      state=PlaybackState {state=3, position=7155, buffered position=23637, speed=1.0, updated=1666078, actions=7339999, custom actions=[], active item id=0, error=null}
+      state=PlaybackState {state=2, position=20181, buffered position=0, speed=1.0, updated=1526813, actions=822, custom actions=[Action:mName='收藏, mIcon=2131239514, mExtras=Bundle[mParcelledData.dataSize=72], Action:mName='播放模式, mIcon=2131239574, mExtras=Bundle[mParcelledData.dataSize=72], Action:mName='播放倍速, mIcon=2131238673, mExtras=Bundle[mParcelledData.dataSize=72]], active item id=-1, error=null}
+--- 采样 3 ---
+      state=PlaybackState {state=3, position=8300, buffered position=233506, speed=1.0, updated=1667229, actions=822, custom actions=[], active item id=-1, error=null}
+      state=PlaybackState {state=3, position=7155, buffered position=23637, speed=1.0, updated=1666078, actions=7339999, custom actions=[], active item id=0, error=null}
+      state=PlaybackState {state=2, position=20181, buffered position=0, speed=1.0, updated=1526813, actions=822, custom actions=[Action:mName='收藏, mIcon=2131239514, mExtras=Bundle[mParcelledData.dataSize=72], Action:mName='播放模式, mIcon=2131239574, mExtras=Bundle[mParcelledData.dataSize=72], Action:mName='播放倍速, mIcon=2131238673, mExtras=Bundle[mParcelledData.dataSize=72]], active item id=-1, error=null}
+
+## 注入 PAUSE 后 立刻(0.3s) 与 3s 后 的对比
+$ input keyevent 127
+--- 0.3s 后 ---
+      state=PlaybackState {state=2, position=10325, buffered position=233506, speed=1.0, updated=1669259, actions=822, custom actions=[], active item id=-1, error=null}
+      state=PlaybackState {state=2, position=10325, buffered position=30208, speed=0.0, updated=1669259, actions=7339999, custom actions=[], active item id=0, error=null}
+      state=PlaybackState {state=2, position=20181, buffered position=0, speed=1.0, updated=1526813, actions=822, custom actions=[Action:mName='收藏, mIcon=2131239514, mExtras=Bundle[mParcelledData.dataSize=72], Action:mName='播放模式, mIcon=2131239574, mExtras=Bundle[mParcelledData.dataSize=72], Action:mName='播放倍速, mIcon=2131238673, mExtras=Bundle[mParcelledData.dataSize=72]], active item id=-1, error=null}
+--- 3s 后 ---
+      state=PlaybackState {state=2, position=10325, buffered position=233506, speed=1.0, updated=1669259, actions=822, custom actions=[], active item id=-1, error=null}
+      state=PlaybackState {state=2, position=10325, buffered position=30208, speed=0.0, updated=1669259, actions=7339999, custom actions=[], active item id=0, error=null}
+      state=PlaybackState {state=2, position=20181, buffered position=0, speed=1.0, updated=1526813, actions=822, custom actions=[Action:mName='收藏, mIcon=2131239514, mExtras=Bundle[mParcelledData.dataSize=72], Action:mName='播放模式, mIcon=2131239574, mExtras=Bundle[mParcelledData.dataSize=72], Action:mName='播放倍速, mIcon=2131238673, mExtras=Bundle[mParcelledData.dataSize=72]], active item id=-1, error=null}
+
+## 恢复播放

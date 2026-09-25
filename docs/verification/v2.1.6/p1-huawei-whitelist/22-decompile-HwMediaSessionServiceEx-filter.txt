@@ -1,0 +1,202 @@
+# 反汇编原文 —— com.android.server.media.HwMediaSessionServiceEx.isInMediaWhiteList / filterMediaInfos
+# 来源：/system/framework/hwServices.jar ! classes.dex
+# 采集时间：2026-09-25T13:06:11+08:00
+
+## isInMediaWhiteList
+----- METHOD isInMediaWhiteList -----
+    #22              : (in Lcom/android/server/media/HwMediaSessionServiceEx;)
+      name          : 'isInMediaWhiteList'
+      type          : '(Ljava/lang/String;)Z'
+      access        : 0x0001 (PUBLIC)
+      code          -
+      registers     : 5
+      ins           : 2
+      outs          : 4
+      insns size    : 45 16-bit code units
+30d2b8:                                        |[30d2b8] com.android.server.media.HwMediaSessionServiceEx.isInMediaWhiteList:(Ljava/lang/String;)Z
+30d2c8: 5430 4a3b                              |0000: iget-object v0, v3, Lcom/android/server/media/HwMediaSessionServiceEx;.mContext:Landroid/content/Context; // field@3b4a
+30d2cc: 5231 753b                              |0002: iget v1, v3, Lcom/android/server/media/HwMediaSessionServiceEx;.mUserId:I // field@3b75
+30d2d0: 1222                                   |0004: const/4 v2, #int 2 // #2
+30d2d2: 7140 9ba5 0421                         |0005: invoke-static {v4, v0, v1, v2}, Lcom/huawei/android/media/session/MediaControlUtils;.isInMediaSessionOrStyleList:(Ljava/lang/String;Landroid/content/Context;II)Z // method@a59b
+30d2d8: 0a00                                   |0008: move-result v0
+30d2da: 3900 2300                              |0009: if-nez v0, 002c // +0023
+30d2de: 2201 d81e                              |000b: new-instance v1, Ljava/lang/StringBuilder; // type@1ed8
+30d2e2: 7010 63e7 0100                         |000d: invoke-direct {v1}, Ljava/lang/StringBuilder;.<init>:()V // method@e763
+30d2e8: 1b02 4601 0100                         |0010: const-string/jumbo v2, "isInMediaWhiteList: " // string@00010146
+30d2ee: 6e20 6ce7 2100                         |0013: invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;.append:(Ljava/lang/String;)Ljava/lang/StringBuilder; // method@e76c
+30d2f4: 6e20 6ce7 4100                         |0016: invoke-virtual {v1, v4}, Ljava/lang/StringBuilder;.append:(Ljava/lang/String;)Ljava/lang/StringBuilder; // method@e76c
+30d2fa: 1a02 3509                              |0019: const-string v2, ", " // string@0935
+30d2fe: 6e20 6ce7 2100                         |001b: invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;.append:(Ljava/lang/String;)Ljava/lang/StringBuilder; // method@e76c
+30d304: 5232 753b                              |001e: iget v2, v3, Lcom/android/server/media/HwMediaSessionServiceEx;.mUserId:I // field@3b75
+30d308: 6e20 69e7 2100                         |0020: invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;.append:(I)Ljava/lang/StringBuilder; // method@e769
+30d30e: 6e10 76e7 0100                         |0023: invoke-virtual {v1}, Ljava/lang/StringBuilder;.toString:()Ljava/lang/String; // method@e776
+30d314: 0c01                                   |0026: move-result-object v1
+30d316: 1a02 1c3b                              |0027: const-string v2, "HwMediaSessionServiceEx" // string@3b1c
+30d31a: 7120 c90b 1200                         |0029: invoke-static {v2, v1}, Landroid/util/Log;.v:(Ljava/lang/String;Ljava/lang/String;)I // method@0bc9
+30d320: 0f00                                   |002c: return v0
+      catches       : (none)
+      positions     :
+        0x0000 line=2657
+        0x0009 line=2659
+        0x000b line=2660
+        0x002c line=2662
+      locals        :
+        0x0009 - 0x002d reg=0 isInWhiteList Z
+        0x0000 - 0x002d reg=3 this Lcom/android/server/media/HwMediaSessionServiceEx;
+        0x0000 - 0x002d reg=4 pkgName Ljava/lang/String;
+
+## filterMediaInfos
+----- METHOD filterMediaInfos -----
+    #68              : (in Lcom/android/server/media/HwMediaSessionServiceEx;)
+      name          : 'filterMediaInfos'
+      type          : '([Ljava/lang/String;Ljava/lang/String;)Ljava/util/List;'
+      access        : 0x0002 (PRIVATE)
+      code          -
+      registers     : 16
+      ins           : 3
+      outs          : 6
+      insns size    : 214 16-bit code units
+30e46c:                                        |[30e46c] com.android.server.media.HwMediaSessionServiceEx.filterMediaInfos:([Ljava/lang/String;Ljava/lang/String;)Ljava/util/List;
+30e47c: 2200 261f                              |0000: new-instance v0, Ljava/util/ArrayList; // type@1f26
+30e480: 7010 14e8 0000                         |0002: invoke-direct {v0}, Ljava/util/ArrayList;.<init>:()V // method@e814
+30e486: 2201 d81e                              |0005: new-instance v1, Ljava/lang/StringBuilder; // type@1ed8
+30e48a: 7010 63e7 0100                         |0007: invoke-direct {v1}, Ljava/lang/StringBuilder;.<init>:()V // method@e763
+30e490: 1212                                   |000a: const/4 v2, #int 1 // #1
+30e492: 21e3                                   |000b: array-length v3, v14
+30e494: 1a04 1c3b                              |000c: const-string v4, "HwMediaSessionServiceEx" // string@3b1c
+30e498: 3532 a300                              |000e: if-ge v2, v3, 00b1 // +00a3
+30e49c: 4603 0e02                              |0010: aget-object v3, v14, v2
+30e4a0: 7020 3961 3d00                         |0012: invoke-direct {v13, v3}, Lcom/android/server/media/HwMediaSessionServiceEx;.getComponentName:(Ljava/lang/String;)Ljava/util/Optional; // method@6139
+30e4a6: 0c03                                   |0015: move-result-object v3
+30e4a8: 6e10 fce8 0300                         |0016: invoke-virtual {v3}, Ljava/util/Optional;.isPresent:()Z // method@e8fc
+30e4ae: 0a05                                   |0019: move-result v5
+30e4b0: 3905 0400                              |001a: if-nez v5, 001e // +0004
+30e4b4: 2900 9100                              |001c: goto/16 00ad // +0091
+30e4b8: 6e10 fae8 0300                         |001e: invoke-virtual {v3}, Ljava/util/Optional;.get:()Ljava/lang/Object; // method@e8fa
+30e4be: 0c05                                   |0021: move-result-object v5
+30e4c0: 1f05 aa00                              |0022: check-cast v5, Landroid/content/ComponentName; // type@00aa
+30e4c4: 6e10 0d02 0500                         |0024: invoke-virtual {v5}, Landroid/content/ComponentName;.getPackageName:()Ljava/lang/String; // method@020d
+30e4ca: 0c0c                                   |0027: move-result-object v12
+30e4cc: 7020 3161 cd00                         |0028: invoke-direct {v13, v12}, Lcom/android/server/media/HwMediaSessionServiceEx;.checkPkgName:(Ljava/lang/String;)Z // method@6131
+30e4d2: 0a06                                   |002b: move-result v6
+30e4d4: 3806 6b00                              |002c: if-eqz v6, 0097 // +006b
+30e4d8: 6e20 6061 cd00                         |002e: invoke-virtual {v13, v12}, Lcom/android/server/media/HwMediaSessionServiceEx;.isInMediaWhiteList:(Ljava/lang/String;)Z // method@6160
+30e4de: 0a06                                   |0031: move-result v6
+30e4e0: 3906 0300                              |0032: if-nez v6, 0035 // +0003
+30e4e4: 2863                                   |0034: goto 0097 // +0063
+30e4e6: 380f 0a00                              |0035: if-eqz v15, 003f // +000a
+30e4ea: 1a06 0000                              |0037: const-string v6, "" // string@0000
+30e4ee: 6e20 2be7 6f00                         |0039: invoke-virtual {v15, v6}, Ljava/lang/String;.equals:(Ljava/lang/Object;)Z // method@e72b
+30e4f4: 0a06                                   |003c: move-result v6
+30e4f6: 3806 2d00                              |003d: if-eqz v6, 006a // +002d
+30e4fa: 54d6 5d3b                              |003f: iget-object v6, v13, Lcom/android/server/media/HwMediaSessionServiceEx;.mHwMediaSessionServiceInner:Lcom/android/server/media/HwMediaSessionServiceInner; // field@3b5d
+30e4fe: 6e20 da61 c600                         |0041: invoke-virtual {v6, v12}, Lcom/android/server/media/HwMediaSessionServiceInner;.isPackageMigrateOut:(Ljava/lang/String;)Z // method@61da
+30e504: 0a06                                   |0044: move-result v6
+30e506: 3806 2500                              |0045: if-eqz v6, 006a // +0025
+30e50a: 2206 d81e                              |0047: new-instance v6, Ljava/lang/StringBuilder; // type@1ed8
+30e50e: 7010 63e7 0600                         |0049: invoke-direct {v6}, Ljava/lang/StringBuilder;.<init>:()V // method@e763
+30e514: 1b07 ef80 0100                         |004c: const-string/jumbo v7, "this app is migrate out pkgName = " // string@000180ef
+30e51a: 6e20 6ce7 7600                         |004f: invoke-virtual {v6, v7}, Ljava/lang/StringBuilder;.append:(Ljava/lang/String;)Ljava/lang/StringBuilder; // method@e76c
+30e520: 6e20 6ce7 c600                         |0052: invoke-virtual {v6, v12}, Ljava/lang/StringBuilder;.append:(Ljava/lang/String;)Ljava/lang/StringBuilder; // method@e76c
+30e526: 6e10 76e7 0600                         |0055: invoke-virtual {v6}, Ljava/lang/StringBuilder;.toString:()Ljava/lang/String; // method@e776
+30e52c: 0c06                                   |0058: move-result-object v6
+30e52e: 7120 c60b 6400                         |0059: invoke-static {v4, v6}, Landroid/util/Log;.i:(Ljava/lang/String;Ljava/lang/String;)I // method@0bc6
+30e534: 54d4 703b                              |005c: iget-object v4, v13, Lcom/android/server/media/HwMediaSessionServiceEx;.mPlayerIdToHistoryPkgMap:Ljava/util/Map; // field@3b70
+30e538: 6e10 32e7 0c00                         |005e: invoke-virtual {v12}, Ljava/lang/String;.hashCode:()I // method@e732
+30e53e: 0a06                                   |0061: move-result v6
+30e540: 7110 51e7 0600                         |0062: invoke-static {v6}, Ljava/lang/String;.valueOf:(I)Ljava/lang/String; // method@e751
+30e546: 0c06                                   |0065: move-result-object v6
+30e548: 7230 eae8 640c                         |0066: invoke-interface {v4, v6, v12}, Ljava/util/Map;.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object; // method@e8ea
+30e54e: 2844                                   |0069: goto 00ad // +0044
+30e550: 6e20 6ce7 c100                         |006a: invoke-virtual {v1, v12}, Ljava/lang/StringBuilder;.append:(Ljava/lang/String;)Ljava/lang/StringBuilder; // method@e76c
+30e556: 1a04 6715                              |006d: const-string v4, ";" // string@1567
+30e55a: 6e20 6ce7 4100                         |006f: invoke-virtual {v1, v4}, Ljava/lang/StringBuilder;.append:(Ljava/lang/String;)Ljava/lang/StringBuilder; // method@e76c
+30e560: 2204 4f19                              |0072: new-instance v4, Lcom/huawei/media/controller/MediaPlayerInfoEx; // type@194f
+30e564: 1208                                   |0074: const/4 v8, #int 0 // #0
+30e566: 6e10 32e7 0c00                         |0075: invoke-virtual {v12}, Ljava/lang/String;.hashCode:()I // method@e732
+30e56c: 0a06                                   |0078: move-result v6
+30e56e: 7110 51e7 0600                         |0079: invoke-static {v6}, Ljava/lang/String;.valueOf:(I)Ljava/lang/String; // method@e751
+30e574: 0c09                                   |007c: move-result-object v9
+30e576: 52db 413b                              |007d: iget v11, v13, Lcom/android/server/media/HwMediaSessionServiceEx;.mAudioCastFlag:I // field@3b41
+30e57a: 1a07 d914                              |007f: const-string v7, "0" // string@14d9
+30e57e: 0746                                   |0081: move-object v6, v4
+30e580: 07ca                                   |0082: move-object v10, v12
+30e582: 7606 edad 0600                         |0083: invoke-direct/range {v6, v7, v8, v9, v10, v11}, Lcom/huawei/media/controller/MediaPlayerInfoEx;.<init>:(Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;I)V // method@aded
+30e588: 7220 b7e8 4000                         |0086: invoke-interface {v0, v4}, Ljava/util/List;.add:(Ljava/lang/Object;)Z // method@e8b7
+30e58e: 54d4 703b                              |0089: iget-object v4, v13, Lcom/android/server/media/HwMediaSessionServiceEx;.mPlayerIdToHistoryPkgMap:Ljava/util/Map; // field@3b70
+30e592: 6e10 32e7 0c00                         |008b: invoke-virtual {v12}, Ljava/lang/String;.hashCode:()I // method@e732
+30e598: 0a06                                   |008e: move-result v6
+30e59a: 7110 51e7 0600                         |008f: invoke-static {v6}, Ljava/lang/String;.valueOf:(I)Ljava/lang/String; // method@e751
+30e5a0: 0c06                                   |0092: move-result-object v6
+30e5a2: 7230 eae8 640c                         |0093: invoke-interface {v4, v6, v12}, Ljava/util/Map;.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object; // method@e8ea
+30e5a8: 2817                                   |0096: goto 00ad // +0017
+30e5aa: 2206 d81e                              |0097: new-instance v6, Ljava/lang/StringBuilder; // type@1ed8
+30e5ae: 7010 63e7 0600                         |0099: invoke-direct {v6}, Ljava/lang/StringBuilder;.<init>:()V // method@e763
+30e5b4: 1b07 f180 0100                         |009c: const-string/jumbo v7, "this app is not support pkgName = " // string@000180f1
+30e5ba: 6e20 6ce7 7600                         |009f: invoke-virtual {v6, v7}, Ljava/lang/StringBuilder;.append:(Ljava/lang/String;)Ljava/lang/StringBuilder; // method@e76c
+30e5c0: 6e20 6ce7 c600                         |00a2: invoke-virtual {v6, v12}, Ljava/lang/StringBuilder;.append:(Ljava/lang/String;)Ljava/lang/StringBuilder; // method@e76c
+30e5c6: 6e10 76e7 0600                         |00a5: invoke-virtual {v6}, Ljava/lang/StringBuilder;.toString:()Ljava/lang/String; // method@e776
+30e5cc: 0c06                                   |00a8: move-result-object v6
+30e5ce: 7120 c60b 6400                         |00a9: invoke-static {v4, v6}, Landroid/util/Log;.i:(Ljava/lang/String;Ljava/lang/String;)I // method@0bc6
+30e5d4: 0000                                   |00ac: nop // spacer
+30e5d6: d802 0201                              |00ad: add-int/lit8 v2, v2, #int 1 // #01
+30e5da: 2900 5cff                              |00af: goto/16 000b // -00a4
+30e5de: 2202 d81e                              |00b1: new-instance v2, Ljava/lang/StringBuilder; // type@1ed8
+30e5e2: 7010 63e7 0200                         |00b3: invoke-direct {v2}, Ljava/lang/StringBuilder;.<init>:()V // method@e763
+30e5e8: 1a03 c7ef                              |00b6: const-string v3, "historyInfoList size: " // string@efc7
+30e5ec: 6e20 6ce7 3200                         |00b8: invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;.append:(Ljava/lang/String;)Ljava/lang/StringBuilder; // method@e76c
+30e5f2: 7210 c7e8 0000                         |00bb: invoke-interface {v0}, Ljava/util/List;.size:()I // method@e8c7
+30e5f8: 0a03                                   |00be: move-result v3
+30e5fa: 6e20 69e7 3200                         |00bf: invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;.append:(I)Ljava/lang/StringBuilder; // method@e769
+30e600: 1a03 4a06                              |00c2: const-string v3, " packageNames:" // string@064a
+30e604: 6e20 6ce7 3200                         |00c4: invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;.append:(Ljava/lang/String;)Ljava/lang/StringBuilder; // method@e76c
+30e60a: 6e10 76e7 0100                         |00c7: invoke-virtual {v1}, Ljava/lang/StringBuilder;.toString:()Ljava/lang/String; // method@e776
+30e610: 0c03                                   |00ca: move-result-object v3
+30e612: 6e20 6ce7 3200                         |00cb: invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;.append:(Ljava/lang/String;)Ljava/lang/StringBuilder; // method@e76c
+30e618: 6e10 76e7 0200                         |00ce: invoke-virtual {v2}, Ljava/lang/StringBuilder;.toString:()Ljava/lang/String; // method@e776
+30e61e: 0c02                                   |00d1: move-result-object v2
+30e620: 7120 c60b 2400                         |00d2: invoke-static {v4, v2}, Landroid/util/Log;.i:(Ljava/lang/String;Ljava/lang/String;)I // method@0bc6
+30e626: 1100                                   |00d5: return-object v0
+      catches       : (none)
+      positions     :
+        0x0000 line=1173
+        0x0005 line=1174
+        0x000a line=1175
+        0x0010 line=1176
+        0x0016 line=1177
+        0x001c line=1178
+        0x001e line=1180
+        0x0024 line=1181
+        0x0028 line=1182
+        0x0035 line=1186
+        0x0041 line=1187
+        0x0047 line=1188
+        0x005c line=1189
+        0x0069 line=1190
+        0x006a line=1192
+        0x0072 line=1193
+        0x0075 line=1194
+        0x0086 line=1193
+        0x0089 line=1195
+        0x0097 line=1183
+        0x00ac line=1184
+        0x00ad line=1175
+        0x00b1 line=1197
+        0x00d5 line=1198
+      locals        :
+        0x0016 - 0x00ad reg=3 comName Ljava/util/Optional; Ljava/util/Optional<Landroid/content/ComponentName;>;
+        0x0024 - 0x00ad reg=5 componName Landroid/content/ComponentName;
+        0x0028 - 0x00ad reg=12 pkgName Ljava/lang/String;
+        0x000b - 0x00b1 reg=2 i I
+        0x0005 - 0x00d6 reg=0 historyInfoList Ljava/util/List; Ljava/util/List<Lcom/huawei/media/controller/MediaPlayerInfoEx;>;
+        0x000a - 0x00d6 reg=1 packageNames Ljava/lang/StringBuilder;
+        0x0000 - 0x00d6 reg=13 this Lcom/android/server/media/HwMediaSessionServiceEx;
+        0x0000 - 0x00d6 reg=14 mediaInfos [Ljava/lang/String;
+        0x0000 - 0x00d6 reg=15 deviceId Ljava/lang/String;
+
+
+## 调用 isInMediaWhiteList / checkController 的方法（grep 原文）
+ name : 'checkController' ||| 30ce8c: 7130 93a5 0301 |0004: invoke-static {v3, v0, v1}, Lcom/huawei/android/media/session/MediaControlUtils;.checkController:(Landroid/media/session/MediaController;Landroid/content/Context;I)Z // method@a593
+ name : 'filterMediaInfos' ||| 30e4d8: 6e20 6061 cd00 |002e: invoke-virtual {v13, v12}, Lcom/android/server/media/HwMediaSessionServiceEx;.isInMediaWhiteList:(Ljava/lang/String;)Z // method@6160
+ name : 'lambda$getPlayerInfoList$1$HwMediaSessionServiceEx' ||| 30d718: 7020 3061 2100 |0000: invoke-direct {v1, v2}, Lcom/android/server/media/HwMediaSessionServiceEx;.checkController:(Landroid/media/session/MediaController;)Z // method@6130
+ name : 'lambda$startConfigHistoryMediaPlayer$10$HwMediaSessionServiceEx' ||| 30d77c: 7020 3061 2100 |0000: invoke-direct {v1, v2}, Lcom/android/server/media/HwMediaSessionServiceEx;.checkController:(Landroid/media/session/MediaController;)Z // method@6130

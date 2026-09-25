@@ -1,0 +1,61 @@
+# 媒体按键矩阵
+# 注入方式: adb shell input keyevent <code>（InputManager -> MediaSessionService -> media button session）
+# 每次都是  前状态 -> 注入 -> 后状态，证明因果。
+# KEYCODE: 85=HEADSETHOOK/PLAY_PAUSE 86=STOP 87=NEXT 88=PREVIOUS 126=PLAY 127=PAUSE
+
+---------- PAUSE(127) (keyevent 127) ----------
+前 state : 3 
+前 titles: metadata: size=10, description=打开窗你会看到悲伤融化, 心墙 · 林俊杰, null|
+$ adb -s WVQ6R22124000968 shell input keyevent 127
+后 state : 2 
+后 titles: metadata: size=10, description=打开窗你会看到悲伤融化, 心墙 · 林俊杰, null|
+media button session:   Media button session is com.takahashirinta.ncrust/androidx.media3.session.id. (userId=0)
+
+---------- PLAY(126) (keyevent 126) ----------
+前 state : 2 
+前 titles: metadata: size=10, description=打开窗你会看到悲伤融化, 心墙 · 林俊杰, null|
+$ adb -s WVQ6R22124000968 shell input keyevent 126
+后 state : 3 
+后 titles: metadata: size=10, description=打开窗你会看到悲伤融化, 心墙 · 林俊杰, null|
+media button session:   Media button session is com.takahashirinta.ncrust/androidx.media3.session.id. (userId=0)
+
+---------- PLAY_PAUSE(85) (keyevent 85) ----------
+前 state : 3 
+前 titles: metadata: size=10, description=打开窗你会看到悲伤融化, 心墙 · 林俊杰, null|
+$ adb -s WVQ6R22124000968 shell input keyevent 85
+后 state : 2 
+后 titles: metadata: size=10, description=打开窗你会看到悲伤融化, 心墙 · 林俊杰, null|
+media button session:   Media button session is com.takahashirinta.ncrust/androidx.media3.session.id. (userId=0)
+
+---------- PLAY_PAUSE(85) 第二次 (keyevent 85) ----------
+前 state : 2 
+前 titles: metadata: size=10, description=打开窗你会看到悲伤融化, 心墙 · 林俊杰, null|
+$ adb -s WVQ6R22124000968 shell input keyevent 85
+后 state : 3 
+后 titles: metadata: size=10, description=打开窗你会看到悲伤融化, 心墙 · 林俊杰, null|
+media button session:   Media button session is com.takahashirinta.ncrust/androidx.media3.session.id. (userId=0)
+
+---------- NEXT(87) (keyevent 87) ----------
+前 state : 3 
+前 titles: metadata: size=10, description=打开窗你会看到悲伤融化, 心墙 · 林俊杰, null|
+$ adb -s WVQ6R22124000968 shell input keyevent 87
+后 state : 3 
+后 titles: metadata: size=10, description=跳楼机, LBI利比, null|
+media button session:   Media button session is com.takahashirinta.ncrust/androidx.media3.session.id. (userId=0)
+
+---------- PREVIOUS(88) (keyevent 88) ----------
+前 state : 3 
+前 titles: metadata: size=10, description=跳楼机, LBI利比, null|
+$ adb -s WVQ6R22124000968 shell input keyevent 88
+后 state : 3 
+后 titles: metadata: size=10, description=一个人 眺望碧海和蓝天, 心墙 · 林俊杰, null|
+media button session:   Media button session is com.takahashirinta.ncrust/androidx.media3.session.id. (userId=0)
+
+---------- HEADSETHOOK(79) (keyevent 79) ----------
+前 state : 3 
+前 titles: metadata: size=10, description=一个人 眺望碧海和蓝天, 心墙 · 林俊杰, null|
+$ adb -s WVQ6R22124000968 shell input keyevent 79
+后 state : 2 
+后 titles: metadata: size=10, description=一个人 眺望碧海和蓝天, 心墙 · 林俊杰, null|
+media button session:   Media button session is com.takahashirinta.ncrust/androidx.media3.session.id. (userId=0)
+

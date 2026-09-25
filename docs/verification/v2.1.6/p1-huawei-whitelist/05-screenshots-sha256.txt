@@ -1,0 +1,10 @@
+# 截图校验值（sha256）—— 采集命令：adb -s WVQ6R22124000968 exec-out screencap -p > screenshots/<name>.png
+# 采集时间 2026-09-25T13:09:26+08:00 记录
+0d3cbd54f8dd61d3ab4fd8138cbd798c70797371b89ef256d4421d9ea53e0c15  screenshots/douyin-controlcenter-WRONG-app-is-netease.png
+f269ebe8bb1f7fee893a9d65f3278d5ec49a814b66452812ac67121f0e344258  screenshots/huawei-controlcenter-INVALID-black-frame.png
+afe87d6fff360f246b89941d68201b1e0c608c464f113780ae185ec1f1d9f79e  screenshots/netease-controlcenter.png
+
+# 有效性判定（人工看图复核，不是推断）：
+#  netease-controlcenter.png                     ✅ 有效：控制中心，媒体卡显示 'The Final Countdown / Europe' + 封面 + 上一首/播放/下一首
+#  huawei-controlcenter-INVALID-black-frame.png ❌ 无效：整幅纯黑（19838 B），screencap 抓到空白帧；当时控制中心也未打开成功（见 EVIDENCE.md §B-2）
+#  douyin-controlcenter-WRONG-app-is-netease.png ❌ 无效：拍到的其实是**网易云**的卡（抖音采集期间 ROM 自行拉起网易云），见 EVIDENCE.md §B-4

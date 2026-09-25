@@ -1,0 +1,15 @@
+# 旁路条件探测（对应 whitelist-criterion.md §2.1 / §2.5）—— 采集时间 2026-09-25T13:07:16+08:00
+$ adb -s WVQ6R22124000968 shell getprop ro.board.platform
+kirin9000E
+  ⇒ isInMediaSessionOrStyleList 的 '"hmos_emulator".equals(ro.board.platform)' 分支不成立
+
+$ adb -s WVQ6R22124000968 shell getprop hwouc.media_controller_enable
+
+  ⇒ 空值，不等于 "enable" ⇒ hasMediaPermission 第一道门不成立（该旁路未激活）
+
+$ adb -s WVQ6R22124000968 shell pm path com.huawei.mediacontroller.plrdtest   # 旁路所需的测试包
+exit=1
+  ⇒ 有输出=存在 / 无输出=不存在（见上）
+
+$ adb -s WVQ6R22124000968 shell pm path com.huawei.mediacontroller
+package:/system/priv-app/MediaPlaybackController/MediaPlaybackController.apk

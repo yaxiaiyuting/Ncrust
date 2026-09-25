@@ -1,0 +1,56 @@
+====================== netease
+ uses-sdk {'minSdkVersion': '23', 'targetSdkVersion': '33'}  activity 总数 991  权限总数 84
+ receiver 总数 37  service 总数 93
+ -- 媒体相关 receiver:
+    com.netease.cloudmusic.receiver.MediaButtonEventReceiver  exported=true prio=2147483647 line=2609
+         android.intent.action.MEDIA_BUTTON
+    com.netease.cloudmusic.module.appwidget.PlayerWidget  exported=true prio=None line=2617
+         android.appwidget.action.APPWIDGET_UPDATE
+         com.netease.music.action.STAR_MUSIC
+         com.netease.cloudmusic.change_widget_musicinfo_action
+    com.netease.cloudmusic.module.appwidget.PlayerWidgetFourTwo  exported=true prio=None line=2631
+         android.appwidget.action.APPWIDGET_UPDATE
+         com.netease.music.action.STAR_MUSIC
+         com.netease.cloudmusic.change_widget_musicinfo_action
+    com.netease.cloudmusic.module.appwidget.PlayerWidgetFourFour  exported=true prio=None line=2645
+         android.appwidget.action.APPWIDGET_UPDATE
+         com.netease.music.action.STAR_MUSIC
+         com.netease.cloudmusic.change_widget_musicinfo_action
+    com.netease.cloudmusic.module.webview.audio.WebMediaButtonReceiver  exported=true prio=2147483647 line=7989
+         android.intent.action.MEDIA_BUTTON
+ -- 媒体相关 service:
+    com.netease.cloudmusic.module.ucar.UCarService  exported=true fgs=None line=2142
+         android.media.browse.MediaBrowserService
+    com.netease.cloudmusic.hop.ContinuationService  exported=true fgs=None line=2484
+         com.netease.cloudmusic.hop.ContinuationService.action
+    com.netease.cloudmusic.biz.watch.downloader.HuaweiSportService  exported=true fgs=None line=2717
+         com.netease.cloudmusic.biz.watch.downloader.DOWNLOAD_SERVICE
+    com.netease.cloudmusic.third.api.CMApiService  exported=true fgs=None line=3755
+         com.netease.cloudmusic.third.api.CMApiService
+    com.netease.cloudmusic.diagnose.monitor.NEDTrafficService  exported=false fgs=None line=8925
+         com.netease.cloudmusic.monitor.TRAFFIC_SERVICE
+    com.netease.cloudmusic.diagnose.ipc.NEDIPCService  exported=false fgs=None line=8932
+         com.netease.cloudmusic.monitor.IPC_SERVICE
+ -- 全部 receiver 名字（仅名字，便于核对总数）:
+    com.netease.cloudmusic.receiver.AlarmAlertBroadcastReceiver; com.netease.cloudmusic.module.alarmclock.localpush.LocalPushAlarmAlertBroadcastReceiver; com.netease.cloudmusic.music.biz.appwidgets.view.appwidget.fm.provider.PlayFm42AppWidgetProvider; com.netease.cloudmusic.music.biz.appwidgets.view.appwidget.miyou.Miyou44AppwidgetProvider; com.netease.cloudmusic.music.biz.appwidgets.view.appwidget.miyou.Miyou22AppwidgetProvider; com.netease.cloudmusic.music.biz.appwidgets.view.appwidget.heartbeat.provider.HeartBeatLyric42AppWidgetProvider; com.netease.cloudmusic.music.biz.appwidgets.view.appwidget.heartbeat.provider.HeartBeatLyric44AppWidgetProvider; com.netease.cloudmusic.music.biz.appwidgets.view.appwidget.heartbeat.provider.HeartBeatCalendar42AppWidgetProvider; com.netease.cloudmusic.music.biz.appwidgets.view.appwidget.heartbeat.provider.HeartBeatCalendar44AppWidgetProvider; com.netease.cloudmusic.music.biz.appwidgets.view.appwidget.footprint.FootPrintCalendar42AppWidgetProvider; com.netease.cloudmusic.music.biz.appwidgets.view.appwidget.Feature22AppWidgetProvider; com.netease.cloudmusic.music.biz.appwidgets.view.appwidget.honor.Honor22AppWidgetProvider; com.netease.cloudmusic.music.biz.appwidgets.view.appwidget.general.Feature22PlayAppWidgetProvider; com.netease.cloudmusic.music.biz.appwidgets.view.appwidget.general.Feature42PlayAppWidgetProvider; com.netease.cloudmusic.music.biz.appwidgets.view.appwidget.honor.Honor42YoyoAppWidgetProvider; com.netease.cloudmusic.music.biz.appwidgets.view.appwidget.Feature42AppWidgetProvider; com.netease.cloudmusic.music.biz.appwidgets.view.appwidget.honor.Honor42AppWidgetProvider; com.netease.cloudmusic.music.biz.appwidgets.view.appwidget.Feature44AppWidgetProvider; com.netease.cloudmusic.music.biz.appwidgets.view.appwidget.uniwidget.UniWidgetProvider22; com.netease.cloudmusic.music.biz.appwidgets.view.appwidget.uniwidget.UniWidgetProvider42; com.netease.cloudmusic.music.biz.appwidgets.view.appwidget.uniwidget.UniWidgetRecentPlayProvider; com.netease.cloudmusic.receiver.MediaButtonEventReceiver; com.netease.cloudmusic.module.appwidget.PlayerWidget; com.netease.cloudmusic.module.appwidget.PlayerWidgetFourTwo; com.netease.cloudmusic.module.appwidget.PlayerWidgetFourFour; com.netease.cloudmusic.module.iot.sonyearphone.utils.SonyBluetoothA2DPReceiver; com.netease.cloudmusic.module.webview.audio.WebMediaButtonReceiver; com.xiaomi.push.service.receivers.PingReceiver; com.netease.cloudmusic.push.receiver.MiPushMessageReceiver; com.netease.cloudmusic.push.receiver.VivoPushReceiver; androidx.profileinstaller.ProfileInstallReceiver; org.gux.widget.WidgetBroadcastReceiver; org.gux.widget.WidgetAddBroadcastReceiver; com.oplus.ocs.relaykit.sdk.broadcastreceiver.RelayReceiver; com.netease.nimlib.coexist.service.ResponseReceiver; com.huawei.hms.support.api.push.PushMsgReceiver; com.huawei.hms.support.api.push.PushReceiver
+====================== huaweimusic
+ uses-sdk {'minSdkVersion': '24', 'targetSdkVersion': '29'}  activity 总数 314  权限总数 111
+ receiver 总数 26  service 总数 36
+ -- 媒体相关 receiver:
+    com.android.mediacenter.playback.systeminteract.MediaButtonIntentReceiver  exported=true prio=999 line=2571
+         android.intent.action.MEDIA_BUTTON
+ -- 媒体相关 service:
+ -- 全部 receiver 名字（仅名字，便于核对总数）:
+    com.android.mediacenter.openability.hivoice.HiVoiceReceiver; com.android.mediacenter.openability.quickaction.ShortcutsReceiver; com.android.mediacenter.library.wear.WearTransNotificationRemoveReceiver; com.android.mediacenter.ui.ktsong.KtSongNeedBuyRecevier; com.android.mediacenter.localmusic.NotificationRemoveReceiver; com.android.mediacenter.ui.player.common.sleepmode.SleepModeReceiver; com.android.mediacenter.ui.player.common.cleannotification.CleanNotificationReceiver; com.android.mediacenter.localmusic.MediaAppWidgetProvider; launcherwidget.MediaAppWidgetStyle1Provider; launcherwidget.MediaAppWidgetStyle2Provider; launcherwidget.MediaAppWidgetStyle3Provider; com.android.mediacenter.videoplayer.notification.MiniNotificationRemoveReceiver; com.android.mediacenter.playback.systeminteract.MediaButtonIntentReceiver; com.huawei.music.platform.commonservice.login.receiver.AccountReceiver; androidx.work.impl.utils.ForceStopRunnable$BroadcastReceiver; androidx.work.impl.background.systemalarm.ConstraintProxy$BatteryChargingProxy; androidx.work.impl.background.systemalarm.ConstraintProxy$BatteryNotLowProxy; androidx.work.impl.background.systemalarm.ConstraintProxy$StorageNotLowProxy; androidx.work.impl.background.systemalarm.ConstraintProxy$NetworkStateProxy; androidx.work.impl.background.systemalarm.RescheduleReceiver; androidx.work.impl.background.systemalarm.ConstraintProxyUpdateReceiver; androidx.work.impl.diagnostics.DiagnosticsReceiver; com.huawei.appgallery.marketinstallerservice.impl.download.MarketInstallReceiver; com.huawei.hms.support.api.push.PushMsgReceiver; com.huawei.hms.support.api.push.PushReceiver; androidx.profileinstaller.ProfileInstallReceiver
+====================== ncrust
+ uses-sdk {'minSdkVersion': '24', 'targetSdkVersion': '36'}  activity 总数 1  权限总数 11
+ receiver 总数 2  service 总数 2
+ -- 媒体相关 receiver:
+    androidx.media3.session.MediaButtonReceiver  exported=true prio=None line=144
+         android.intent.action.MEDIA_BUTTON
+ -- 媒体相关 service:
+    com.takahashirinta.ncrust.player.PlaybackService  exported=true fgs=0x00000002 line=80
+         androidx.media3.session.MediaSessionService
+         android.media.browse.MediaBrowserService
+ -- 全部 receiver 名字（仅名字，便于核对总数）:
+    androidx.media3.session.MediaButtonReceiver; androidx.profileinstaller.ProfileInstallReceiver

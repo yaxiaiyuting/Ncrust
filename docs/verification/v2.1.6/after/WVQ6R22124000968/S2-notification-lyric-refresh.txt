@@ -1,0 +1,134 @@
+# 场景：让应用在播，间隔 8s 采两次通知，比对正文是否随歌词推进
+
+## 起播命令
+$ /usr/bin/adb -s WVQ6R22124000968 shell am start -n com.takahashirinta.ncrust/.MainActivity
+--- stdout/stderr ---
+Starting: Intent { cmp=com.takahashirinta.ncrust/.MainActivity }
+Warning: Activity not started, its current task has been brought to the front
+--- exit=0 ---
+$ /usr/bin/adb -s WVQ6R22124000968 shell input keyevent 126
+--- stdout/stderr ---
+--- exit=0 ---
+
+########## 采样 1  (t+0s) ##########
+### 播放状态
+3 ### 通知正文（android.title / android.text）
+    NotificationRecord(0x06656454: pkg=android user=UserHandle{-1} id=26 tag=null importance=4 key=-1|android|26|null|1000: Notification(channel=DEVELOPER_IMPORTANT shortcut=null contentView=null vibrate=null sound=null tick defaults=0x0 flags=0x2 color=0x00000000 groupKey=ranker_group26 vis=PUBLIC))
+      uid=1000 userId=-1
+      icon=Icon(typ=RESOURCE pkg=android id=0x0108088d)
+                android.title=String (已连接 USB 调试)
+                android.text=String (点击可停用 USB 调试。)
+                android.tv.EXTENSIONS=Bundle (Bundle[{channel_id=usbdevicemanager.adb.tv, suppressShowOverApps=false, flags=1}])
+    NotificationRecord(0x00ec5444: pkg=com.tencent.androidqqmail user=UserHandle{0} id=1888757328 tag=null importance=3 key=0|com.tencent.androidqqmail|1888757328|null|10193: Notification(channel=com.huawei.android.pushagent54225 shortcut=null contentView=null vibrate=null sound=null tick defaults=0x0 flags=0x110 color=0x00000000 vis=PRIVATE))
+      uid=10193 userId=0
+      icon=Icon(typ=RESOURCE pkg=com.tencent.androidqqmail id=0x7f0801c6)
+                android.title=String (你订阅的悦读壹周精选已送达)
+                android.text=String (读名著，有必要跟《西游记》这样的书较劲吗？)
+    NotificationRecord(0x057c70b0: pkg=com.takahashirinta.ncrust user=UserHandle{0} id=1 tag=null importance=2 key=0|com.takahashirinta.ncrust|1|null|10274: Notification(channel=ncrust_playback shortcut=null contentView=null vibrate=null sound=null defaults=0x0 flags=0x6a color=0xff181818 category=transport groupKey=ranker_group1 actions=3 vis=PUBLIC))
+      uid=10274 userId=0
+      icon=Icon(typ=RESOURCE pkg=com.takahashirinta.ncrust id=0x01080024)
+                android.title=String (你的心有一道墙 但我发现一扇窗)
+                android.text=String (心墙 · 林俊杰)
+    NotificationRecord(0x0bf0f2ca: pkg=com.huawei.parentcontrol user=UserHandle{0} id=110 tag=null importance=2 key=0|com.huawei.parentcontrol|110|null|10115: Notification(channel=notify_channel_id shortcut=null contentView=null vibrate=null sound=null defaults=0x0 flags=0x2 color=0x00000000 groupKey=com.huawei.parentcontrol.permanent vis=SECRET))
+      uid=10115 userId=0
+                android.title=String (使用统计)
+                android.text=String (已使用 2 小时 15 分钟)
+    NotificationRecord(0x0fa9d716: pkg=com.android.settings user=UserHandle{0} id=1000002 tag=null importance=1 key=0|com.android.settings|1000002|null|1000: Notification(channel=SETTINGS_USB shortcut=null contentView=null vibrate=null sound=null tick defaults=0x0 flags=0x2 color=0x00000000 groupKey=ranker_group1000002 vis=PRIVATE))
+      uid=1000 userId=0
+      icon=Icon(typ=RESOURCE pkg=com.android.settings id=0x7f08074e)
+                android.title=String (正在通过 USB 充电)
+                android.text=String (点击查看更多选项)
+      automaticRules=ZenRule[id=EVENTS_DEFAULT_RULE,state=STATE_FALSE,enabled=FALSE,snoozing=false,name=活动,zenMode=ZEN_MODE_IMPORTANT_INTERRUPTIONS,conditionId=condition://android/event?userId=-10000&calendar=&reply=1,pkg=android,component=ComponentInfo{android/com.android.server.notification.EventConditionProvider},configActivity=null,creationTime=0,enabler=null,zenPolicy=null,modified=false,condition=Condition[state=STATE_FALSE,id=condition://android/event?userId=-10000&calendar=&reply=1,summary=...,line1=...,line2=...,icon=0,flags=2]]
+                     ZenRule[id=EVERY_NIGHT_DEFAULT_RULE,state=STATE_FALSE,enabled=FALSE,snoozing=false,name=睡眠,zenMode=ZEN_MODE_IMPORTANT_INTERRUPTIONS,conditionId=condition://android/schedule?days=1.7&start=22.0&end=7.0&exitAtAlarm=false,pkg=android,component=ComponentInfo{android/com.android.server.notification.ScheduleConditionProvider},configActivity=null,creationTime=0,enabler=null,zenPolicy=null,modified=false,condition=Condition[state=STATE_FALSE,id=condition://android/schedule?days=1.7&start=22.0&end=7.0&exitAtAlarm=false,summary=...,line1=...,line2=...,icon=0,flags=2]]
+      automaticRules=ZenRule[id=EVENTS_DEFAULT_RULE,state=STATE_FALSE,enabled=FALSE,snoozing=false,name=活动,zenMode=ZEN_MODE_IMPORTANT_INTERRUPTIONS,conditionId=condition://android/event?userId=-10000&calendar=&reply=1,pkg=android,component=ComponentInfo{android/com.android.server.notification.EventConditionProvider},configActivity=null,creationTime=0,enabler=null,zenPolicy=null,modified=false,condition=Condition[state=STATE_FALSE,id=condition://android/event?userId=-10000&calendar=&reply=1,summary=...,line1=...,line2=...,icon=0,flags=2]]
+                     ZenRule[id=EVERY_NIGHT_DEFAULT_RULE,state=STATE_FALSE,enabled=FALSE,snoozing=false,name=睡眠,zenMode=ZEN_MODE_IMPORTANT_INTERRUPTIONS,conditionId=condition://android/schedule?days=1.7&start=22.0&end=7.0&exitAtAlarm=false,pkg=android,component=ComponentInfo{android/com.android.server.notification.ScheduleConditionProvider},configActivity=null,creationTime=0,enabler=null,zenPolicy=null,modified=false,condition=Condition[state=STATE_FALSE,id=condition://android/schedule?days=1.7&start=22.0&end=7.0&exitAtAlarm=false,summary=...,line1=...,line2=...,icon=0,flags=2]]
+ZenRule[id=EVENTS_DEFAULT_RULE,state=STATE_FALSE,enabled=FALSE,snoozing=false,name=活动,zenMode=ZEN_MODE_IMPORTANT_INTERRUPTIONS,conditionId=condition://android/event?userId=-10000&calendar=&reply=1,pkg=android,component=ComponentInfo{android/com.android.server.notification.EventConditionProvider},configActivity=null,creationTime=0,enabler=null,zenPolicy=null,modified=false,condition=Condition[state=STATE_FALSE,id=condition://android/event?userId=-10000&calendar=&reply=1,summary=...,line1=...,line2=...,icon=0,flags=2]],
+ZenRule[id=EVERY_NIGHT_DEFAULT_RULE,state=STATE_FALSE,enabled=FALSE,snoozing=false,name=睡眠,zenMode=ZEN_MODE_IMPORTANT_INTERRUPTIONS,conditionId=condition://android/schedule?days=1.7&start=22.0&end=7.0&exitAtAlarm=false,pkg=android,component=ComponentInfo{android/com.android.server.notification.ScheduleConditionProvider},configActivity=null,creationTime=0,enabler=null,zenPolicy=null,modified=false,condition=Condition[state=STATE_FALSE,id=condition://android/schedule?days=1.7&start=22.0&end=7.0&exitAtAlarm=false,summary=...,line1=...,line2=...,icon=0,flags=2]]},
+Diff[automaticRule[EVENTS_DEFAULT_RULE].condition:null->Condition[state=STATE_FALSE,id=condition://android/event?userId=-10000&calendar=&reply=1,summary=...,line1=...,line2=...,icon=0,flags=2],
+automaticRule[EVERY_NIGHT_DEFAULT_RULE].condition:null->Condition[state=STATE_FALSE,id=condition://android/schedule?days=1.7&start=22.0&end=7.0&exitAtAlarm=false,summary=...,line1=...,line2=...,icon=0,flags=2]]
+      ConditionRecord[id=condition://android/event?userId=-10000&calendar=&reply=1,component=ComponentInfo{android/com.android.server.notification.EventConditionProvider},subscribed=true]
+      ConditionRecord[id=condition://android/schedule?days=1.7&start=22.0&end=7.0&exitAtAlarm=false,component=ComponentInfo{android/com.android.server.notification.ScheduleConditionProvider},subscribed=true]
+### 通知栏里属于本包的通知条数（id 行）
+3
+
+########## 采样 2  (t+8s) ##########
+### 播放状态
+3 ### 通知正文（android.title / android.text）
+    NotificationRecord(0x06656454: pkg=android user=UserHandle{-1} id=26 tag=null importance=4 key=-1|android|26|null|1000: Notification(channel=DEVELOPER_IMPORTANT shortcut=null contentView=null vibrate=null sound=null tick defaults=0x0 flags=0x2 color=0x00000000 groupKey=ranker_group26 vis=PUBLIC))
+      uid=1000 userId=-1
+      icon=Icon(typ=RESOURCE pkg=android id=0x0108088d)
+                android.title=String (已连接 USB 调试)
+                android.text=String (点击可停用 USB 调试。)
+                android.tv.EXTENSIONS=Bundle (Bundle[{channel_id=usbdevicemanager.adb.tv, suppressShowOverApps=false, flags=1}])
+    NotificationRecord(0x00ec5444: pkg=com.tencent.androidqqmail user=UserHandle{0} id=1888757328 tag=null importance=3 key=0|com.tencent.androidqqmail|1888757328|null|10193: Notification(channel=com.huawei.android.pushagent54225 shortcut=null contentView=null vibrate=null sound=null tick defaults=0x0 flags=0x110 color=0x00000000 vis=PRIVATE))
+      uid=10193 userId=0
+      icon=Icon(typ=RESOURCE pkg=com.tencent.androidqqmail id=0x7f0801c6)
+                android.title=String (你订阅的悦读壹周精选已送达)
+                android.text=String (读名著，有必要跟《西游记》这样的书较劲吗？)
+    NotificationRecord(0x0dc01209: pkg=com.takahashirinta.ncrust user=UserHandle{0} id=1 tag=null importance=2 key=0|com.takahashirinta.ncrust|1|null|10274: Notification(channel=ncrust_playback shortcut=null contentView=null vibrate=null sound=null defaults=0x0 flags=0x6a color=0xff181818 category=transport groupKey=ranker_group1 actions=3 vis=PUBLIC))
+      uid=10274 userId=0
+      icon=Icon(typ=RESOURCE pkg=com.takahashirinta.ncrust id=0x01080024)
+                android.title=String (偶尔透出一丝暖暖的微光)
+                android.text=String (心墙 · 林俊杰)
+    NotificationRecord(0x0bf0f2ca: pkg=com.huawei.parentcontrol user=UserHandle{0} id=110 tag=null importance=2 key=0|com.huawei.parentcontrol|110|null|10115: Notification(channel=notify_channel_id shortcut=null contentView=null vibrate=null sound=null defaults=0x0 flags=0x2 color=0x00000000 groupKey=com.huawei.parentcontrol.permanent vis=SECRET))
+      uid=10115 userId=0
+                android.title=String (使用统计)
+                android.text=String (已使用 2 小时 15 分钟)
+    NotificationRecord(0x0fa9d716: pkg=com.android.settings user=UserHandle{0} id=1000002 tag=null importance=1 key=0|com.android.settings|1000002|null|1000: Notification(channel=SETTINGS_USB shortcut=null contentView=null vibrate=null sound=null tick defaults=0x0 flags=0x2 color=0x00000000 groupKey=ranker_group1000002 vis=PRIVATE))
+      uid=1000 userId=0
+      icon=Icon(typ=RESOURCE pkg=com.android.settings id=0x7f08074e)
+                android.title=String (正在通过 USB 充电)
+                android.text=String (点击查看更多选项)
+      automaticRules=ZenRule[id=EVENTS_DEFAULT_RULE,state=STATE_FALSE,enabled=FALSE,snoozing=false,name=活动,zenMode=ZEN_MODE_IMPORTANT_INTERRUPTIONS,conditionId=condition://android/event?userId=-10000&calendar=&reply=1,pkg=android,component=ComponentInfo{android/com.android.server.notification.EventConditionProvider},configActivity=null,creationTime=0,enabler=null,zenPolicy=null,modified=false,condition=Condition[state=STATE_FALSE,id=condition://android/event?userId=-10000&calendar=&reply=1,summary=...,line1=...,line2=...,icon=0,flags=2]]
+                     ZenRule[id=EVERY_NIGHT_DEFAULT_RULE,state=STATE_FALSE,enabled=FALSE,snoozing=false,name=睡眠,zenMode=ZEN_MODE_IMPORTANT_INTERRUPTIONS,conditionId=condition://android/schedule?days=1.7&start=22.0&end=7.0&exitAtAlarm=false,pkg=android,component=ComponentInfo{android/com.android.server.notification.ScheduleConditionProvider},configActivity=null,creationTime=0,enabler=null,zenPolicy=null,modified=false,condition=Condition[state=STATE_FALSE,id=condition://android/schedule?days=1.7&start=22.0&end=7.0&exitAtAlarm=false,summary=...,line1=...,line2=...,icon=0,flags=2]]
+      automaticRules=ZenRule[id=EVENTS_DEFAULT_RULE,state=STATE_FALSE,enabled=FALSE,snoozing=false,name=活动,zenMode=ZEN_MODE_IMPORTANT_INTERRUPTIONS,conditionId=condition://android/event?userId=-10000&calendar=&reply=1,pkg=android,component=ComponentInfo{android/com.android.server.notification.EventConditionProvider},configActivity=null,creationTime=0,enabler=null,zenPolicy=null,modified=false,condition=Condition[state=STATE_FALSE,id=condition://android/event?userId=-10000&calendar=&reply=1,summary=...,line1=...,line2=...,icon=0,flags=2]]
+                     ZenRule[id=EVERY_NIGHT_DEFAULT_RULE,state=STATE_FALSE,enabled=FALSE,snoozing=false,name=睡眠,zenMode=ZEN_MODE_IMPORTANT_INTERRUPTIONS,conditionId=condition://android/schedule?days=1.7&start=22.0&end=7.0&exitAtAlarm=false,pkg=android,component=ComponentInfo{android/com.android.server.notification.ScheduleConditionProvider},configActivity=null,creationTime=0,enabler=null,zenPolicy=null,modified=false,condition=Condition[state=STATE_FALSE,id=condition://android/schedule?days=1.7&start=22.0&end=7.0&exitAtAlarm=false,summary=...,line1=...,line2=...,icon=0,flags=2]]
+ZenRule[id=EVENTS_DEFAULT_RULE,state=STATE_FALSE,enabled=FALSE,snoozing=false,name=活动,zenMode=ZEN_MODE_IMPORTANT_INTERRUPTIONS,conditionId=condition://android/event?userId=-10000&calendar=&reply=1,pkg=android,component=ComponentInfo{android/com.android.server.notification.EventConditionProvider},configActivity=null,creationTime=0,enabler=null,zenPolicy=null,modified=false,condition=Condition[state=STATE_FALSE,id=condition://android/event?userId=-10000&calendar=&reply=1,summary=...,line1=...,line2=...,icon=0,flags=2]],
+ZenRule[id=EVERY_NIGHT_DEFAULT_RULE,state=STATE_FALSE,enabled=FALSE,snoozing=false,name=睡眠,zenMode=ZEN_MODE_IMPORTANT_INTERRUPTIONS,conditionId=condition://android/schedule?days=1.7&start=22.0&end=7.0&exitAtAlarm=false,pkg=android,component=ComponentInfo{android/com.android.server.notification.ScheduleConditionProvider},configActivity=null,creationTime=0,enabler=null,zenPolicy=null,modified=false,condition=Condition[state=STATE_FALSE,id=condition://android/schedule?days=1.7&start=22.0&end=7.0&exitAtAlarm=false,summary=...,line1=...,line2=...,icon=0,flags=2]]},
+Diff[automaticRule[EVENTS_DEFAULT_RULE].condition:null->Condition[state=STATE_FALSE,id=condition://android/event?userId=-10000&calendar=&reply=1,summary=...,line1=...,line2=...,icon=0,flags=2],
+automaticRule[EVERY_NIGHT_DEFAULT_RULE].condition:null->Condition[state=STATE_FALSE,id=condition://android/schedule?days=1.7&start=22.0&end=7.0&exitAtAlarm=false,summary=...,line1=...,line2=...,icon=0,flags=2]]
+      ConditionRecord[id=condition://android/event?userId=-10000&calendar=&reply=1,component=ComponentInfo{android/com.android.server.notification.EventConditionProvider},subscribed=true]
+      ConditionRecord[id=condition://android/schedule?days=1.7&start=22.0&end=7.0&exitAtAlarm=false,component=ComponentInfo{android/com.android.server.notification.ScheduleConditionProvider},subscribed=true]
+### 通知栏里属于本包的通知条数（id 行）
+3
+
+########## 采样 3  (t+16s) ##########
+### 播放状态
+3 ### 通知正文（android.title / android.text）
+    NotificationRecord(0x06656454: pkg=android user=UserHandle{-1} id=26 tag=null importance=4 key=-1|android|26|null|1000: Notification(channel=DEVELOPER_IMPORTANT shortcut=null contentView=null vibrate=null sound=null tick defaults=0x0 flags=0x2 color=0x00000000 groupKey=ranker_group26 vis=PUBLIC))
+      uid=1000 userId=-1
+      icon=Icon(typ=RESOURCE pkg=android id=0x0108088d)
+                android.title=String (已连接 USB 调试)
+                android.text=String (点击可停用 USB 调试。)
+                android.tv.EXTENSIONS=Bundle (Bundle[{channel_id=usbdevicemanager.adb.tv, suppressShowOverApps=false, flags=1}])
+    NotificationRecord(0x00ec5444: pkg=com.tencent.androidqqmail user=UserHandle{0} id=1888757328 tag=null importance=3 key=0|com.tencent.androidqqmail|1888757328|null|10193: Notification(channel=com.huawei.android.pushagent54225 shortcut=null contentView=null vibrate=null sound=null tick defaults=0x0 flags=0x110 color=0x00000000 vis=PRIVATE))
+      uid=10193 userId=0
+      icon=Icon(typ=RESOURCE pkg=com.tencent.androidqqmail id=0x7f0801c6)
+                android.title=String (你订阅的悦读壹周精选已送达)
+                android.text=String (读名著，有必要跟《西游记》这样的书较劲吗？)
+    NotificationRecord(0x0af80d96: pkg=com.takahashirinta.ncrust user=UserHandle{0} id=1 tag=null importance=2 key=0|com.takahashirinta.ncrust|1|null|10274: Notification(channel=ncrust_playback shortcut=null contentView=null vibrate=null sound=null defaults=0x0 flags=0x6a color=0xff181818 category=transport groupKey=ranker_group1 actions=3 vis=PUBLIC))
+      uid=10274 userId=0
+      icon=Icon(typ=RESOURCE pkg=com.takahashirinta.ncrust id=0x01080024)
+                android.title=String (就算你有一道墙 我的爱会攀上窗台盛放)
+                android.text=String (心墙 · 林俊杰)
+    NotificationRecord(0x0bf0f2ca: pkg=com.huawei.parentcontrol user=UserHandle{0} id=110 tag=null importance=2 key=0|com.huawei.parentcontrol|110|null|10115: Notification(channel=notify_channel_id shortcut=null contentView=null vibrate=null sound=null defaults=0x0 flags=0x2 color=0x00000000 groupKey=com.huawei.parentcontrol.permanent vis=SECRET))
+      uid=10115 userId=0
+                android.title=String (使用统计)
+                android.text=String (已使用 2 小时 15 分钟)
+    NotificationRecord(0x0fa9d716: pkg=com.android.settings user=UserHandle{0} id=1000002 tag=null importance=1 key=0|com.android.settings|1000002|null|1000: Notification(channel=SETTINGS_USB shortcut=null contentView=null vibrate=null sound=null tick defaults=0x0 flags=0x2 color=0x00000000 groupKey=ranker_group1000002 vis=PRIVATE))
+      uid=1000 userId=0
+      icon=Icon(typ=RESOURCE pkg=com.android.settings id=0x7f08074e)
+                android.title=String (正在通过 USB 充电)
+                android.text=String (点击查看更多选项)
+      automaticRules=ZenRule[id=EVENTS_DEFAULT_RULE,state=STATE_FALSE,enabled=FALSE,snoozing=false,name=活动,zenMode=ZEN_MODE_IMPORTANT_INTERRUPTIONS,conditionId=condition://android/event?userId=-10000&calendar=&reply=1,pkg=android,component=ComponentInfo{android/com.android.server.notification.EventConditionProvider},configActivity=null,creationTime=0,enabler=null,zenPolicy=null,modified=false,condition=Condition[state=STATE_FALSE,id=condition://android/event?userId=-10000&calendar=&reply=1,summary=...,line1=...,line2=...,icon=0,flags=2]]
+                     ZenRule[id=EVERY_NIGHT_DEFAULT_RULE,state=STATE_FALSE,enabled=FALSE,snoozing=false,name=睡眠,zenMode=ZEN_MODE_IMPORTANT_INTERRUPTIONS,conditionId=condition://android/schedule?days=1.7&start=22.0&end=7.0&exitAtAlarm=false,pkg=android,component=ComponentInfo{android/com.android.server.notification.ScheduleConditionProvider},configActivity=null,creationTime=0,enabler=null,zenPolicy=null,modified=false,condition=Condition[state=STATE_FALSE,id=condition://android/schedule?days=1.7&start=22.0&end=7.0&exitAtAlarm=false,summary=...,line1=...,line2=...,icon=0,flags=2]]
+      automaticRules=ZenRule[id=EVENTS_DEFAULT_RULE,state=STATE_FALSE,enabled=FALSE,snoozing=false,name=活动,zenMode=ZEN_MODE_IMPORTANT_INTERRUPTIONS,conditionId=condition://android/event?userId=-10000&calendar=&reply=1,pkg=android,component=ComponentInfo{android/com.android.server.notification.EventConditionProvider},configActivity=null,creationTime=0,enabler=null,zenPolicy=null,modified=false,condition=Condition[state=STATE_FALSE,id=condition://android/event?userId=-10000&calendar=&reply=1,summary=...,line1=...,line2=...,icon=0,flags=2]]
+                     ZenRule[id=EVERY_NIGHT_DEFAULT_RULE,state=STATE_FALSE,enabled=FALSE,snoozing=false,name=睡眠,zenMode=ZEN_MODE_IMPORTANT_INTERRUPTIONS,conditionId=condition://android/schedule?days=1.7&start=22.0&end=7.0&exitAtAlarm=false,pkg=android,component=ComponentInfo{android/com.android.server.notification.ScheduleConditionProvider},configActivity=null,creationTime=0,enabler=null,zenPolicy=null,modified=false,condition=Condition[state=STATE_FALSE,id=condition://android/schedule?days=1.7&start=22.0&end=7.0&exitAtAlarm=false,summary=...,line1=...,line2=...,icon=0,flags=2]]
+ZenRule[id=EVENTS_DEFAULT_RULE,state=STATE_FALSE,enabled=FALSE,snoozing=false,name=活动,zenMode=ZEN_MODE_IMPORTANT_INTERRUPTIONS,conditionId=condition://android/event?userId=-10000&calendar=&reply=1,pkg=android,component=ComponentInfo{android/com.android.server.notification.EventConditionProvider},configActivity=null,creationTime=0,enabler=null,zenPolicy=null,modified=false,condition=Condition[state=STATE_FALSE,id=condition://android/event?userId=-10000&calendar=&reply=1,summary=...,line1=...,line2=...,icon=0,flags=2]],
+ZenRule[id=EVERY_NIGHT_DEFAULT_RULE,state=STATE_FALSE,enabled=FALSE,snoozing=false,name=睡眠,zenMode=ZEN_MODE_IMPORTANT_INTERRUPTIONS,conditionId=condition://android/schedule?days=1.7&start=22.0&end=7.0&exitAtAlarm=false,pkg=android,component=ComponentInfo{android/com.android.server.notification.ScheduleConditionProvider},configActivity=null,creationTime=0,enabler=null,zenPolicy=null,modified=false,condition=Condition[state=STATE_FALSE,id=condition://android/schedule?days=1.7&start=22.0&end=7.0&exitAtAlarm=false,summary=...,line1=...,line2=...,icon=0,flags=2]]},
+Diff[automaticRule[EVENTS_DEFAULT_RULE].condition:null->Condition[state=STATE_FALSE,id=condition://android/event?userId=-10000&calendar=&reply=1,summary=...,line1=...,line2=...,icon=0,flags=2],
+automaticRule[EVERY_NIGHT_DEFAULT_RULE].condition:null->Condition[state=STATE_FALSE,id=condition://android/schedule?days=1.7&start=22.0&end=7.0&exitAtAlarm=false,summary=...,line1=...,line2=...,icon=0,flags=2]]
+      ConditionRecord[id=condition://android/event?userId=-10000&calendar=&reply=1,component=ComponentInfo{android/com.android.server.notification.EventConditionProvider},subscribed=true]
+      ConditionRecord[id=condition://android/schedule?days=1.7&start=22.0&end=7.0&exitAtAlarm=false,component=ComponentInfo{android/com.android.server.notification.ScheduleConditionProvider},subscribed=true]
+### 通知栏里属于本包的通知条数（id 行）
+3

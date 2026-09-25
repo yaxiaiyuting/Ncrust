@@ -1,0 +1,77 @@
+# root 判定 —— 采集时间 2026-09-25T12:56:40+08:00
+
+$ adb -s WVQ6R22124000968 shell su -c id
+/system/bin/sh: su: inaccessible or not found
+exit=127
+
+$ adb -s WVQ6R22124000968 root
+adbd cannot run as root in production builds
+exit=0
+
+$ adb -s WVQ6R22124000968 shell id
+uid=2000(shell) gid=2000(shell) groups=2000(shell),1004(input),1007(log),1011(adb),1015(sdcard_rw),1028(sdcard_r),1078(ext_data_rw),1079(ext_obb_rw),3001(net_bt_admin),3002(net_bt),3003(inet),3006(net_bw_stats),3009(readproc),3011(uhid) context=u:r:shell:s0
+exit=0
+
+$ adb -s WVQ6R22124000968 shell 'ls /system/framework | head -50'
+HwGestureAction.fpk
+HwGestureAction.vdex
+SystemResources.hap
+abx.jar
+abx.vdex
+am.jar
+am.vdex
+android.hidl.base-V1.0-java.jar
+android.hidl.base-V1.0-java.vdex
+android.hidl.manager-V1.0-java.jar
+android.hidl.manager-V1.0-java.vdex
+android.net.ipsec.ike.abc
+android.test.base.jar
+android.test.base.vdex
+android.test.mock.jar
+android.test.mock.vdex
+android.test.runner.jar
+android.test.runner.vdex
+apache-xml.abc
+apache-xml.an
+appwidget.jar
+appwidget.vdex
+arm
+arm64
+bmgr.jar
+bmgr.vdex
+boot-com.huawei.nfc.vdex
+boot-core-icu4j.vdex
+boot-ext.vdex
+boot-featurelayer-widget.vdex
+boot-framework-graphics.vdex
+boot-framework.vdex
+boot-hwEmui.vdex
+boot-hwIAwareAL.vdex
+boot-hwIms-common.vdex
+boot-hwPartAirSharing.vdex
+boot-hwPartBasicplatform.vdex
+boot-hwPartConnectivity.vdex
+boot-hwPartDFR.vdex
+boot-hwPartDefaultDFR.vdex
+boot-hwPartDeviceVirtualization.vdex
+boot-hwPartIaware.vdex
+boot-hwPartMagicWindow.vdex
+boot-hwPartMdm.vdex
+boot-hwPartMedia.vdex
+boot-hwPartPowerOffice.vdex
+boot-hwPartSecurity.vdex
+boot-hwPartSecurityFaceId.vdex
+boot-hwPartTelephony.vdex
+boot-hwPartTelephonyCust.vdex
+
+$ adb -s WVQ6R22124000968 shell 'ls -l /system/framework/framework.jar /system/framework/services.jar'
+-rw-r--r-- 1 root root 41586883 2018-08-08 00:01 /system/framework/framework.jar
+-rw-r--r-- 1 root root 21336921 2018-08-08 00:01 /system/framework/services.jar
+
+# 读 system 分区可用性探测（v2.1.5 的 t3 脚本曾用 shell 读 /system/priv-app/*.apk，故先验证）
+$ adb -s WVQ6R22124000968 shell 'unzip -l /system/priv-app/SystemUI/SystemUI.apk | head -5'
+Archive:  /system/priv-app/SystemUI/SystemUI.apk
+  Length      Date    Time    Name
+---------  ---------- -----   ----
+      724  1980-01-01 08:00   res/drawable/ic_flashlight_off2on.xml
+     1120  1980-01-01 08:00   res/drawable-xxhdpi-v4/hwseekbar_slider_thumb_normal_dark_emui.png

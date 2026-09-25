@@ -1,0 +1,16 @@
+# 场景：熄屏再亮屏后的锁屏媒体控件
+# 注意：本机若有锁屏密码，截屏只会拿到密码界面 —— 那就如实记录「拿不到」，不伪造。
+
+## 采集前播放状态: 3 3 2 
+## 亮屏后焦点:   mCurrentFocus=Window{59315b6 u0 NotificationShade}
+## 是否有锁屏密码: 
+
+## 锁屏 uiautomator 里与本包/媒体相关的节点
+<node index="0" text="" resource-id="com.android.systemui:id/divider_title" class="android.view.View" package="com.android.systemui" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[446,798][2113,802]" xpos="[0,0][0,0]" />
+<node index="2" text="已连接 USB 调试" resource-id="com.android.systemui:id/tv_ntf_title" class="android.widget.TextView" package="com.android.systemui" content-desc="系统,已连接 USB 调试" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[558,760][1959,798]" xpos="[0,0][0,0]" />
+<node index="0" text="" resource-id="com.android.systemui:id/magazine_simple_title_parent" class="android.widget.RelativeLayout" package="com.android.systemui" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[80,1518][2480,1598]" xpos="[0,0][0,0]">
+<node index="0" text='"Till death do us part"' resource-id="com.android.systemui:id/magazine_simple_title" class="android.widget.TextView" package="com.android.systemui" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="true" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[371,1539][2188,1577]" xpos="[0,0][0,0]" />
+
+## 本包在锁屏上是否有节点（package=com.takahashirinta.ncrust）
+0
+0

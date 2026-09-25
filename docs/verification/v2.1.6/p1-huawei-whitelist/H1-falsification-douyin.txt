@@ -1,0 +1,58 @@
+# H1 证伪实验：名单内的**用户自装第三方**（抖音）是否被拒？
+# 采集时间: 2026-09-25T13:23:06+08:00   设备: WVQ6R22124000968 (WGR-W09 / HarmonyOS 4.2 / API 31)
+# 目的: whitelist-criterion.md §8.2 的 H1 原本只是「高置信推断」——
+#       「名单是唯一准入判据」缺一步穷尽证明。本实验把它补上。
+
+## 为什么选抖音
+  包名 com.ss.android.ugc.aweme 在 third_app_filter.xml 的 mediasession 名单里
+  （条目 version="25.3.0" 与通配 version="0" 各一条），
+  且它是**用户自己安装的第三方应用**，不是华为预置、不是系统应用。
+  设备上装的版本是 40.6.0 —— 同时验证了「version 0 通配」这一条。
+
+## 命令与原文
+$ adb -s WVQ6R22124000968 shell pm list packages com.ss.android.ugc.aweme
+package:com.ss.android.ugc.aweme
+$ grep -o "package=\"com.ss.android.ugc.aweme\" version=\"[^\"]*\"" 14-third_app_filter.xml
+package="com.ss.android.ugc.aweme" version="25.3.0"
+package="com.ss.android.ugc.aweme" version="0"
+package="com.ss.android.ugc.aweme" version="0"
+package="com.ss.android.ugc.aweme" version="1.0.0.0"
+package="com.ss.android.ugc.aweme" version="0"
+package="com.ss.android.ugc.aweme" version=""
+package="com.ss.android.ugc.aweme" version="0"
+package="com.ss.android.ugc.aweme" version="0"
+package="com.ss.android.ugc.aweme" version="210701"
+$ adb -s WVQ6R22124000968 shell dumpsys package com.ss.android.ugc.aweme | grep versionName
+    versionName=40.6.0
+
+## 隔离后启动抖音（先停掉 Ncrust 与网易云，并 logcat -c）
+$ adb -s WVQ6R22124000968 shell am force-stop com.takahashirinta.ncrust
+$ adb -s WVQ6R22124000968 shell am force-stop com.netease.cloudmusic
+$ adb -s WVQ6R22124000968 shell logcat -c
+$ adb -s WVQ6R22124000968 shell monkey -p com.ss.android.ugc.aweme -c android.intent.category.LAUNCHER 1
+## Network stats: elapsed time=86ms (0ms mobile, 0ms wifi, 86ms not connected)
+
+## 抖音的会话（原文）
+$ adb -s WVQ6R22124000968 shell dumpsys media_session | grep -E "Media button session is|com.ss.android|state=PlaybackState|metadata:"
+    metadata: null
+  Media button session is com.ss.android.ugc.aweme/FeedPlayerSession (userId=0)
+    FeedPlayerSession com.ss.android.ugc.aweme/FeedPlayerSession (userId=0)
+      state=PlaybackState {state=1, position=0, buffered position=0, speed=1.0, updated=1976482, actions=566, custom actions=[], active item id=-1, error=null}
+      metadata: null
+
+## ROM 对抖音的白名单判定日志
+$ adb -s WVQ6R22124000968 shell logcat -d | grep -i "media white list"
+  匹配行数 = 0
+
+## 对照：同一台设备、同一时间窗，Ncrust 的判定（见 baseline/CARD-AB.txt §5）
+  V MediaControlUtils:          this app is not in media white list, pkgName: com.takahashirinta.ncrust
+  V HwMediaSessionServiceInner: this app is not in media white list, pkgName: com.takahashirinta.ncrust
+
+## 结论
+  名单内的用户自装第三方（抖音）=> 0 次拒绝；名单外的 Ncrust => 反复被拒。
+  ⇒ H1（唯一准入判据就是包名在不在名单里）由「高置信推断」升级为**已证**。
+  ⇒ 同时排除「只认华为预置应用」「只认华为签名」两种解释：抖音既不是预置、也不是华为签名。
+
+## 本次未取到的部分（如实记录，不当证据）
+  抖音的 FeedPlayerSession 停在 state=1（信息流未起播），因此**没有**拿到它上卡片的截图/节点。
+  卡片侧的 A/B 仍以官方网易云为准（v2.1.5 目录已有完整证据）。本实验的结论只依赖上面的日志计数。

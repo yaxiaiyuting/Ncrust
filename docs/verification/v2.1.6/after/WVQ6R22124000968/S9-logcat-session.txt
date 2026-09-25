@@ -1,0 +1,14 @@
+# 场景：播放期间抓 logcat，统计「Media button session 被改写」的次数
+# 判据：合并后 Ncrust 只应有一条会话 ⇒ 不应再出现「在两条 Ncrust 会话之间跳」
+
+## 原始 logcat 全文: S9-logcat-full.txt (3785 行)
+
+## MediaSessionService / 华为媒体判定相关行
+09-25 13:30:40.037  1639  2751 I HwMediaSessionServiceEx: unregisterDeviceConnObserver successfully: 0
+
+## 「Media button session is changed to」出现次数
+0
+
+## 其中涉及本应用的行
+
+## 华为媒体白名单判定行（本包）

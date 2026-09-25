@@ -1,0 +1,14 @@
+# 场景：熄屏再亮屏后的锁屏媒体控件
+# 注意：本机若有锁屏密码，截屏只会拿到密码界面 —— 那就如实记录「拿不到」，不伪造。
+
+## 采集前播放状态: 3 3 
+## 亮屏后焦点:   mCurrentFocus=Window{bfeb20ad0 u0 StatusBar}
+## 是否有锁屏密码: 
+
+## 锁屏 uiautomator 里与本包/媒体相关的节点
+<node index="0" text="只好到屋顶找另一个梦境" resource-id="android:id/title" class="android.widget.TextView" package="com.android.systemui" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[96,988][704,1069]" />
+<node index="1" text="" resource-id="android:id/media_actions" class="android.widget.LinearLayout" package="com.android.systemui" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[744,991][1344,1183]">
+
+## 本包在锁屏上是否有节点（package=com.takahashirinta.ncrust）
+0
+0

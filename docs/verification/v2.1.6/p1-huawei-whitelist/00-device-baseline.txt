@@ -1,0 +1,28 @@
+# WGR-W09 设备基线 —— 采集时间 2026-09-25T12:56:40+08:00
+
+$ adb -s WVQ6R22124000968 shell getprop ro.product.model
+WGR-W09
+$ adb -s WVQ6R22124000968 shell getprop ro.product.brand
+HUAWEI
+$ adb -s WVQ6R22124000968 shell getprop ro.product.manufacturer
+HUAWEI
+$ adb -s WVQ6R22124000968 shell getprop ro.build.version.release
+12
+$ adb -s WVQ6R22124000968 shell getprop ro.build.version.sdk
+31
+$ adb -s WVQ6R22124000968 shell getprop ro.build.display.id
+WGR-W09 4.2.0.213(C00E100R3P9)
+$ adb -s WVQ6R22124000968 shell getprop ro.build.version.emui
+EmotionUI_14.2.0
+$ adb -s WVQ6R22124000968 shell getprop ro.build.type
+user
+$ adb -s WVQ6R22124000968 shell getprop ro.debuggable
+0
+$ adb -s WVQ6R22124000968 shell getprop ro.secure
+1
+$ adb -s WVQ6R22124000968 shell getprop ro.build.characteristics
+tablet
+$ adb -s WVQ6R22124000968 shell date
+Fri Sep 25 12:56:40 CST 2026
+$ adb -s WVQ6R22124000968 shell uname -a
+Linux localhost 5.10.43 #1 SMP PREEMPT Thu Aug 29 17:05:05 CST 2024 aarch64

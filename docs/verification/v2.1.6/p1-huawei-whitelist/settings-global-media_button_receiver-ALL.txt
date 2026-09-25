@@ -1,0 +1,102 @@
+# media_button_receiver 设置项三次读取汇总（原文）
+
+# settings list global | grep -i media_button_receiver —— 应用=netease
+# 采集时间与命令原文见 tmp/capture-netease.log 的「(4)」段
+################ (4) settings list global | grep -i media_button_receiver  [2026-09-25T13:02:48+08:00]
+$ adb -s WVQ6R22124000968 shell settings list global | grep -i media_button_receiver
+exit=1  （exit=1 表示无该设置项）
+$ adb -s WVQ6R22124000968 shell settings list global | grep -iE "media|music"
+awareness_ca_com.android.mediacenter=1
+awareness_ca_com.huawei.music=1
+car_dock_sound=/system/media/audio/ui/Dock.ogg
+car_undock_sound=/system/media/audio/ui/Undock.ogg
+charging_started_sound=/system/media/audio/ui/ChargingStarted.ogg
+desk_dock_sound=/system/media/audio/ui/Dock.ogg
+desk_undock_sound=/system/media/audio/ui/Undock.ogg
+dock_audio_media_enabled=1
+huawei_music=1
+huawei_music_old=1
+lock_sound=/system/media/audio/ui/Lock.ogg
+low_battery_sound=/system/media/audio/ui/LowBattery.ogg
+trusted_sound=/system/media/audio/ui/Trusted.ogg
+unlock_sound=/system/media/audio/ui/Unlock.ogg
+wireless_charging_started_sound=/system/media/audio/ui/WirelessChargingStarted.ogg
+
+################ (5) 控制中心 uiautomator + 截图  [2026-09-25T13:02:48+08:00]
+
+-----
+
+# settings list global | grep -i media_button_receiver —— 应用=huawei
+# 采集时间与命令原文见 tmp/capture-huawei.log 的「(4)」段
+################ (4) settings list global | grep -i media_button_receiver  [2026-09-25T13:04:13+08:00]
+$ adb -s WVQ6R22124000968 shell settings list global | grep -i media_button_receiver
+exit=1  （exit=1 表示无该设置项）
+$ adb -s WVQ6R22124000968 shell settings list global | grep -iE "media|music"
+awareness_ca_com.android.mediacenter=1
+awareness_ca_com.huawei.music=1
+car_dock_sound=/system/media/audio/ui/Dock.ogg
+car_undock_sound=/system/media/audio/ui/Undock.ogg
+charging_started_sound=/system/media/audio/ui/ChargingStarted.ogg
+desk_dock_sound=/system/media/audio/ui/Dock.ogg
+desk_undock_sound=/system/media/audio/ui/Undock.ogg
+dock_audio_media_enabled=1
+huawei_music=1
+huawei_music_old=1
+lock_sound=/system/media/audio/ui/Lock.ogg
+low_battery_sound=/system/media/audio/ui/LowBattery.ogg
+trusted_sound=/system/media/audio/ui/Trusted.ogg
+unlock_sound=/system/media/audio/ui/Unlock.ogg
+wireless_charging_started_sound=/system/media/audio/ui/WirelessChargingStarted.ogg
+
+################ (5) 控制中心 uiautomator + 截图  [2026-09-25T13:04:13+08:00]
+
+-----
+
+# settings list global | grep -i media_button_receiver —— 第三次读取（设备当前状态，Ncrust 未在播放）
+# ⚠️ 本项与播放状态无关：该设置在三次读取中**均不存在**（grep exit=1）。
+#    Ncrust 那一次未重跑播放（与主会话协调，避免抢焦点），故以只读方式补测。
+# 采集时间 2026-09-25T13:07:48+08:00  设备 WVQ6R22124000968
+
+$ adb -s WVQ6R22124000968 shell settings list global | grep -i media_button_receiver
+exit=1
+
+$ adb -s WVQ6R22124000968 shell settings list global | grep -iE "media|music"
+awareness_ca_com.android.mediacenter=1
+awareness_ca_com.huawei.music=1
+car_dock_sound=/system/media/audio/ui/Dock.ogg
+car_undock_sound=/system/media/audio/ui/Undock.ogg
+charging_started_sound=/system/media/audio/ui/ChargingStarted.ogg
+desk_dock_sound=/system/media/audio/ui/Dock.ogg
+desk_undock_sound=/system/media/audio/ui/Undock.ogg
+dock_audio_media_enabled=1
+huawei_music=1
+huawei_music_old=1
+lock_sound=/system/media/audio/ui/Lock.ogg
+low_battery_sound=/system/media/audio/ui/LowBattery.ogg
+trusted_sound=/system/media/audio/ui/Trusted.ogg
+unlock_sound=/system/media/audio/ui/Unlock.ogg
+wireless_charging_started_sound=/system/media/audio/ui/WirelessChargingStarted.ogg
+exit=0
+
+-----
+
+# 结论：WGR-W09（HarmonyOS 4.2）的 Settings.Global 里**没有** media_button_receiver 这一类设置项。
+#       即：无法通过 settings put 把某个包「设成」媒体按键接收者 —— 该 ROM 不用这个机制做准入。
+# 附：HwMediaSessionServiceEx 的 SYSTEM_CONFIG_MUSIC_KEY 是否在 Settings 里（对应 whitelist-criterion.md §8.3-U1 的相关性排查）
+# 采集时间 2026-09-25T13:07:52+08:00
+$ adb -s WVQ6R22124000968 shell settings list global | grep -i meida_controller
+exit=1
+$ adb -s WVQ6R22124000968 shell settings list system | grep -iE 'meida_controller|music'
+volume_music=5
+volume_music_bt_a2dp=3
+volume_music_bt_sco=5
+volume_music_remote_submix=15
+volume_music_speaker=5
+volume_music_usb_device=1
+exit=0
+$ adb -s WVQ6R22124000968 shell settings list secure | grep -iE 'meida_controller|music'
+media_button_receiver=com.netease.cloudmusic/com.netease.cloudmusic.receiver.MediaButtonEventReceiver,0,1-com.netease.cloudmusic/com.netease.cloudmusic.receiver.MediaButtonEventReceiver,0,1-com.huawei.music/com.android.mediacenter.playback.systeminteract.MediaButtonIntentReceiver,0,1-com.netease.cloudmusic/com.netease.cloudmusic.module.webview.audio.WebMediaButtonReceiver,0,1
+permission_reason_policy=SUPPORTED;com.huawei.intelligent;com.huawei.ohos.suggestion;com.huawei.hwread.dz;com.huawei.smarthome;com.huawei.filemanager;com.vmall.client;com.huawei.recsys;com.huawei.android.totemweather;com.android.providers.telephony;com.huawei.android.hwouc;com.huawei.ims;com.huawei.hiai;com.huawei.magazine;com.huawei.contactscamcard;com.huawei.contacts;com.android.emergency;com.huawei.himovie;com.huawei.lives;com.huawei.localBackup;com.huawei.privatespace;com.huawei.HwMultiScreenShot;com.huawei.ohos.famanager;com.huawei.smartshot;com.huawei.android.hsf;com.huawei.security.privacycenter;com.android.incallui;com.huawei.multimedia.audioengine;com.huawei.stylus.floatmenu;com.huawei.gamebox;com.huawei.parentcontrol;com.huawei.systemserver;com.huawei.hiwrite;com.huawei.hwid;com.android.managedprovisioning;com.huawei.android.findmyphone;com.huawei.pcassistant;com.huawei.screenrecorder;com.huawei.printservice;com.huawei.mycenter;com.huawei.dmsdp;com.huawei.gameassistant;com.huawei.vassistant;com.huawei.contentsensor;com.huawei.ohos.inputmethod;com.huawei.wallet;com.huawei.hiview;com.bjbyhd.screenreader_huawei;com.huawei.hiviewtunnel;com.huawei.android.launcher;com.android.cellbroadcastservice;com.huawei.associateassistant;com.android.providers.contacts;com.huawei.hinote;com.huawei.phoneservice;com.huawei.appmarket;com.huawei.email;com.huawei.compass;com.huawei.hbm;com.android.systemui;com.huawei.hwstartupguide;com.huawei.audioaccessorymanager;com.huawei.android.instantshare;com.huawei.systemmanager;com.huawei.himovie.local;com.android.mms;com.huawei.videoeditor;com.android.settings;com.huawei.music;com.huawei.deskclock;com.huawei.hwdiagnosis;com.huawei.soundrecorder;com.huawei.photos;com.huawei.contacts.sync;com.android.phone;com.android.mms.service;com.huawei.calendar;com.huawei.scanner;com.huawei.educenter;com.huawei.browser;com.android.providers.calendar;com.hicloud.android.clone;com.huawei.android.tips;com.android.server.telecom;com.iflytek.speechsuite;com.huawei.hilink.framework;com.huawei.android.wfdft;com.huawei.hwddmp;com.huawei.search;com.huawei.android.airsharing;com.huawei.fastapp;com.huawei.hicloud;com.huawei.health;com.huawei.hidisk;com.huawei.hwireader;com.huawei.nemo;com.huawei.hitouch;com.huawei.hieduservice;com.huawei.music.local;com.huawei.notepad;com.huawei.meetime;com.huawei.android.thememanager;com.huawei.camera;com.huawei.hsl;com.huawei.maps.app;com.tencent.qqlivehuawei
+unsafe_volume_music_active_ms=4440001
+unsafe_volume_music_active_ms_bt=39180001
+exit=0

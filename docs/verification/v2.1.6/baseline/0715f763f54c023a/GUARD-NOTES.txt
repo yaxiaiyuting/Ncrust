@@ -1,0 +1,2 @@
+  [guard] 本机(API 24) dumpsys 无 'Media button session' 字段，跳过该项校验
+  [guard] 本机(API 24) dumpsys 无 'Media button session' 字段，跳过该项校验
