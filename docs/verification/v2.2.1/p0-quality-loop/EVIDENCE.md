@@ -86,12 +86,37 @@ cd /home/duanjb666/deepseek/ncrust-gpl/Ncrust
   `QualityAssessmentTest` 新增 4 例（可信档位降级、不可信标签沉默、不低于请求仍 NORMAL、实测优先）；
 - 结果文件：`app/build/reports/tests/testDebugUnitTest/index.html`。
 
+## 5.5 三设备安装与冷启动冒烟（2026-09-25 15:2x）
+
+三台设备全部升到 `2.2.1-gpl`（versionCode **38**），安装后逐台冷启一次并检查崩溃日志：
+
+| 设备 | 型号 / Android | 安装包 | 签名 | 结果 | 截图 |
+|---|---|---|---|---|---|
+| `3B15CD00GB700000` | PLC110 / 16 (API 36) | `Ncrust-v2.2.1-gpl-release.apk` | release（`e75af3ff…`） | 冷启正常；**完整 QQ A/B 在本机完成** | `screenshots/B4-playing-6ch.png` |
+| `0715f763f54c023a` | SM-G9209 / 7.0 (**API 24**) | `app-debug.apk`（见下） | **Android Debug**（`e10c8b4d…`） | 冷启正常，库页与队列都在 | `screenshots/C-s6-api24-launch.png` |
+| `WVQ6R22124000968` | WGR-W09（华为）/ 12 (API 31) | `Ncrust-v2.2.1-gpl-release.apk` | release（`e75af3ff…`） | 冷启正常，播放器/歌词正常 | `screenshots/C-wgr-w09-launch.png` |
+
+崩溃检查命令（三台一致）：
+
+```bash
+adb -s <serial> logcat -d | grep -aE "FATAL|AndroidRuntime.*ncrust|beginning of crash|UnsatisfiedLinkError|NoClassDefFoundError|ClassNotFoundException"
+# 三台均为空
+```
+
+**S6 为什么装的是 debug 包**：它上面原有的 2.2.0 是 **Android Debug 签名**
+（`apksigner verify --print-certs` 实测），而 `dist/` 里是 release 签名，直接覆盖会
+`INSTALL_FAILED_UPDATE_INCOMPATIBLE`。AGENTS.md 已记过「S6 卸载会清登录态」，
+所以改装**同一份源码构建的 debug 包**（同样是 38），既保住登录态又完成升级。
+
 ## 6. 修复后仍未验证的项（如实列出）
 
 1. **未做逐版本装机回溯**（见 `version-bisect.md` 的口径说明）——引入版本来自提交级考古；
-2. **华为 / 非华为 A/B 只完成一半**：本轮 PCL110（非华为）做了完整 A/B；
-   WGR-W09（华为）未跑本轮流程（该机没有登录 QQ 账号，无法复现 QQ 取链路径）；
-3. **「网易云侧是否有 6 声道文件」未逐档位核实**：本轮只核实了 QQ 侧（确定性结论），
+2. **华为 / 非华为 A/B 只完成一半**：非华为（PCL110）做完了完整 A/B；
+   华为（WGR-W09）只做了**安装 + 冷启动冒烟**（见 §5.5），**没有跑 QQ 取链 A/B**
+   —— 因此「华为 ROM 上 6 声道文件能否正常出声」**本轮未验证**；
+3. **API 24（S6）只做了冷启动冒烟**：没有在上面跑 QQ 取链 A/B，
+   「Android 7.0 上 6 声道 FLAC 经 FFmpeg 软解能否正常出声」**本轮未验证**；
+4. **「网易云侧是否有 6 声道文件」未逐档位核实**：本轮只核实了 QQ 侧（确定性结论），
    网易云侧按现有档位表（jymaster/hires/lossless 均为立体声）推断无此形态，属推断而非实测；
-4. **修复后的音频听感未做主观评价**（只看「能正常出声、进度前进、无异常日志」）；
-5. **多声道文件的声道是否被正确保留**未用外部工具核验（app 侧只保证不再因矩阵缺失而崩）。
+5. **修复后的音频听感未做主观评价**（只看「能正常出声、进度前进、无异常日志」）；
+6. **多声道文件的声道是否被正确保留**未用外部工具核验（app 侧只保证不再因矩阵缺失而崩）。
