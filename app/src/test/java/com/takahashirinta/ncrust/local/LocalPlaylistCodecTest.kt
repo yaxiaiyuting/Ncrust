@@ -199,4 +199,66 @@ class LocalPlaylistCodecTest {
         assertNotNull(back.firstOrNull { it.key.ownerId == "alice" })
         assertNotNull(back.firstOrNull { it.key.ownerId == "bob" })
     }
+
+    // ================================================================ v2.3.0 · B
+    // ★ **落盘字段名是对外契约**（release-only 回归）。
+    //
+    // 第一次 release 真机验证时读回 `ncrust_local_playlists.xml`，发现 JSON 是
+    // `{"a":"netease","b":"local:...","c":"anonymous","d":"v230test",...}`
+    // —— R8 把 DTO 的字段名整体混淆成了单字母。同一个 APK 内读写自洽，所以**不崩**，
+    // 但持久化结构的字段名成了「构建的副产物」：下一次构建的映射一变，
+    // 老数据一条都读不出来 ⇒ 用户的本地歌单在升级时**静默消失**。
+    //
+    // 修法是 `app/proguard-rules.pro` 里的 `-keep class …ncrust.local.** { *; }`。
+    // 下面这组用例是它的第二道防线：**字段改名会让这里变红**，
+    // 而不是让用户的数据消失。debug 单测跑不到 R8，所以这里钉的是
+    // 「DTO 的字段名本身」——那正是 keep 规则要保住的东西。
+
+    @Test
+    fun `落盘字段名是契约——歌单的一级 key 必须可读`() {
+        val json = LocalPlaylistCodec.encodePlaylists(
+            listOf(LocalPlaylist(qqKey, "n", now, now, lastSyncedAt = 1L, dirId = 2L)),
+        )
+        listOf("source", "id", "ownerId", "name", "createdAt", "updatedAt", "lastSyncedAt", "dirId")
+            .forEach { key ->
+                assertTrue("歌单 JSON 缺少字段名 \"$key\"：$json", json.contains("\"$key\""))
+            }
+    }
+
+    @Test
+    fun `落盘字段名是契约——曲目的一级 key 必须可读（含 tombstoned）`() {
+        val json = LocalPlaylistCodec.encodeTracks(
+            listOf(
+                LocalPlaylistTrack(
+                    trackKey = TrackKey(MusicSource.QQMUSIC, 42L, "mid", "media"),
+                    origin = LocalTrackOrigin.LOCAL,
+                    addedAt = now,
+                    tombstoned = true,
+                    song = com.takahashirinta.ncrust.network.SongItem(
+                        id = 42L, name = "歌", artists = null, album = null, duration = null,
+                    ),
+                ),
+            ),
+        )
+        listOf("schemaVersion", "tracks", "source", "trackId", "sourceId", "mediaId",
+                "origin", "addedAt", "tombstoned", "song").forEach { key ->
+            assertTrue("曲目 JSON 缺少字段名 \"$key\"：$json", json.contains("\"$key\""))
+        }
+        // 值也要可读（枚举用 name 落盘，不是 ordinal）——ordinal 会在中间插值时静默指错。
+        assertTrue(json.contains("\"LOCAL\""))
+    }
+
+    @Test
+    fun `schemaVersion 落在 JSON 里（迁移的判据不能只是内存里的常量）`() {
+        val json = LocalPlaylistCodec.encodeTracks(emptyList())
+        assertTrue(json.contains("\"schemaVersion\":${LocalPlaylistCodec.SCHEMA_VERSION}"))
+    }
+
+    @Test
+    fun `单字母 key 的样本会被当成缺字段处理（R8 混淆后的老数据不会读成垃圾）`() {
+        // 模拟 v2.3.0 首个 release 包写下的、被 R8 混淆过的那份数据。
+        val obfuscated = """[{"a":"netease","b":"11","c":"REMOTE","d":100}]"""
+        // 所有必填字段都读不到 ⇒ 条目被丢弃（而不是造出一条 id=0 的假记录）
+        assertTrue(LocalPlaylistCodec.decodeTracks(obfuscated).isEmpty())
+    }
 }

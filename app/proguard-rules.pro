@@ -38,6 +38,21 @@
 # 代码侧已经改成用 TypeToken 解析（见 PlaylistCacheCodec.ListEnvelope 的 KDoc），
 # 这里是第二道防线：万一将来有人又写了依赖字段泛型签名的持久化结构。
 -keep class com.takahashirinta.ncrust.playlist.** { *; }
+# v2.3.0：本地歌单的 DTO 与编解码。**这一条同样是真的踩过坑才加的** ——
+# 第一次 release 真机验证时读回 ncrust_local_playlists.xml，发现落盘的 JSON 是
+# {"a":"netease","b":"local:...","c":"anonymous","d":"v230test","e":...,"f":...}
+# —— R8 把 DTO 的字段名整体混淆成了单字母。同一个 APK 内读写自洽，所以**不崩**，
+# 但持久化结构的字段名变成了「构建的副产物」：下一次构建的混淆映射一变，
+# 老数据就一条都读不出来 ⇒ 用户的本地歌单在升级时**静默消失**。
+# 这与 v2.2.0 那次「R8 丢掉泛型签名 ⇒ Gson 产出 LinkedTreeMap」是同一类问题的两个面：
+# **凡是落盘/落网的结构，字段名与泛型签名都是对外契约，不能交给 R8 决定。**
+# 回归保护：LocalPlaylistCodecTest 里断言了编解码产物的**确切 key 名**
+# （字段改名会让那个用例变红，而不是让用户的数据消失）。
+-keep class com.takahashirinta.ncrust.local.** { *; }
+
+# v2.3.0：单曲标签（版权可用性 / 原唱翻唱）。它**不落盘**，keep 的理由与上面不同：
+# 它是 Compose 的稳定性判据来源（@Immutable data class），混淆不会破坏正确性。
+# 这里不 keep 它 —— 列出来只为说明「为什么 local 要 keep 而 search 不要」。
 
 # =============================================================================
 # Retrofit / OkHttp —— 保留 interface 上的 HTTP 注解
