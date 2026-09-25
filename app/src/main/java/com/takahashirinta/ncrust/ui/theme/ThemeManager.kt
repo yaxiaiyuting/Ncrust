@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color as ComposeColor
+import com.takahashirinta.ncrust.ui.theme.color.CoverPalette
 
 /**
  * 主题色预设条目
@@ -81,15 +82,29 @@ fun themeColorForIndex(index: Int): Color {
 fun NcrustTheme(
     primaryColor: Color = Color(0xFF1DB954),
     isDark: Boolean = true,
+    /**
+     * v2.5.0 · A（色调）：封面取色的多角色调色板。非 null 时**背景与强调色跟随封面**。
+     *
+     * 默认 null = 保持既有观感（预设色 + 固定底），所以全部既有调用点零行为变化。
+     * 只有用户在设置里选了「主题色来源 = 跟随封面」时 `MainActivity` 才会传它进来。
+     *
+     * ⚠️ 传进来的这一套必须已经由 `CoverThemeExtractor` 在**后台线程**算好 ——
+     * 本函数在组合期求值，这里只做字段搬运，不做任何颜色计算（铁律 3）。
+     */
+    coverPalette: CoverPalette? = null,
     content: @Composable () -> Unit
 ) {
-    val colors = remember(primaryColor, isDark) {
-        (if (isDark) DefaultNcrustColors else LightNcrustColors).copy(
+    val colors = remember(primaryColor, isDark, coverPalette) {
+        val base = (if (isDark) DefaultNcrustColors else LightNcrustColors).copy(
             primary = primaryColor,
             // B2-C：onPrimary 随主题色推导。原先恒为白色，浅色主题色（如琥珀）上
             // 文字/图标对比度不足 —— 这是 4.5:1 要求的前提。
             onPrimary = onAccentColor(primaryColor),
         )
+        // v2.5.0：跟随封面时，背景/容器/描边/强调色整组来自封面调色板。
+        // 注意 `toNcrustColors` **不覆盖** surfaceContainerHigh/Highest ——
+        // 那是菜单与输入框的底色，可读性影响面比"背景好不好看"大（见其 KDoc）。
+        if (coverPalette != null) CoverThemeExtractor.toNcrustColors(coverPalette, base) else base
     }
     CompositionLocalProvider(
         LocalNcrustColors provides colors,

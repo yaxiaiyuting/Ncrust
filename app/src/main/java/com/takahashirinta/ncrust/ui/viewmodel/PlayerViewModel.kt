@@ -81,6 +81,7 @@ import android.widget.Toast
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import com.takahashirinta.ncrust.ui.theme.CoverThemeColors
 
 class PlayerViewModel(application: Application) : AndroidViewModel(application) {
     val isPlaying = MutableStateFlow(false)
@@ -256,6 +257,17 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
      * （同一张封面在深色/浅色下锚定区间不同，不能只按 URL 缓存处理结果）。
      */
     val coverAccentRgb = MutableStateFlow<Int?>(null)
+
+    /**
+     * v2.5.0 · A（色调）：封面取色的**多角色调色板**（深/浅两套一起给），
+     * null = 无封面 / 灰度封面 / 提取失败 → UI 回落预设主题。
+     *
+     * 与 [coverAccentRgb] 是两条独立通路（后者走 `androidx.palette`、服务通知栏着色）：
+     * 这一条走新增的 HCT 通路、服务界面主题。两条都在后台线程算完才推过来，
+     * **UI 侧不需要再做任何颜色计算**（这正是"切深浅色立即正确"的前提 ——
+     * 两套变体已经算好，切模式只是换一次字段读取）。
+     */
+    val coverTheme = MutableStateFlow<CoverThemeColors?>(null)
 
     private val qualityApiLevels = QUALITY_LEVELS
 
@@ -571,6 +583,8 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         PlaybackService.onBufferingChanged = { buffering -> isBuffering.value = buffering }
         // B2-C：封面 Palette 提取出的主题色（null = 无封面 / 提取失败 → UI 回落预设色）。
         PlaybackService.onCoverAccent = { rgb -> coverAccentRgb.value = rgb }
+        // v2.5.0 · A（色调）：同一张封面的 HCT 多角色调色板（深/浅两套）。
+        PlaybackService.onCoverTheme = { theme -> coverTheme.value = theme }
         // ExoPlayer 主线程回调。播放失败 → 降档重试,而不是无声地停在 IDLE。
         // v2.2.1 · P0：回调现在带失败描述（errorCode + cause），重试策略由
         // [QualityRetryGuard] 决定 —— 单调、去重、有上限、带音频焦点节流。

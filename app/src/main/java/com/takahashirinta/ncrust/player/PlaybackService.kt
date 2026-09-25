@@ -84,6 +84,8 @@ import com.takahashirinta.ncrust.ui.i18n.getSavedLanguageCode
 import com.takahashirinta.ncrust.ui.i18n.stringsForCode
 import com.takahashirinta.ncrust.ui.player.VisualizerSetting
 import kotlinx.coroutines.*
+import com.takahashirinta.ncrust.ui.theme.CoverThemeColors
+import com.takahashirinta.ncrust.ui.theme.CoverThemeExtractor
 
 @OptIn(UnstableApi::class)
 class PlaybackService : MediaLibraryService() {
@@ -139,6 +141,9 @@ class PlaybackService : MediaLibraryService() {
     private val PALETTE_SAMPLE_PX = 112
     // 同一张封面不重复取色（URL 未变直接复用上次结果）。
     private var paletteUrl: String? = null
+
+    /** v2.5.0 · A（色调）：与 [paletteUrl] 同生命周期缓存的 HCT 配色，避免重复量化。 */
+    private var paletteTheme: CoverThemeColors? = null
     private var paletteRgb: Int? = null
     private var paletteDominant: Int = 0xFF1DB954.toInt()
 
@@ -204,6 +209,21 @@ class PlaybackService : MediaLibraryService() {
         // B2-C：封面 Palette 提取出的主题色（ARGB）。null = 当前歌无封面，UI 回落预设色。
         // 由 PlaybackService 静态回调推给 PlayerViewModel.coverAccentRgb。
         var onCoverAccent: ((Int?) -> Unit)? = null
+
+        /**
+         * v2.5.0 · A（色调）：封面取色的**多角色调色板**（深/浅两套），
+         * 由静态回调推给 `PlayerViewModel.coverTheme`。
+         *
+         * 与 [onCoverAccent] 是**两条独立的通路**，刻意不合并：
+         *  - [onCoverAccent] 走 `androidx.palette`，服务**通知栏着色**（`setColorized`），
+         *    这是 v1.2.0 就有的行为，本版一个字节不动；
+         *  - 这一条走新增的 HCT 通路（`ui/theme/color/`），服务**界面主题**。
+         *
+         * 「两条通路给出同一个颜色」**不是**本版的目标，也不应被当成验收项 ——
+         * 它们是两套算法（`ColorCutQuantizer` vs `QuantizerCelebi`+`Score`）。
+         * 合并它们会同时改掉通知栏的观感，而那是用户已经习惯的东西。
+         */
+        var onCoverTheme: ((CoverThemeColors?) -> Unit)? = null
         var mediaTitle: String = "Ncrust"
         var mediaArtist: String = ""
         var mediaSongId: Long? = null
@@ -683,6 +703,7 @@ class PlaybackService : MediaLibraryService() {
         } else if (artwork != null && artwork.isEmpty()) {
             // 这首歌没有封面：清掉主题色，UI 回落预设色（不然会沿用上一首的颜色）。
             paletteUrl = null
+            paletteTheme = null
             paletteRgb = null
             onCoverAccent?.invoke(null)
         }
@@ -1084,21 +1105,48 @@ class PlaybackService : MediaLibraryService() {
     private fun applyCoverAccent(bitmap: Bitmap, url: String, gen: Int) {
         if (url == paletteUrl) {
             paletteRgb?.let { onCoverAccent?.invoke(it) }
+            // 同一张封面（URL 未变，例如空闲释放后恢复播放触发的重载）直接复用，
+            // 不重复量化 —— HCT 量化比 Palette 贵，这条早退是它唯一的省法。
+            paletteTheme?.let { onCoverTheme?.invoke(it) }
             return
         }
         scope.launch(Dispatchers.Default) {
+            // 缩到 112×112 的那张图**两套通路共用**：Palette 吃它，
+            // 新增的 HCT 通路也从它取像素 —— 这样新通路不必再缩一次大图，
+            // 也把 getPixels 的分配从「整张封面」降到 112×112×4 ≈ 50KB。
+            val sampled = try {
+                Bitmap.createScaledBitmap(bitmap, PALETTE_SAMPLE_PX, PALETTE_SAMPLE_PX, true)
+            } catch (e: Exception) {
+                Log.w("PlaybackService", "palette downscale failed", e)
+                null
+            }
             val palette = try {
-                Palette.from(
-                    Bitmap.createScaledBitmap(bitmap, PALETTE_SAMPLE_PX, PALETTE_SAMPLE_PX, true)
-                ).generate()
+                sampled?.let { Palette.from(it).generate() }
             } catch (e: Exception) {
                 Log.w("PlaybackService", "palette extraction failed", e)
+                null
+            }
+            // v2.5.0 · A（色调）：HCT 多角色调色板。**任何失败都静默为 null**
+            // （CoverThemeExtractor 内部逐层 runCatching），界面回落到预设主题，
+            // 用户察觉不到 —— 取色是增值功能，不是播放链路的一环。
+            val theme = try {
+                sampled?.let { bmp ->
+                    val px = IntArray(bmp.width * bmp.height)
+                    bmp.getPixels(px, 0, bmp.width, 0, 0, bmp.width, bmp.height)
+                    CoverThemeExtractor.extractBoth(px, bmp.width, bmp.height)
+                }
+            } catch (e: Exception) {
+                Log.w("PlaybackService", "cover theme extraction failed", e)
                 null
             }
             // 取色期间又切了歌：结果作废，别把上一首的颜色推给新歌。
             if (gen != artworkGeneration) return@launch
             if (palette == null) {
                 onCoverAccent?.invoke(null)
+                // 两条通路的降级是独立的：Palette 失败不代表 HCT 也失败（反之亦然），
+                // 所以各自推各自的结果，不互相牵连。
+                paletteTheme = theme
+                onCoverTheme?.invoke(theme)
                 return@launch
             }
             val dominant = palette.getDominantColor(0xFF1DB954.toInt())
@@ -1110,8 +1158,10 @@ class PlaybackService : MediaLibraryService() {
             paletteUrl = url
             paletteDominant = dominant
             paletteRgb = accent
+            paletteTheme = theme
             currentDominantColor = dominant
             onCoverAccent?.invoke(accent)
+            onCoverTheme?.invoke(theme)
             scope.launch(Dispatchers.Main) { updateNotify() }
         }
     }

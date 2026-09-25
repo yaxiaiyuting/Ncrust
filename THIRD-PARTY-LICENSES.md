@@ -116,6 +116,33 @@ Apache-2.0 第 4 条要求在分发时保留版权、许可证与 NOTICE 声明�
 
 原始 MIT 代码与新增 GPLv3 代码混合后整体以 GPLv3 分发：MIT 允许再许可（sublicense）为 GPLv3，MIT 原文与版权声明已完整保留在 `LICENSE-MIT`（未作任何修改，sha256 与上游一致）。
 
+### R5 — `material-color-utilities` 的**源码移植**（Apache-2.0，v2.5.0 新增）
+
+v2.5.0 的封面取色（HCT / 量化 / 评分 / 色调板）是 **Google `material-foundation/material-color-utilities`
+的 Kotlin 源码移植**，落在 `app/src/main/java/com/takahashirinta/ncrust/ui/theme/color/`。
+
+**它不是 Gradle 依赖** —— 是逐文件移植进本仓库的源码。理由写在 `CoverPaletteExtractor.kt` 的文件头：
+本项目的发布产物必须能从一次源码检出复现，而引入一个新的二进制依赖会让
+「`git clone` 即可构建」这条纪律变弱（同 v1.5.0 把 Kanesumi `MetroLyricsPanel`
+搬进本仓库的理由，见 `AGENTS.md`）。
+
+| | |
+|---|---|
+| 上游 | `https://github.com/material-foundation/material-color-utilities` |
+| 许可证 | **Apache-2.0** |
+| 移植范围 | `Cam16` / `Hct` / `ColorUtils` / `Quantizer{Celebi,Wu,Wsmeans,Map}` / `Score` / `TonalPalette` 的算法；`CoverPalette` / `CoverPaletteExtractor` 为本项目自有 |
+
+**署名义务（Apache-2.0 第 4 条，需要遵守）**：
+
+- 每个移植文件顶部都带 **Apache-2.0 许可证头 + 出处 URL + 「本文件为移植」的说明**；
+- 必须保留上游的版权与许可证声明 —— 上游许可证全文见其仓库根 `LICENSE`；
+- **GPLv3 兼容性**：Apache-2.0 与 GPLv3 兼容（Apache-2.0 不是 copyleft，允许再许可进 GPLv3 作品）。
+  与本仓库既有的 Kanesumi（Apache-2.0）情况相同，见 R3。
+
+> 与 R3 的区别：Kanesumi 是**依赖**（组合构建编入），这里是**源码移植**。
+> 两者都触发署名义务，但后者的代码在本仓库版本控制内，因此**可以**被
+> `AppShapesSingleSourceTest` 一类的守卫扫描到，也不受上游发版节奏影响。
+
 ## 四、构建工具链（不随 APK 分发，仅供参考）
 
 | 工具 | 许可证 |
