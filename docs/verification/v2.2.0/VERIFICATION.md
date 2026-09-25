@@ -230,3 +230,21 @@ adb -s <serial> shell svc wifi disable; adb -s <serial> shell svc data disable
 # 6) 探针复跑（只读，148 次请求，写接口零调用）
 cd ../  &&  python3 tools/probe-qq-playlist.py --serial 3B15CD00GB700000
 ```
+
+---
+
+## 8. 关于截图里的内容（如实说明）
+
+`device/` 下的截图是**真机屏幕原图**，因此包含测试账号**真实可见的界面文本**：
+歌单名（「我喜欢」「新建歌单1」）、曲目名与歌手名、以及曲目数。
+
+- 这些是**设备屏幕的忠实记录**，也是 UI 验证不可替代的证据；本仓库既有验证目录
+  （`docs/verification/v2.1.5/`、`v2.1.6/`）同样提交界面截图；
+- **没有**任何账号凭证进入截图：uin / 昵称 / 头像在 QQ 歌单页**本来就不显示**，
+  截图里也不存在 12 位以上的数字串（已用脚本逐个 PNG 复核，
+  正则命中项全部是 PNG 压缩流的字节噪声，不是可见文本）；
+- 探针落盘的 JSON **全部脱敏**（`<redacted:N>` 225 处、`<text:N>` 2738 处），
+  只有公开目录 id（songid / songmid / media_id / dirId / tid）按结论需要保留。
+
+> 若维护者认为「歌单名 / 歌名」也不宜入库，删掉 `device/*.png` 即可 ——
+> 结论与命令都在本文与 `EVIDENCE.md` 里，截图只是佐证。
