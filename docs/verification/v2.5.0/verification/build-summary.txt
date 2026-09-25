@@ -1,0 +1,28 @@
+=== v2.5.0 构建与测试证据 ===
+时间：2026-09-25T20:16:52+08:00
+命令：./gradlew clean testDebugUnitTest lint assembleDebug assembleRelease --console=plain
+
+BUILD SUCCESSFUL in 3m 3s
+421 actionable tasks: 133 executed, 288 up-to-date
+
+--- 单测（聚合 app/build/test-results/testDebugUnitTest/*.xml）---
+classes=79 tests=1068 failures=0 errors=0 skipped=0
+
+--- lint（app/build/reports/lint-results-debug.xml）---
+Fatal: 0
+Error: 0
+Warning: 8
+Information: 2
+  （8 个 Warning 全部是既有的 ApplySharedPref，见 lint-results-debug.txt；0 Error / 0 Fatal）
+
+--- 产物 ---
+app-debug.apk              31044436 bytes  versionCode='41' versionName='2.5.0-gpl'
+app-release.apk            10042824 bytes  versionCode='41' versionName='2.5.0-gpl'
+
+--- 签名（release）---
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::loadLibrary has been called by org.conscrypt.NativeLibraryUtil in an unnamed module (file:/home/duanjb666/Android/sdk/build-tools/36.0.0/lib/apksigner.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+Signer #1 certificate DN: CN=Ncrust GPL Fork, OU=Personal, O=yaxiaiyuting, L=Unknown, ST=Unknown, C=CN

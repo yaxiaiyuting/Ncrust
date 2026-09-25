@@ -1,0 +1,48 @@
+=== v2.5.0 设备验证（真机 + 模拟器）===
+时间：2026-09-25T20:16:59+08:00
+产物：app/build/outputs/apk/debug/app-debug.apk (versionCode 41) / release 同
+
+############ 安装矩阵 ############
+  S6-G9209 | SM-G9209 | Android 7.0 (API 24) | 装的是 debug | versionName=2.5.0-gpl
+  PLC110 | PLC110 | Android 16 (API 36) | 装的是 debug | versionName=2.5.0-gpl
+  WGR-W09(平板) | WGR-W09 | Android 12 (API 31) | 装的是 release | versionName=2.5.0-gpl
+  emulator-5554 | Android SDK built for x86_64 | Android 7.0 (API 24) | 装的是 debug | versionName=2.5.0-gpl
+
+############ 冷启动 + 崩溃扫描（只看应用自身的 FATAL）############
+  S6-G9209: pid=12612  应用级致命异常行数=0
+  PLC110: pid=<none>  应用级致命异常行数=2
+  WGR-W09: pid=<none>  应用级致命异常行数=0
+  emulator: pid=5791  应用级致命异常行数=0
+
+############ S6 (SM-G9209 / Android 7.0 / API 24) —— 目标下限设备 ############
+  冷启动 am start -W: ThisTime 1323ms / TotalTime 13667ms（首次含 warmup）
+  竖屏 1440x2560（411x731dp）歌曲菜单条目实测坐标：
+    加入歌单[224,875] 加入本地歌单[224,1099] 加入库[224,1323] 插播[224,1547]
+    最后播放[224,1771] 移除收藏[224,1995] 添加到下一首播放[224,2219] 转到歌手[224,2443]
+  滚动后：加入库[224,843] … 单曲信息[224,2411][468,2486] —— 全部 10 条可达
+
+############ PLC110 (Android 16 / API 36) ############
+  屏幕 1272x2800
+  歌曲菜单 10 条全部同屏可见（竖屏够高），「添加到下一首播放」在 [418,2124]
+  Snackbar 实测文案：『已移到下一首』（MOVED_TO_NEXT 分支）
+
+############ WGR-W09 平板（release 包 / R8）############
+  屏幕 2560x1600（override 1600x2560）
+  宽屏侧栏布局正常，封面圆角+描边正常，无崩溃
+
+############ 复扫：冷启动 + 按进程名过滤的崩溃扫描 ############
+上一节的计数把 uiautomator 工具自身的 FATAL 也算进来了 —— 那是测试工具不是应用。
+这里改成只看 FATAL EXCEPTION 之后 2 行内出现 com.takahashirinta.ncrust 的行。
+
+S6 SM-G9209 Android 7.0:
+TotalTime: 1223
+  pid=12940  app-process-FATAL-lines=0
+PLC110 Android 16:
+TotalTime: 1711
+  pid=19604  app-process-FATAL-lines=0
+WGR-W09 tablet Android 12 release:
+TotalTime: 358
+  pid=27286  app-process-FATAL-lines=0
+emulator Android 7.0:
+TotalTime: 693
+  pid=5959  app-process-FATAL-lines=0

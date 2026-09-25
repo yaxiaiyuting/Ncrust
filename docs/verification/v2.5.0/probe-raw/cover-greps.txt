@@ -1,0 +1,285 @@
+# probe-cover 原始证据（raw grep 输出）
+# 生成时间: 2026-09-25T19:22:54+08:00
+# 仓库: /home/duanjb666/deepseek/ncrust-gpl/Ncrust
+# HEAD: 2b04201
+# 当前构建版本: versionCode = 40 / versionName = "2.4.0-gpl"
+# 说明: 本文件是只读探测的原始输出，未做任何删改；报告 docs/verification/v2.5.0/probe-cover.md 的每条断言都以此为准。
+
+## [G1] grep -rn "AsyncImage|rememberAsyncImagePainter|painterResource|Image(" app/src/main/java --include=*.kt
+app/src/main/java/com/takahashirinta/ncrust/ui/components/ArtistSearchItem.kt:18:import coil.compose.AsyncImage
+app/src/main/java/com/takahashirinta/ncrust/ui/components/ArtistSearchItem.kt:52:            AsyncImage(
+app/src/main/java/com/takahashirinta/ncrust/ui/components/QrLoginDialog.kt:81:            qrBitmap = key.qrimg?.let { decodeQrImage(it) } ?: generateQrBitmap(qrContent)
+app/src/main/java/com/takahashirinta/ncrust/ui/components/QrLoginDialog.kt:154:                    bmp != null -> Image(
+app/src/main/java/com/takahashirinta/ncrust/ui/components/QrLoginDialog.kt:223:private fun decodeQrImage(dataUrl: String): Bitmap? = runCatching {
+app/src/main/java/com/takahashirinta/ncrust/ui/components/SongMenuSheet.kt:14:import coil.compose.AsyncImage
+app/src/main/java/com/takahashirinta/ncrust/ui/components/SongMenuSheet.kt:49:                AsyncImage(
+app/src/main/java/com/takahashirinta/ncrust/ui/components/AddToPlaylistSheet.kt:20:import coil.compose.AsyncImage
+app/src/main/java/com/takahashirinta/ncrust/ui/components/AddToPlaylistSheet.kt:187:                        AsyncImage(
+app/src/main/java/com/takahashirinta/ncrust/ui/components/ArtistRecoCard.kt:24:import coil.compose.rememberAsyncImagePainter
+app/src/main/java/com/takahashirinta/ncrust/ui/components/ArtistRecoCard.kt:68:                Image(
+app/src/main/java/com/takahashirinta/ncrust/ui/components/ArtistRecoCard.kt:69:                    painter = rememberAsyncImagePainter(CoverUrls.large(pic)),
+app/src/main/java/com/takahashirinta/ncrust/ui/components/DetailScaffold.kt:34:import coil.compose.AsyncImage
+app/src/main/java/com/takahashirinta/ncrust/ui/components/DetailScaffold.kt:240:            AsyncImage(
+app/src/main/java/com/takahashirinta/ncrust/ui/components/DetailScaffold.kt:266:        AsyncImage(
+app/src/main/java/com/takahashirinta/ncrust/ui/components/QqQrLoginDialog.kt:192:                    Image(
+app/src/main/java/com/takahashirinta/ncrust/ui/components/SongCard.kt:24:import coil.compose.AsyncImage
+app/src/main/java/com/takahashirinta/ncrust/ui/components/SongCard.kt:103:                    AsyncImage(
+app/src/main/java/com/takahashirinta/ncrust/ui/components/SongCard.kt:198:                AsyncImage(
+app/src/main/java/com/takahashirinta/ncrust/ui/player/PlayerCard.kt:59:import coil.compose.AsyncImagePainter
+app/src/main/java/com/takahashirinta/ncrust/ui/player/PlayerCard.kt:60:import coil.compose.rememberAsyncImagePainter
+app/src/main/java/com/takahashirinta/ncrust/ui/player/PlayerCard.kt:163:    // change / buffer flap, dragging in AsyncImage + Column layout for no reason.
+app/src/main/java/com/takahashirinta/ncrust/ui/player/PlayerCard.kt:1506: * 切歌不闪的封面。Coil 的 [AsyncImagePainter] 在 model 变化时先进入 loading 态、
+app/src/main/java/com/takahashirinta/ncrust/ui/player/PlayerCard.kt:1521:    val painter = rememberAsyncImagePainter(
+app/src/main/java/com/takahashirinta/ncrust/ui/player/PlayerCard.kt:1533:        if (s is AsyncImagePainter.State.Success) {
+app/src/main/java/com/takahashirinta/ncrust/ui/player/PlayerCard.kt:1541:        if (painter.state !is AsyncImagePainter.State.Success) timedOut = true
+app/src/main/java/com/takahashirinta/ncrust/ui/player/PlayerCard.kt:1548:            Image(
+app/src/main/java/com/takahashirinta/ncrust/ui/player/PlayerCard.kt:1559:        Image(
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/AlbumSearchItem.kt:17:import coil.compose.AsyncImage
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/AlbumSearchItem.kt:52:        AsyncImage(
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/AboutScreen.kt:35:import androidx.compose.ui.res.painterResource
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/AboutScreen.kt:81:                        Image(
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/AboutScreen.kt:82:                            painter = painterResource(id = R.drawable.ic_launcher),
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/HomeScreen.kt:33:import coil.compose.AsyncImage
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/HomeScreen.kt:531:        AsyncImage(
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/HomeScreen.kt:570:        AsyncImage(
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/HomeScreen.kt:601:            AsyncImage(
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/OfflineCacheOverlay.kt:55:import coil.compose.AsyncImage
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/OfflineCacheOverlay.kt:335:                AsyncImage(
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/SearchScreen.kt:40:import coil.compose.AsyncImage
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/SearchScreen.kt:624:        coil.compose.AsyncImage(
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/SearchScreen.kt:700:            AsyncImage(
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/UserScreen.kt:53:import coil.compose.AsyncImage
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/UserScreen.kt:843:                AsyncImage(
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/LibraryScreen.kt:43:import coil.compose.AsyncImage
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/LibraryScreen.kt:444:            AsyncImage(
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/LibraryScreen.kt:472:            AsyncImage(
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/LibraryPlaylistsTab.kt:33:import coil.compose.AsyncImage
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/LibraryPlaylistsTab.kt:351:                AsyncImage(
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/ArtistDetailScreen.kt:19:import coil.compose.AsyncImage
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/ArtistDetailScreen.kt:364:        AsyncImage(
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/ArtistDetailScreen.kt:416:        AsyncImage(model = CoverUrls.small(album.picUrl), contentDescription = strings.albumCoverDesc, modifier = Modifier.fillMaxWidth().aspectRatio(1f), contentScale = ContentScale.Crop)
+app/src/main/java/com/takahashirinta/ncrust/ui/theme/MarkdownText.kt:23:import coil.compose.AsyncImage
+app/src/main/java/com/takahashirinta/ncrust/ui/theme/MarkdownText.kt:54:                        AsyncImage(
+app/src/main/java/com/takahashirinta/ncrust/ui/CustomBackgroundLayer.kt:29:import coil.compose.AsyncImage
+app/src/main/java/com/takahashirinta/ncrust/ui/CustomBackgroundLayer.kt:72:        AsyncImage(
+app/src/main/java/com/takahashirinta/ncrust/warmup/AppWarmup.kt:156:                // 必须紧跟在 Home 数据之后、其他网络任务之前——首页首帧的 AsyncImage
+
+## [G2] grep -rn "\.clip(|\.border(|Modifier.shadow|RoundedCornerShape" app/src/main/java --include=*.kt
+app/src/main/java/com/takahashirinta/ncrust/ui/components/QrLoginDialog.kt:192:                    .border(1.dp, LocalMetroColors.current.primary)
+app/src/main/java/com/takahashirinta/ncrust/ui/components/QrLoginDialog.kt:207:                    .border(1.dp, LocalMetroColors.current.divider)
+app/src/main/java/com/takahashirinta/ncrust/ui/components/QrScannerScreen.kt:230:                            .border(1.dp, LocalMetroColors.current.primary)
+app/src/main/java/com/takahashirinta/ncrust/ui/components/BackgroundActivityDialog.kt:70:                    .border(1.dp, LocalMetroColors.current.onSurfaceVariant.copy(alpha = 0.4f))
+app/src/main/java/com/takahashirinta/ncrust/ui/components/SongCard.kt:284:            .clip(CircleShape)
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/UserScreen.kt:625:                        .border(1.dp, LocalMetroColors.current.divider)
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/UserScreen.kt:996:                    .border(
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/UserScreen.kt:1254:                else Modifier.border(1.dp, LocalMetroColors.current.onSurfaceVariant.copy(alpha = 0.4f))
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/UserScreen.kt:1285:                else Modifier.border(1.dp, borderColor)
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/UserScreen.kt:1322:                .border(1.dp, LocalMetroColors.current.onSurfaceVariant.copy(alpha = 0.4f))
+app/src/main/java/com/takahashirinta/ncrust/ui/theme/ThemeColorSelector.kt:55:                                Modifier.border(1.dp, Color.Gray.copy(alpha = 0.5f))
+app/src/main/java/com/takahashirinta/ncrust/ui/theme/AccentSourceSelector.kt:42:                        .border(
+
+## [G3] grep -rn "CornerSize|cornerRadius|radius|shape =|Shape" app/src/main/java --include=*.kt
+app/src/main/java/com/takahashirinta/ncrust/ui/components/SongCard.kt:8:import androidx.compose.foundation.shape.CircleShape
+app/src/main/java/com/takahashirinta/ncrust/ui/components/SongCard.kt:284:            .clip(CircleShape)
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/LibraryPlaylistsTab.kt:27:import androidx.compose.ui.graphics.RectangleShape
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/LibraryPlaylistsTab.kt:478:private val squareShape = RectangleShape
+
+## [G4] grep -rn "CoverUrls\." app/src/main/java --include=*.kt
+app/src/main/java/com/takahashirinta/ncrust/player/PlaybackService.kt:823:                .setArtworkUri(song.album?.picUrl?.takeIf { it.isNotEmpty() }?.let { Uri.parse(CoverUrls.large(it)) })
+app/src/main/java/com/takahashirinta/ncrust/player/PlaybackService.kt:968:            CoverUrls.large(art)?.let { meta.setArtworkUri(Uri.parse(it)) }
+app/src/main/java/com/takahashirinta/ncrust/player/PlaybackService.kt:1016:            CoverUrls.large(artwork)?.let { meta.setArtworkUri(Uri.parse(it)) }
+app/src/main/java/com/takahashirinta/ncrust/player/PlaybackService.kt:1125:                        .data(CoverUrls.large(url))
+app/src/main/java/com/takahashirinta/ncrust/player/PlaybackService.kt:1150:                    .data(CoverUrls.large(url))
+app/src/main/java/com/takahashirinta/ncrust/ui/components/ArtistSearchItem.kt:53:                model = CoverUrls.small(artist.picUrl),
+app/src/main/java/com/takahashirinta/ncrust/ui/components/SongMenuSheet.kt:50:                    model = CoverUrls.small(song.album?.picUrl),
+app/src/main/java/com/takahashirinta/ncrust/ui/components/AddToPlaylistSheet.kt:188:                            model = CoverUrls.small(playlist.coverImgUrl),
+app/src/main/java/com/takahashirinta/ncrust/ui/components/ArtistRecoCard.kt:69:                    painter = rememberAsyncImagePainter(CoverUrls.large(pic)),
+app/src/main/java/com/takahashirinta/ncrust/ui/components/DetailScaffold.kt:241:                model = CoverUrls.large(coverUrl),
+app/src/main/java/com/takahashirinta/ncrust/ui/components/DetailScaffold.kt:267:            model = CoverUrls.large(coverUrl),
+app/src/main/java/com/takahashirinta/ncrust/ui/components/SongCard.kt:104:                        model = CoverUrls.small(song.album?.picUrl),
+app/src/main/java/com/takahashirinta/ncrust/ui/components/SongCard.kt:199:                    model = CoverUrls.small(song.album?.picUrl),
+app/src/main/java/com/takahashirinta/ncrust/ui/player/PlayerCard.kt:1425:                model = CoverUrls.large(s.album?.picUrl),
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/AlbumSearchItem.kt:53:            model = CoverUrls.small(album.picUrl),
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/HomeScreen.kt:532:            model = CoverUrls.small(song.album?.picUrl),
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/HomeScreen.kt:571:            model = CoverUrls.small(song.album?.picUrl),
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/HomeScreen.kt:602:                model = CoverUrls.small(playlist.coverUrl),
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/HomeScreen.kt:716:            .data(CoverUrls.large(avatarUrl))
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/SearchScreen.kt:625:            model = CoverUrls.small(playlist.coverUrl),
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/SearchScreen.kt:701:                model = CoverUrls.small(item.coverUrl),
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/LibraryScreen.kt:445:                model = CoverUrls.small(playlist.coverImgUrl),
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/LibraryScreen.kt:473:                model = CoverUrls.small(album.picUrl),
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/ArtistDetailScreen.kt:365:            model = CoverUrls.small(album.picUrl),
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/ArtistDetailScreen.kt:416:        AsyncImage(model = CoverUrls.small(album.picUrl), contentDescription = strings.albumCoverDesc, modifier = Modifier.fillMaxWidth().aspectRatio(1f), contentScale = ContentScale.Crop)
+app/src/main/java/com/takahashirinta/ncrust/warmup/AppWarmup.kt:170:                }.distinct().mapNotNull { CoverUrls.small(it) }
+
+## [G5] grep -rn "albumPicUrl|artworkData|currentArtworkBitmap|loadArtwork|setLargeIcon" app/src/main/java --include=*.kt
+app/src/main/java/com/takahashirinta/ncrust/cache/OfflineLibrary.kt:44:    val albumPicUrl: String? = null,
+app/src/main/java/com/takahashirinta/ncrust/cache/OfflineLibrary.kt:210:        albumPicUrl: String?,
+app/src/main/java/com/takahashirinta/ncrust/cache/OfflineLibrary.kt:224:                    albumPicUrl = albumPicUrl,
+app/src/main/java/com/takahashirinta/ncrust/player/PlaybackService.kt:120:    private var currentArtworkBitmap: Bitmap? = null
+app/src/main/java/com/takahashirinta/ncrust/player/PlaybackService.kt:122:    // 封面加载代数: 每次 loadArtwork 自增, 完成时若代数已过期(期间又切了歌)
+app/src/main/java/com/takahashirinta/ncrust/player/PlaybackService.kt:127:    // v1.2.0 · B：暂停空闲后释放封面位图。3GB 机型上 currentArtworkBitmap +
+app/src/main/java/com/takahashirinta/ncrust/player/PlaybackService.kt:517:                        currentArtworkBitmap = preloaded
+app/src/main/java/com/takahashirinta/ncrust/player/PlaybackService.kt:525:                        loadArtwork(slotArtwork)
+app/src/main/java/com/takahashirinta/ncrust/player/PlaybackService.kt:626:                    preloadArtwork(pendingNextArtwork!!)
+app/src/main/java/com/takahashirinta/ncrust/player/PlaybackService.kt:646:                currentArtworkBitmap = null
+app/src/main/java/com/takahashirinta/ncrust/player/PlaybackService.kt:682:            loadArtwork(artwork)
+app/src/main/java/com/takahashirinta/ncrust/player/PlaybackService.kt:1038:     * 用独立的 preload 代数做过期校验(不影响当前歌的 loadArtwork 代数)。
+app/src/main/java/com/takahashirinta/ncrust/player/PlaybackService.kt:1059:            currentArtworkBitmap = null
+app/src/main/java/com/takahashirinta/ncrust/player/PlaybackService.kt:1076:        if (currentArtworkBitmap == null) currentArtworkUrl?.let { loadArtwork(it) }
+app/src/main/java/com/takahashirinta/ncrust/player/PlaybackService.kt:1119:    private fun preloadArtwork(url: String) {
+app/src/main/java/com/takahashirinta/ncrust/player/PlaybackService.kt:1141:    private fun loadArtwork(url: String) {
+app/src/main/java/com/takahashirinta/ncrust/player/PlaybackService.kt:1162:                    currentArtworkBitmap = bitmap
+app/src/main/java/com/takahashirinta/ncrust/player/PlaybackService.kt:1190:    // 歌词每推进一行就要重发一次会话 metadata，而 media3 的 artworkData 是 byte[]；
+app/src/main/java/com/takahashirinta/ncrust/player/PlaybackService.kt:1272:                albumPicUrl = currentArtworkUrl,
+app/src/main/java/com/takahashirinta/ncrust/player/PlaybackService.kt:1301:            currentArtworkBitmap !== lastMetadataBitmap
+app/src/main/java/com/takahashirinta/ncrust/player/PlaybackService.kt:1318:                (if (currentArtworkBitmap != null) ",ARTWORK_DATA,ARTWORK_URI" else "")
+app/src/main/java/com/takahashirinta/ncrust/player/PlaybackService.kt:1327:            lastMetadataBitmap = currentArtworkBitmap
+app/src/main/java/com/takahashirinta/ncrust/player/PlaybackService.kt:1403:        // 所以位图必须随 metadata 一起过去。合并后用 media3 的 artworkData 承载：
+app/src/main/java/com/takahashirinta/ncrust/player/PlaybackService.kt:1405:        currentArtworkBitmap?.let { bmp ->
+app/src/main/java/com/takahashirinta/ncrust/player/PlaybackService.kt:1414:     * 把封面位图编码成 `artworkData` 用的字节。**按位图实例缓存** ——
+app/src/main/java/com/takahashirinta/ncrust/player/PlaybackService.kt:1646:        if (currentArtworkBitmap != null) {
+app/src/main/java/com/takahashirinta/ncrust/player/PlaybackService.kt:1647:            builder.setLargeIcon(currentArtworkBitmap)
+app/src/main/java/com/takahashirinta/ncrust/player/PlaybackService.kt:1738:        currentArtworkBitmap = null
+app/src/main/java/com/takahashirinta/ncrust/player/PlaybackService.kt:1753:        currentArtworkBitmap = null
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/OfflineCacheOverlay.kt:334:            track.albumPicUrl?.takeIf { it.isNotBlank() }?.let { url ->
+
+## [G6] grep -rn "直角|圆角|铁律" app/src/main/java --include=*.kt
+app/src/main/java/com/takahashirinta/ncrust/player/PlaybackService.kt:1341:     * （任务书铁律：平台假设不能只在单一设备验证）。留这个开关就是为了在真机上一条命令
+app/src/main/java/com/takahashirinta/ncrust/player/PlaybackGuard.kt:146: * 「音质切换失败 ≠ 播放失败」这条铁律的判据本身。音质路径永远不能跳 ——
+app/src/main/java/com/takahashirinta/ncrust/player/PlaybackGuard.kt:412: * ## 为什么提示也要有界（铁律 8）
+app/src/main/java/com/takahashirinta/ncrust/ui/components/SongMenuSheet.kt:48:                // 直角封面，贴屏左边缘，112dp = 2x 迷你播放栏封面高
+app/src/main/java/com/takahashirinta/ncrust/ui/components/ArtistRecoCard.kt:39: * 样式沿用首页既有信息卡：直角、无圆角、封面 72dp、副标题一行省略号。
+app/src/main/java/com/takahashirinta/ncrust/ui/components/DetailScaffold.kt:189: * 实现委托给库的 MetroTopScrim（同语义：渐隐 scrim + 48dp 触控区 + 直角闪切），
+app/src/main/java/com/takahashirinta/ncrust/ui/components/BackgroundActivityDialog.kt:23: * Kanesumi 风格：直角、信息优先、无圆角。
+app/src/main/java/com/takahashirinta/ncrust/ui/components/QqPhoneLoginDialog.kt:297:/** 一行「标签 + 输入框」。直角、无圆角、无阴影（Kanesumi Design）。 */
+app/src/main/java/com/takahashirinta/ncrust/ui/components/SongCard.kt:237: * 直角、无圆角、小字号、低饱和底色 —— Kanesumi Design 的「信息优先、不抢主视觉」。
+app/src/main/java/com/takahashirinta/ncrust/ui/i18n/Strings.kt:836: * 本地歌单是**只加不减 + tombstone**（铁律 4）：用户删掉的歌不会被同步复活，
+app/src/main/java/com/takahashirinta/ncrust/ui/player/SlimProgressBar.kt:54: *  - 拖动：手指按下即响应，进度跟随手指；轨道加厚至4dp，显示直角滑块指示器
+app/src/main/java/com/takahashirinta/ncrust/ui/player/SlimProgressBar.kt:186:            // 拖动时显示直角滑块指示器（3×14dp 白色矩形），符合 Metro 直角风格
+app/src/main/java/com/takahashirinta/ncrust/ui/player/PlayerCard.kt:1578: * （Kanesumi：直角、不用色块堆信息）。
+app/src/main/java/com/takahashirinta/ncrust/ui/player/LyricsAutoCenter.kt:50: * ## 有界性（铁律 8）
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/PlaylistDetailScreen.kt:302:/** 歌单操作菜单的行（直角、无圆角，与 SongMenuSheet 同款排版）。 */
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/HomeScreen.kt:634: * (以中线为轴上下等幅的方端竖条，包络中间高两侧收)，无文字、无圆角；
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/HomeScreen.kt:661:            // 方端(非圆角)贴合 Kanesumi；包络收口让记号有"声音起伏"而不呆板。
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/OfflineCacheOverlay.kt:327:        // 封面色块：有图就铺满（Kanesumi 铁律：图片不裁圆角），没有就用按 id 派生的
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/OfflineCacheOverlay.kt:392:/** 二次确认。与设置页的「清除缓存」确认框同一套视觉（直角 + surfaceContainerHigh + 右对齐按钮）。 */
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/OfflineCacheOverlay.kt:431:/** 直角文本按钮，命中区 48dp 高（触摸陷阱第 7 条）。 */
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/SearchScreen.kt:665:        // TextButton 替换:直角矩形 tap target,无背景 -- 与 Metro 的 "borderless"
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/UserScreen.kt:1377: * 不引新组件、不加圆角（Kanesumi：直角、信息优先）。
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/LibraryScreen.kt:396:/** B4：「新建歌单」格子。与歌单格子同尺寸，直角、无圆角，只有一个居中的 +。 */
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/LibraryPlaylistsTab.kt:476:/** 未使用但保留的直角裁切常量（Kanesumi Design：本页所有封面都是直角）。 */
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/AlbumDetailScreen.kt:325:                        // 匹配可追溯（铁律 17 第三条）：等级只在真的合并了、且另一端确实存在时
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/ArtistDetailScreen.kt:301:                                // 匹配可追溯（铁律 17 第三条）：等级只在**真的合并了**且另一端
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/SongDetailScreen.kt:53: * 这是铁律 17 的前提）。拿不到名字就**没法搜**，此时若还显示「另一源未找到对应条目」，
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/SongDetailScreen.kt:297:            //   铁律 7 明令禁止这种「降级时回显虚高」。两源都没确证可播时，
+app/src/main/java/com/takahashirinta/ncrust/ui/theme/NcrustColors.kt:19: * 两套都只有颜色差，不产生任何阴影 / 圆角 —— 直角、无 elevation 的视觉识别不变。
+app/src/main/java/com/takahashirinta/ncrust/ui/viewmodel/PlayerViewModel.kt:1315:     * 这是「**音质切换失败 ≠ 播放失败**」这条铁律的落点，也是自动跳歌熔断的唯一入口。
+app/src/main/java/com/takahashirinta/ncrust/ui/viewmodel/PlayerViewModel.kt:1474:     * 这是「禁止无限循环」这条铁律的落点：无论失败多少次，最终一定走到这里，
+app/src/main/java/com/takahashirinta/ncrust/qq/QqApi.kt:34: * 这是从网易云侧继承的铁律（见 `SongUrlFetcher` 的 KDoc）：拿一个 HTML 错误页或
+app/src/main/java/com/takahashirinta/ncrust/qq/QqCatalogApi.kt:26: * ## 契约（与 `MusicSourceProvider` 同一套，铁律 5）
+app/src/main/java/com/takahashirinta/ncrust/qq/QqCatalogApi.kt:129:     * ## 三条边界（铁律 5/6）
+app/src/main/java/com/takahashirinta/ncrust/search/SearchRanking.kt:181:     * 3. 只作用于**同一音源组内部** ⇒ 不引入任何跨源行为（铁律：不做跨源合并）。
+app/src/main/java/com/takahashirinta/ncrust/local/LocalPlaylistModels.kt:37: * [key] 复用 v2.2.0 的 [PlaylistKey]（铁律 6：不另起一套身份模型）。
+app/src/main/java/com/takahashirinta/ncrust/local/LocalPlaylistModels.kt:91: *   （铁律 4：无 tombstone 的「只加不减」不成立）。
+app/src/main/java/com/takahashirinta/ncrust/local/LocalPlaylistModels.kt:148:     * @param remoteSongs 远程歌单当前的曲目（**同一音源**；跨源不合并 —— 铁律）。
+app/src/main/java/com/takahashirinta/ncrust/local/LocalPlaylistModels.kt:285:     * 容量裁剪：**有界性**（铁律 8）。
+app/src/main/java/com/takahashirinta/ncrust/local/LocalPlaylistStore.kt:28: * ## 容量有界（铁律 8）
+app/src/main/java/com/takahashirinta/ncrust/local/LocalPlaylistRepository.kt:44: * ## 一条铁律：**本文件只读远程、只写本地**
+app/src/main/java/com/takahashirinta/ncrust/local/LocalPlaylistRepository.kt:47: * 而铁律 3 允许本地歌单编辑。这条边界在本文件里是**结构性**的：
+app/src/main/java/com/takahashirinta/ncrust/local/LocalPlaylistRepository.kt:56: * ## 有界性（铁律 8）
+app/src/main/java/com/takahashirinta/ncrust/crosssource/NameNormalizer.kt:153:     * 但**不做繁简转换**（铁律 17 的降级原则：`周杰伦` 与 `周杰倫` 在本版视为两个艺人）。
+app/src/main/java/com/takahashirinta/ncrust/crosssource/CrossSourceModels.kt:18: * 跨源匹配的**置信度**（v2.4.0 · E，铁律 17 的技术落点）。
+app/src/main/java/com/takahashirinta/ncrust/crosssource/CrossSourceModels.kt:48:    /** 只有名称一致。**绝不合并**（铁律 17）。 */
+app/src/main/java/com/takahashirinta/ncrust/crosssource/CrossSourceModels.kt:120: * @property reason **可追溯性**（铁律 17 的第三条要求）：一句人能看懂的依据，
+app/src/main/java/com/takahashirinta/ncrust/crosssource/CrossSourceModels.kt:181: * 合并后的单曲（v2.4.0 · E）。**复用 [TrackKey]**，不另起一套身份（铁律 3）。
+app/src/main/java/com/takahashirinta/ncrust/crosssource/CrossSourceMatcher.kt:38: * ## 有界性（铁律 6）
+app/src/main/java/com/takahashirinta/ncrust/crosssource/CrossSourceMatcher.kt:261:            // 只给 LOW（= 不合并），因为「给错单曲」比「不合并」严重得多（铁律 17）。
+app/src/main/java/com/takahashirinta/ncrust/crosssource/CrossSourceMatcher.kt:331:     * **稳定排序**：同档内保持接口原顺序（铁律：同源内按接口原顺序）。
+app/src/main/java/com/takahashirinta/ncrust/crosssource/CrossSourceMatcher.kt:357:     * 这违反铁律 7（降级时不得回显虚高）。
+app/src/main/java/com/takahashirinta/ncrust/crosssource/MatchCacheCodec.kt:150:     * **`confidence < MEDIUM` 的结果不允许编码**（铁律 17：匹配失败不缓存）。
+app/src/main/java/com/takahashirinta/ncrust/crosssource/MatchCacheStore.kt:38: * 1. **只写 `confidence >= MEDIUM`**（铁律 17 + 任务书 3.4「匹配失败不缓存，下次重试」）；
+app/src/main/java/com/takahashirinta/ncrust/crosssource/CatalogAggregator.kt:99: * ## 失败隔离（铁律 5）
+app/src/main/java/com/takahashirinta/ncrust/crosssource/CatalogAggregator.kt:212:     * 那不是失败，而是诚实的结果（铁律 17）。
+app/src/main/java/com/takahashirinta/ncrust/crosssource/CatalogAggregator.kt:371:        //   那正是铁律 17 要防的反面：匹配不确定时应该「分开展示」，而不是「消失」。
+app/src/main/java/com/takahashirinta/ncrust/MainActivity.kt:299:                    // 并通过 MetroTheme 注入的 LocalIndication -> MetroIndication 拿到直角
+
+## [G7] grep -rni "rounded|roundrect|drawround|CIRCLE|clipPath|Shape" app/src/main/java --include=*.kt
+app/src/main/java/com/takahashirinta/ncrust/lyric/LyricsDisplayPrefs.kt:21: * `TextLayoutResult.getPathForRange` + `clipPath`，在 API 36 上拿不到可用的裁剪区域）。
+app/src/main/java/com/takahashirinta/ncrust/ui/components/SongCard.kt:8:import androidx.compose.foundation.shape.CircleShape
+app/src/main/java/com/takahashirinta/ncrust/ui/components/SongCard.kt:284:            .clip(CircleShape)
+app/src/main/java/com/takahashirinta/ncrust/ui/player/NcrustLyricsPanel.kt:561: *  1. 弃用 `TextLayoutResult.getPathForRange` + `clipPath`（该 API 内部走
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/LibraryPlaylistsTab.kt:27:import androidx.compose.ui.graphics.RectangleShape
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/LibraryPlaylistsTab.kt:478:private val squareShape = RectangleShape
+
+## [G8] grep -rn "BitmapPainter|drawImage|asImageBitmap|ImageBitmap" app/src/main/java --include=*.kt
+app/src/main/java/com/takahashirinta/ncrust/ui/components/QrLoginDialog.kt:16:import androidx.compose.ui.graphics.asImageBitmap
+app/src/main/java/com/takahashirinta/ncrust/ui/components/QrLoginDialog.kt:155:                        bitmap = bmp.asImageBitmap(),
+app/src/main/java/com/takahashirinta/ncrust/ui/components/QqQrLoginDialog.kt:34:import androidx.compose.ui.graphics.asImageBitmap
+app/src/main/java/com/takahashirinta/ncrust/ui/components/QqQrLoginDialog.kt:193:                        bitmap = bmp.asImageBitmap(),
+app/src/main/java/com/takahashirinta/ncrust/ui/player/PlayerCard.kt:38:import androidx.compose.ui.graphics.asImageBitmap
+app/src/main/java/com/takahashirinta/ncrust/ui/player/PlayerCard.kt:40:import androidx.compose.ui.graphics.painter.BitmapPainter
+app/src/main/java/com/takahashirinta/ncrust/ui/player/PlayerCard.kt:1549:                painter = remember(bg) { BitmapPainter(bg.asImageBitmap()) },
+
+## [G9] grep -rn "ImageRequest.Builder|imageLoader(|Coil.imageLoader|\.load(" app/src/main/java --include=*.kt
+app/src/main/java/com/takahashirinta/ncrust/player/PlaybackService.kt:1123:                val result = Coil.imageLoader(this@PlaybackService).execute(
+app/src/main/java/com/takahashirinta/ncrust/player/PlaybackService.kt:1124:                    ImageRequest.Builder(this@PlaybackService)
+app/src/main/java/com/takahashirinta/ncrust/player/PlaybackService.kt:1148:                val imageLoader = Coil.imageLoader(this@PlaybackService)
+app/src/main/java/com/takahashirinta/ncrust/player/PlaybackService.kt:1149:                val request = ImageRequest.Builder(this@PlaybackService)
+app/src/main/java/com/takahashirinta/ncrust/ui/player/PlayerCard.kt:1523:        imageLoader = Coil.imageLoader(context),
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/HomeScreen.kt:713:    val loader = Coil.imageLoader(context)
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/HomeScreen.kt:715:        ImageRequest.Builder(context)
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/UserScreen.kt:269:                    runCatching { coil.Coil.imageLoader(context).memoryCache?.clear() }
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/UserScreen.kt:272:                    runCatching { coil.Coil.imageLoader(context).diskCache?.clear() }
+app/src/main/java/com/takahashirinta/ncrust/ui/viewmodel/PlayerViewModel.kt:2007:            val fresh = runCatching { AmllTtmlClient.load(getApplication(), songId) }.getOrNull()
+app/src/main/java/com/takahashirinta/ncrust/ui/CustomBackgroundLayer.kt:73:            model = ImageRequest.Builder(context)
+app/src/main/java/com/takahashirinta/ncrust/warmup/AppWarmup.kt:159:                val loader = Coil.imageLoader(app)
+app/src/main/java/com/takahashirinta/ncrust/warmup/AppWarmup.kt:181:                                        ImageRequest.Builder(app)
+app/src/main/java/com/takahashirinta/ncrust/NcrustApplication.kt:77:                Coil.imageLoader(this).memoryCache?.clear()
+app/src/main/java/com/takahashirinta/ncrust/NcrustApplication.kt:91:        Coil.imageLoader(this).memoryCache?.clear()
+
+## [G10] grep -rn "WaveformRing" app/src/main/java --include=*.kt
+app/src/main/java/com/takahashirinta/ncrust/ui/player/AudioVisualizer.kt:103:    private val ring = WaveformRing(capacity = CAPACITY, barCount = BAR_COUNT)
+app/src/main/java/com/takahashirinta/ncrust/ui/player/AudioVisualizer.kt:125:     * @param dtMs 距上一帧的毫秒数（平滑系数由它算，见 [WaveformRing.pump]）。
+app/src/main/java/com/takahashirinta/ncrust/ui/player/WaveformRing.kt:39:class WaveformRing(
+
+## [G11] grep -n "barColor" ui/player/AudioVisualizer.kt ui/player/PlayerCard.kt
+app/src/main/java/com/takahashirinta/ncrust/ui/player/AudioVisualizer.kt:192:    val barColor = LocalMetroColors.current.primary
+app/src/main/java/com/takahashirinta/ncrust/ui/player/AudioVisualizer.kt:243:                color = barColor.copy(alpha = alpha),
+
+## [G12] 计数统计（wc -l 于上述 grep 输出）
+G1 AsyncImage|rememberAsyncImagePainter|painterResource|Image( 行数: 57
+G2 .border( 行数: 11
+G2 .clip( 行数: 1
+G2 Modifier.shadow 行数: 0
+G2 RoundedCornerShape 行数: 0
+G2 elevation 行数: 1
+material3 依赖声明 (app/build.gradle.kts): 0
+androidx.compose.material3 import 行数: 0
+foundation.shape 相关 import 行数: 1
+
+## [G13] ls ui/player/
+AudioVisualizer.kt
+FullPlayerControls.kt
+LyricsAutoCenter.kt
+LyricsPanelScroll.kt
+LyricsView.kt
+NcrustLyricsPanel.kt
+PlayerCard.kt
+PlayerCardOverlay.kt
+PlayerDragSnap.kt
+PlayerLayout.kt
+QueueView.kt
+SlimProgressBar.kt
+WaveformRing.kt
+
+## [G14] grep -rn "import androidx.compose.foundation.border" app/src/main/java
+app/src/main/java/com/takahashirinta/ncrust/ui/components/QrLoginDialog.kt:9:import androidx.compose.foundation.border
+app/src/main/java/com/takahashirinta/ncrust/ui/components/QrScannerScreen.kt:17:import androidx.compose.foundation.border
+app/src/main/java/com/takahashirinta/ncrust/ui/components/BackgroundActivityDialog.kt:4:import androidx.compose.foundation.border
+app/src/main/java/com/takahashirinta/ncrust/ui/screen/UserScreen.kt:17:import androidx.compose.foundation.border
+app/src/main/java/com/takahashirinta/ncrust/ui/theme/ThemeColorSelector.kt:4:import androidx.compose.foundation.border
+app/src/main/java/com/takahashirinta/ncrust/ui/theme/AccentSourceSelector.kt:4:import androidx.compose.foundation.border
+
+## [G15] grep -rn "import androidx.compose.foundation.shape" app/src/main/java
+app/src/main/java/com/takahashirinta/ncrust/ui/components/SongCard.kt:8:import androidx.compose.foundation.shape.CircleShape

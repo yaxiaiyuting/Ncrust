@@ -1,0 +1,48 @@
+=== v2.5.0 三源交叉校验 versionCode ===
+命令：bash tools/next-version.sh   （**带 fetch**，铁律 4）
+时间：2026-09-25T20:16:42+08:00
+
+--- git fetch --tags --prune ---
+fetch rc=0
+
+--- tools/next-version.sh 结论 ---
+  Ncrust-v2.4.0-gpl-release.apk	40
+
+==========================================
+  MAX versionCode (所有来源) = 41   [repo:/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build.gradle.kts]
+  下一个可用 versionCode     = 42
+==========================================
+
+--- ① 最近 tag 指向的 build.gradle ---
+v2.4.0-gpl             versionCode = 40
+v2.3.0-gpl             versionCode = 39
+v2.2.1-gpl             versionCode = 38
+
+--- ② APK badging（唯一可信的『已发布出去』来源）---
+Ncrust-v2.4.0-gpl-debug.apk                    versionCode='40'
+Ncrust-v2.4.0-gpl-release.apk                  versionCode='40'
+
+--- ③ 仓库当前 build.gradle ---
+        versionCode = 41
+        versionName = "2.5.0-gpl"
+
+--- 本版产物 badging（debug + release）---
+app-debug.apk                      versionCode=41 versionName=2.5.0-gpl
+app-release.apk                    versionCode=41 versionName=2.5.0-gpl
+
+结论：三源 max = 40 ⇒ 本版 versionCode = 41，与两个 APK 的 badging 一致。
+
+--- ⚠️ 读法说明（避免误读） ------------------------------------------------
+上面这一次跑是在**已经改完 build.gradle（41）之后**复跑的，所以脚本报的
+「MAX = 41 [repo:...build.gradle.kts]」是**含工作区自身**的结果。
+
+**定号那一次是在改 build.gradle 之前跑的**，输出为：
+
+    ==========================================
+      MAX versionCode (所有来源) = 40   [Ncrust-v2.4.0-gpl-debug.apk]
+      下一个可用 versionCode     = 41
+    ==========================================
+
+即三源一致 = 40 ⇒ 41（铁律 9：tag / APK badging / build.gradle 取 max+1）。
+两次跑的差别只在「③ 工作区 build.gradle」这一源，而它正是被本版改动的那一源 ——
+所以上面 ①② 两源的原始值（tag=40、dist/*.apk badging=40）才是定号依据。

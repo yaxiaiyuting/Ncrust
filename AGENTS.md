@@ -3057,3 +3057,124 @@ media3 的 `ChannelMixingMatrix` 只实现 `N→N / 1→2 / 2→1`，**6→1 抛
 `SourceStrings`（37 → 57，上限 60）。`AggregateStringsTest` 同时钉住
 「八个语言都非空」与「SourceStrings ≤ 60」。
 **下一次要加文案时，SourceStrings 只剩 3 个槽位 —— 请先拆新组，而拆组前必须先给主构造器腾位置。**
+
+## v2.5.0 新增（本 fork · UI 视觉规范 / 专辑封面边框 / 添加到下一首播放）
+
+> **探针**：`docs/verification/v2.5.0/PROBE-SUMMARY.md` + 五份 `probe-*.md` + `probe-raw/`。
+> **发布说明**：`docs/verification/v2.5.0/CHANGELOG-v2.5.0.md`。
+> **真机证据**：`docs/verification/v2.5.0/verification/` 与 `screenshots/`。
+
+### 三条新规则（本版起是硬约束）
+
+1. **UI 动效不得影响播放性能和核心功能。**
+   判据不是"看起来流畅"，而是三件可测的事：
+   ① 动效**必须有界**（列表入场只对下标 < `ListItemAppear.MAX_ANIMATED_INDEX` 播放，
+   纯函数判定 + `ListItemAppearTest` 钉住阈值在 1..64）；
+   ② 动效**不得驱动带阈值判定的 `progress`**，除非弹簧不过冲 ——
+   播放器卡片的 `progress` 同时是命中测试开关（`<0.01f` 卸载展开态子树、`>0.99f` 吞事件），
+   会过冲的弹簧会让它反复跨越阈值 ⇒ 子树挂载抖动 + 命中区闪烁。
+   `AppMotionSpecTest` 断言 `playerExpand` / `playerCollapse` 的 `dampingRatio >= 1.0`；
+   ③ **新增**动效一律零重组（`Animatable` + 在 `graphicsLayer { }` / draw 阶段读取），
+   `spring(` 只能来自 `AppMotion`（`AppMotionSpecTest` 扫源码树）。
+   **存量 41 处手写 `tween` 与 5 处 `animateFloatAsState` 不在本版范围**（见未验证清单）。
+
+2. **“添加到下一首播放”必须正确处理队列边界（当前歌是最后一首、队列为空、随机模式）。**
+   判定抽成纯逻辑 `player/QueueInsert.kt`，四条边界各有单测（`QueueInsertTest`）：
+   - **队列为空（或没有有效当前项）** ⇒ `Outcome.START_FRESH`，**必须真的起播**
+     （只改队列不起播 = 用户点了没反应，这是本版修掉的第一个真实缺陷）；
+   - **当前歌是最后一首** ⇒ `coerceIn` 到队尾即可，**不要写模式特例**：
+     插到末尾后当前歌不再是最后一首，CYCLE / LINE / INFINITY 的"队尾没有下一首"判定
+     会自然指向它（单测钉住）；**唯一的例外是 SINGLE**，见下；
+   - **随机模式** ⇒ 必须同时修正编排序列（`shuffleAfterInsert`），
+     把插入项放到 `shuffledPosition + 1`。只改线性队列 = **功能静默失效**
+     （下一首仍是原来那首随机歌）。无法保证结果是合法排列时返回 `null`，
+     调用方回退到"重洗一轮" —— **宁可随机性变一次，也绝不给出一个错的播放顺序**；
+   - **同一首歌已在下一首** ⇒ **去重且幂等**（本版确认的决策）。
+     理由：重复项会踩 v1.5.2 串台的形状；且本应用**所有**队列写入都去重，
+     只有这一处例外会让"队列里同一首歌最多一份"这条事实不变量失效。
+   **并且必须重新同步待播槽位**（`shouldPreloadAfterInsert`）：插入后 ExoPlayer
+   列表里已经预载了**旧的**下一首，不重同步就会出现"队列面板显示 C、耳朵里是 B" ——
+   那正是 v1.5.2 串台的形状，只是触发者换成了这个新入口。
+   **只有 `QueueModes.SINGLE` 不重同步**：它的无缝实现是预载**当前歌自己**，
+   改成预载下一首等于**静默把单曲循环变成顺序播放**。
+
+3. **颜色提取等非核心计算必须在后台线程，失败时静默降级。**
+   v1.2.0 起封面取色就在 `Dispatchers.Default` 上跑、按 URL 缓存、带世代号防串色，
+   并在灰度/失败时回落到预设主题（`processAccentColor` 饱和度 `< 0.08` 返回 null）。
+   本版新增的 HCT 多角色调色板（`ui/theme/color/`）沿用同一条纪律，并且**更强**：
+   - 算法层是**纯 Kotlin**（不 import `android.*`），所以 HCT / 量化 / 评分 / 色调板
+     全部能在 JVM 单测里真跑 —— 这是 v1.2.0 `rgbToHsv` 注释里那条理由的延续
+     （`android.graphics.Color.colorToHSV` 在单测里是未实现的 stub）；
+   - `CoverPaletteExtractor.extract` **永不抛异常**（`runCatching` 包住），
+     灰度 / 空输入 / 量化无结果一律返回 `null`，由调用方回落预设主题；
+   - **取色是增值功能，不是播放链路的一环** —— 它失败时用户应当**察觉不到**，
+     而不是看到错误或空白。
+
+### 本版的两个新单一落点（改这套视觉只需动这些文件）
+
+| 文件 | 作用 | 守卫 |
+|---|---|---|
+| `ui/theme/AppShapes.kt` | 圆角 token：`extraSmall 4 / small 8 / medium 12 / large 16 / extraLarge 28 / full 50%` | `AppShapesSingleSourceTest`：圆角构造器**只能**出现在这个文件里 |
+| `ui/theme/AppMotion.kt` | 动效 token：官方 M3 Expressive 六弹簧 + 本项目既有 tween 词汇 | `AppMotionSpecTest`：逐值 + 不过冲 + `spring(` 只能来自这里 |
+
+调用点辅助：`ui/components/AppVisualModifiers.kt` 的 `appCoverFrame`（圆角 + 1dp `outlineVariant` 描边）
+与 `appPressScale`（按压 1.05x 回弹，**不消费指针事件**）；
+`ui/components/ListItemAppear.kt` 的 `listItemAppear(index)`。
+
+### 本版修正的三处任务书前提（**下一个读任务书的人先看这里**）
+
+| 任务书原文 | 实测 | 处置 |
+|---|---|---|
+| 「参考 SPlayer-Next」的色彩提取与圆角规范 | `SPlayer-Dev/SPlayer-Next` 是 **Electron + Vue 3 + Rust 桌面端**（浅克隆后 `find` 查 `*.gradle*`/`AndroidManifest.xml`/`*.kt`/`pubspec.yaml` **全空**）。「50×50 采样」「`Score` 评分」只存在于其 `color.ts` 的一句 **JSDoc 注释**里（真实常量 `COVER_SAMPLE_SIZE = 64`，且该文件**从未 import `Score`**） | 圆角**取值照收**（另有 Google 一手出处：androidx `ShapeTokens.kt` + MDC `Shape.md` 逐值一致），但**不引用 SPlayer-Next 作为依据** |
+| 「Material 3 Expressive 弹簧动效四档」 | 官方是「**三种速度** × **两种类型** = **六个弹簧**」（MDC `Motion.md` 原文）。且**没有任何官方 spring→tween 对应值**（`MotionScheme` 12 个 spec 全是 `spring(...)`） | `AppMotion` 按"官方空间三档 + 官方 effects 三档 + 本项目既有 tween"组织，每类出处写进注释；任务书给的 `effects`/`effectsFast` tween 保留但**标明非官方** |
+| 「`player.addMediaItem(index, mediaItem)`」实现添加到下一首 | 本工程的队列在**应用层**（`MainScreen.playbackQueue`），ExoPlayer 列表**不是队列**，只承载 `[当前项]` 或 `[当前项, 待播项]`。真按任务书写法会往列表里塞第三项，**直接破坏 v1.5.2 的待播槽位不变量** | 改为「改应用队列 + 重新同步待播槽位」 |
+
+### 本版的三条**有意不做**（不是遗漏）
+
+| 不做 | 理由 |
+|---|---|
+| 页面切换转场（任务书 §3.3） | `ui/navigation/NavGraph.kt` 四个转场被**显式**关掉，注释写明是**用户决策**、理由是低端机掉帧。任务书未给出任何新证据。铁律 15 与目标下限 Android 7.0 / 3GB 支持现状 → **交回产品决策**，`AppMotion.PAGE_TRANSITION_MS` 留了常量与取证要求 |
+| 把 41 处存量 `tween` 批量改走 `AppMotion` | 逐处判断"空间类还是效果类"需读 41 处上下文，改错会让手感变化且**无法归因**；其中 `PlayerCard.kt` / `NcrustLyricsPanel.kt` 被本文档标注 load-bearing、禁止批量重构 |
+| 改 Kanesumi 库（用户裁定） | 会让发布产物依赖另一个仓库的未发布提交，破坏「`git clone` 即可复现」（v1.5.0 搬 `MetroLyricsPanel` 进本仓库正是同一条理由）。代价：库内部的弹窗/按钮背板保持直角 |
+
+### 本版新增的封面口径（两个档位，**不是**全用 16dp）
+
+| 渲染边长 | 圆角 | 描边 |
+|---|---|---|
+| **≥ 160dp**（播放页大封面、详情页大封面 `fillMaxWidth`） | `AppShapes.large`（16dp） | 1dp `outlineVariant` |
+| **< 160dp**（列表行 56/72dp、菜单头 112dp、网格缩略图） | `AppShapes.small`（8dp） | 1dp `outlineVariant` |
+| 通知栏封面 | **不动** | **不动** —— Android 系统 chrome 自己的事，应用侧不做圆角 |
+
+按尺寸分档是**判断**、不是任务书原文：任务书 §4.2 的验收写的是「大/小封面**视觉协调**」，
+而半径不随尺寸缩放时并不协调（16dp 圆角放在 56dp 缩略图上会吃掉边长的一半）。
+
+**⚠️ 两条实现约束（踩过就会写出"封面不见了"）**：
+
+1. **播放页封面不能在外面套 `Modifier.clip`。** 该节点布局在卡片 (0,0)，
+   视觉位置全靠自己的 `graphicsLayer { translationX/Y/scale }` 搬过去；
+   clip 若排在那个 `graphicsLayer` **之前**（= 外层），裁切边界是**未平移的布局边界**
+   （屏幕左上角），封面会被整块裁掉。正确顺序：**变换在外、裁切在内**
+   （实现见 `PlayerCard.StableCover` 的 KDoc）。
+2. **mini bar 封面是大封面同一节点被 `scale` 到 56dp 的结果**，所以圆角与描边会**等比缩放**
+   （16dp → 约 2.5dp，1dp → 约 0.16dp）。这是**有意接受**的：要让它不缩放就得每帧改
+   `graphicsLayer.shape` 并按 `1/scale` 反算描边宽度 —— 那会让播放器展开/收起这条
+   **播放链路上的关键动画**每帧重建图层属性，与规则 1 冲突。
+
+### 本版新增/改写的文件
+
+| 文件 | 作用 |
+|---|---|
+| `ui/theme/AppShapes.kt` | 圆角 token（**唯一**落点） |
+| `ui/theme/AppMotion.kt` | 动效 token（**唯一**落点） |
+| `ui/theme/color/**` | HCT / 量化 / 评分 / 色调板的 **Apache-2.0 源码移植**（见 `THIRD-PARTY-LICENSES.md` R5）+ 本项目自有的 `CoverPalette` / `CoverPaletteExtractor` |
+| `ui/components/AppVisualModifiers.kt` | `appCoverFrame` / `appPressScale` |
+| `ui/components/ListItemAppear.kt` | 列表入场（含**有界性**的纯判定） |
+| `ui/components/AppSnackbar.kt` | 应用级 Snackbar。**此前全仓库 `Snackbar` 命中 0 处**，反馈一律 `Toast`；宿主**刻意不挂任何指针输入**，否则会在屏幕底部造出只在提示出现的 2 秒内存在的死带 |
+| `player/QueueInsert.kt` | 「添加到下一首播放」的队列边界判定（纯逻辑 + 单测） |
+
+新增文案全部进 `Strings` 的**嵌套组** `QueueStrings`（8 条）。
+`QueueStrings` 同时**吸收**了原先在 `Strings` 主构造器上的
+`actionInsertNext` / `actionAppendToQueue`（成员转发属性保住调用点），
+所以主构造器 **245 -> 244**，腾出了 1 个槽位。
+**下一个要加文案的人：主构造器只剩 1 个空位，请先腾位置再加组**
+（v2.3.0 的做法是把语义相近的两条搬进已有的嵌套组）。
