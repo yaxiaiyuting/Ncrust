@@ -85,6 +85,8 @@ fun LibraryScreen(
     onSongInsertNext: (SongItem) -> Unit = {},
     onSongAppendToQueue: (SongItem) -> Unit = {},
     onShowSongMenu: (SongItem, List<SongMenuAction>) -> Unit = { _, _ -> },
+    // v2.3.0 · A/B：本地歌单的失效信号（见下面的 LaunchedEffect）。
+    localPlaylistsTick: Int = 0,
     // v2.3.0 · A：QQ 歌单**不再走二级入口**，列表直接平铺在「歌单」tab 里。
     // 这个回调改成「点了某一张 QQ 歌单」。
     onQqPlaylistClick: (com.takahashirinta.ncrust.source.Playlist) -> Unit = {},
@@ -166,6 +168,13 @@ fun LibraryScreen(
             LibraryManager.refreshFromCloud(context)
             reloadLocal()
         }
+    }
+
+    // v2.3.0 · B：本地歌单不是可观察数据源（SharedPreferences），所以由上层用一个
+    // 递增的信号告诉本页「它变了，重读一次」。从歌曲菜单里加过歌之后必须重读，
+    // 否则用户回到库页看到的还是加之前的样子。
+    LaunchedEffect(localPlaylistsTick) {
+        if (localPlaylistsTick > 0) localPlaylists = LocalPlaylistStore.readPlaylists(context)
     }
 
     // 收藏单曲分页懒加载：滚动到列表末尾时拉取下一批详情。

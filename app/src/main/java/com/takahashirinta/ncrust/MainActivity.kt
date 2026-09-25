@@ -874,8 +874,17 @@ fun MainScreen(
     var pendingAddSongs by remember { mutableStateOf<List<Long>>(emptyList()) }
     // v2.3.0 · B：「加入本地歌单」选择器是否打开（与云端的 showAddToPlaylist 分开）。
     var showAddToLocalPlaylist by remember { mutableStateOf(false) }
+    // ★ 选择器要操作的那首歌**必须自己存一份**：`SongMenuSheet` 在动作点完之后会
+    // 立刻 `onDismiss()`（见 SongMenuSheet.kt:100-101），而 `onDismiss` 会把
+    // `menuSong` 置空 —— 所以「拿 menuSong 当选择器的输入」在真机上表现为
+    // **点了「加入本地歌单」什么都不弹**（debug 阅读代码时看不出来）。
+    // 与云端的 showAddToPlaylist 用 `pendingAddSongs` 存 id 是同一个道理。
+    var pendingLocalSong by remember { mutableStateOf<SongItem?>(null) }
     // 本地歌单列表的快照：对话框打开时读一次，选完即失效。
     var localPickerList by remember { mutableStateOf<List<com.takahashirinta.ncrust.local.LocalPlaylist>>(emptyList()) }
+    // 本地歌单存在 SharedPreferences 里、不是可观察数据源，所以在库页上给它一个
+    // 显式的失效信号：从菜单里加过歌之后把库页的本地歌单重新读一次。
+    var localPlaylistsTick by remember { mutableIntStateOf(0) }
 
     // 打开歌曲长按菜单的唯一入口：所有 Screen 共用，菜单关闭时把歌单相关状态一并清掉，
     // 避免上一次的待加歌曲泄漏到下一次「加入歌单」。
@@ -884,6 +893,7 @@ fun MainScreen(
         menuSongActions = actions
         showAddToPlaylist = false
         showAddToLocalPlaylist = false
+        pendingLocalSong = null
         pendingAddSongs = emptyList()
     }
 
@@ -2055,7 +2065,8 @@ fun MainScreen(
                             onSongInsertNext = { insertNext(it) },
                             onSongAppendToQueue = { appendToQueue(it) },
                             onShowSongMenu = { song, actions -> showSongMenu(song, actions) },
-                            refreshTrigger = cookieRefreshTrigger
+                            refreshTrigger = cookieRefreshTrigger,
+                            localPlaylistsTick = localPlaylistsTick
                         )
 
                         2 -> SearchScreen(
@@ -2211,6 +2222,7 @@ fun MainScreen(
                         ) {
                             pendingAddSongs = listOf(song.id)
                             localPickerList = LocalPlaylistStore.readPlaylists(context)
+                            pendingLocalSong = song
                             showAddToLocalPlaylist = true
                         },
                     ) + menuSongActions + listOf(
@@ -2277,20 +2289,22 @@ fun MainScreen(
         // v2.3.0 · B：加入**本地**歌单。列出现有本地歌单 + 一个「新建」出口；
         // 选择后走 LocalPlaylistRepository.addTrack（规则 5/7：origin=LOCAL，
         // 若这首曾被移除过则**清除 tombstone** —— 用户的重新添加就是撤销删除意图）。
-        if (showAddToLocalPlaylist && menuSong != null) {
+        if (showAddToLocalPlaylist) {
             val pickStrings = LocalStrings.current
-            val pickSong = menuSong!!
+            val pickSong = pendingLocalSong
             LocalPlaylistPickerDialog(
                 playlists = localPickerList,
                 onDismiss = { showAddToLocalPlaylist = false },
                 onPick = { pl ->
-                    LocalPlaylistRepository.addTrack(context, pl.key, pickSong)
+                    pickSong?.let { LocalPlaylistRepository.addTrack(context, pl.key, it) }
+                    localPlaylistsTick++
                     showAddToLocalPlaylist = false
                     Toast.makeText(context, pickStrings.localPlaylistAdded, Toast.LENGTH_SHORT).show()
                 },
                 onCreateNew = { name ->
                     val created = LocalPlaylistRepository.createLocalOnly(context, name)
-                    LocalPlaylistRepository.addTrack(context, created.key, pickSong)
+                    pickSong?.let { LocalPlaylistRepository.addTrack(context, created.key, it) }
+                    localPlaylistsTick++
                     showAddToLocalPlaylist = false
                     Toast.makeText(context, pickStrings.localPlaylistAdded, Toast.LENGTH_SHORT).show()
                 },
