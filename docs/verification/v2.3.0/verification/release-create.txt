@@ -1,0 +1,20 @@
+# draft release 创建结果（v2.3.0-gpl）
+时间：2026-09-25T17:34:58+08:00
+
+$ gh release create v2.3.0-gpl --draft --title … --notes … --target 02e28a2 <两个 APK>
+https://github.com/yaxiaiyuting/Ncrust/releases/tag/untagged-6e10cbc77c25a133f5e0
+
+$ gh release view v2.3.0-gpl --json tagName,name,isDraft,targetCommitish,assets
+tagName          = v2.3.0-gpl
+name             = v2.3.0-gpl —— 库界面重构 + 本地歌单 + 音源/版权标注 + 横屏歌词自动居中
+isDraft          = True
+isPrerelease     = False
+targetCommitish  = 02e28a25f2461653ed5612acaf13e239c67ebe2d
+assets           =
+    Ncrust-v2.3.0-gpl-debug.apk                      30532915 bytes
+    Ncrust-v2.3.0-gpl-release.apk                     9944028 bytes
+
+## 说明
+- tag `v2.3.0-gpl` 指向 02e28a2（= 产出这批 APK 的提交），**未移动任何已发布的 tag**；
+- release 是 **draft**：等人工冒烟后再手动发布；
+- 附了两个 APK：release（正式签名，推荐）+ debug（对照用）。
