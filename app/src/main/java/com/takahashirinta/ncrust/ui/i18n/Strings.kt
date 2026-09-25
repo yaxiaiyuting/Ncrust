@@ -196,6 +196,21 @@ data class Strings(
      */
     val queue: QueueStrings,
 
+    /**
+     * v2.5.1 · F：**页面转场（动效）文案组**（[MotionStrings]）。
+     *
+     * **为什么必须拆组、而且这是最后一个能拆的位置**：`Strings` 的构造参数在 245 个时
+     * `1 (this) + 245 + 8 (默认值 mask) + 1 (DefaultConstructorMarker) = 255`，**正好用满**；
+     * 再加一个参数就会在类加载期抛
+     * `ClassFormatError: Too many arguments in method signature`（编译照过，真机启动即崩）。
+     * v2.5.0 · D 把构造参数从 245 降到 **244**（腾 2 花 1），本组用掉**最后一个空位** ⇒ 回到 **245**。
+     *
+     * ⚠️ **下一个要加文案的人：余量现在是 0。**
+     * 必须**先腾出一个位置**（把一条既有文案搬进某个语义相符的嵌套组、并在类体里留转发属性），
+     * 然后才能加第二组 —— 不能顺手直接加。`StringsConstructorBudgetTest` 会挡住越界的那一次。
+     */
+    val motion: MotionStrings,
+
     // v1.5.1 · C：无网络时的首页降级空态（标题 / 提示）。
     //
     // ★ v2.3.0：这两条**从构造参数搬进了 [OfflineStrings]**（语义上本来就属于「离线」那一组），
@@ -962,4 +977,23 @@ data class QueueStrings(
     val queueAddToNextCurrent: String,
     /** 队列为空、因此直接起播的提示。 */
     val queueAddToNextStarted: String,
+)
+
+/**
+ * v2.5.1 · F：**页面转场文案组**。
+ *
+ * 只有两条，但**必须成组**：它们是设置页里同一个开关的「标题 + 说明」，
+ * 语义上不可分割，摊平进 [Strings] 的构造参数会直接顶穿 dex 的 255 槽上限
+ * （理由与算式见 [Strings.motion] 的 KDoc 与 `StringsConstructorBudgetTest`）。
+ *
+ * 文案要求（写进这里，避免下一个改文案的人各改各的）：
+ *  - [pageTransitionLabel] 是**名词短语**（「页面切换动效」），与设置页其它开关标题同构；
+ *  - [pageTransitionDescription] 只说**关掉能得到什么**（「关闭可提升低端机流畅度」），
+ *    不说「开启会掉帧」—— 默认是开，说明文字不该先劝退用户。
+ */
+data class MotionStrings(
+    /** 设置页开关标题：「页面切换动效」。 */
+    val pageTransitionLabel: String,
+    /** 设置页开关说明：「关闭可提升低端机流畅度」。 */
+    val pageTransitionDescription: String,
 )

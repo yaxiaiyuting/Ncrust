@@ -2,6 +2,10 @@ package com.takahashirinta.ncrust.ui.navigation
 
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -12,6 +16,8 @@ import com.takahashirinta.ncrust.network.SongItem
 import com.takahashirinta.ncrust.source.MusicSource
 import com.takahashirinta.ncrust.ui.components.SongMenuAction
 import com.takahashirinta.ncrust.ui.screen.*
+import com.takahashirinta.ncrust.ui.theme.AppMotion
+import com.takahashirinta.ncrust.ui.theme.PageTransitionSetting
 import java.net.URLDecoder
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -104,19 +110,34 @@ fun MainNavGraph(
     onSongInsertNext: (SongItem) -> Unit = {},
     onSongAppendToQueue: (SongItem) -> Unit = {},
     onShowSongMenu: (SongItem, List<SongMenuAction>) -> Unit = { _, _ -> },
+    /**
+     * v2.5.1 · F：页面转场开关（「页面切换动效」，默认启用）。
+     *
+     * 由 `MainScreen` 持有状态（设置页改一次 → 这里立刻拿到新值 → 下一次导航即生效，
+     * **不需要重启**）。默认参数取 [PageTransitionSetting.DEFAULT_ENABLED] 而不是写死 `true`，
+     * 是为了让「默认值只有一处真相」。
+     */
+    pageTransitionEnabled: Boolean = PageTransitionSetting.DEFAULT_ENABLED,
     startDestination: String = NavRoutes.HOME
 ) {
-    // 页面切换直接跳变, 不做转场动画(用户决策)。
-    // 转场期间新旧两页同帧渲染, slide/fade 每帧都要全屏合成, 低端机上
-    // 是切换动作的主要掉帧源; 详情页内容有 ContentCache/磁盘缓存兜底,
-    // 跳变"瞬间出现完整内容"反而更利落, 且零中间帧。
+    // v2.5.1 · F：页面切换动效**用户可配，默认启用**。
+    //
+    // v2.5.0 的注释（「页面转场期间新旧两页同帧渲染, slide/fade 每帧都要全屏合成,
+    // 低端机上是切换动作的主要掉帧源, 所以显式关掉」）描述的**代价依然成立**，
+    // 本版没有推翻它 —— 推翻的是它的**处置方式**：
+    // 从「一刀切不做」改成「默认启用 + 用户可关」，关掉时逐字节回到 v2.5.0 的行为。
+    // 用户拍板见 TASK / v2.5.1 release notes；量化数据（release 包、两台真机、
+    // dumpsys gfxinfo framestats）见 docs/verification/v2.5.1/。
+    //
+    // 四个转场都在**导航发生的那一刻**求值（lambda 体内），所以
+    // 「设置页关掉 → 下一次点进详情页就已经没有动画」，无需重启、无需重建 NavHost。
     NavHost(
         navController = navController,
         startDestination = startDestination,
-        enterTransition = { EnterTransition.None },
-        exitTransition = { ExitTransition.None },
-        popEnterTransition = { EnterTransition.None },
-        popExitTransition = { ExitTransition.None }
+        enterTransition = { pageEnterTransition(pageTransitionEnabled) },
+        exitTransition = { pageExitTransition(pageTransitionEnabled) },
+        popEnterTransition = { pagePopEnterTransition(pageTransitionEnabled) },
+        popExitTransition = { pagePopExitTransition(pageTransitionEnabled) }
     ) {
         composable(NavRoutes.HOME) {
             // 不渲染任何内容，由 MainScreen 的 Scaffold 内容填充
@@ -338,3 +359,65 @@ fun MainNavGraph(
         }
     }
 }
+
+// ─────────────────────────────────────────────────────────────────────────
+// v2.5.1 · F：页面转场的四个方向
+//
+// 分散在四个 private 函数里，是为了让「关掉时到底挂的是什么」一眼可查：
+// 四个函数的第一行**都是**同一个短路 `if (!enabled) …None`。
+// 这样「关闭时不能有残留动画计算」不是靠调用点自觉，而是这四条路径的唯一形状。
+//
+// 位移取屏宽的 1/12（`PAGE_SLIDE_DIVISOR`）：足够读出方向，又不至于让新旧两页
+// 各滑过半个屏幕（滑得越远，转场期间需要重绘的像素带越宽）。这个「小位移 + 淡入淡出」
+// 的组合是低端机的折中：方向感来自位移，遮盖感来自 alpha，两者都不需要额外测量。
+//
+// 时长与曲线**只有一处真相**：`AppMotion.pageTransitionSpec()`（260ms + FastOutSlowInEasing）。
+// 关掉时 `PageTransitionSetting.durationMs(false) == 0`，且这里连 spec 都不会构造。
+// ─────────────────────────────────────────────────────────────────────────
+
+/** 转场位移 = 屏宽 / 该除数。12 ⇒ 360dp 屏上约 30dp。 */
+private const val PAGE_SLIDE_DIVISOR = 12
+
+/** 前进（push）：新页从右侧滑入并淡入。 */
+private fun pageEnterTransition(enabled: Boolean): EnterTransition =
+    if (!enabled) {
+        EnterTransition.None
+    } else {
+        slideInHorizontally(
+            animationSpec = AppMotion.pageTransitionSpec(),
+            initialOffsetX = { it / PAGE_SLIDE_DIVISOR }
+        ) + fadeIn(animationSpec = AppMotion.pageTransitionSpec())
+    }
+
+/** 前进时的旧页：向左让位并淡出。 */
+private fun pageExitTransition(enabled: Boolean): ExitTransition =
+    if (!enabled) {
+        ExitTransition.None
+    } else {
+        slideOutHorizontally(
+            animationSpec = AppMotion.pageTransitionSpec(),
+            targetOffsetX = { -it / PAGE_SLIDE_DIVISOR }
+        ) + fadeOut(animationSpec = AppMotion.pageTransitionSpec())
+    }
+
+/** 返回（pop）：上一页从左侧滑回并淡入。 */
+private fun pagePopEnterTransition(enabled: Boolean): EnterTransition =
+    if (!enabled) {
+        EnterTransition.None
+    } else {
+        slideInHorizontally(
+            animationSpec = AppMotion.pageTransitionSpec(),
+            initialOffsetX = { -it / PAGE_SLIDE_DIVISOR }
+        ) + fadeIn(animationSpec = AppMotion.pageTransitionSpec())
+    }
+
+/** 返回时被关掉的那一页：向右退出并淡出。 */
+private fun pagePopExitTransition(enabled: Boolean): ExitTransition =
+    if (!enabled) {
+        ExitTransition.None
+    } else {
+        slideOutHorizontally(
+            animationSpec = AppMotion.pageTransitionSpec(),
+            targetOffsetX = { it / PAGE_SLIDE_DIVISOR }
+        ) + fadeOut(animationSpec = AppMotion.pageTransitionSpec())
+    }

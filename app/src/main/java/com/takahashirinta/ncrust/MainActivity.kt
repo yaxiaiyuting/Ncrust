@@ -130,6 +130,7 @@ import com.takahashirinta.ncrust.ui.theme.systemAccentColor
 import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.takahashirinta.ncrust.ui.theme.getSavedThemeMode
+import com.takahashirinta.ncrust.ui.theme.PageTransitionSetting
 import com.takahashirinta.ncrust.ui.theme.saveThemeIndex
 import com.takahashirinta.ncrust.ui.theme.saveThemeMode
 import com.takahashirinta.ncrust.ui.theme.themeColorForIndex
@@ -824,6 +825,17 @@ fun MainScreen(
 
     val density = LocalDensity.current
     val coroutineScope = rememberCoroutineScope()
+
+    // v2.5.1 · F：页面切换动效开关（默认**开**）。
+    //
+    // 状态放在 MainScreen 而不是设置页内部：设置页（UserScreen）与导航宿主
+    // （MainNavGraph）都在这里之下，两者必须看到**同一个**值 ——
+    // 各存一份就会出现「设置页关了、转场还在」的状态分裂
+    // （v1.8.0 把自动旋转抽成 RotationSetting 是同一条理由）。
+    // 它是 Compose 状态 ⇒ 开关与 NavGraph 同帧更新，所以「切换后立即生效」不需要重启。
+    var pageTransitionEnabled by remember {
+        mutableStateOf(PageTransitionSetting.readEnabled(context))
+    }
 
     // ---------- 系统栏高度 ----------
     // 正常设备从 WindowInsets 取；车机（Android Automotive）的 CarSystemUI 顶/底栏是
@@ -2299,7 +2311,13 @@ fun MainScreen(
                                 // v2.1.1：手机号验证码登录（微信用户的可用路径）。
                                 onShowQqPhoneLogin = { showQqPhone = true },
                             refreshTrigger = cookieRefreshTrigger,
-                            onLanguageChange = onLanguageChange
+                            onLanguageChange = onLanguageChange,
+                            // v2.5.1 · F：页面切换动效（唯一写入口在这一行回调里）。
+                            pageTransitionEnabled = pageTransitionEnabled,
+                            onPageTransitionChange = { enabled ->
+                                pageTransitionEnabled = enabled
+                                PageTransitionSetting.writeEnabled(context, enabled)
+                            },
                         )
                     }
                 }
@@ -2314,6 +2332,8 @@ fun MainScreen(
                     onSongInsertNext = { insertNext(it) },
                     onSongAppendToQueue = { appendToQueue(it) },
                     onShowSongMenu = { song, actions -> showSongMenu(song, actions) },
+                    // v2.5.1 · F：页面转场开关（用户可配，默认启用）。
+                    pageTransitionEnabled = pageTransitionEnabled,
                     startDestination = NavRoutes.HOME
                 )
             }

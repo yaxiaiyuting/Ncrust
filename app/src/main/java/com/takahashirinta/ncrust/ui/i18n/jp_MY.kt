@@ -414,4 +414,8 @@ val jpMY = Strings(
             queueAddToNextCurrent = "此曲 現奏",
             queueAddToNextStarted = "列 空 即奏",
         ),
+        motion = MotionStrings(
+            pageTransitionLabel = "頁面 切替 の 動效",
+            pageTransitionDescription = "閉づれば 低端 の 端末 に て 滑 らか に なる",
+        ),
 )

@@ -415,4 +415,8 @@ val jpJP = Strings(
             queueAddToNextCurrent = "この曲は再生中です",
             queueAddToNextStarted = "キューが空のため再生しました",
         ),
+        motion = MotionStrings(
+            pageTransitionLabel = "ページ切り替えエフェクト",
+            pageTransitionDescription = "オフにすると低スペック端末でも滑らかになります",
+        ),
 )

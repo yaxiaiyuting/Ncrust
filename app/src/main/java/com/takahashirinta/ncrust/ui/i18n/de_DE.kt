@@ -414,4 +414,8 @@ val deDE = Strings(
             queueAddToNextCurrent = "Dieser Titel läuft gerade",
             queueAddToNextStarted = "Warteschlange war leer, läuft jetzt",
         ),
+        motion = MotionStrings(
+            pageTransitionLabel = "Seitenübergänge",
+            pageTransitionDescription = "Ausschalten verbessert die Flüssigkeit auf schwachen Geräten",
+        ),
 )

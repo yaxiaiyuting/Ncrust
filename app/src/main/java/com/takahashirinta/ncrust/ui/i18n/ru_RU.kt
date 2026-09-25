@@ -414,4 +414,8 @@ val ruRU = Strings(
             queueAddToNextCurrent = "Эта песня сейчас играет",
             queueAddToNextStarted = "Очередь пуста, играет сейчас",
         ),
+        motion = MotionStrings(
+            pageTransitionLabel = "Переходы между страницами",
+            pageTransitionDescription = "Отключение повышает плавность на слабых устройствах",
+        ),
 )

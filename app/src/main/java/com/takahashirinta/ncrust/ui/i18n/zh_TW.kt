@@ -415,4 +415,8 @@ scanConnecting = "正在連接平板…",
             queueAddToNextCurrent = "這首歌正在播放",
             queueAddToNextStarted = "佇列為空，已直接播放",
         ),
+        motion = MotionStrings(
+            pageTransitionLabel = "頁面切換動效",
+            pageTransitionDescription = "關閉可提升低階機流暢度",
+        ),
 )

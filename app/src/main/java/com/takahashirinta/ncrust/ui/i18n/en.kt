@@ -414,4 +414,8 @@ val en = Strings(
             queueAddToNextCurrent = "This song is playing",
             queueAddToNextStarted = "Queue was empty, playing now",
         ),
+        motion = MotionStrings(
+            pageTransitionLabel = "Page transitions",
+            pageTransitionDescription = "Turn off to improve smoothness on low-end devices",
+        ),
 )

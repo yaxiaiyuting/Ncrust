@@ -12,6 +12,7 @@
 package com.takahashirinta.ncrust.ui.theme
 
 import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.animation.core.Easing
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.SpringSpec
@@ -232,24 +233,58 @@ object AppMotion {
     val colorTransition: TweenSpec<Float> = tween(300, easing = FastOutSlowInEasing)
 
     // ─────────────────────────────────────────────────────────────────────
-    // 页面转场：**本版不启用**（有意为之，见下）
+    // 页面转场：**用户可配，默认启用**（v2.5.1 · F）
     // ─────────────────────────────────────────────────────────────────────
 
     /**
-     * 页面转场时长。**本版没有任何调用点** —— 保留它是为了把「为什么没有页面转场」
-     * 这件事写在代码里，而不是让它变成一个看起来像遗漏的空白。
+     * 页面转场时长（毫秒）。**唯一的调用点是 `ui/navigation/NavGraph.kt`**，
+     * 且只在 [PageTransitionSetting] 判定「用户开着转场」时才会被用上。
      *
-     * `ui/navigation/NavGraph.kt` 显式把四个转场都设成 `EnterTransition.None` /
-     * `ExitTransition.None`，并且**写明这是用户决策**：
-     * 「转场期间新旧两页同帧渲染, slide/fade 每帧都要全屏合成, 低端机上
-     * 是切换动作的主要掉帧源」。本应用的目标下限是 Android 7.0 / 3GB RAM，
-     * 而铁律 15 要求动效不得影响性能 ——
-     * 所以任务书 §3.3「页面切换：AnimatedContent 方向性转场」这一条
-     * **与项目已有的、有明确理由的决策直接冲突**，本版**不做**，
-     * 并把它写进未验证/遗留清单交回产品决策。
+     * ## 从「本版不做」到「用户可配」的完整沿革（下一个读到这里的人先看这段）
      *
-     * 真要启用时，用这个时长 + [spatialDefault]，并且**必须**在低端真机上
-     * 用 `dumpsys gfxinfo` 对照转场前后的掉帧数（模拟器结论不构成证据）。
+     * - **v2.5.0**：`NavGraph.kt` 显式把四个转场设成 `EnterTransition.None` /
+     *   `ExitTransition.None`，注释写明那是**用户决策**，理由是
+     *   「转场期间新旧两页同帧渲染, slide/fade 每帧都要全屏合成, 低端机上
+     *   是切换动作的主要掉帧源」。当时的结论是「任务书未给新证据，交回产品决策」，
+     *   本常量因此**没有任何调用点**，只是一份书面记录。
+     * - **v2.5.1**：用户**拍板改为「用户可配、默认启用」**。
+     *   所以本版第一次真的把它接上 —— 但接法是**开关 + 默认值**，
+     *   而不是把 v2.5.0 那条「低端机会掉帧」的顾虑直接删掉：
+     *   顾虑仍然成立，只是处置方式从「一刀切不做」改成「默认开、用户可关」。
+     *   关掉时走 [PageTransitionSetting.durationMs] 返回的 **0**，
+     *   `NavGraph` 直接挂 `EnterTransition.None`（零动画、零中间帧、零残留计算）。
+     *
+     * ## 取证要求（**没有豁免**）
+     *
+     * 只要这个值 > 0，就必须在低端真机（Android 7.0 / 3GB 这一档）上用
+     * `adb shell dumpsys gfxinfo <pkg> framestats` 记录**开启时**的 90 分位帧时间，
+     * 并与关闭时对照。**模拟器结论不构成证据，debug 包数据也不构成证据**（铁律 15）——
+     * 本版的数据见 `docs/verification/v2.5.1/verification/framestats-*.txt`。
+     *
+     * 取值 260ms 沿用 v2.5.0 留下的常量与既有的 `sheetDismiss`/`sheetAppear` 同族时长，
+     * 不是本版新拍的数。
      */
     const val PAGE_TRANSITION_MS: Int = 260
+
+    /**
+     * 页面转场的缓动曲线：`FastOutSlowInEasing`。
+     *
+     * 与 [sheetDismiss]（260ms + FastOutSlowInEasing）**同一条** —— 页面转场在体感上
+     * 就是「一层面板让位给另一层」，没有理由为它单独发明一条曲线。
+     *
+     * 不用 [spatialDefault] 那类弹簧：转场驱动的是**整页位移**，弹簧的过冲会让页面
+     * 越过目标位置再弹回（边缘会出现一条背景色），而 tween 收敛即停。
+     */
+    val pageTransitionEasing: Easing = FastOutSlowInEasing
+
+    /**
+     * 页面转场动画规格（泛型：转场同时驱动 `IntOffset` 位移与 `Float` 透明度，
+     * 两者需要各自的 `FiniteAnimationSpec` 实例）。
+     *
+     * ⚠️ **关掉转场时不要调用它**。`EnterTransition.None` / `ExitTransition.None`
+     * 才是零开销路径；本函数只负责「开」的那一半，判定在
+     * [PageTransitionSetting.durationMs]（返回 0 即代表关）。
+     */
+    fun <T> pageTransitionSpec(): TweenSpec<T> =
+        tween(durationMillis = PAGE_TRANSITION_MS, easing = pageTransitionEasing)
 }

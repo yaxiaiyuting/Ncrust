@@ -80,6 +80,7 @@ import com.takahashirinta.ncrust.ui.i18n.languagePresets
 import com.takahashirinta.ncrust.ui.theme.AccentSource
 import com.takahashirinta.ncrust.ui.theme.AccentSourceSelector
 import com.takahashirinta.ncrust.ui.theme.LocalNcrustColors
+import com.takahashirinta.ncrust.ui.theme.PageTransitionSetting
 import com.takahashirinta.ncrust.ui.theme.ThemeColorSelector
 import com.takahashirinta.ncrust.ui.theme.systemAccentSupported
 import com.takahashirinta.ncrust.ui.theme.ThemeMode
@@ -105,7 +106,16 @@ fun UserScreen(
     /** v2.1.1：打开 QQ 音乐的手机号验证码登录（微信用户走不了 QQ 扫码时用）。 */
     onShowQqPhoneLogin: () -> Unit = {},
     refreshTrigger: Int = 0,
-    onLanguageChange: (String) -> Unit = {}
+    onLanguageChange: (String) -> Unit = {},
+    /**
+     * v2.5.1 · F：「页面切换动效」的**当前值**。
+     *
+     * 由 `MainScreen` 持有（它是导航宿主与设置页的共同祖先），这里只读不存 ——
+     * 自己在本地再 `remember` 一份就会出现「设置页显示关、转场还在」的状态分裂。
+     */
+    pageTransitionEnabled: Boolean = PageTransitionSetting.DEFAULT_ENABLED,
+    /** v2.5.1 · F：切换「页面切换动效」。写盘 + 更新 MainScreen 的状态，**下一次导航即生效**。 */
+    onPageTransitionChange: (Boolean) -> Unit = {},
 ) {
     val context = LocalContext.current
     val strings = LocalStrings.current
@@ -479,6 +489,16 @@ fun UserScreen(
                     artistRecoEnabled = it
                     ArtistReco.setEnabled(context, it)
                 }
+            )
+            // v2.5.1 · F：页面切换动效（默认**开**）。**改完立即生效**，不需要重启：
+            // 状态提升在 MainScreen，这里通过 onPageTransitionChange 上报；
+            // NavGraph 的四个转场 lambda 在**下一次导航**时求值，所以返回列表再点进详情
+            // 就已经是新行为。关掉 = 四个转场挂 EnterTransition.None，逐字节回到 v2.5.0。
+            SettingSwitchRow(
+                title = strings.motion.pageTransitionLabel,
+                description = strings.motion.pageTransitionDescription,
+                checked = pageTransitionEnabled,
+                onCheckedChange = onPageTransitionChange
             )
             // 歌词翻译开关(Spotify 式双语:原句下方小号译文)。切了立即生效,播放器常挂载无需重进。
             SettingSwitchRow(

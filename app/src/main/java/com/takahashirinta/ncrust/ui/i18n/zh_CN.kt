@@ -415,4 +415,8 @@ val zhCN = Strings(
             queueAddToNextCurrent = "这首歌正在播放",
             queueAddToNextStarted = "队列为空，已直接播放",
         ),
+        motion = MotionStrings(
+            pageTransitionLabel = "页面切换动效",
+            pageTransitionDescription = "关闭可提升低端机流畅度",
+        ),
 )

@@ -414,4 +414,8 @@ scanConnecting = "평판에 연결중…",
             queueAddToNextCurrent = "지금 재생중인 곡임",
             queueAddToNextStarted = "대기열이 없어 바로 재생함",
         ),
+        motion = MotionStrings(
+            pageTransitionLabel = "페이지 전환 효과",
+            pageTransitionDescription = "끄면 저사양 기기에서 더 부드러워집니다",
+        ),
 )
