@@ -1,26 +1,36 @@
 # 构建与静态检查（v2.3.0）
 
 命令：JAVA_HOME=/usr/lib/jvm/java-21-openjdk ./gradlew clean testDebugUnitTest lint assembleDebug assembleRelease
-时间：2026-09-25T17:06:28+08:00
-HEAD：67b7bdbddf79f515559997aac97080921cd17f07
+时间：2026-09-25T17:33:44+08:00
+HEAD：bdd4304cb1835cfd5c08266aba9287f09469abff
 
 ## 结果
-BUILD SUCCESSFUL in 3m 4s
-421 actionable tasks: 133 executed, 288 up-to-date
+BUILD SUCCESSFUL
 
-## 单测统计
-tests=825 failures=0 errors=0 skipped=0
-测试类文件数=63
+## 单测
+tests=829 failures=0 errors=0 skipped=0
+（v2.2.1 基线为 788 个，本版新增 41 个）
 
-## 新增测试类（v2.3.0）
-  app/src/test/java/com/takahashirinta/ncrust/local/LocalPlaylistSyncTest.kt  (27 个用例)
-  app/src/test/java/com/takahashirinta/ncrust/local/LocalPlaylistCodecTest.kt  (19 个用例)
-  app/src/test/java/com/takahashirinta/ncrust/search/TrackAvailabilityTest.kt  (20 个用例)
-  app/src/test/java/com/takahashirinta/ncrust/ui/components/SongTagsTest.kt  (20 个用例)
-  app/src/test/java/com/takahashirinta/ncrust/ui/player/LyricsAutoCenterTest.kt  (14 个用例)
-  app/src/test/java/com/takahashirinta/ncrust/ui/i18n/StringsConstructorBudgetTest.kt  (5 个用例)
-  app/src/test/java/com/takahashirinta/ncrust/ui/player/LyricsPanelScrollTest.kt  (追加 18 个，含 v2.3.0 新增 6 个)
-  app/src/test/java/com/takahashirinta/ncrust/search/SearchRankingTest.kt  (追加至 19 个)
-  app/src/test/java/com/takahashirinta/ncrust/player/PlaybackGuardTest.kt  (追加至 30 个)
+新增测试类（6 个）：
+  local/LocalPlaylistSyncTest.kt            27 个用例 —— 七条同步规则 + 去重隔离 + 容量有界
+  local/LocalPlaylistCodecTest.kt           23 个用例 —— 迁移 + 落盘 key 名契约（R8 回归）
+  search/TrackAvailabilityTest.kt           20 个用例 —— 可播放/需会员/无版权/原唱翻唱
+  ui/components/SongTagsTest.kt             20 个用例 —— 角标装配（重点是「什么都不显示」）
+  ui/player/LyricsAutoCenterTest.kt         14 个用例 —— 5s 计时 / 拖拽不打断 / 世代回绕
+  ui/i18n/StringsConstructorBudgetTest.kt   5 个用例 —— dex 255 槽预算（本版真实踩到的坑）
+
+扩充的测试类（3 个）：
+  ui/player/LyricsPanelScrollTest.kt        → 18 个（新增横屏 0.5 相关 6 个）
+  search/SearchRankingTest.kt               → 19 个（新增 order/沉底 6 个）
+  player/PlaybackGuardTest.kt               → 30 个（新增提示节流闸 7 个）
 
 ## Lint
+Fatal=0  Error=0  Warning=8
+（8 条 Warning：3 条是 LocalPlaylistStore 有意用 commit() 而不是 apply()，
+  3 条是 v2.2.0 既有的 QqPlaylistStore 同类；1 条依赖版本提示；1 条 DetailScaffold 的 Modifier 参数位置）
+
+## 产物
+debug:   app/build/outputs/apk/debug/app-debug.apk
+release: app/build/outputs/apk/release/app-release.apk
+         ⇒ dist/Ncrust-v2.3.0-gpl-release.apk
+         sha256 = f9f32a77b41137f2aa16ed77abacceca0b96f90d80b7de915edb97eb8874a9c3
