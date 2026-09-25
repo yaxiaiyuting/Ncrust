@@ -86,10 +86,31 @@ object SongTags {
      * 音源排第一是有意的：它是这一行「属于谁」的第一信息；可用性第二（能不能放）；
      * 版本第三（是不是原唱）。三者都不抢歌名的主视觉。
      */
-    fun of(song: SongItem, strings: Strings): List<SongTag> {
+    fun of(song: SongItem, strings: Strings): List<SongTag> = of(song, strings, null)
+
+    /**
+     * v2.4.0 · E：带**探测结果覆盖**的角标装配。
+     *
+     * ## 为什么需要这个重载，而不是把可用性写回 `SongItem`
+     *
+     * 聚合页的可用性是**探测出来的临时事实**（VIP 到期、版权下架、地区变化都会改，
+     * 见 [com.takahashirinta.ncrust.crosssource.AggregatedSong] 的 KDoc），而
+     * `SongItem` 是**落盘结构**（队列 JSON、本地歌单、离线索引都在存它）。
+     * 把探测结果写进 `SongItem` 一定会出现「上周探测过能播、今天显示可播放、点下去 404」；
+     * 所以列表行必须能在**不改 song** 的前提下显示探测结果 —— 这个参数就是那条通道。
+     *
+     * @param availabilityOverride 非 null 时**优先于** [TrackAvailability.of] 的推导值。
+     *   传 null 与既有的 2 参重载**逐字节等价**（`SongTagsTest` 钉住这一点：
+     *   默认行为不能因为多了一条通道就变）。
+     */
+    fun of(
+        song: SongItem,
+        strings: Strings,
+        availabilityOverride: TrackAvailability?,
+    ): List<SongTag> {
         val out = ArrayList<SongTag>(3)
         out += SongTag(sourceLabel(song.musicSource, strings), SongTagKind.SOURCE)
-        availabilityLabel(TrackAvailability.of(song), strings)
+        availabilityLabel(availabilityOverride ?: TrackAvailability.of(song), strings)
             ?.let { out += SongTag(it, SongTagKind.AVAILABILITY) }
         versionLabel(TrackVersionTag.of(song), strings)
             ?.let { out += SongTag(it, SongTagKind.VERSION) }

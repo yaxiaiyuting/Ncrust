@@ -1,0 +1,3447 @@
+{
+ "周杰伦": {
+  "ne_artists": [
+   {
+    "id": 6452,
+    "name": "周杰伦",
+    "alias": [
+     "Jay Chou",
+     "周董"
+    ],
+    "albumSize": 41,
+    "musicSize": 568
+   },
+   {
+    "id": 51128649,
+    "name": "周杰伦.",
+    "alias": [
+     "周杰伦头号粉"
+    ],
+    "albumSize": 2,
+    "musicSize": 20
+   },
+   {
+    "id": 122494823,
+    "name": "周杰伦♚",
+    "alias": [
+     "周杰伦"
+    ],
+    "albumSize": 8,
+    "musicSize": 15
+   },
+   {
+    "id": 122200643,
+    "name": "Jay",
+    "alias": [
+     "嚜日",
+     "周杰伦",
+     "林俊杰",
+     "权志龙",
+     "章若楠"
+    ],
+    "albumSize": 51,
+    "musicSize": 53
+   },
+   {
+    "id": 52198464,
+    "name": "周杰伦jay",
+    "alias": [],
+    "albumSize": 2,
+    "musicSize": 3
+   },
+   {
+    "id": 52348016,
+    "name": "何兵兵",
+    "alias": [
+     "林俊杰",
+     "周杰伦",
+     "王源",
+     "易烊千玺",
+     "黄明昊"
+    ],
+    "albumSize": 61,
+    "musicSize": 85
+   },
+   {
+    "id": 60800058,
+    "name": "周杰倫",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 1
+   },
+   {
+    "id": 128026629,
+    "name": "过于悲怜",
+    "alias": [
+     "周杰伦"
+    ],
+    "albumSize": 2,
+    "musicSize": 2
+   },
+   {
+    "id": 97534636,
+    "name": "东北周杰伦",
+    "alias": [
+     "东北周杰伦"
+    ],
+    "albumSize": 1,
+    "musicSize": 1
+   },
+   {
+    "id": 123815941,
+    "name": "小蓝（有周杰伦的音乐）",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 3
+   },
+   {
+    "id": 100627651,
+    "name": "山东周杰伦-淼",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 2
+   },
+   {
+    "id": 54707474,
+    "name": "周杰伦.",
+    "alias": [],
+    "albumSize": 0,
+    "musicSize": 1
+   },
+   {
+    "id": 121573756,
+    "name": "Jay Chou",
+    "alias": [
+     "周杰倫"
+    ],
+    "albumSize": 1,
+    "musicSize": 2
+   },
+   {
+    "id": 37002062,
+    "name": "Jay",
+    "alias": [
+     "周杰伦"
+    ],
+    "albumSize": 1,
+    "musicSize": 9
+   },
+   {
+    "id": 94904681,
+    "name": "新市区周杰伦",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 4
+   },
+   {
+    "id": 121461228,
+    "name": "因你爱上周杰伦",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 3
+   },
+   {
+    "id": 94724273,
+    "name": "周杰伦的大提琴",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 22
+   },
+   {
+    "id": 51773517,
+    "name": "泰安周杰伦",
+    "alias": [],
+    "albumSize": 2,
+    "musicSize": 9
+   },
+   {
+    "id": 122630019,
+    "name": "lD_宝",
+    "alias": [
+     "张作霖",
+     "邓紫棋",
+     "周杰伦",
+     "林俊杰",
+     "江苏泷"
+    ],
+    "albumSize": 6,
+    "musicSize": 13
+   },
+   {
+    "id": 127794818,
+    "name": "寻找周杰伦",
+    "alias": [],
+    "albumSize": 5,
+    "musicSize": 6
+   }
+  ],
+  "qq_artists": [
+   {
+    "id": 4558,
+    "mid": "0025NhlN2yWrP4",
+    "name": "周杰伦",
+    "albumNum": 43,
+    "songNum": 1012
+   },
+   {
+    "id": 7311,
+    "mid": "00489l610k75Z2",
+    "name": "Lara梁心颐",
+    "albumNum": 35,
+    "songNum": 184
+   },
+   {
+    "id": 141,
+    "mid": "003JGrNQ3RjelA",
+    "name": "张惠妹",
+    "albumNum": 57,
+    "songNum": 676
+   },
+   {
+    "id": 157261,
+    "mid": "0020KRM719dcJ5",
+    "name": "潘儿",
+    "albumNum": 1,
+    "songNum": 12
+   },
+   {
+    "id": 23063564,
+    "mid": "002yNuBB2sSFMo",
+    "name": "周杰倫",
+    "albumNum": 1,
+    "songNum": 1
+   },
+   {
+    "id": 1561248,
+    "mid": "00203xA13apUJN",
+    "name": "周杰伦战队",
+    "albumNum": 0,
+    "songNum": 3
+   },
+   {
+    "id": 3002682,
+    "mid": "0044EuoX04IMeH",
+    "name": "陈瑞琦",
+    "albumNum": 5,
+    "songNum": 6
+   },
+   {
+    "id": 1518532,
+    "mid": "000VmTtj2d2mnM",
+    "name": "达布希勒图",
+    "albumNum": 50,
+    "songNum": 147
+   },
+   {
+    "id": 3299033,
+    "mid": "0041HEDq2qIH1N",
+    "name": "木子旭",
+    "albumNum": 5,
+    "songNum": 23
+   },
+   {
+    "id": 24366287,
+    "mid": "003B8muo11pCfF",
+    "name": "周涛美杰伦",
+    "albumNum": 4,
+    "songNum": 57
+   },
+   {
+    "id": 131,
+    "mid": "0040MELG3TS8OW",
+    "name": "费玉清",
+    "albumNum": 149,
+    "songNum": 1223
+   }
+  ],
+  "verdict": {
+   "kw": "周杰伦",
+   "note": "华语·网易云无版权；网易云 3 个同名字号",
+   "ne_id": 6452,
+   "ne_name": "周杰伦",
+   "qq_mid": "0025NhlN2yWrP4",
+   "qq_name": "周杰伦",
+   "ne_albums": 44,
+   "qq_albums": 43,
+   "overlap": 33,
+   "confidence": "EXACT",
+   "reason": "唯一同名候选 + 专辑重合 33 张（占较小侧 77%）",
+   "naive": "HIGH",
+   "tried": [
+    {
+     "name": "周杰伦",
+     "mid": "0025NhlN2yWrP4",
+     "albumNum": 43,
+     "albums_fetched": 43,
+     "overlap": 33
+    }
+   ],
+   "ne_sample": [
+    "11月的萧邦",
+    "2004无与伦比演唱会",
+    "fantasyshow香港演唱会",
+    "initialj",
+    "jay",
+    "mojito"
+   ],
+   "qq_sample": [
+    "2007世界巡回演唱会",
+    "jay",
+    "jiiimp3player",
+    "mojito",
+    "sixdegrees",
+    "theera2010超时代演唱会"
+   ],
+   "ne_only": [
+    "11月的萧邦",
+    "2004无与伦比演唱会",
+    "fantasyshow香港演唱会",
+    "initialj",
+    "partners拍档",
+    "theone周杰伦演唱会"
+   ],
+   "qq_only": [
+    "2007世界巡回演唱会",
+    "jiiimp3player",
+    "theera2010超时代演唱会",
+    "theone演唱会",
+    "十一月的萧邦",
+    "周杰伦2004无与伦比演唱会livecd"
+   ]
+  }
+ },
+ "林俊杰": {
+  "ne_artists": [
+   {
+    "id": 3684,
+    "name": "林俊杰",
+    "alias": [
+     "JJ Lin",
+     "Wayne Lim"
+    ],
+    "albumSize": 73,
+    "musicSize": 598
+   },
+   {
+    "id": 7763,
+    "name": "G.E.M.邓紫棋",
+    "alias": [
+     "G.E.M.",
+     "Gloria Tang"
+    ],
+    "albumSize": 58,
+    "musicSize": 420
+   },
+   {
+    "id": 122200643,
+    "name": "Jay",
+    "alias": [
+     "嚜日",
+     "周杰伦",
+     "林俊杰",
+     "权志龙",
+     "章若楠"
+    ],
+    "albumSize": 51,
+    "musicSize": 53
+   },
+   {
+    "id": 52348016,
+    "name": "何兵兵",
+    "alias": [
+     "林俊杰",
+     "周杰伦",
+     "王源",
+     "易烊千玺",
+     "黄明昊"
+    ],
+    "albumSize": 61,
+    "musicSize": 85
+   },
+   {
+    "id": 123552101,
+    "name": "林俊杰66",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 4
+   },
+   {
+    "id": 37055271,
+    "name": "林俊杰Rinsixken",
+    "alias": [
+     "林俊杰R1n"
+    ],
+    "albumSize": 5,
+    "musicSize": 6
+   },
+   {
+    "id": 123977014,
+    "name": "热河林俊杰",
+    "alias": [],
+    "albumSize": 17,
+    "musicSize": 18
+   },
+   {
+    "id": 122630019,
+    "name": "lD_宝",
+    "alias": [
+     "张作霖",
+     "邓紫棋",
+     "周杰伦",
+     "林俊杰",
+     "江苏泷"
+    ],
+    "albumSize": 6,
+    "musicSize": 13
+   },
+   {
+    "id": 123634979,
+    "name": "林俊晨",
+    "alias": [
+     "陈奕迅",
+     "薛之谦",
+     "周杰伦",
+     "林俊杰"
+    ],
+    "albumSize": 2,
+    "musicSize": 5
+   },
+   {
+    "id": 126619360,
+    "name": "林俊杰薛之谦胡彦斌",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 11
+   },
+   {
+    "id": 52331015,
+    "name": "林俊杰",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 1
+   },
+   {
+    "id": 9940,
+    "name": "徐佳莹",
+    "alias": [
+     "LaLa Hsu"
+    ],
+    "albumSize": 58,
+    "musicSize": 356
+   },
+   {
+    "id": 8259,
+    "name": "金莎",
+    "alias": [
+     "蓝菲琳",
+     "Kym"
+    ],
+    "albumSize": 35,
+    "musicSize": 200
+   },
+   {
+    "id": 57051285,
+    "name": "今晚听林俊杰",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 1
+   },
+   {
+    "id": 1083118,
+    "name": "王嘉尔",
+    "alias": [
+     "Jackson"
+    ],
+    "albumSize": 43,
+    "musicSize": 176
+   },
+   {
+    "id": 124121802,
+    "name": "苦中作乐",
+    "alias": [
+     "林俊杰"
+    ],
+    "albumSize": 1,
+    "musicSize": 2
+   },
+   {
+    "id": 13193,
+    "name": "五月天",
+    "alias": [
+     "Mayday"
+    ],
+    "albumSize": 66,
+    "musicSize": 801
+   },
+   {
+    "id": 7891,
+    "name": "韩红",
+    "alias": [
+     "央金卓玛"
+    ],
+    "albumSize": 81,
+    "musicSize": 439
+   },
+   {
+    "id": 7227,
+    "name": "蔡卓妍",
+    "alias": [
+     "Charlene Choi",
+     "阿Sa"
+    ],
+    "albumSize": 15,
+    "musicSize": 179
+   },
+   {
+    "id": 122401829,
+    "name": "林俊杰u",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 2
+   }
+  ],
+  "qq_artists": [
+   {
+    "id": 4286,
+    "mid": "001BLpXF2DyJe2",
+    "name": "林俊杰",
+    "albumNum": 75,
+    "songNum": 1025
+   },
+   {
+    "id": 13948,
+    "mid": "001fNHEf1SFEFN",
+    "name": "G.E.M.邓紫棋",
+    "albumNum": 68,
+    "songNum": 759
+   },
+   {
+    "id": 4856,
+    "mid": "000N3nfJ398H07",
+    "name": "蔡卓妍",
+    "albumNum": 16,
+    "songNum": 167
+   },
+   {
+    "id": 1339126,
+    "mid": "002KASw53FQbTK",
+    "name": "王者荣耀",
+    "albumNum": 412,
+    "songNum": 1127
+   },
+   {
+    "id": 14871776,
+    "mid": "003MjvJZ3YRbIq",
+    "name": "林俊杰",
+    "albumNum": 0,
+    "songNum": 0
+   },
+   {
+    "id": 11043847,
+    "mid": "001mE5Sd1Wd8Xx",
+    "name": "林俊杰·JM音像",
+    "albumNum": 0,
+    "songNum": 1
+   },
+   {
+    "id": 1375422,
+    "mid": "000kW4Xz4aMrwj",
+    "name": "Ryuukey (林俊杰)",
+    "albumNum": 14,
+    "songNum": 20
+   },
+   {
+    "id": 2125430,
+    "mid": "000petH52Bx8TT",
+    "name": "林俊杰1307电台",
+    "albumNum": 1,
+    "songNum": 33
+   },
+   {
+    "id": 2086017,
+    "mid": "0042Daf33GueUE",
+    "name": "林俊杰FM89757电台",
+    "albumNum": 1,
+    "songNum": 14
+   },
+   {
+    "id": 8969284,
+    "mid": "004fyl0L41TeK2",
+    "name": "林俊杰FM",
+    "albumNum": 0,
+    "songNum": 1
+   },
+   {
+    "id": 163229,
+    "mid": "000tBkdY3JyD20",
+    "name": "张绍飞",
+    "albumNum": 27,
+    "songNum": 61
+   },
+   {
+    "id": 2166217,
+    "mid": "002lC12G38x1Ch",
+    "name": "襄阳皓哥",
+    "albumNum": 1,
+    "songNum": 2
+   },
+   {
+    "id": 4,
+    "mid": "0023JlKC41RuGV",
+    "name": "MC HotDog 热狗",
+    "albumNum": 44,
+    "songNum": 252
+   }
+  ],
+  "verdict": {
+   "kw": "林俊杰",
+   "note": "华语·两源都有版权；两源各有 2 个同名字号",
+   "ne_id": 3684,
+   "ne_name": "林俊杰",
+   "qq_mid": "001BLpXF2DyJe2",
+   "qq_name": "林俊杰",
+   "ne_albums": 78,
+   "qq_albums": 72,
+   "overlap": 63,
+   "confidence": "EXACT",
+   "reason": "唯一同名候选 + 专辑重合 63 张（占较小侧 88%）",
+   "naive": "HIGH",
+   "tried": [
+    {
+     "name": "林俊杰",
+     "mid": "001BLpXF2DyJe2",
+     "albumNum": 75,
+     "albums_fetched": 72,
+     "overlap": 63
+    }
+   ],
+   "ne_sample": [
+    "100天",
+    "100天love音乐实录",
+    "2006就是俊杰世界巡回演唱会",
+    "2infinityandbeyond",
+    "7千3百多天",
+    "asibelieve"
+   ],
+   "qq_sample": [
+    "100天",
+    "100天love音乐实录",
+    "2006就是俊杰世界巡回演唱会",
+    "2infinityandbeyond",
+    "7千3百多天",
+    "atleastihadyou"
+   ],
+   "ne_only": [
+    "asibelieve",
+    "checkmate",
+    "gentlebones",
+    "hold住爱影视原声",
+    "iprayforyou",
+    "oursingapore"
+   ],
+   "qq_only": [
+    "itunessession",
+    "乐行者",
+    "俯冲的灵魂",
+    "和自己对话frommetomyself",
+    "幸存者drifter",
+    "我为你祈祷"
+   ]
+  }
+ },
+ "五月天": {
+  "ne_artists": [
+   {
+    "id": 13193,
+    "name": "五月天",
+    "alias": [
+     "Mayday"
+    ],
+    "albumSize": 66,
+    "musicSize": 801
+   },
+   {
+    "id": 1875,
+    "name": "五月天 阿信",
+    "alias": [
+     "陈信宏",
+     "Ashin"
+    ],
+    "albumSize": 10,
+    "musicSize": 49
+   },
+   {
+    "id": 190012,
+    "name": "五月天 怪兽",
+    "alias": [
+     "温尚翊"
+    ],
+    "albumSize": 2,
+    "musicSize": 15
+   },
+   {
+    "id": 48923647,
+    "name": "五月天阿信",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 1
+   },
+   {
+    "id": 59627863,
+    "name": "五月天呐",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 1
+   },
+   {
+    "id": 94134894,
+    "name": "五月天的钢琴手",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 5
+   },
+   {
+    "id": 12138269,
+    "name": "毛不易",
+    "alias": [],
+    "albumSize": 80,
+    "musicSize": 453
+   },
+   {
+    "id": 51590617,
+    "name": "五月天的饭团",
+    "alias": [],
+    "albumSize": 3,
+    "musicSize": 3
+   },
+   {
+    "id": 3684,
+    "name": "林俊杰",
+    "alias": [
+     "JJ Lin",
+     "Wayne Lim"
+    ],
+    "albumSize": 73,
+    "musicSize": 598
+   },
+   {
+    "id": 7217,
+    "name": "陈绮贞",
+    "alias": [
+     "Cheer Chen"
+    ],
+    "albumSize": 28,
+    "musicSize": 307
+   },
+   {
+    "id": 57787923,
+    "name": "不是五月天",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 1
+   },
+   {
+    "id": 4292,
+    "name": "李荣浩",
+    "alias": [
+     "Ronghao Li"
+    ],
+    "albumSize": 33,
+    "musicSize": 246
+   },
+   {
+    "id": 55228020,
+    "name": "寻找五月天",
+    "alias": [],
+    "albumSize": 0,
+    "musicSize": 0
+   },
+   {
+    "id": 1030001,
+    "name": "周深",
+    "alias": [],
+    "albumSize": 266,
+    "musicSize": 969
+   },
+   {
+    "id": 5768,
+    "name": "萧敬腾",
+    "alias": [
+     "Jam Hsiao"
+    ],
+    "albumSize": 83,
+    "musicSize": 675
+   },
+   {
+    "id": 54090627,
+    "name": "喜欢五月天的丑丑",
+    "alias": [],
+    "albumSize": 0,
+    "musicSize": 0
+   },
+   {
+    "id": 226487,
+    "name": "玛莎",
+    "alias": [
+     "蔡昇晏"
+    ],
+    "albumSize": 0,
+    "musicSize": 8
+   },
+   {
+    "id": 9272,
+    "name": "孙燕姿",
+    "alias": [
+     "Stefanie Sun"
+    ],
+    "albumSize": 41,
+    "musicSize": 606
+   },
+   {
+    "id": 30525174,
+    "name": "冠佑",
+    "alias": [
+     "刘谚明"
+    ],
+    "albumSize": 0,
+    "musicSize": 0
+   },
+   {
+    "id": 14714174,
+    "name": "萧秉治",
+    "alias": [
+     "XIAO BING CHIH"
+    ],
+    "albumSize": 22,
+    "musicSize": 113
+   }
+  ],
+  "qq_artists": [
+   {
+    "id": 74,
+    "mid": "000Sp0Bz4JXH0o",
+    "name": "五月天",
+    "albumNum": 72,
+    "songNum": 790
+   },
+   {
+    "id": 6617,
+    "mid": "0040EhGd2lkffO",
+    "name": "五月天 阿信",
+    "albumNum": 17,
+    "songNum": 58
+   },
+   {
+    "id": 160963,
+    "mid": "001SISr13fOHnm",
+    "name": "五月天 怪兽",
+    "albumNum": 3,
+    "songNum": 35
+   },
+   {
+    "id": 179173,
+    "mid": "0036uHBn0ty5w6",
+    "name": "石头 (五月天成员)",
+    "albumNum": 2,
+    "songNum": 4
+   },
+   {
+    "id": 1059618,
+    "mid": "000PEyz40m8pWt",
+    "name": "玛莎 (五月天成员)",
+    "albumNum": 1,
+    "songNum": 5
+   },
+   {
+    "id": 1526759,
+    "mid": "003z228M1M6NNK",
+    "name": "冠佑 (五月天成员)",
+    "albumNum": 0,
+    "songNum": 0
+   },
+   {
+    "id": 10,
+    "mid": "003kBi0c1ckZB4",
+    "name": "陈绮贞",
+    "albumNum": 37,
+    "songNum": 328
+   },
+   {
+    "id": 4286,
+    "mid": "001BLpXF2DyJe2",
+    "name": "林俊杰",
+    "albumNum": 75,
+    "songNum": 1025
+   },
+   {
+    "id": 109,
+    "mid": "001pWERg3vFgg8",
+    "name": "孙燕姿",
+    "albumNum": 50,
+    "songNum": 544
+   },
+   {
+    "id": 16282243,
+    "mid": "003W86v12v9GRn",
+    "name": "五月天的钢琴手",
+    "albumNum": 5,
+    "songNum": 35
+   },
+   {
+    "id": 23461340,
+    "mid": "001q02qe0Scg1b",
+    "name": "五月天时",
+    "albumNum": 1,
+    "songNum": 1
+   },
+   {
+    "id": 218,
+    "mid": "003u5H9x1vACGo",
+    "name": "S.H.E",
+    "albumNum": 33,
+    "songNum": 493
+   },
+   {
+    "id": 22679487,
+    "mid": "000OPSaa3FrNHd",
+    "name": "初见五月天",
+    "albumNum": 2,
+    "songNum": 1
+   },
+   {
+    "id": 16324132,
+    "mid": "0028kD8Q3ox31R",
+    "name": "五月天喵星分天",
+    "albumNum": 1,
+    "songNum": 19
+   },
+   {
+    "id": 16228321,
+    "mid": "003uv01J3OltbY",
+    "name": "聊什么天五月天",
+    "albumNum": 1,
+    "songNum": 27
+   },
+   {
+    "id": 23599150,
+    "mid": "004aVEjT31s1Mj",
+    "name": "诺乐五月天",
+    "albumNum": 1,
+    "songNum": 1
+   },
+   {
+    "id": 199509,
+    "mid": "003fA5G40k6hKc",
+    "name": "周深",
+    "albumNum": 312,
+    "songNum": 1365
+   },
+   {
+    "id": 13203,
+    "mid": "004bsIDK0awMOv",
+    "name": "萧敬腾",
+    "albumNum": 93,
+    "songNum": 950
+   },
+   {
+    "id": 60505,
+    "mid": "000aHmbL2aPXWH",
+    "name": "李荣浩",
+    "albumNum": 32,
+    "songNum": 396
+   },
+   {
+    "id": 1507534,
+    "mid": "001BHDR33FZVZ0",
+    "name": "毛不易",
+    "albumNum": 100,
+    "songNum": 542
+   }
+  ],
+  "verdict": {
+   "kw": "五月天",
+   "note": "华语乐队",
+   "ne_id": 13193,
+   "ne_name": "五月天",
+   "qq_mid": "000Sp0Bz4JXH0o",
+   "qq_name": "五月天",
+   "ne_albums": 73,
+   "qq_albums": 71,
+   "overlap": 58,
+   "confidence": "EXACT",
+   "reason": "唯一同名候选 + 专辑重合 58 张（占较小侧 82%）",
+   "naive": "EXACT",
+   "tried": [
+    {
+     "name": "五月天",
+     "mid": "000Sp0Bz4JXH0o",
+     "albumNum": 72,
+     "albums_fetched": 71,
+     "overlap": 58
+    }
+   ],
+   "ne_sample": [
+    "92全运会纪念ep",
+    "belief春を待つ君へ",
+    "dna",
+    "doyouevershine",
+    "enrichyourlife",
+    "finalhome当我们混在一起"
+   ],
+   "qq_sample": [
+    "92全运会纪念",
+    "callmeno1",
+    "dna",
+    "dnalive五月天创造小巨蛋演唱会创纪录音",
+    "doyouevershine",
+    "enrichyourlife"
+   ],
+   "ne_only": [
+    "92全运会纪念ep",
+    "belief春を待つ君へ",
+    "五月之恋",
+    "五月天创造小巨蛋dnalive创记录音",
+    "五月天十万人出头天live",
+    "五月天诺亚方舟世界巡回演唱会live"
+   ],
+   "qq_only": [
+    "92全运会纪念",
+    "callmeno1",
+    "dnalive五月天创造小巨蛋演唱会创纪录音",
+    "firstday",
+    "你要去哪里台湾巡回演唱会live全纪录",
+    "候鸟五月天电影音乐作品"
+   ]
+  }
+ },
+ "陈奕迅": {
+  "ne_artists": [
+   {
+    "id": 2116,
+    "name": "陈奕迅",
+    "alias": [
+     "Eason Chan"
+    ],
+    "albumSize": 133,
+    "musicSize": 1863
+   },
+   {
+    "id": 121808446,
+    "name": "寻找陈奕迅",
+    "alias": [],
+    "albumSize": 2,
+    "musicSize": 3
+   },
+   {
+    "id": 100441541,
+    "name": "爱陈奕迅",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 3
+   },
+   {
+    "id": 58739664,
+    "name": "陈奕迅的病人E",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 1
+   },
+   {
+    "id": 123634979,
+    "name": "林俊晨",
+    "alias": [
+     "陈奕迅",
+     "薛之谦",
+     "周杰伦",
+     "林俊杰"
+    ],
+    "albumSize": 2,
+    "musicSize": 5
+   },
+   {
+    "id": 94529650,
+    "name": "陈奕迅损友",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 4
+   },
+   {
+    "id": 122020632,
+    "name": "陳奕迅所長",
+    "alias": [],
+    "albumSize": 3,
+    "musicSize": 4
+   },
+   {
+    "id": 123431625,
+    "name": "讨厌陈奕迅",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 2
+   },
+   {
+    "id": 122217712,
+    "name": "陳奕迅本人",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 2
+   },
+   {
+    "id": 52432772,
+    "name": "前男友.",
+    "alias": [
+     "陈奕迅"
+    ],
+    "albumSize": 1,
+    "musicSize": 1
+   },
+   {
+    "id": 125627609,
+    "name": "陈奕迅11",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 3
+   },
+   {
+    "id": 5205,
+    "name": "谭咏麟",
+    "alias": [
+     "Alan Tam",
+     "谭校长",
+     "阿伦"
+    ],
+    "albumSize": 191,
+    "musicSize": 3431
+   },
+   {
+    "id": 98767717,
+    "name": "陈奕迅的花衬衫",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 2
+   },
+   {
+    "id": 122558830,
+    "name": "岛城陈奕迅",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 2
+   },
+   {
+    "id": 123635210,
+    "name": "青岛陈奕迅",
+    "alias": [],
+    "albumSize": 2,
+    "musicSize": 2
+   },
+   {
+    "id": 122432586,
+    "name": "我不是陈奕迅",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 2
+   },
+   {
+    "id": 121539157,
+    "name": "徐濠萦的老公陈奕迅",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 2
+   },
+   {
+    "id": 98526991,
+    "name": "小易",
+    "alias": [
+     "陈奕迅",
+     "蔡徐坤"
+    ],
+    "albumSize": 1,
+    "musicSize": 3
+   },
+   {
+    "id": 100380837,
+    "name": "陈奕迅的阝东",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 1
+   },
+   {
+    "id": 121680728,
+    "name": "王泊陈奕迅",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 1
+   }
+  ],
+  "qq_artists": [
+   {
+    "id": 143,
+    "mid": "003Nz2So3XXYek",
+    "name": "陈奕迅",
+    "albumNum": 141,
+    "songNum": 1443
+   },
+   {
+    "id": 264,
+    "mid": "000GDDuQ3sGQiT",
+    "name": "王菲",
+    "albumNum": 95,
+    "songNum": 853
+   },
+   {
+    "id": 2127635,
+    "mid": "004CWftm0F57H5",
+    "name": "eason and the duo band",
+    "albumNum": 6,
+    "songNum": 19
+   }
+  ],
+  "verdict": {
+   "kw": "陈奕迅",
+   "note": "华语·同名少",
+   "ne_id": 2116,
+   "ne_name": "陈奕迅",
+   "qq_mid": "003Nz2So3XXYek",
+   "qq_name": "陈奕迅",
+   "ne_albums": 74,
+   "qq_albums": 78,
+   "overlap": 31,
+   "confidence": "HIGH",
+   "reason": "同名 + 专辑重合 31 张",
+   "naive": "HIGH",
+   "tried": [
+    {
+     "name": "陈奕迅",
+     "mid": "003Nz2So3XXYek",
+     "albumNum": 141,
+     "albums_fetched": 78,
+     "overlap": 31
+    }
+   ],
+   "ne_sample": [
+    "2013陈奕迅musiclife精选",
+    "3mm",
+    "3mmremixlp",
+    "903idclub拉阔音乐会",
+    "chinup",
+    "cmonin"
+   ],
+   "qq_sample": [
+    "2013陈奕迅musiclife精选",
+    "3mm",
+    "6829",
+    "903idclub拉阔音乐会陈奕迅x杨千嬅x梁汉文",
+    "eason18首选",
+    "eason4achangehits"
+   ],
+   "ne_only": [
+    "3mmremixlp",
+    "903idclub拉阔音乐会",
+    "chinup",
+    "cmonin",
+    "duo陈奕迅2010演唱会",
+    "easonair"
+   ],
+   "qq_only": [
+    "6829",
+    "903idclub拉阔音乐会陈奕迅x杨千嬅x梁汉文",
+    "eason18首选",
+    "eason4achangehits",
+    "easonchanduoconcert2010",
+    "easonfriends903idclub拉阔音乐会"
+   ]
+  }
+ },
+ "邓紫棋": {
+  "ne_artists": [
+   {
+    "id": 7763,
+    "name": "G.E.M.邓紫棋",
+    "alias": [
+     "G.E.M.",
+     "Gloria Tang"
+    ],
+    "albumSize": 58,
+    "musicSize": 420
+   },
+   {
+    "id": 62017015,
+    "name": "邓紫棋",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 7
+   },
+   {
+    "id": 121440966,
+    "name": "邓紫棋解解",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 2
+   },
+   {
+    "id": 123806118,
+    "name": "邓紫棋",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 3
+   },
+   {
+    "id": 98983615,
+    "name": "邓紫棋",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 3
+   },
+   {
+    "id": 98018108,
+    "name": "邓紫棋",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 10
+   },
+   {
+    "id": 122630019,
+    "name": "lD_宝",
+    "alias": [
+     "张作霖",
+     "邓紫棋",
+     "周杰伦",
+     "林俊杰",
+     "江苏泷"
+    ],
+    "albumSize": 6,
+    "musicSize": 13
+   },
+   {
+    "id": 127726431,
+    "name": "邓紫棋",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 2
+   },
+   {
+    "id": 123145425,
+    "name": "邓紫棋",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 2
+   },
+   {
+    "id": 122105739,
+    "name": "G·E·M 鄧紫棋",
+    "alias": [
+     "念晚"
+    ],
+    "albumSize": 1,
+    "musicSize": 6
+   },
+   {
+    "id": 122508955,
+    "name": "邓紫棋的狗",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 1
+   },
+   {
+    "id": 123068594,
+    "name": "邓紫棋",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 1
+   },
+   {
+    "id": 95464846,
+    "name": "广州邓紫棋分琪",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 2
+   },
+   {
+    "id": 98527425,
+    "name": "邓紫棋",
+    "alias": [],
+    "albumSize": 2,
+    "musicSize": 22
+   },
+   {
+    "id": 122364603,
+    "name": "邓紫棋",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 2
+   },
+   {
+    "id": 861777,
+    "name": "华晨宇",
+    "alias": [
+     "花花"
+    ],
+    "albumSize": 37,
+    "musicSize": 300
+   },
+   {
+    "id": 122534409,
+    "name": "邓紫棋朴彩英",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 7
+   },
+   {
+    "id": 123996236,
+    "name": "邓紫棋",
+    "alias": [],
+    "albumSize": 2,
+    "musicSize": 2
+   },
+   {
+    "id": 121937944,
+    "name": "邓紫棋",
+    "alias": [],
+    "albumSize": 2,
+    "musicSize": 2
+   },
+   {
+    "id": 100297651,
+    "name": "邓紫棋",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 2
+   }
+  ],
+  "qq_artists": [
+   {
+    "id": 13948,
+    "mid": "001fNHEf1SFEFN",
+    "name": "G.E.M.邓紫棋",
+    "albumNum": 68,
+    "songNum": 759
+   },
+   {
+    "id": 16943082,
+    "mid": "0028XoyB3nC70u",
+    "name": "云南邓紫棋",
+    "albumNum": 4,
+    "songNum": 8
+   },
+   {
+    "id": 4417761,
+    "mid": "000Up6uo077kLR",
+    "name": "邓紫棋的留声机",
+    "albumNum": 1,
+    "songNum": 57
+   },
+   {
+    "id": 207618,
+    "mid": "003HjfSF1fYQPK",
+    "name": "杨宝心",
+    "albumNum": 23,
+    "songNum": 111
+   },
+   {
+    "id": 15329447,
+    "mid": "001EiDWN0LVgn6",
+    "name": "邓紫棋的棋士",
+    "albumNum": 1,
+    "songNum": 10
+   },
+   {
+    "id": 23480310,
+    "mid": "000wqS7u2Y8mZo",
+    "name": "鄧紫棋710出道八周年快樂",
+    "albumNum": 2,
+    "songNum": 2
+   },
+   {
+    "id": 16835694,
+    "mid": "001LODXG3mcgb4",
+    "name": "广州邓紫棋分琪",
+    "albumNum": 1,
+    "songNum": 2
+   },
+   {
+    "id": 196240,
+    "mid": "0021nVW63LnDq8",
+    "name": "谭芷昀",
+    "albumNum": 1,
+    "songNum": 35
+   },
+   {
+    "id": 19109032,
+    "mid": "0040uU4J11t2BJ",
+    "name": "紫棋鄧",
+    "albumNum": 1,
+    "songNum": 2
+   }
+  ],
+  "verdict": {
+   "kw": "邓紫棋",
+   "note": "华语·**艺名与真名不同**（真身 G.E.M.邓紫棋）",
+   "ne_id": 7763,
+   "ne_name": "G.E.M.邓紫棋",
+   "qq_mid": "001fNHEf1SFEFN",
+   "qq_name": "G.E.M.邓紫棋",
+   "ne_albums": 58,
+   "qq_albums": 65,
+   "overlap": 54,
+   "confidence": "EXACT",
+   "reason": "唯一同名候选 + 专辑重合 54 张（占较小侧 93%）",
+   "naive": "NONE",
+   "tried": [
+    {
+     "name": "G.E.M.邓紫棋",
+     "mid": "001fNHEf1SFEFN",
+     "albumNum": 68,
+     "albums_fetched": 65,
+     "overlap": 54
+    }
+   ],
+   "ne_sample": [
+    "18",
+    "18plus",
+    "25looks",
+    "ainy爱你",
+    "amazinggrace",
+    "bangbang"
+   ],
+   "qq_sample": [
+    "18",
+    "25looks",
+    "ainy爱你",
+    "amazinggrace",
+    "bangbang",
+    "gem"
+   ],
+   "ne_only": [
+    "18plus",
+    "goodtobebad",
+    "后会无期",
+    "女也herstorywithmayday"
+   ],
+   "qq_only": [
+    "justthewayyouare",
+    "sacrifice争",
+    "somedayillfly",
+    "你把我灌醉",
+    "多远都要在一起",
+    "小黄人大眼萌神偷奶爸前传电影原声专辑"
+   ]
+  }
+ },
+ "李健": {
+  "ne_artists": [
+   {
+    "id": 3695,
+    "name": "李健",
+    "alias": [],
+    "albumSize": 49,
+    "musicSize": 331
+   },
+   {
+    "id": 50317690,
+    "name": "李健",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 17
+   },
+   {
+    "id": 12237130,
+    "name": "AKA小健（李健）",
+    "alias": [],
+    "albumSize": 16,
+    "musicSize": 23
+   },
+   {
+    "id": 3815,
+    "name": "李健达",
+    "alias": [
+     "Douglas Li",
+     "李富经",
+     "木子健"
+    ],
+    "albumSize": 5,
+    "musicSize": 36
+   },
+   {
+    "id": 46751857,
+    "name": "李健",
+    "alias": [],
+    "albumSize": 6,
+    "musicSize": 13
+   },
+   {
+    "id": 58674990,
+    "name": "李健楠",
+    "alias": [
+     "李浩煜"
+    ],
+    "albumSize": 5,
+    "musicSize": 5
+   },
+   {
+    "id": 53556550,
+    "name": "李健战队",
+    "alias": [],
+    "albumSize": 0,
+    "musicSize": 1
+   },
+   {
+    "id": 52341829,
+    "name": "CL李健文",
+    "alias": [
+     "CL",
+     "楚岚",
+     "岚岚"
+    ],
+    "albumSize": 25,
+    "musicSize": 73
+   },
+   {
+    "id": 59754042,
+    "name": "李健健",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 1
+   },
+   {
+    "id": 33166860,
+    "name": "李健俊",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 1
+   },
+   {
+    "id": 29551578,
+    "name": "李健茛",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 15
+   },
+   {
+    "id": 35176618,
+    "name": "李健（兄弟组合）",
+    "alias": [],
+    "albumSize": 6,
+    "musicSize": 15
+   },
+   {
+    "id": 34391098,
+    "name": "李健翔",
+    "alias": [],
+    "albumSize": 5,
+    "musicSize": 16
+   },
+   {
+    "id": 51969992,
+    "name": "李健",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 2
+   },
+   {
+    "id": 29802127,
+    "name": "单依纯",
+    "alias": [],
+    "albumSize": 49,
+    "musicSize": 306
+   },
+   {
+    "id": 123696672,
+    "name": "李健宇",
+    "alias": [],
+    "albumSize": 0,
+    "musicSize": 2
+   },
+   {
+    "id": 61322483,
+    "name": "李健峰",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 1
+   },
+   {
+    "id": 51751283,
+    "name": "李健LEE",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 2
+   },
+   {
+    "id": 94510547,
+    "name": "李健毛川的妈",
+    "alias": [],
+    "albumSize": 4,
+    "musicSize": 14
+   },
+   {
+    "id": 12605993,
+    "name": "李健生",
+    "alias": [],
+    "albumSize": 3,
+    "musicSize": 4
+   }
+  ],
+  "qq_artists": [
+   {
+    "id": 6740,
+    "mid": "001oEyQf4Ub6s7",
+    "name": "李健",
+    "albumNum": 46,
+    "songNum": 434
+   },
+   {
+    "id": 5039,
+    "mid": "001wGZ0m23ef6M",
+    "name": "孙俪",
+    "albumNum": 15,
+    "songNum": 105
+   },
+   {
+    "id": 149,
+    "mid": "0040D7gK4aI54k",
+    "name": "谭咏麟",
+    "albumNum": 199,
+    "songNum": 1849
+   },
+   {
+    "id": 212,
+    "mid": "002WkEWV1TA75B",
+    "name": "老狼",
+    "albumNum": 36,
+    "songNum": 188
+   },
+   {
+    "id": 1485019,
+    "mid": "00144Gaz4W5WRa",
+    "name": "李健",
+    "albumNum": 1,
+    "songNum": 2
+   },
+   {
+    "id": 7693895,
+    "mid": "000s8POy39D4Xm",
+    "name": "李健",
+    "albumNum": 17,
+    "songNum": 24
+   },
+   {
+    "id": 13576666,
+    "mid": "0031DOSP2HyALi",
+    "name": "李健",
+    "albumNum": 0,
+    "songNum": 0
+   },
+   {
+    "id": 163595,
+    "mid": "002Xaf3Q2ZDS3r",
+    "name": "李健",
+    "albumNum": 0,
+    "songNum": 6
+   },
+   {
+    "id": 1012643,
+    "mid": "0022SOMW2cs4vf",
+    "name": "李健",
+    "albumNum": 5,
+    "songNum": 18
+   },
+   {
+    "id": 19390990,
+    "mid": "004AEZg52RWyVn",
+    "name": "李 健",
+    "albumNum": 4,
+    "songNum": 6
+   },
+   {
+    "id": 5813385,
+    "mid": "001lMdnP2Tauwq",
+    "name": "李健",
+    "albumNum": 4,
+    "songNum": 13
+   },
+   {
+    "id": 7960024,
+    "mid": "0044xPY84RHqB4",
+    "name": "李健（AKA小健）",
+    "albumNum": 5,
+    "songNum": 11
+   },
+   {
+    "id": 5883624,
+    "mid": "004QhCEV1LZmpH",
+    "name": "李健（鹿马桥）",
+    "albumNum": 4,
+    "songNum": 5
+   },
+   {
+    "id": 44291,
+    "mid": "002cIEuP1pxG92",
+    "name": "李健达",
+    "albumNum": 8,
+    "songNum": 44
+   },
+   {
+    "id": 12921587,
+    "mid": "000gkXek1ebpZX",
+    "name": "李健",
+    "albumNum": 1,
+    "songNum": 1
+   },
+   {
+    "id": 21222483,
+    "mid": "003M5hyG32gQ57",
+    "name": "李健",
+    "albumNum": 1,
+    "songNum": 1
+   },
+   {
+    "id": 17101808,
+    "mid": "002VkWhm1nmLNK",
+    "name": "李健",
+    "albumNum": 0,
+    "songNum": 18
+   },
+   {
+    "id": 1113089,
+    "mid": "003mHII73MzArE",
+    "name": "이건 (李健)",
+    "albumNum": 2,
+    "songNum": 5
+   },
+   {
+    "id": 2594966,
+    "mid": "003OB4lU1xiliY",
+    "name": "李健战队",
+    "albumNum": 0,
+    "songNum": 3
+   },
+   {
+    "id": 1113551,
+    "mid": "0047HlnX16l6nT",
+    "name": "이건 (李健)",
+    "albumNum": 0,
+    "songNum": 2
+   }
+  ],
+  "verdict": {
+   "kw": "李健",
+   "note": "华语·同名歧义严重（QQ 同名字号 9 个）",
+   "ne_id": 3695,
+   "ne_name": "李健",
+   "qq_mid": "001oEyQf4Ub6s7",
+   "qq_name": "李健",
+   "ne_albums": 50,
+   "qq_albums": 44,
+   "overlap": 35,
+   "confidence": "EXACT",
+   "reason": "唯一同名候选 + 专辑重合 35 张（占较小侧 80%）",
+   "naive": "HIGH",
+   "tried": [
+    {
+     "name": "李健",
+     "mid": "001oEyQf4Ub6s7",
+     "albumNum": 46,
+     "albums_fetched": 44,
+     "overlap": 35
+    }
+   ],
+   "ne_sample": [
+    "feelinggood",
+    "marine玛琳娜",
+    "一念一生",
+    "一路花香一路唱",
+    "为你而来",
+    "人群中的人"
+   ],
+   "qq_sample": [
+    "1981",
+    "feelinggood",
+    "一念一生",
+    "一路花香一路唱",
+    "为你而来",
+    "人间共鸣"
+   ],
+   "ne_only": [
+    "marine玛琳娜",
+    "人群中的人",
+    "你从天而降",
+    "如果可以",
+    "宋词辑壹",
+    "完美坚持"
+   ],
+   "qq_only": [
+    "1981",
+    "君子行",
+    "庆余年第二季影视原声带",
+    "无乐不谈",
+    "李健",
+    "李健自选辑1"
+   ]
+  }
+ },
+ "周深": {
+  "ne_artists": [
+   {
+    "id": 1030001,
+    "name": "周深",
+    "alias": [],
+    "albumSize": 266,
+    "musicSize": 969
+   },
+   {
+    "id": 59412707,
+    "name": "周深深",
+    "alias": [],
+    "albumSize": 55,
+    "musicSize": 98
+   },
+   {
+    "id": 36124807,
+    "name": "白浅熙想嫁给周深.",
+    "alias": [],
+    "albumSize": 136,
+    "musicSize": 346
+   },
+   {
+    "id": 61331952,
+    "name": "周深的深",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 2
+   },
+   {
+    "id": 51744020,
+    "name": "周深的水壶",
+    "alias": [],
+    "albumSize": 2,
+    "musicSize": 11
+   },
+   {
+    "id": 125401023,
+    "name": "周深的小迷妹",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 2
+   },
+   {
+    "id": 94182694,
+    "name": "周深冬",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 11
+   },
+   {
+    "id": 121980730,
+    "name": "周深深",
+    "alias": [],
+    "albumSize": 3,
+    "musicSize": 11
+   },
+   {
+    "id": 128366387,
+    "name": "周深澜",
+    "alias": [],
+    "albumSize": 2,
+    "musicSize": 1
+   },
+   {
+    "id": 2124,
+    "name": "陈楚生",
+    "alias": [],
+    "albumSize": 59,
+    "musicSize": 454
+   },
+   {
+    "id": 3066,
+    "name": "胡彦斌",
+    "alias": [
+     "Tiger Hu",
+     "Anson Hu"
+    ],
+    "albumSize": 89,
+    "musicSize": 736
+   },
+   {
+    "id": 10200,
+    "name": "郁可唯",
+    "alias": [
+     "Yisa Yu"
+    ],
+    "albumSize": 81,
+    "musicSize": 548
+   },
+   {
+    "id": 12316085,
+    "name": "宋亚轩",
+    "alias": [],
+    "albumSize": 6,
+    "musicSize": 211
+   },
+   {
+    "id": 5538,
+    "name": "汪苏泷",
+    "alias": [
+     "Silence Wang"
+    ],
+    "albumSize": 108,
+    "musicSize": 724
+   },
+   {
+    "id": 9489,
+    "name": "谭维维",
+    "alias": [
+     "Sitar Tan"
+    ],
+    "albumSize": 109,
+    "musicSize": 612
+   },
+   {
+    "id": 9606,
+    "name": "王心凌",
+    "alias": [
+     "Cyndi Wang"
+    ],
+    "albumSize": 34,
+    "musicSize": 543
+   },
+   {
+    "id": 7946,
+    "name": "黄绮珊",
+    "alias": [
+     "黄晓霞",
+     "Sophia Huang"
+    ],
+    "albumSize": 49,
+    "musicSize": 332
+   },
+   {
+    "id": 4941,
+    "name": "孙楠",
+    "alias": [],
+    "albumSize": 177,
+    "musicSize": 814
+   },
+   {
+    "id": 2849,
+    "name": "古巨基",
+    "alias": [
+     "Leo Ku"
+    ],
+    "albumSize": 108,
+    "musicSize": 1264
+   },
+   {
+    "id": 52543942,
+    "name": "Ara",
+    "alias": [
+     "大连周深",
+     "大连张惠妹",
+     "大连陈绮贞"
+    ],
+    "albumSize": 2,
+    "musicSize": 4
+   }
+  ],
+  "qq_artists": [
+   {
+    "id": 199509,
+    "mid": "003fA5G40k6hKc",
+    "name": "周深",
+    "albumNum": 312,
+    "songNum": 1365
+   },
+   {
+    "id": 4702,
+    "mid": "001CEwVd2eW7yI",
+    "name": "Ella陈嘉桦",
+    "albumNum": 28,
+    "songNum": 212
+   },
+   {
+    "id": 1507534,
+    "mid": "001BHDR33FZVZ0",
+    "name": "毛不易",
+    "albumNum": 100,
+    "songNum": 542
+   },
+   {
+    "id": 6190733,
+    "mid": "003zBnTq38nxJ0",
+    "name": "北京环球度假区",
+    "albumNum": 2,
+    "songNum": 3
+   },
+   {
+    "id": 23745540,
+    "mid": "003wdpL131GIxo",
+    "name": "一只周深宝贝",
+    "albumNum": 1,
+    "songNum": 1
+   },
+   {
+    "id": 23061912,
+    "mid": "003UCL0W0wAgz7",
+    "name": "周深的米-AI创作活动",
+    "albumNum": 1,
+    "songNum": 1
+   },
+   {
+    "id": 21634192,
+    "mid": "000PquN2062WdW",
+    "name": "周深小美满",
+    "albumNum": 1,
+    "songNum": 1
+   },
+   {
+    "id": 14998700,
+    "mid": "003IUTsR3OtGyg",
+    "name": "周深颖",
+    "albumNum": 3,
+    "songNum": 3
+   },
+   {
+    "id": 1520287,
+    "mid": "000UwWxM47de9l",
+    "name": "郭沁",
+    "albumNum": 30,
+    "songNum": 104
+   },
+   {
+    "id": 5062,
+    "mid": "002J4UUk29y8BY",
+    "name": "薛之谦",
+    "albumNum": 31,
+    "songNum": 539
+   },
+   {
+    "id": 224,
+    "mid": "002raUWw3PXdkT",
+    "name": "张韶涵",
+    "albumNum": 55,
+    "songNum": 587
+   },
+   {
+    "id": 1121441,
+    "mid": "004LV0lb4fOw89",
+    "name": "GAI周延",
+    "albumNum": 109,
+    "songNum": 449
+   },
+   {
+    "id": 11446,
+    "mid": "002PZBgg1S9xPX",
+    "name": "陈楚生",
+    "albumNum": 71,
+    "songNum": 667
+   }
+  ],
+  "verdict": {
+   "kw": "周深",
+   "note": "华语·新生代",
+   "ne_id": 1030001,
+   "ne_name": "周深",
+   "qq_mid": "003fA5G40k6hKc",
+   "qq_name": "周深",
+   "ne_albums": 76,
+   "qq_albums": 78,
+   "overlap": 41,
+   "confidence": "EXACT",
+   "reason": "唯一同名候选 + 专辑重合 41 张（占较小侧 54%）",
+   "naive": "EXACT",
+   "tried": [
+    {
+     "name": "周深",
+     "mid": "003fA5G40k6hKc",
+     "albumNum": 312,
+     "albums_fetched": 78,
+     "overlap": 41
+    }
+   ],
+   "ne_sample": [
+    "七夜雪电视剧影视原声带",
+    "万里晴空",
+    "三餐四季",
+    "云边的风筝",
+    "今天的我们",
+    "仙台有树电视剧原声音乐专辑"
+   ],
+   "qq_sample": [
+    "letitgo",
+    "unravel",
+    "一期一会未闻花名",
+    "万里晴空",
+    "不再流浪",
+    "不说话"
+   ],
+   "ne_only": [
+    "七夜雪电视剧影视原声带",
+    "三餐四季",
+    "云边的风筝",
+    "仙台有树电视剧原声音乐专辑",
+    "借过一下",
+    "再一次见面"
+   ],
+   "qq_only": [
+    "letitgo",
+    "unravel",
+    "一期一会未闻花名",
+    "不再流浪",
+    "不说话",
+    "东游"
+   ]
+  }
+ },
+ "薛之谦": {
+  "ne_artists": [
+   {
+    "id": 5781,
+    "name": "薛之谦",
+    "alias": [
+     "Joker Xue",
+     "Jacky Xue"
+    ],
+    "albumSize": 26,
+    "musicSize": 310
+   },
+   {
+    "id": 35248193,
+    "name": "薛之谦后援会",
+    "alias": [
+     "Joker Xue"
+    ],
+    "albumSize": 3,
+    "musicSize": 11
+   },
+   {
+    "id": 100616215,
+    "name": "Jokerbai",
+    "alias": [
+     "薛之谦"
+    ],
+    "albumSize": 7,
+    "musicSize": 24
+   },
+   {
+    "id": 121496479,
+    "name": "鲤城薛之谦",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 3
+   },
+   {
+    "id": 54125026,
+    "name": "薛之谦的小音响",
+    "alias": [],
+    "albumSize": 7,
+    "musicSize": 25
+   },
+   {
+    "id": 98677119,
+    "name": "HF薛之谦",
+    "alias": [],
+    "albumSize": 3,
+    "musicSize": 7
+   },
+   {
+    "id": 46586441,
+    "name": "叶落",
+    "alias": [
+     "薛之谦"
+    ],
+    "albumSize": 14,
+    "musicSize": 16
+   },
+   {
+    "id": 122332838,
+    "name": "薛之谦.",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 4
+   },
+   {
+    "id": 95639883,
+    "name": "麟听薛之谦",
+    "alias": [],
+    "albumSize": 4,
+    "musicSize": 4
+   },
+   {
+    "id": 58393394,
+    "name": "我谦哥叫薛之谦",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 1
+   },
+   {
+    "id": 55109372,
+    "name": "小新和薛之谦",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 1
+   },
+   {
+    "id": 127408414,
+    "name": "峡阳薛之谦",
+    "alias": [],
+    "albumSize": 2,
+    "musicSize": 2
+   },
+   {
+    "id": 95579697,
+    "name": "郑州薛之谦",
+    "alias": [],
+    "albumSize": 12,
+    "musicSize": 20
+   },
+   {
+    "id": 52007340,
+    "name": "东光薛之谦",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 1
+   },
+   {
+    "id": 99556426,
+    "name": "薛之谦.",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 2
+   },
+   {
+    "id": 51124059,
+    "name": "小薛之谦",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 1
+   },
+   {
+    "id": 121283529,
+    "name": "梅州薛之谦",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 2
+   },
+   {
+    "id": 123634979,
+    "name": "林俊晨",
+    "alias": [
+     "陈奕迅",
+     "薛之谦",
+     "周杰伦",
+     "林俊杰"
+    ],
+    "albumSize": 2,
+    "musicSize": 5
+   },
+   {
+    "id": 10561,
+    "name": "张靓颖",
+    "alias": [
+     "Jane Zhang"
+    ],
+    "albumSize": 151,
+    "musicSize": 785
+   },
+   {
+    "id": 123858954,
+    "name": "薛之谦迷弟",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 2
+   }
+  ],
+  "qq_artists": [
+   {
+    "id": 5062,
+    "mid": "002J4UUk29y8BY",
+    "name": "薛之谦",
+    "albumNum": 31,
+    "songNum": 539
+   },
+   {
+    "id": 4419,
+    "mid": "003WlPvN2EvRaj",
+    "name": "韩红",
+    "albumNum": 89,
+    "songNum": 633
+   },
+   {
+    "id": 4674,
+    "mid": "003x77MM2iIg6c",
+    "name": "刘惜君",
+    "albumNum": 97,
+    "songNum": 520
+   },
+   {
+    "id": 1573958,
+    "mid": "002Jhik52k49N3",
+    "name": "郭聪明",
+    "albumNum": 34,
+    "songNum": 242
+   },
+   {
+    "id": 3848849,
+    "mid": "002OO73f3Faxg1",
+    "name": "薛之谦全球后援会",
+    "albumNum": 1,
+    "songNum": 3
+   },
+   {
+    "id": 10606833,
+    "mid": "004WQnEd3NieXC",
+    "name": "陈牧荻",
+    "albumNum": 0,
+    "songNum": 0
+   },
+   {
+    "id": 23381409,
+    "mid": "0044UtGD3XSTZV",
+    "name": "薛之谦吖",
+    "albumNum": 1,
+    "songNum": 1
+   },
+   {
+    "id": 2143973,
+    "mid": "000wz1iO2QWCss",
+    "name": "Gifty",
+    "albumNum": 32,
+    "songNum": 286
+   },
+   {
+    "id": 1216652,
+    "mid": "00147FHk38Sh8N",
+    "name": "1022女声",
+    "albumNum": 15,
+    "songNum": 68
+   },
+   {
+    "id": 17938571,
+    "mid": "0024u8ZC1IFvTh",
+    "name": "之谦薛",
+    "albumNum": 2,
+    "songNum": 2
+   },
+   {
+    "id": 4607,
+    "mid": "000aw4WC2EQYTv",
+    "name": "张靓颖",
+    "albumNum": 158,
+    "songNum": 1108
+   },
+   {
+    "id": 19624,
+    "mid": "000NUoMp2WAEpO",
+    "name": "郁可唯",
+    "albumNum": 112,
+    "songNum": 792
+   },
+   {
+    "id": 11476,
+    "mid": "003AKgLE4SfjsK",
+    "name": "黄龄",
+    "albumNum": 106,
+    "songNum": 642
+   },
+   {
+    "id": 199509,
+    "mid": "003fA5G40k6hKc",
+    "name": "周深",
+    "albumNum": 312,
+    "songNum": 1365
+   }
+  ],
+  "verdict": {
+   "kw": "薛之谦",
+   "note": "华语",
+   "ne_id": 5781,
+   "ne_name": "薛之谦",
+   "qq_mid": "002J4UUk29y8BY",
+   "qq_name": "薛之谦",
+   "ne_albums": 28,
+   "qq_albums": 31,
+   "overlap": 25,
+   "confidence": "EXACT",
+   "reason": "唯一同名候选 + 专辑重合 25 张（占较小侧 89%）",
+   "naive": "HIGH",
+   "tried": [
+    {
+     "name": "薛之谦",
+     "mid": "002J4UUk29y8BY",
+     "albumNum": 31,
+     "albums_fetched": 31,
+     "overlap": 25
+    }
+   ],
+   "ne_sample": [
+    "一半",
+    "一首歌一个故事",
+    "为了遇见你",
+    "人字拖",
+    "你不是一个人",
+    "你过得好吗"
+   ],
+   "qq_sample": [
+    "一半",
+    "人字拖",
+    "传说",
+    "你不是一个人",
+    "你过得好吗",
+    "几个薛之谦"
+   ],
+   "ne_only": [
+    "一首歌一个故事",
+    "为了遇见你",
+    "渡"
+   ],
+   "qq_only": [
+    "传说",
+    "别",
+    "最好",
+    "渡thecrossing",
+    "电视剧你微笑时很美影视原声带",
+    "那是你离开了北京的生活"
+   ]
+  }
+ },
+ "Taylor Swift": {
+  "ne_artists": [
+   {
+    "id": 44266,
+    "name": "Taylor Swift",
+    "alias": [],
+    "albumSize": 211,
+    "musicSize": 1887
+   },
+   {
+    "id": 122886548,
+    "name": "Taylor Swiftt",
+    "alias": [],
+    "albumSize": 4,
+    "musicSize": 37
+   },
+   {
+    "id": 30351964,
+    "name": "We Love Taylor Swift",
+    "alias": [],
+    "albumSize": 5,
+    "musicSize": 5
+   },
+   {
+    "id": 30323449,
+    "name": "Tonight i'm Taylor Swift",
+    "alias": [],
+    "albumSize": 4,
+    "musicSize": 4
+   },
+   {
+    "id": 56378718,
+    "name": "Taylor Swifta",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 15
+   },
+   {
+    "id": 14200603,
+    "name": "Taylor Swift Karaoke Band",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 3
+   },
+   {
+    "id": 59394802,
+    "name": "Taylor Swifte",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 27
+   },
+   {
+    "id": 122849213,
+    "name": "Rave with taylor swift",
+    "alias": [],
+    "albumSize": 0,
+    "musicSize": 21
+   },
+   {
+    "id": 58486061,
+    "name": "Taylor Swiftsz",
+    "alias": [],
+    "albumSize": 0,
+    "musicSize": 19
+   },
+   {
+    "id": 57846444,
+    "name": "Taylor Swifter",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 4
+   },
+   {
+    "id": 95730344,
+    "name": "Taylor Swift",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 1
+   },
+   {
+    "id": 94872336,
+    "name": "Taylor Swift",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 5
+   },
+   {
+    "id": 98930593,
+    "name": "Taylor Swift DV",
+    "alias": [],
+    "albumSize": 5,
+    "musicSize": 5
+   },
+   {
+    "id": 95582480,
+    "name": "Taylor swift remakes",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 1
+   },
+   {
+    "id": 98930594,
+    "name": "Taylor Swift DV",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 1
+   },
+   {
+    "id": 94752103,
+    "name": "Taylor Swift Brook",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 2
+   },
+   {
+    "id": 122326620,
+    "name": "Taylor Swift Tribute Songs",
+    "alias": [],
+    "albumSize": 2,
+    "musicSize": 2
+   },
+   {
+    "id": 96273843,
+    "name": "Taylor Swift Donald Trump JR",
+    "alias": [],
+    "albumSize": 0,
+    "musicSize": 0
+   },
+   {
+    "id": 121701250,
+    "name": "Taylor Swiftee",
+    "alias": [],
+    "albumSize": 13,
+    "musicSize": 13
+   },
+   {
+    "id": 97083079,
+    "name": "Taylor Swifty",
+    "alias": [],
+    "albumSize": 0,
+    "musicSize": 1
+   }
+  ],
+  "qq_artists": [
+   {
+    "id": 11921,
+    "mid": "000qrPik2w6lDr",
+    "name": "Taylor Swift",
+    "albumNum": 197,
+    "songNum": 1212
+   },
+   {
+    "id": 28008,
+    "mid": "002vgTnq0U85by",
+    "name": "Bon Iver",
+    "albumNum": 33,
+    "songNum": 157
+   },
+   {
+    "id": 968065,
+    "mid": "000IDHDK3CxrAZ",
+    "name": "Post Malone",
+    "albumNum": 90,
+    "songNum": 574
+   },
+   {
+    "id": 331626,
+    "mid": "002krTNI4HE7Pp",
+    "name": "Taylor Swift Tribute Band",
+    "albumNum": 0,
+    "songNum": 4
+   },
+   {
+    "id": 15012639,
+    "mid": "004ddjTf1yxJi2",
+    "name": "Taylor Swifte",
+    "albumNum": 1,
+    "songNum": 27
+   },
+   {
+    "id": 13142593,
+    "mid": "003J0Jgo485Kvf",
+    "name": "Taylor Swift Piano Covers",
+    "albumNum": 12,
+    "songNum": 156
+   },
+   {
+    "id": 16578126,
+    "mid": "004FJI6Y27XnYB",
+    "name": "Taylor Swift Brook",
+    "albumNum": 1,
+    "songNum": 2
+   },
+   {
+    "id": 13594200,
+    "mid": "000HdtQW0Ki1v0",
+    "name": "Taylor Swifta",
+    "albumNum": 2,
+    "songNum": 15
+   },
+   {
+    "id": 13245927,
+    "mid": "002P7Km23QkiaJ",
+    "name": "Taylor Swift Facts",
+    "albumNum": 1,
+    "songNum": 2
+   },
+   {
+    "id": 21458595,
+    "mid": "000JKWR54Ekgeb",
+    "name": "Taylor Swiftee",
+    "albumNum": 13,
+    "songNum": 13
+   },
+   {
+    "id": 22219085,
+    "mid": "002RcW921d4QKK",
+    "name": "Taylor Swiftt",
+    "albumNum": 4,
+    "songNum": 48
+   },
+   {
+    "id": 10788553,
+    "mid": "0045S6OB24nX1Y",
+    "name": "Taylor Swift/Ed Sheeran",
+    "albumNum": 0,
+    "songNum": 1
+   },
+   {
+    "id": 8966229,
+    "mid": "003mhBAB1ti2es",
+    "name": "Taylor Swiftman",
+    "albumNum": 4,
+    "songNum": 4
+   },
+   {
+    "id": 12343727,
+    "mid": "004fy6uE2p1UBH",
+    "name": "taylorswift13",
+    "albumNum": 1,
+    "songNum": 1
+   },
+   {
+    "id": 19290520,
+    "mid": "0027L9Hh0StigB",
+    "name": "Taylor Swift DV",
+    "albumNum": 6,
+    "songNum": 6
+   },
+   {
+    "id": 2769209,
+    "mid": "0046T0yH27Ew30",
+    "name": "We Love Taylor Swift",
+    "albumNum": 5,
+    "songNum": 5
+   },
+   {
+    "id": 15055908,
+    "mid": "004V9wOA2Olfwt",
+    "name": "Taylor Swiftoo",
+    "albumNum": 1,
+    "songNum": 1
+   },
+   {
+    "id": 14960990,
+    "mid": "002ZU7gf3oWuzY",
+    "name": "Taylor Swift Music",
+    "albumNum": 1,
+    "songNum": 0
+   },
+   {
+    "id": 17611913,
+    "mid": "002DnDXf22T5RX",
+    "name": "Taylor Swifty",
+    "albumNum": 1,
+    "songNum": 1
+   },
+   {
+    "id": 5686258,
+    "mid": "000yhA5k4etN2B",
+    "name": "TaylorSwiftTMS",
+    "albumNum": 1,
+    "songNum": 1
+   }
+  ],
+  "verdict": {
+   "kw": "Taylor Swift",
+   "note": "欧美·英文名",
+   "ne_id": 44266,
+   "ne_name": "Taylor Swift",
+   "qq_mid": "000qrPik2w6lDr",
+   "qq_name": "Taylor Swift",
+   "ne_albums": 28,
+   "qq_albums": 48,
+   "overlap": 9,
+   "confidence": "HIGH",
+   "reason": "同名 + 专辑重合 9 张",
+   "naive": "HIGH",
+   "tried": [
+    {
+     "name": "Taylor Swift",
+     "mid": "000qrPik2w6lDr",
+     "albumNum": 197,
+     "albums_fetched": 48,
+     "overlap": 9
+    }
+   ],
+   "ne_sample": [
+    "1989",
+    "allofthegirlsyoulovedbefore",
+    "antihero",
+    "cruelsummer",
+    "elizabethtaylor",
+    "eyesopen"
+   ],
+   "qq_sample": [
+    "1989",
+    "22",
+    "badblood",
+    "beautifuleyes",
+    "christmastreefarm",
+    "cmtcrossroads"
+   ],
+   "ne_only": [
+    "allofthegirlsyoulovedbefore",
+    "antihero",
+    "cruelsummer",
+    "eyesopen",
+    "fortnight",
+    "icandoitwithabrokenheart"
+   ],
+   "qq_only": [
+    "22",
+    "badblood",
+    "beautifuleyes",
+    "christmastreefarm",
+    "cmtcrossroads",
+    "crazier"
+   ]
+  }
+ },
+ "Adele": {
+  "ne_artists": [
+   {
+    "id": 46487,
+    "name": "Adele",
+    "alias": [],
+    "albumSize": 22,
+    "musicSize": 347
+   },
+   {
+    "id": 746015,
+    "name": "Adelén",
+    "alias": [],
+    "albumSize": 16,
+    "musicSize": 39
+   },
+   {
+    "id": 37412269,
+    "name": "Adèle Castillon",
+    "alias": [],
+    "albumSize": 11,
+    "musicSize": 54
+   },
+   {
+    "id": 12539343,
+    "name": "Adele Anthony",
+    "alias": [],
+    "albumSize": 3,
+    "musicSize": 67
+   },
+   {
+    "id": 14629183,
+    "name": "Adele Roberts",
+    "alias": [],
+    "albumSize": 6,
+    "musicSize": 53
+   },
+   {
+    "id": 50075799,
+    "name": "Adele",
+    "alias": [],
+    "albumSize": 2,
+    "musicSize": 2
+   },
+   {
+    "id": 144493,
+    "name": "Laila Adele",
+    "alias": [],
+    "albumSize": 6,
+    "musicSize": 37
+   },
+   {
+    "id": 50196726,
+    "name": "Alanna Adele",
+    "alias": [],
+    "albumSize": 0,
+    "musicSize": 3
+   },
+   {
+    "id": 97508908,
+    "name": "Adele Tomlin",
+    "alias": [],
+    "albumSize": 0,
+    "musicSize": 6
+   },
+   {
+    "id": 264814,
+    "name": "Adele Addison",
+    "alias": [],
+    "albumSize": 0,
+    "musicSize": 225
+   },
+   {
+    "id": 14961937,
+    "name": "Adele Sebastian",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 8
+   },
+   {
+    "id": 28756,
+    "name": "Adele Harley",
+    "alias": [],
+    "albumSize": 20,
+    "musicSize": 144
+   },
+   {
+    "id": 277534,
+    "name": "Adele Leigh",
+    "alias": [],
+    "albumSize": 0,
+    "musicSize": 72
+   },
+   {
+    "id": 13250136,
+    "name": "Adele Stolte",
+    "alias": [],
+    "albumSize": 6,
+    "musicSize": 184
+   },
+   {
+    "id": 30798610,
+    "name": "Adele Classics",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 1
+   },
+   {
+    "id": 29995296,
+    "name": "Ester Adele",
+    "alias": [],
+    "albumSize": 6,
+    "musicSize": 14
+   },
+   {
+    "id": 127042228,
+    "name": "Laila Adèle",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 1
+   },
+   {
+    "id": 49301463,
+    "name": "Adele",
+    "alias": [],
+    "albumSize": 2,
+    "musicSize": 14
+   },
+   {
+    "id": 55737829,
+    "name": "Adele Moon",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 21
+   },
+   {
+    "id": 31121266,
+    "name": "Adèle Charvet",
+    "alias": [],
+    "albumSize": 6,
+    "musicSize": 167
+   }
+  ],
+  "qq_artists": [
+   {
+    "id": 12578,
+    "mid": "003CoxJh1zFPpx",
+    "name": "Adele",
+    "albumNum": 26,
+    "songNum": 250
+   },
+   {
+    "id": 14016,
+    "mid": "001P7Vlq1d8j5M",
+    "name": "Darius Rucker",
+    "albumNum": 50,
+    "songNum": 195
+   },
+   {
+    "id": 2924,
+    "mid": "000bFLxZ4GRBLA",
+    "name": "JAŸ-Z",
+    "albumNum": 123,
+    "songNum": 1532
+   },
+   {
+    "id": 1104128,
+    "mid": "003T09nh37Pq4N",
+    "name": "Marshmello",
+    "albumNum": 217,
+    "songNum": 489
+   },
+   {
+    "id": 964937,
+    "mid": "003nDphF0lH7M8",
+    "name": "Delacey",
+    "albumNum": 49,
+    "songNum": 141
+   },
+   {
+    "id": 2764066,
+    "mid": "001nTDnR3jLzFt",
+    "name": "Adele",
+    "albumNum": 7,
+    "songNum": 46
+   },
+   {
+    "id": 3257644,
+    "mid": "0013sSN32ijSA0",
+    "name": "Adele:Be",
+    "albumNum": 0,
+    "songNum": 1
+   },
+   {
+    "id": 87248,
+    "mid": "001HsVp32VBnK0",
+    "name": "Thomas Dutronc",
+    "albumNum": 35,
+    "songNum": 187
+   },
+   {
+    "id": 9742800,
+    "mid": "003BYV6D2XKXCC",
+    "name": "Adele",
+    "albumNum": 1,
+    "songNum": 1
+   },
+   {
+    "id": 654837,
+    "mid": "000eUfdD1ZZUxw",
+    "name": "Adele Leigh",
+    "albumNum": 3,
+    "songNum": 63
+   },
+   {
+    "id": 964604,
+    "mid": "001MMRVC37G5nT",
+    "name": "Adele Stolte",
+    "albumNum": 10,
+    "songNum": 223
+   },
+   {
+    "id": 17472621,
+    "mid": "0045UOK73dq2sE",
+    "name": "Adele卿玖",
+    "albumNum": 1,
+    "songNum": 1
+   },
+   {
+    "id": 11044205,
+    "mid": "002XLWeo3CdyfW",
+    "name": "Adele",
+    "albumNum": 1,
+    "songNum": 1
+   },
+   {
+    "id": 23278598,
+    "mid": "001CnJ4f4GNNDe",
+    "name": "adele",
+    "albumNum": 1,
+    "songNum": 1
+   },
+   {
+    "id": 23941734,
+    "mid": "002TzGZ61ZDWYJ",
+    "name": "我爱Adele",
+    "albumNum": 1,
+    "songNum": 1
+   },
+   {
+    "id": 16864145,
+    "mid": "001pjnWI10oprQ",
+    "name": "Adele",
+    "albumNum": 0,
+    "songNum": 1
+   },
+   {
+    "id": 17100777,
+    "mid": "004LgIar255vsy",
+    "name": "Adele",
+    "albumNum": 1,
+    "songNum": 1
+   },
+   {
+    "id": 2299487,
+    "mid": "001Lc6YH0W3vDh",
+    "name": "Adèle",
+    "albumNum": 2,
+    "songNum": 6
+   },
+   {
+    "id": 9229118,
+    "mid": "004PiX7i09Skpw",
+    "name": "adéle",
+    "albumNum": 2,
+    "songNum": 2
+   },
+   {
+    "id": 159232,
+    "mid": "002e4Ksm2rFw1n",
+    "name": "Adelén",
+    "albumNum": 23,
+    "songNum": 28
+   }
+  ],
+  "verdict": {
+   "kw": "Adele",
+   "note": "欧美·单名",
+   "ne_id": 46487,
+   "ne_name": "Adele",
+   "qq_mid": "003CoxJh1zFPpx",
+   "qq_name": "Adele",
+   "ne_albums": 18,
+   "qq_albums": 20,
+   "overlap": 18,
+   "confidence": "EXACT",
+   "reason": "唯一同名候选 + 专辑重合 18 张（占较小侧 100%）",
+   "naive": "HIGH",
+   "tried": [
+    {
+     "name": "Adele",
+     "mid": "003CoxJh1zFPpx",
+     "albumNum": 26,
+     "albums_fetched": 20,
+     "overlap": 18
+    }
+   ],
+   "ne_sample": [
+    "19",
+    "21",
+    "25",
+    "30",
+    "chasingpavements",
+    "coldshoulder"
+   ],
+   "qq_sample": [
+    "19",
+    "21",
+    "25",
+    "30",
+    "chasingpavements",
+    "coldshoulder"
+   ],
+   "ne_only": [],
+   "qq_only": [
+    "ituneslivefromsoho",
+    "youllneverseemeagainnevergonnaleaveyou"
+   ]
+  }
+ },
+ "张学友": {
+  "ne_artists": [
+   {
+    "id": 6460,
+    "name": "张学友",
+    "alias": [
+     "Jacky Cheung"
+    ],
+    "albumSize": 129,
+    "musicSize": 2577
+   },
+   {
+    "id": 5205,
+    "name": "谭咏麟",
+    "alias": [
+     "Alan Tam",
+     "谭校长",
+     "阿伦"
+    ],
+    "albumSize": 191,
+    "musicSize": 3431
+   },
+   {
+    "id": 3699,
+    "name": "李克勤",
+    "alias": [
+     "Hacken Lee"
+    ],
+    "albumSize": 129,
+    "musicSize": 2404
+   },
+   {
+    "id": 32628225,
+    "name": "郫县张学友",
+    "alias": [],
+    "albumSize": 2,
+    "musicSize": 6
+   },
+   {
+    "id": 61385712,
+    "name": "張学友演曲",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 2
+   },
+   {
+    "id": 8918,
+    "name": "梅艳芳",
+    "alias": [
+     "Anita Mui"
+    ],
+    "albumSize": 53,
+    "musicSize": 973
+   },
+   {
+    "id": 31084139,
+    "name": "犀浦张学友",
+    "alias": [],
+    "albumSize": 2,
+    "musicSize": 3
+   },
+   {
+    "id": 2116,
+    "name": "陈奕迅",
+    "alias": [
+     "Eason Chan"
+    ],
+    "albumSize": 133,
+    "musicSize": 1863
+   },
+   {
+    "id": 122623267,
+    "name": "張學友張",
+    "alias": [],
+    "albumSize": 0,
+    "musicSize": 0
+   },
+   {
+    "id": 37134203,
+    "name": "长沙张学友",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 5
+   },
+   {
+    "id": 121658701,
+    "name": "张学友的猫",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 5
+   },
+   {
+    "id": 7768,
+    "name": "关淑怡",
+    "alias": [
+     "Shirley Kwan"
+    ],
+    "albumSize": 72,
+    "musicSize": 1400
+   },
+   {
+    "id": 61165787,
+    "name": "宣城张学友",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 1
+   },
+   {
+    "id": 47683593,
+    "name": "福清张学友",
+    "alias": [],
+    "albumSize": 4,
+    "musicSize": 18
+   },
+   {
+    "id": 99954905,
+    "name": "新疆张学友",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 1
+   },
+   {
+    "id": 124321639,
+    "name": "奥丹张学友",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 1
+   },
+   {
+    "id": 46558876,
+    "name": "襄都张学友",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 1
+   },
+   {
+    "id": 123927199,
+    "name": "江阴张学友",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 2
+   },
+   {
+    "id": 100072183,
+    "name": "南充张学友",
+    "alias": [],
+    "albumSize": 1,
+    "musicSize": 3
+   },
+   {
+    "id": 124155799,
+    "name": "miss张学友",
+    "alias": [],
+    "albumSize": 4,
+    "musicSize": 4
+   }
+  ],
+  "qq_artists": [
+   {
+    "id": 174,
+    "mid": "004Be55m1SJaLk",
+    "name": "张学友",
+    "albumNum": 136,
+    "songNum": 1513
+   },
+   {
+    "id": 6124,
+    "mid": "000FJmnn3uH2aK",
+    "name": "高慧君",
+    "albumNum": 8,
+    "songNum": 81
+   },
+   {
+    "id": 22103881,
+    "mid": "002snhXk0YGFTh",
+    "name": "張學友張",
+    "albumNum": 1,
+    "songNum": 1
+   },
+   {
+    "id": 2150012,
+    "mid": "004Wt5Bg2Ay1ba",
+    "name": "张学友宜春",
+    "albumNum": 2,
+    "songNum": 4
+   },
+   {
+    "id": 13833819,
+    "mid": "003UjQtK13AEO0",
+    "name": "浙江张学友",
+    "albumNum": 1,
+    "songNum": 25
+   },
+   {
+    "id": 5067045,
+    "mid": "000OYyur1DVPmu",
+    "name": "跑快车的张学友",
+    "albumNum": 0,
+    "songNum": 29
+   },
+   {
+    "id": 17537624,
+    "mid": "001vzjXD2zDmQM",
+    "name": "郫县张学友",
+    "albumNum": 0,
+    "songNum": 1
+   },
+   {
+    "id": 22791886,
+    "mid": "001UQNKo0ewDg0",
+    "name": "我不是张学友",
+    "albumNum": 1,
+    "songNum": 1
+   }
+  ],
+  "verdict": {
+   "kw": "张学友",
+   "note": "华语·老牌",
+   "ne_id": 6460,
+   "ne_name": "张学友",
+   "qq_mid": "004Be55m1SJaLk",
+   "qq_name": "张学友",
+   "ne_albums": 75,
+   "qq_albums": 80,
+   "overlap": 25,
+   "confidence": "HIGH",
+   "reason": "同名 + 专辑重合 25 张",
+   "naive": "HIGH",
+   "tried": [
+    {
+     "name": "张学友",
+     "mid": "004Be55m1SJaLk",
+     "albumNum": 136,
+     "albums_fetched": 80,
+     "overlap": 25
+    }
+   ],
+   "ne_sample": [
+    "903拉阔演唱会",
+    "blackwhite",
+    "btb3ep张学友黄凯芹",
+    "byyourside",
+    "greatesthits新曲精选",
+    "jackycheung15"
+   ],
+   "qq_sample": [
+    "1999友个人演唱会",
+    "25周年smile",
+    "93学与友演唱会",
+    "blackwhite",
+    "dsd视听之王张学友爱你多一些精选",
+    "greatesthits新歌精选"
+   ],
+   "ne_only": [
+    "903拉阔演唱会",
+    "btb3ep张学友黄凯芹",
+    "byyourside",
+    "greatesthits新曲精选",
+    "lustcaution",
+    "multiverseofpolygram55thanniversary张学友"
+   ],
+   "qq_only": [
+    "1999友个人演唱会",
+    "25周年smile",
+    "93学与友演唱会",
+    "dsd视听之王张学友爱你多一些精选",
+    "greatesthits新歌精选",
+    "jacky"
+   ]
+  }
+ }
+}

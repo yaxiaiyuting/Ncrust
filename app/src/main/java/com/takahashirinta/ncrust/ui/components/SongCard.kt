@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.takahashirinta.ncrust.network.SongItem
 import com.takahashirinta.ncrust.network.CoverUrls
+import com.takahashirinta.ncrust.search.TrackAvailability
 import io.github.takahashirinta.kanesumi.anim.sokuou.SokuouPresets
 import io.github.takahashirinta.kanesumi.core.theme.LocalMetroColors
 import io.github.takahashirinta.kanesumi.core.theme.LocalMetroTypography
@@ -49,7 +50,18 @@ fun SongCard(
     onShowMenu: (() -> Unit)? = null,
     actions: (@Composable RowScope.() -> Unit)? = null,
     isCurrentPlaying: Boolean = false,
-    showCover: Boolean = true
+    showCover: Boolean = true,
+    /**
+     * v2.4.0 · E：聚合页**探测出来**的版权可用性。
+     *
+     * 默认 null = 完全按今天的行为走（从 [SongItem] 推导）。加在参数表**末尾**且带默认值，
+     * 所以既有的全部调用点一个字节都不用改。
+     *
+     * 为什么不让调用方直接把可用性写进 `SongItem`：那是落盘结构（队列 / 本地歌单 /
+     * 离线索引都在存），写进去会出现「上周探测能播、今天显示可播放、点下去 404」。
+     * 详见 [SongTags.of] 的 3 参重载。
+     */
+    availabilityOverride: TrackAvailability? = null
 ) {
     val strings = LocalStrings.current
     val artistStr = song.artists?.joinToString("/") { it.name } ?: strings.unknownArtist
@@ -61,7 +73,9 @@ fun SongCard(
     // 条目混进同一个列表，而两源的 id 完全独立 —— 实测同关键词下会出现**完全同名**的行
     // （《晴天》网易云 186016 / QQ 00083kc41YcFuR），不标音源用户判断不出哪行是哪个源。
     // 装配规则（含「什么时候什么都不显示」）全部在 SongTags 里，JVM 可单测。
-    val tags = remember(song, strings) { SongTags.of(song, strings) }
+    val tags = remember(song, strings, availabilityOverride) {
+        SongTags.of(song, strings, availabilityOverride)
+    }
     val sourceBadge = tags.firstOrNull { it.kind == SongTagKind.SOURCE }?.text.orEmpty()
     val extraBadges = tags.filter { it.kind != SongTagKind.SOURCE }
     val coverOriginLine = remember(song, strings) { SongTags.coverOriginLine(song, strings) }

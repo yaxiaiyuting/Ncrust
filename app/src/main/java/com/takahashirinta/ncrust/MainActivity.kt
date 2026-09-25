@@ -36,6 +36,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LibraryMusic
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PlaylistAdd
@@ -76,6 +77,9 @@ import com.takahashirinta.ncrust.network.SongItem
 import com.takahashirinta.ncrust.network.model.AlbumItem
 import com.takahashirinta.ncrust.network.model.ArtistItem
 import com.takahashirinta.ncrust.reco.ArtistReco
+import com.takahashirinta.ncrust.source.MusicSource
+import com.takahashirinta.ncrust.source.SourceIds
+import com.takahashirinta.ncrust.source.musicSource
 import com.takahashirinta.ncrust.player.PlayOrigin
 import com.takahashirinta.ncrust.player.PlaybackStateManager
 import com.takahashirinta.ncrust.player.ShuffleRound
@@ -627,6 +631,27 @@ object QueueModes {
     const val LINE = 3
     const val INFINITY = 4
 }
+
+/**
+ * v2.4.0 · E：单曲信息路由（`song/{source}/{songId}`）里的 id 字符串。
+ *
+ * ## 为什么 QQ 要反解一次
+ *
+ * 路由的参数类型是 `StringType`（QQ 的身份本来就是字符串），但 **QQ 的 songmid 不在
+ * `SongItem.id` 里** —— `id` 是 [`SourceIds.qqId`] 造出来的**合成数字 id**（带 `1L shl 62`
+ * 标志位），真正的 songid 要用 [`SourceIds.qqRawId`] 掩码取回。把合成 id 直接写进路由，
+ * 单曲页就得再反解一次，而且合成 id 的十进制是 `46xxxxxxxxxxxxxxxxx` 这种量级，
+ * 肉眼完全无法与网易云的 songId 区分 —— 路由里带**裸 songid** + `source` 段才是自解释的。
+ *
+ * 反解不出来（理论上是「这不是个 QQ 合成 id」）时退回原 id：路由至少是确定的，
+ * 单曲页一定拿得到同一首歌的身份，不会因为一次反解失败跳去别的曲子。
+ */
+private fun songIdForRoute(song: SongItem): String =
+    if (song.musicSource == MusicSource.QQMUSIC) {
+        SourceIds.qqRawId(song.id)?.toString() ?: song.id.toString()
+    } else {
+        song.id.toString()
+    }
 
 /**
  * v1.8.0 · T4：自动进入大屏的**观察者**（无 UI，只做判定与回调）。
@@ -2231,6 +2256,13 @@ fun MainScreen(
                         },
                         SongMenuAction(Icons.Default.LibraryMusic, LocalStrings.current.actionGoToAlbum) {
                             resolveAndNavigate(song, toArtist = false)
+                        },
+                        // v2.4.0 · E：单曲信息页（两源版本对比 + 歌词）。**放在最后** ——
+                        // 它是最「重」的一个入口（会发聚合与版权探测请求），
+                        // 不该挤在「转到歌手 / 转到专辑」这两个高频操作前面。
+                        SongMenuAction(Icons.Default.Info, LocalStrings.current.source.aggSongDetailAction) {
+                            if (progress.value > 0.01f) collapseCard()
+                            navController.navigate(NavRoutes.song(song.musicSource, songIdForRoute(song)))
                         },
                     ),
                     onDismiss = { menuSong = null }

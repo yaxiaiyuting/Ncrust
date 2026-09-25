@@ -1,0 +1,24 @@
+# v2.4.0 构建与测试证据
+
+命令（2026-09-25）：
+JAVA_HOME=/usr/lib/jvm/java-21-openjdk ./gradlew clean testDebugUnitTest lint assembleDebug assembleRelease
+
+## 单测
+tests=935 failures=0 errors=0 skipped=0
+（v2.3.0 基线 829 ⇒ 本版净增 106 条）
+新增测试类（@Test 数）：
+  crosssource/CrossSourceMatcherTest.kt   37
+  crosssource/CatalogAggregatorTest.kt    23
+  crosssource/MatchCacheCodecTest.kt      22
+  crosssource/NameNormalizerTest.kt       14
+  crosssource/AggregateStringsTest.kt      5
+  ui/components/SongTagsTest.kt           +5（扩展现有文件）
+
+## lint
+0 errors, 8 warnings（56 errors / 102 warnings 由 lint-baseline.xml 过滤）
+Fatal=0 Error=0
+
+## APK
+debug:   app/build/outputs/apk/debug/app-debug.apk      versionCode=40 versionName=2.4.0-gpl
+release: app/build/outputs/apk/release/app-release.apk  versionCode=40 versionName=2.4.0-gpl
+release sha256(前16): e70477763168a11f

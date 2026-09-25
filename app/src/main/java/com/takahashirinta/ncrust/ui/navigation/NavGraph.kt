@@ -9,6 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.takahashirinta.ncrust.network.SongItem
+import com.takahashirinta.ncrust.source.MusicSource
 import com.takahashirinta.ncrust.ui.components.SongMenuAction
 import com.takahashirinta.ncrust.ui.screen.*
 import java.net.URLDecoder
@@ -47,11 +48,42 @@ object NavRoutes {
      */
     const val LOCAL_PLAYLIST_DETAIL = "localplaylist/{source}/{ownerId}/{playlistId}"
 
+    /**
+     * v2.4.0 · E：**带音源的**详情路由（艺人 / 专辑 / 单曲）。
+     *
+     * ## 为什么必须新增一套而不是改旧的
+     *
+     * 旧路由的 id 参数是 [NavType.LongType]，而 **QQ 音乐的身份是字符串**：
+     * 艺人是 `singerMID`、专辑是 albumMid、单曲是 songmid（形状 `0025NhlN2yWrP4`）。
+     * 用 Long 装它只有两条路，两条都是错的：要么给 QQ 编一个假数字 id
+     * （那正是「给错专辑 / 错单曲」的温床），要么把它当网易云的 id 用。
+     *
+     * 所以新的三段路由里 `source` 与 id **一律是 `StringType`**（QQ 的 id 天然是字符串，
+     * 网易云的十进制 id 写成字符串也不丢信息），旧的单段 `Long` 路由**原样保留**：
+     * 剪贴板识别、`resolveAndNavigate`、首页/库页那些「只有网易云 id」的老调用点
+     * 一个都不用改（它们构造出的就是网易云身份，见下面的 composable）。
+     *
+     * 注册顺序上两套路由互不冲突：`album/{albumId}` 只吃一段路径，
+     * `album/{source}/{albumId}` 吃两段，导航库的深链正则无法互相匹配。
+     */
+    const val ARTIST_SRC = "artist/{source}/{artistId}"
+    const val ALBUM_SRC = "album/{source}/{albumId}"
+    const val SONG_SRC = "song/{source}/{songId}"
+
     fun album(albumId: Long) = "album/$albumId"
     fun artist(artistId: Long) = "artist/$artistId"
     fun playlist(id: Long, name: String = "", coverUrl: String = "") =
         "playlist/$id/${URLEncoder.encode(name, StandardCharsets.UTF_8.toString())}/${URLEncoder.encode(coverUrl, StandardCharsets.UTF_8.toString())}"
     fun song(songId: Long) = "song/$songId"
+
+    /** v2.4.0 · E：带音源的艺人路由（QQ 的 id 是 `singerMID`）。 */
+    fun artist(source: MusicSource, id: String) = "artist/${source.key}/$id"
+
+    /** v2.4.0 · E：带音源的专辑路由。 */
+    fun album(source: MusicSource, id: String) = "album/${source.key}/$id"
+
+    /** v2.4.0 · E：带音源的单曲路由。 */
+    fun song(source: MusicSource, id: String) = "song/${source.key}/$id"
 
     fun qqPlaylistDetail(id: String, ownerId: String, dirId: Long, name: String) =
         "qqplaylist/$id/$ownerId/$dirId/" + URLEncoder.encode(name, StandardCharsets.UTF_8.toString())
@@ -95,11 +127,42 @@ fun MainNavGraph(
             arguments = listOf(navArgument("albumId") { type = NavType.LongType })
         ) { backStackEntry ->
             val albumId = backStackEntry.arguments?.getLong("albumId") ?: return@composable
+            // 旧路由只有网易云的十进制 id ⇒ 它构造出来的**就是网易云身份**。
+            // 这里不猜、不查表：能走到这条路由的调用点（剪贴板识别、resolveAndNavigate、
+            // 首页/库页）本来就只认识网易云的 id。
             AlbumDetailScreen(
+                sourceKey = MusicSource.NETEASE.key,
+                albumId = albumId.toString(),
+                onBack = { navController.popBackStack() },
+                onSongClick = onSongClick,
+                onArtistClick = { source, artistId ->
+                    navController.navigate(NavRoutes.artist(source, artistId))
+                },
+                onReplaceAndPlay = onReplaceAndPlay,
+                onInsertNext = onInsertNext,
+                onSongInsertNext = onSongInsertNext,
+                onSongAppendToQueue = onSongAppendToQueue,
+                onShowSongMenu = onShowSongMenu
+            )
+        }
+
+        composable(
+            route = NavRoutes.ALBUM_SRC,
+            arguments = listOf(
+                navArgument("source") { type = NavType.StringType },
+                navArgument("albumId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val sourceKey = backStackEntry.arguments?.getString("source") ?: return@composable
+            val albumId = backStackEntry.arguments?.getString("albumId") ?: return@composable
+            AlbumDetailScreen(
+                sourceKey = sourceKey,
                 albumId = albumId,
                 onBack = { navController.popBackStack() },
                 onSongClick = onSongClick,
-                onArtistClick = { artistId -> navController.navigate(NavRoutes.artist(artistId)) },
+                onArtistClick = { source, artistId ->
+                    navController.navigate(NavRoutes.artist(source, artistId))
+                },
                 onReplaceAndPlay = onReplaceAndPlay,
                 onInsertNext = onInsertNext,
                 onSongInsertNext = onSongInsertNext,
@@ -114,10 +177,32 @@ fun MainNavGraph(
         ) { backStackEntry ->
             val artistId = backStackEntry.arguments?.getLong("artistId") ?: return@composable
             ArtistDetailScreen(
+                sourceKey = MusicSource.NETEASE.key,
+                artistId = artistId.toString(),
+                onBack = { navController.popBackStack() },
+                onSongClick = onSongClick,
+                onAlbumClick = { source, id -> navController.navigate(NavRoutes.album(source, id)) },
+                onSongInsertNext = onSongInsertNext,
+                onSongAppendToQueue = onSongAppendToQueue,
+                onShowSongMenu = onShowSongMenu
+            )
+        }
+
+        composable(
+            route = NavRoutes.ARTIST_SRC,
+            arguments = listOf(
+                navArgument("source") { type = NavType.StringType },
+                navArgument("artistId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val sourceKey = backStackEntry.arguments?.getString("source") ?: return@composable
+            val artistId = backStackEntry.arguments?.getString("artistId") ?: return@composable
+            ArtistDetailScreen(
+                sourceKey = sourceKey,
                 artistId = artistId,
                 onBack = { navController.popBackStack() },
                 onSongClick = onSongClick,
-                onAlbumClick = { id -> navController.navigate(NavRoutes.album(id)) },
+                onAlbumClick = { source, id -> navController.navigate(NavRoutes.album(source, id)) },
                 onSongInsertNext = onSongInsertNext,
                 onSongAppendToQueue = onSongAppendToQueue,
                 onShowSongMenu = onShowSongMenu
@@ -226,9 +311,29 @@ fun MainNavGraph(
             arguments = listOf(navArgument("songId") { type = NavType.LongType })
         ) { backStackEntry ->
             val songId = backStackEntry.arguments?.getLong("songId") ?: return@composable
+            // 旧路由 = 网易云身份（理由同 ALBUM 那一段）。
             SongDetailScreen(
+                sourceKey = MusicSource.NETEASE.key,
+                songId = songId.toString(),
+                onBack = { navController.popBackStack() },
+                onPlay = onSongClick
+            )
+        }
+
+        composable(
+            route = NavRoutes.SONG_SRC,
+            arguments = listOf(
+                navArgument("source") { type = NavType.StringType },
+                navArgument("songId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val sourceKey = backStackEntry.arguments?.getString("source") ?: return@composable
+            val songId = backStackEntry.arguments?.getString("songId") ?: return@composable
+            SongDetailScreen(
+                sourceKey = sourceKey,
                 songId = songId,
-                onBack = { navController.popBackStack() }
+                onBack = { navController.popBackStack() },
+                onPlay = onSongClick
             )
         }
     }

@@ -1,0 +1,7750 @@
+{
+ "artists": {
+  "周杰伦": {
+   "ne": [
+    {
+     "id": 274336916,
+     "name": "即兴曲",
+     "size": 1,
+     "company": "杰威尔",
+     "publishTime": 1749139200000,
+     "norm": "即兴曲"
+    },
+    {
+     "id": 259316984,
+     "name": "Six Degrees",
+     "size": 1,
+     "company": "杰威尔",
+     "publishTime": 1736438400000,
+     "norm": "sixdegrees"
+    },
+    {
+     "id": 241205548,
+     "name": "稻香 (Remix摇滚版)",
+     "size": 1,
+     "company": "杰威尔",
+     "publishTime": 1719936000000,
+     "norm": "稻香"
+    },
+    {
+     "id": 181638865,
+     "name": "圣诞星 (feat. 杨瑞代)",
+     "size": 1,
+     "company": "杰威尔",
+     "publishTime": 1703174400000,
+     "norm": "圣诞星"
+    },
+    {
+     "id": 147779282,
+     "name": "最伟大的作品",
+     "size": 12,
+     "company": "杰威尔",
+     "publishTime": 1657814400000,
+     "norm": "最伟大的作品"
+    },
+    {
+     "id": 90743831,
+     "name": "Mojito",
+     "size": 1,
+     "company": "杰威尔",
+     "publishTime": 1591891200000,
+     "norm": "mojito"
+    },
+    {
+     "id": 84129171,
+     "name": "我是如此相信",
+     "size": 1,
+     "company": "杰威尔",
+     "publishTime": 1576339200000,
+     "norm": "我是如此相信"
+    },
+    {
+     "id": 82918363,
+     "name": "周杰伦地表最强世界巡回演唱会",
+     "size": 25,
+     "company": "杰威尔",
+     "publishTime": 1572537600000,
+     "norm": "周杰伦地表最强世界巡回演唱会"
+    },
+    {
+     "id": 81679689,
+     "name": "说好不哭",
+     "size": 1,
+     "company": "杰威尔",
+     "publishTime": 1568563200000,
+     "norm": "说好不哭"
+    },
+    {
+     "id": 38721188,
+     "name": "不爱我就拉倒",
+     "size": 1,
+     "company": "杰威尔",
+     "publishTime": 1526313600000,
+     "norm": "不爱我就拉倒"
+    },
+    {
+     "id": 37251353,
+     "name": "等你下课",
+     "size": 1,
+     "company": "杰威尔",
+     "publishTime": 1516204800007,
+     "norm": "等你下课"
+    },
+    {
+     "id": 34720827,
+     "name": "周杰伦的床边故事",
+     "size": 10,
+     "company": "杰威尔",
+     "publishTime": 1466697600007,
+     "norm": "周杰伦的床边故事"
+    },
+    {
+     "id": 34685590,
+     "name": "魔天伦 世界巡回演唱会",
+     "size": 22,
+     "company": "杰威尔",
+     "publishTime": 1462809600007,
+     "norm": "魔天伦世界巡回演唱会"
+    },
+    {
+     "id": 34588039,
+     "name": "英雄",
+     "size": 1,
+     "company": "杰威尔",
+     "publishTime": 1458748800007,
+     "norm": "英雄"
+    },
+    {
+     "id": 34420153,
+     "name": "Try",
+     "size": 1,
+     "company": "杰威尔",
+     "publishTime": 1452009600007,
+     "norm": "try"
+    },
+    {
+     "id": 3084335,
+     "name": "哎呦，不错哦",
+     "size": 12,
+     "company": "杰威尔",
+     "publishTime": 1419523200007,
+     "norm": "哎呦不错哦"
+    },
+    {
+     "id": 3154731,
+     "name": "黄俊郎的黑",
+     "size": 8,
+     "company": "杰威尔",
+     "publishTime": 1387900800000,
+     "norm": "黄俊郎的黑"
+    },
+    {
+     "id": 2489195,
+     "name": "天台 电影原声带",
+     "size": 35,
+     "company": "杰威尔",
+     "publishTime": 1373212800000,
+     "norm": "天台电影原声带"
+    },
+    {
+     "id": 2263029,
+     "name": "十二新作",
+     "size": 12,
+     "company": "杰威尔",
+     "publishTime": 1356624000007,
+     "norm": "十二新作"
+    },
+    {
+     "id": 18869,
+     "name": "惊叹号",
+     "size": 11,
+     "company": "杰威尔",
+     "publishTime": 1320940800000,
+     "norm": "惊叹号"
+    },
+    {
+     "id": 18870,
+     "name": "超时代演唱会",
+     "size": 25,
+     "company": "杰威尔",
+     "publishTime": 1295884800000,
+     "norm": "超时代演唱会"
+    },
+    {
+     "id": 18875,
+     "name": "跨时代",
+     "size": 11,
+     "company": "杰威尔",
+     "publishTime": 1274112000000,
+     "norm": "跨时代"
+    },
+    {
+     "id": 90355419,
+     "name": "熊猫人",
+     "size": 1,
+     "company": "",
+     "publishTime": 1263657600000,
+     "norm": "熊猫人"
+    },
+    {
+     "id": 18877,
+     "name": "魔杰座",
+     "size": 11,
+     "company": "杰威尔",
+     "publishTime": 1224000000000,
+     "norm": "魔杰座"
+    },
+    {
+     "id": 18879,
+     "name": "周杰伦2007世界巡回演唱会",
+     "size": 21,
+     "company": "杰威尔",
+     "publishTime": 1201622400000,
+     "norm": "周杰伦2007世界巡回演唱会"
+    },
+    {
+     "id": 18886,
+     "name": "我很忙",
+     "size": 10,
+     "company": "杰威尔",
+     "publishTime": 1193932800007,
+     "norm": "我很忙"
+    },
+    {
+     "id": 18888,
+     "name": "不能说的秘密 电影原声带",
+     "size": 25,
+     "company": "杰威尔",
+     "publishTime": 1186934400000,
+     "norm": "不能说的秘密电影原声带"
+    },
+    {
+     "id": 18892,
+     "name": "黄金甲",
+     "size": 2,
+     "company": "杰威尔",
+     "publishTime": 1165507200000,
+     "norm": "黄金甲"
+    },
+    {
+     "id": 18893,
+     "name": "依然范特西",
+     "size": 10,
+     "company": "杰威尔",
+     "publishTime": 1157385600007,
+     "norm": "依然范特西"
+    },
+    {
+     "id": 18895,
+     "name": "霍元甲",
+     "size": 2,
+     "company": "杰威尔",
+     "publishTime": 1137686400000,
+     "norm": "霍元甲"
+    },
+    {
+     "id": 2537182,
+     "name": "大头贴",
+     "size": 1,
+     "company": "杰威尔",
+     "publishTime": 1136995200007,
+     "norm": "大头贴"
+    },
+    {
+     "id": 18896,
+     "name": "11月的萧邦",
+     "size": 12,
+     "company": "杰威尔",
+     "publishTime": 1130774400000,
+     "norm": "11月的萧邦"
+    },
+    {
+     "id": 18898,
+     "name": "Initial J",
+     "size": 12,
+     "company": "索尼音乐",
+     "publishTime": 1125417600000,
+     "norm": "initialj"
+    },
+    {
+     "id": 18900,
+     "name": "2004 无与伦比演唱会",
+     "size": 25,
+     "company": "杰威尔",
+     "publishTime": 1106236800000,
+     "norm": "2004无与伦比演唱会"
+    },
+    {
+     "id": 18903,
+     "name": "七里香",
+     "size": 10,
+     "company": "杰威尔",
+     "publishTime": 1091462400000,
+     "norm": "七里香"
+    },
+    {
+     "id": 18904,
+     "name": "寻找周杰伦",
+     "size": 4,
+     "company": "杰威尔",
+     "publishTime": 1068480000000,
+     "norm": "寻找周杰伦"
+    },
+    {
+     "id": 18905,
+     "name": "叶惠美",
+     "size": 11,
+     "company": "杰威尔",
+     "publishTime": 1059580800000,
+     "norm": "叶惠美"
+    },
+    {
+     "id": 18906,
+     "name": "The One 周杰伦演唱会",
+     "size": 20,
+     "company": "杰威尔",
+     "publishTime": 1035475200000,
+     "norm": "theone周杰伦演唱会"
+    },
+    {
+     "id": 18907,
+     "name": "八度空间",
+     "size": 10,
+     "company": "杰威尔",
+     "publishTime": 1026921600000,
+     "norm": "八度空间"
+    },
+    {
+     "id": 18909,
+     "name": "Partners 拍档",
+     "size": 13,
+     "company": "北京亚歆时代网络科技有限责任公司",
+     "publishTime": 1019750400000,
+     "norm": "partners拍档"
+    },
+    {
+     "id": 18914,
+     "name": "范特西PLUS",
+     "size": 3,
+     "company": "杰威尔",
+     "publishTime": 1009209600000,
+     "norm": "范特西plus"
+    },
+    {
+     "id": 2537184,
+     "name": "Fantasy Show香港演唱会",
+     "size": 6,
+     "company": "独立发行",
+     "publishTime": 1004803200000,
+     "norm": "fantasyshow香港演唱会"
+    },
+    {
+     "id": 18915,
+     "name": "范特西",
+     "size": 10,
+     "company": "杰威尔",
+     "publishTime": 1000396800000,
+     "norm": "范特西"
+    },
+    {
+     "id": 18918,
+     "name": "Jay",
+     "size": 10,
+     "company": "杰威尔",
+     "publishTime": 973526400000,
+     "norm": "jay"
+    }
+   ],
+   "qq": [
+    {
+     "id": "1458791",
+     "mid": "003RMaRI1iFoYd",
+     "name": "周杰伦的床边故事",
+     "tranName": "",
+     "size": 10,
+     "company": "杰威尔音乐有限公司",
+     "publishTime": "2016-06-24",
+     "norm": "周杰伦的床边故事"
+    },
+    {
+     "id": "33021",
+     "mid": "002eFUFm2XYZ7z",
+     "name": "我很忙",
+     "tranName": "",
+     "size": 10,
+     "company": "杰威尔音乐有限公司",
+     "publishTime": "2007-11-02",
+     "norm": "我很忙"
+    },
+    {
+     "id": "852856",
+     "mid": "001uqejs3d6EID",
+     "name": "哎呦，不错哦",
+     "tranName": "",
+     "size": 12,
+     "company": "杰威尔音乐有限公司",
+     "publishTime": "2014-12-26",
+     "norm": "哎呦不错哦"
+    },
+    {
+     "id": "194021",
+     "mid": "003Ow85E3pnoqi",
+     "name": "十二新作",
+     "tranName": "",
+     "size": 12,
+     "company": "杰威尔音乐有限公司",
+     "publishTime": "2012-12-28",
+     "norm": "十二新作"
+    },
+    {
+     "id": "36062",
+     "mid": "002Neh8l0uciQZ",
+     "name": "魔杰座",
+     "tranName": "",
+     "size": 11,
+     "company": "杰威尔音乐有限公司",
+     "publishTime": "2008-10-15",
+     "norm": "魔杰座"
+    },
+    {
+     "id": "8218",
+     "mid": "000f01724fd7TH",
+     "name": "Jay",
+     "tranName": "",
+     "size": 10,
+     "company": "阿尔发音乐股份有限公司",
+     "publishTime": "2000-11-07",
+     "norm": "jay"
+    },
+    {
+     "id": "56705",
+     "mid": "000bviBl4FjTpO",
+     "name": "跨时代",
+     "tranName": "",
+     "size": 11,
+     "company": "杰威尔音乐有限公司",
+     "publishTime": "2010-05-18",
+     "norm": "跨时代"
+    },
+    {
+     "id": "60671",
+     "mid": "0024bjiL2aocxT",
+     "name": "十一月的萧邦",
+     "tranName": "",
+     "size": 12,
+     "company": "阿尔发音乐股份有限公司",
+     "publishTime": "2005-11-01",
+     "norm": "十一月的萧邦"
+    },
+    {
+     "id": "8220",
+     "mid": "000MkMni19ClKG",
+     "name": "叶惠美",
+     "tranName": "",
+     "size": 11,
+     "company": "杰威尔音乐有限公司",
+     "publishTime": "2003-07-31",
+     "norm": "叶惠美"
+    },
+    {
+     "id": "8217",
+     "mid": "000I5jJB3blWeN",
+     "name": "范特西",
+     "tranName": "",
+     "size": 10,
+     "company": "阿尔发音乐股份有限公司",
+     "publishTime": "2001-09-14",
+     "norm": "范特西"
+    },
+    {
+     "id": "20612",
+     "mid": "003DFRzD192KKD",
+     "name": "七里香",
+     "tranName": "",
+     "size": 10,
+     "company": "阿尔发音乐股份有限公司",
+     "publishTime": "2004-08-03",
+     "norm": "七里香"
+    },
+    {
+     "id": "85650",
+     "mid": "003KNcyk0t3mwg",
+     "name": "惊叹号",
+     "tranName": "",
+     "size": 11,
+     "company": "杰威尔音乐有限公司",
+     "publishTime": "2011-11-11",
+     "norm": "惊叹号"
+    },
+    {
+     "id": "8219",
+     "mid": "004MGitN0zEHpb",
+     "name": "八度空间",
+     "tranName": "",
+     "size": 10,
+     "company": "杰威尔音乐有限公司",
+     "publishTime": "2002-07-18",
+     "norm": "八度空间"
+    },
+    {
+     "id": "13004",
+     "mid": "002jLGWe16Tf1H",
+     "name": "依然范特西",
+     "tranName": "",
+     "size": 10,
+     "company": "阿尔发音乐股份有限公司",
+     "publishTime": "2006-09-05",
+     "norm": "依然范特西"
+    },
+    {
+     "id": "32611",
+     "mid": "001UP7mW458ipG",
+     "name": "不能说的秘密 电影原声带",
+     "tranName": "",
+     "size": 25,
+     "company": "杰威尔音乐有限公司",
+     "publishTime": "2007-08-13",
+     "norm": "不能说的秘密电影原声带"
+    },
+    {
+     "id": "8221",
+     "mid": "001BGzMs369FzU",
+     "name": "寻找周杰伦",
+     "tranName": "",
+     "size": 4,
+     "company": "杰威尔音乐有限公司",
+     "publishTime": "2003-11-13",
+     "norm": "寻找周杰伦"
+    },
+    {
+     "id": "60736",
+     "mid": "003dAEX43IElBh",
+     "name": "范特西PLUS",
+     "tranName": "",
+     "size": 3,
+     "company": "杰威尔音乐有限公司",
+     "publishTime": "2001-12-28",
+     "norm": "范特西plus"
+    },
+    {
+     "id": "1306793",
+     "mid": "001uJFiE0tbGGa",
+     "name": "英雄",
+     "tranName": "",
+     "size": 1,
+     "company": "杰威尔音乐有限公司",
+     "publishTime": "2016-03-24",
+     "norm": "英雄"
+    },
+    {
+     "id": "14536",
+     "mid": "000OixvE1YjIqd",
+     "name": "霍元甲",
+     "tranName": "",
+     "size": 2,
+     "company": "阿尔发音乐股份有限公司",
+     "publishTime": "2006-01-20",
+     "norm": "霍元甲"
+    },
+    {
+     "id": "67340",
+     "mid": "002o2a5G46ETLr",
+     "name": "The Era 2010 超时代演唱会",
+     "tranName": "",
+     "size": 24,
+     "company": "杰威尔音乐有限公司",
+     "publishTime": "2011-01-25",
+     "norm": "theera2010超时代演唱会"
+    },
+    {
+     "id": "1268858",
+     "mid": "001V8fw21OdEnP",
+     "name": "Try",
+     "tranName": "",
+     "size": 1,
+     "company": "杰威尔音乐有限公司",
+     "publishTime": "2016-01-06",
+     "norm": "try"
+    },
+    {
+     "id": "33802",
+     "mid": "004cPHRr3nkmJe",
+     "name": "2007世界巡回演唱会",
+     "tranName": "",
+     "size": 21,
+     "company": "杰威尔音乐有限公司",
+     "publishTime": "2008-01-30",
+     "norm": "2007世界巡回演唱会"
+    },
+    {
+     "id": "14311",
+     "mid": "002MAeob3zLXwZ",
+     "name": "J III MP3 Player",
+     "tranName": "",
+     "size": 5,
+     "company": "阿尔发音乐股份有限公司",
+     "publishTime": "2005-06-24",
+     "norm": "jiiimp3player"
+    },
+    {
+     "id": "33749",
+     "mid": "004RBqID0tABKW",
+     "name": "大灌篮 电影原声带",
+     "tranName": "",
+     "size": 3,
+     "company": "未确定",
+     "publishTime": "2008-01-18",
+     "norm": "大灌篮电影原声带"
+    },
+    {
+     "id": "14323",
+     "mid": "0032ezFm3F53yO",
+     "name": "周杰伦 2004 无与伦比 演唱会 Live CD",
+     "tranName": "",
+     "size": 25,
+     "company": "杰威尔音乐有限公司",
+     "publishTime": "2005-01-20",
+     "norm": "周杰伦2004无与伦比演唱会livecd"
+    },
+    {
+     "id": "60745",
+     "mid": "002pPeJ54P94c0",
+     "name": "黄金甲",
+     "tranName": "",
+     "size": 2,
+     "company": "杰威尔音乐有限公司",
+     "publishTime": "2006-12-07",
+     "norm": "黄金甲"
+    },
+    {
+     "id": "1366240",
+     "mid": "004c8Md02WHHju",
+     "name": "周杰伦魔天伦世界巡回演唱会",
+     "tranName": "",
+     "size": 22,
+     "company": "杰威尔音乐有限公司",
+     "publishTime": "2016-05-10",
+     "norm": "周杰伦魔天伦世界巡回演唱会"
+    },
+    {
+     "id": "14320",
+     "mid": "001O06fF2b3W8P",
+     "name": "The One演唱会",
+     "tranName": "",
+     "size": 20,
+     "company": "杰威尔音乐有限公司",
+     "publishTime": "2002-10-25",
+     "norm": "theone演唱会"
+    },
+    {
+     "id": "453899",
+     "mid": "003b9EXT2QU0T7",
+     "name": "黄俊郎的黑",
+     "tranName": "",
+     "size": 8,
+     "company": "杰威尔音乐有限公司",
+     "publishTime": "2013-12-25",
+     "norm": "黄俊郎的黑"
+    },
+    {
+     "id": "9612009",
+     "mid": "001hGx1Z0so1YX",
+     "name": "我是如此相信",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2019-12-15",
+     "norm": "我是如此相信"
+    },
+    {
+     "id": "9040723",
+     "mid": "004fXSyj3bWTMN",
+     "name": "周杰伦地表最强世界巡回演唱会",
+     "tranName": "",
+     "size": 25,
+     "company": "未确定",
+     "publishTime": "2019-11-01",
+     "norm": "周杰伦地表最强世界巡回演唱会"
+    },
+    {
+     "id": "87495226",
+     "mid": "0041WVfh2vtlJE",
+     "name": "太阳之子",
+     "tranName": "",
+     "size": 13,
+     "company": "未确定",
+     "publishTime": "2026-03-25",
+     "norm": "太阳之子"
+    },
+    {
+     "id": "79852715",
+     "mid": "004Bux530GytNj",
+     "name": "恒星不忘 Forever Forever",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2025-12-05",
+     "norm": "恒星不忘foreverforever"
+    },
+    {
+     "id": "7876962",
+     "mid": "002gBTVk4JEE2T",
+     "name": "说好不哭（with 五月天阿信）",
+     "tranName": "",
+     "size": 1,
+     "company": "杰威尔音乐有限公司",
+     "publishTime": "2019-09-16",
+     "norm": "说好不哭"
+    },
+    {
+     "id": "68589582",
+     "mid": "001uKKpF1RuJSd",
+     "name": "即兴曲",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2025-06-06",
+     "norm": "即兴曲"
+    },
+    {
+     "id": "61118684",
+     "mid": "001g7BIA0IyPBZ",
+     "name": "Six Degrees",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2025-01-10",
+     "norm": "sixdegrees"
+    },
+    {
+     "id": "52616075",
+     "mid": "0039qQsU3Thnb5",
+     "name": "稻香 (Remix摇滚版)",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2024-07-03",
+     "norm": "稻香"
+    },
+    {
+     "id": "44806901",
+     "mid": "001ln9YB420a7b",
+     "name": "圣诞星 (feat. 杨瑞代)",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2023-12-22",
+     "norm": "圣诞星"
+    },
+    {
+     "id": "4044657",
+     "mid": "001CnPE31iJ899",
+     "name": "不爱我就拉倒",
+     "tranName": "",
+     "size": 1,
+     "company": "杰威尔音乐有限公司",
+     "publishTime": "2018-05-15",
+     "norm": "不爱我就拉倒"
+    },
+    {
+     "id": "3883404",
+     "mid": "003bSL0v4bpKAx",
+     "name": "等你下课",
+     "tranName": "",
+     "size": 1,
+     "company": "杰威尔音乐有限公司",
+     "publishTime": "2018-01-18",
+     "norm": "等你下课"
+    },
+    {
+     "id": "28791467",
+     "mid": "0042cH172YJ0mz",
+     "name": "最伟大的作品",
+     "tranName": "",
+     "size": 12,
+     "company": "未确定",
+     "publishTime": "2022-07-15",
+     "norm": "最伟大的作品"
+    },
+    {
+     "id": "23721068",
+     "mid": "00494Qwl2BYuKO",
+     "name": "大头贴",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2006-01-12",
+     "norm": "大头贴"
+    },
+    {
+     "id": "12924001",
+     "mid": "0009C3rp3Kfwg0",
+     "name": "Mojito",
+     "tranName": "",
+     "size": 1,
+     "company": "杰威尔音乐有限公司",
+     "publishTime": "2020-06-12",
+     "norm": "mojito"
+    }
+   ]
+  },
+  "林俊杰": {
+   "ne": [
+    {
+     "id": 363680877,
+     "name": "我对缘分小心翼翼",
+     "size": 1,
+     "company": "JFJ Productions Co.,Ltd.",
+     "publishTime": 1772121600000,
+     "norm": "我对缘分小心翼翼"
+    },
+    {
+     "id": 365713210,
+     "name": "为你揭晓",
+     "size": 1,
+     "company": "张艺兴工作室/JFJ Productions",
+     "publishTime": 1759420800000,
+     "norm": "为你揭晓"
+    },
+    {
+     "id": 285572520,
+     "name": "瞬间的瞬间",
+     "size": 1,
+     "company": "JFJ Productions",
+     "publishTime": 1757865600000,
+     "norm": "瞬间的瞬间"
+    },
+    {
+     "id": 283799806,
+     "name": "Skibidi",
+     "size": 1,
+     "company": "JFJ Productions",
+     "publishTime": 1756396800000,
+     "norm": "skibidi"
+    },
+    {
+     "id": 277995260,
+     "name": "在月蚀里抱紧我",
+     "size": 1,
+     "company": "JFJ Productions",
+     "publishTime": 1751731200000,
+     "norm": "在月蚀里抱紧我"
+    },
+    {
+     "id": 257899525,
+     "name": "光阴副本 / Turn Of A Page",
+     "size": 2,
+     "company": "JFJ Productions",
+     "publishTime": 1734969600000,
+     "norm": "光阴副本turnofapage"
+    },
+    {
+     "id": 242161668,
+     "name": "绝不绝",
+     "size": 1,
+     "company": "林俊杰、无畏契约",
+     "publishTime": 1721404800000,
+     "norm": "绝不绝"
+    },
+    {
+     "id": 182099803,
+     "name": "The Show (Steve Aoki & Lucas & Steve Remix)",
+     "size": 1,
+     "company": "FLUXGEN",
+     "publishTime": 1704988800000,
+     "norm": "theshow"
+    },
+    {
+     "id": 165474903,
+     "name": "The Show",
+     "size": 1,
+     "company": "FLUX GEN",
+     "publishTime": 1685030400000,
+     "norm": "theshow"
+    },
+    {
+     "id": 163678212,
+     "name": "重拾_快乐",
+     "size": 12,
+     "company": "JFJ Productions",
+     "publishTime": 1682006400000,
+     "norm": "重拾快乐"
+    },
+    {
+     "id": 164109253,
+     "name": "愿与愁",
+     "size": 1,
+     "company": "JFJ Productions",
+     "publishTime": 1681401600000,
+     "norm": "愿与愁"
+    },
+    {
+     "id": 163032988,
+     "name": "In The Joy",
+     "size": 1,
+     "company": "JFJ Productions",
+     "publishTime": 1680796800000,
+     "norm": "inthejoy"
+    },
+    {
+     "id": 162700227,
+     "name": "谢幕",
+     "size": 1,
+     "company": "JFJ Productions",
+     "publishTime": 1679673600000,
+     "norm": "谢幕"
+    },
+    {
+     "id": 159400773,
+     "name": "JJ的咖啡调调, Vol. 2",
+     "size": 6,
+     "company": "索尼音乐",
+     "publishTime": 1675353600000,
+     "norm": "jj的咖啡调调vol2"
+    },
+    {
+     "id": 159400159,
+     "name": "JJ的咖啡调调, Vol. 1",
+     "size": 10,
+     "company": "索尼音乐",
+     "publishTime": 1675180800000,
+     "norm": "jj的咖啡调调vol1"
+    },
+    {
+     "id": 154001751,
+     "name": "7千3百多天",
+     "size": 1,
+     "company": "JFJ Productions",
+     "publishTime": 1667232000000,
+     "norm": "7千3百多天"
+    },
+    {
+     "id": 151493746,
+     "name": "那些你很冒险的梦 (JJ20版)",
+     "size": 1,
+     "company": "JFJ Productions",
+     "publishTime": 1663171200000,
+     "norm": "那些你很冒险的梦"
+    },
+    {
+     "id": 149935225,
+     "name": "无拘",
+     "size": 2,
+     "company": "网易（杭州）网络有限公司",
+     "publishTime": 1660838400000,
+     "norm": "无拘"
+    },
+    {
+     "id": 138386353,
+     "name": "Gentle Bones",
+     "size": 9,
+     "company": "华纳音乐",
+     "publishTime": 1641312000000,
+     "norm": "gentlebones"
+    },
+    {
+     "id": 136644109,
+     "name": "一定会/After The Rain",
+     "size": 2,
+     "company": "JFJ Productions",
+     "publishTime": 1638115200000,
+     "norm": "一定会aftertherain"
+    },
+    {
+     "id": 136159734,
+     "name": "At Least I Had You",
+     "size": 1,
+     "company": "Cross Ratio Entertainment",
+     "publishTime": 1637251200000,
+     "norm": "atleastihadyou"
+    },
+    {
+     "id": 128570836,
+     "name": "裹着心的光",
+     "size": 1,
+     "company": "JFJ Productions",
+     "publishTime": 1623168000000,
+     "norm": "裹着心的光"
+    },
+    {
+     "id": 96964667,
+     "name": "Like You Do 如你",
+     "size": 8,
+     "company": "华纳音乐",
+     "publishTime": 1619107200000,
+     "norm": "likeyoudo如你"
+    },
+    {
+     "id": 120664150,
+     "name": "感爵这一刻",
+     "size": 2,
+     "company": "JFJ Productions",
+     "publishTime": 1608566400000,
+     "norm": "感爵这一刻"
+    },
+    {
+     "id": 120521903,
+     "name": "过",
+     "size": 2,
+     "company": "RYCE MUSIC GROUP 白米范（北京）文化传播有限公司",
+     "publishTime": 1608134400000,
+     "norm": "过"
+    },
+    {
+     "id": 96964343,
+     "name": "幸存者",
+     "size": 6,
+     "company": "华纳音乐",
+     "publishTime": 1603123200000,
+     "norm": "幸存者"
+    },
+    {
+     "id": 95357380,
+     "name": "交换余生",
+     "size": 1,
+     "company": "华纳音乐",
+     "publishTime": 1600185600000,
+     "norm": "交换余生"
+    },
+    {
+     "id": 93560337,
+     "name": "Stay With You (英文版)",
+     "size": 1,
+     "company": "JFJ Productions",
+     "publishTime": 1596902400000,
+     "norm": "staywithyou"
+    },
+    {
+     "id": 93058583,
+     "name": "无滤镜 (feat. 藤原浩)",
+     "size": 1,
+     "company": "JFJ Productions",
+     "publishTime": 1596038400000,
+     "norm": "无滤镜"
+    },
+    {
+     "id": 89855746,
+     "name": "Hello (录音室版)",
+     "size": 1,
+     "company": "华纳音乐",
+     "publishTime": 1590422400000,
+     "norm": "hello"
+    },
+    {
+     "id": 129496720,
+     "name": "《HOLD住爱》影视原声",
+     "size": 1,
+     "company": "海蝶（天津）文化传播有限公司",
+     "publishTime": 1586448000000,
+     "norm": "hold住爱影视原声"
+    },
+    {
+     "id": 82414979,
+     "name": "As I Believe",
+     "size": 1,
+     "company": "",
+     "publishTime": 1571241600000,
+     "norm": "asibelieve"
+    },
+    {
+     "id": 82325540,
+     "name": "Wonderland",
+     "size": 1,
+     "company": "JFJ Productions",
+     "publishTime": 1570982400000,
+     "norm": "wonderland"
+    },
+    {
+     "id": 81704189,
+     "name": "将故事写成我们",
+     "size": 1,
+     "company": "JFJ Productions",
+     "publishTime": 1568908800000,
+     "norm": "将故事写成我们"
+    },
+    {
+     "id": 81114988,
+     "name": "对的时间点/As I Believe",
+     "size": 2,
+     "company": "",
+     "publishTime": 1566748800000,
+     "norm": "对的时间点asibelieve"
+    },
+    {
+     "id": 79833279,
+     "name": "SHOW THE WORLD",
+     "size": 1,
+     "company": "华纳音乐",
+     "publishTime": 1560960000000,
+     "norm": "showtheworld"
+    },
+    {
+     "id": 79630781,
+     "name": "我们很好",
+     "size": 1,
+     "company": "JFJ Productions",
+     "publishTime": 1560355200000,
+     "norm": "我们很好"
+    },
+    {
+     "id": 74956171,
+     "name": "进阶",
+     "size": 1,
+     "company": "JFJ Productions",
+     "publishTime": 1545840000000,
+     "norm": "进阶"
+    },
+    {
+     "id": 38430015,
+     "name": "飞云之下",
+     "size": 1,
+     "company": "央金玛国际文化传媒(北京)有限公司",
+     "publishTime": 1524412800007,
+     "norm": "飞云之下"
+    },
+    {
+     "id": 37251646,
+     "name": "Despacito 缓缓",
+     "size": 1,
+     "company": "环球唱片",
+     "publishTime": 1516924800000,
+     "norm": "despacito缓缓"
+    },
+    {
+     "id": 37085119,
+     "name": "伟大的渺小",
+     "size": 11,
+     "company": "华纳音乐",
+     "publishTime": 1514476800000,
+     "norm": "伟大的渺小"
+    },
+    {
+     "id": 36997258,
+     "name": "黑夜问白天",
+     "size": 1,
+     "company": "华纳音乐",
+     "publishTime": 1514217600000,
+     "norm": "黑夜问白天"
+    },
+    {
+     "id": 36842222,
+     "name": "小瓶子",
+     "size": 1,
+     "company": "华纳音乐",
+     "publishTime": 1511712000000,
+     "norm": "小瓶子"
+    },
+    {
+     "id": 36828813,
+     "name": "伟大的渺小",
+     "size": 2,
+     "company": "华纳音乐",
+     "publishTime": 1511539200000,
+     "norm": "伟大的渺小"
+    },
+    {
+     "id": 35902972,
+     "name": "丹宁执着",
+     "size": 1,
+     "company": "华纳音乐",
+     "publishTime": 1503504000000,
+     "norm": "丹宁执着"
+    },
+    {
+     "id": 34875558,
+     "name": "2infinity And Beyond",
+     "size": 1,
+     "company": "",
+     "publishTime": 1473868800000,
+     "norm": "2infinityandbeyond"
+    },
+    {
+     "id": 34739607,
+     "name": "超越无限",
+     "size": 1,
+     "company": "华纳音乐",
+     "publishTime": 1466438400000,
+     "norm": "超越无限"
+    },
+    {
+     "id": 3438282,
+     "name": "和自己对话",
+     "size": 18,
+     "company": "JFJ Productions",
+     "publishTime": 1450972800000,
+     "norm": "和自己对话"
+    },
+    {
+     "id": 34588159,
+     "name": "和自己对话-感动双推荐",
+     "size": 2,
+     "company": "华纳音乐",
+     "publishTime": 1450368000000,
+     "norm": "和自己对话感动双推荐"
+    },
+    {
+     "id": 3397890,
+     "name": "不为谁而作的歌",
+     "size": 1,
+     "company": "华纳音乐",
+     "publishTime": 1449072000000,
+     "norm": "不为谁而作的歌"
+    },
+    {
+     "id": 34922161,
+     "name": "Dreams (Theme of \"Chingay Parade Singapore 2015\")",
+     "size": 1,
+     "company": "People's Association",
+     "publishTime": 1445529600007,
+     "norm": "dreams"
+    },
+    {
+     "id": 3331034,
+     "name": "只要有你的地方 (电影\"消失的爱人\"主题曲)",
+     "size": 1,
+     "company": "华纳音乐",
+     "publishTime": 1444838400000,
+     "norm": "只要有你的地方"
+    },
+    {
+     "id": 3306073,
+     "name": "全面开战 (\"部落冲突Clash of Clans\"主题曲)",
+     "size": 1,
+     "company": "华纳音乐",
+     "publishTime": 1443024000000,
+     "norm": "全面开战"
+    },
+    {
+     "id": 3210206,
+     "name": "Our Singapore",
+     "size": 1,
+     "company": "",
+     "publishTime": 1435939200007,
+     "norm": "oursingapore"
+    },
+    {
+     "id": 3190675,
+     "name": "I Pray For You",
+     "size": 1,
+     "company": "华纳音乐",
+     "publishTime": 1435766400000,
+     "norm": "iprayforyou"
+    },
+    {
+     "id": 3056951,
+     "name": "新地球 - 人 (Special Edition)",
+     "size": 13,
+     "company": "华纳音乐",
+     "publishTime": 1422547200000,
+     "norm": "新地球人"
+    },
+    {
+     "id": 142840706,
+     "name": "Checkmate",
+     "size": 1,
+     "company": "华纳音乐",
+     "publishTime": 1421683200000,
+     "norm": "checkmate"
+    },
+    {
+     "id": 79214796,
+     "name": "新地球",
+     "size": 12,
+     "company": "华纳音乐",
+     "publishTime": 1419609600000,
+     "norm": "新地球"
+    },
+    {
+     "id": 2301158,
+     "name": "因你而在",
+     "size": 12,
+     "company": "JFJ Productions",
+     "publishTime": 1363104000000,
+     "norm": "因你而在"
+    },
+    {
+     "id": 79239651,
+     "name": "修炼爱情",
+     "size": 1,
+     "company": "华纳音乐",
+     "publishTime": 1361376000000,
+     "norm": "修炼爱情"
+    },
+    {
+     "id": 2448339,
+     "name": "他是…JJ林俊杰",
+     "size": 32,
+     "company": "海蝶（天津）文化传播有限公司",
+     "publishTime": 1356019200000,
+     "norm": "他是jj林俊杰"
+    },
+    {
+     "id": 10750,
+     "name": "学不会",
+     "size": 12,
+     "company": "JFJ Productions",
+     "publishTime": 1325260800000,
+     "norm": "学不会"
+    },
+    {
+     "id": 10751,
+     "name": "I AM 世界巡回演唱会",
+     "size": 29,
+     "company": "海蝶（天津）文化传播有限公司",
+     "publishTime": 1320681600000,
+     "norm": "iam世界巡回演唱会"
+    },
+    {
+     "id": 10755,
+     "name": "她说 概念自选辑",
+     "size": 14,
+     "company": "海蝶音乐",
+     "publishTime": 1291737600000,
+     "norm": "她说概念自选辑"
+    },
+    {
+     "id": 10758,
+     "name": "100天Love音乐实录",
+     "size": 12,
+     "company": "海蝶",
+     "publishTime": 1278000000000,
+     "norm": "100天love音乐实录"
+    },
+    {
+     "id": 10762,
+     "name": "Cheer Singapore",
+     "size": 1,
+     "company": "海螺唱片",
+     "publishTime": 1271347200000,
+     "norm": "cheersingapore"
+    },
+    {
+     "id": 10763,
+     "name": "感动每一刻",
+     "size": 1,
+     "company": "海蝶音樂股份有限公司",
+     "publishTime": 1271174400000,
+     "norm": "感动每一刻"
+    },
+    {
+     "id": 10765,
+     "name": "妈妈的娜鲁娃 (原住民版)",
+     "size": 1,
+     "company": "海蝶",
+     "publishTime": 1265558400000,
+     "norm": "妈妈的娜鲁娃"
+    },
+    {
+     "id": 129727688,
+     "name": "梦想的翅膀",
+     "size": 1,
+     "company": "海蝶（天津）文化传播有限公司",
+     "publishTime": 1261324800000,
+     "norm": "梦想的翅膀"
+    },
+    {
+     "id": 10766,
+     "name": "100天",
+     "size": 13,
+     "company": "海蝶音乐",
+     "publishTime": 1261065600000,
+     "norm": "100天"
+    },
+    {
+     "id": 511433,
+     "name": "微笑上海",
+     "size": 1,
+     "company": "数字发行",
+     "publishTime": 1255363200000,
+     "norm": "微笑上海"
+    },
+    {
+     "id": 184814178,
+     "name": "新年到",
+     "size": 1,
+     "company": "海蝶音乐",
+     "publishTime": 1228060800000,
+     "norm": "新年到"
+    },
+    {
+     "id": 10770,
+     "name": "JJ陆",
+     "size": 14,
+     "company": "海蝶音乐",
+     "publishTime": 1224259200000,
+     "norm": "jj陆"
+    },
+    {
+     "id": 3192052,
+     "name": "听见幸福",
+     "size": 1,
+     "company": "海蝶（天津）文化传播有限公司",
+     "publishTime": 1206633600000,
+     "norm": "听见幸福"
+    },
+    {
+     "id": 10775,
+     "name": "Hurray一起摇",
+     "size": 1,
+     "company": "海蝶",
+     "publishTime": 1194451200000,
+     "norm": "hurray一起摇"
+    },
+    {
+     "id": 10777,
+     "name": "西界",
+     "size": 14,
+     "company": "海蝶音乐",
+     "publishTime": 1183046400000,
+     "norm": "西界"
+    },
+    {
+     "id": 36948177,
+     "name": "忘记",
+     "size": 1,
+     "company": "海蝶",
+     "publishTime": 1169568000007,
+     "norm": "忘记"
+    },
+    {
+     "id": 10783,
+     "name": "音乐进化全过程",
+     "size": 27,
+     "company": "海蝶",
+     "publishTime": 1169568000000,
+     "norm": "音乐进化全过程"
+    },
+    {
+     "id": 10786,
+     "name": "2006就是俊杰世界巡回演唱会",
+     "size": 23,
+     "company": "海蝶（天津）文化传播有限公司",
+     "publishTime": 1167321600000,
+     "norm": "2006就是俊杰世界巡回演唱会"
+    },
+    {
+     "id": 10792,
+     "name": "曹操",
+     "size": 12,
+     "company": "海蝶",
+     "publishTime": 1140105600000,
+     "norm": "曹操"
+    }
+   ],
+   "qq": [
+    {
+     "id": "852443",
+     "mid": "001IV22P1RDX7p",
+     "name": "新地球 - 人 (Special Edition)",
+     "tranName": "",
+     "size": 13,
+     "company": "华纳唱片",
+     "publishTime": "2015-01-29",
+     "norm": "新地球人"
+    },
+    {
+     "id": "36160",
+     "mid": "002g6zv02X7SNi",
+     "name": "JJ陆",
+     "tranName": "",
+     "size": 15,
+     "company": "海蝶音乐",
+     "publishTime": "2008-10-18",
+     "norm": "jj陆"
+    },
+    {
+     "id": "62342",
+     "mid": "000TuW8h0AH2n4",
+     "name": "她说 概念自选辑",
+     "tranName": "",
+     "size": 14,
+     "company": "海蝶音乐",
+     "publishTime": "2010-12-08",
+     "norm": "她说概念自选辑"
+    },
+    {
+     "id": "421264",
+     "mid": "001gqOnU3DTg2S",
+     "name": "因你 而在",
+     "tranName": "",
+     "size": 12,
+     "company": "华纳唱片",
+     "publishTime": "2013-03-13",
+     "norm": "因你而在"
+    },
+    {
+     "id": "8036",
+     "mid": "000y5gq7449K9I",
+     "name": "第二天堂",
+     "tranName": "",
+     "size": 15,
+     "company": "海蝶音乐",
+     "publishTime": "2004-06-04",
+     "norm": "第二天堂"
+    },
+    {
+     "id": "8440",
+     "mid": "002aaUOS24kcwh",
+     "name": "曹操",
+     "tranName": "",
+     "size": 12,
+     "company": "海蝶音乐",
+     "publishTime": "2006-02-17",
+     "norm": "曹操"
+    },
+    {
+     "id": "88971",
+     "mid": "002PQCmo2azasb",
+     "name": "学不会",
+     "tranName": "",
+     "size": 12,
+     "company": "华纳唱片",
+     "publishTime": "2011-12-31",
+     "norm": "学不会"
+    },
+    {
+     "id": "8035",
+     "mid": "001HwwNH1inlz9",
+     "name": "编号89757",
+     "tranName": "",
+     "size": 12,
+     "company": "海蝶音乐",
+     "publishTime": "2005-04-01",
+     "norm": "编号89757"
+    },
+    {
+     "id": "54866",
+     "mid": "002C0kX720gMQi",
+     "name": "100天",
+     "tranName": "",
+     "size": 13,
+     "company": "海蝶音乐",
+     "publishTime": "2009-12-18",
+     "norm": "100天"
+    },
+    {
+     "id": "59071",
+     "mid": "004HNY674Nu68w",
+     "name": "100天·Love音乐实录",
+     "tranName": "",
+     "size": 12,
+     "company": "海蝶音乐",
+     "publishTime": "2010-07-02",
+     "norm": "100天love音乐实录"
+    },
+    {
+     "id": "1220218",
+     "mid": "003nbc0602Tgfx",
+     "name": "不为谁而作的歌",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2015-12-03",
+     "norm": "不为谁而作的歌"
+    },
+    {
+     "id": "8668",
+     "mid": "002vlOfM1X5TQ0",
+     "name": "乐行者",
+     "tranName": "",
+     "size": 11,
+     "company": "海蝶音乐",
+     "publishTime": "2003-04-10",
+     "norm": "乐行者"
+    },
+    {
+     "id": "1258533",
+     "mid": "004Tvu0F207cps",
+     "name": "和自己对话 From M.E. To Myself",
+     "tranName": "",
+     "size": 18,
+     "company": "未确定",
+     "publishTime": "2015-12-25",
+     "norm": "和自己对话frommetomyself"
+    },
+    {
+     "id": "33201",
+     "mid": "002byTjo3vFz40",
+     "name": "西界",
+     "tranName": "",
+     "size": 14,
+     "company": "海蝶音乐",
+     "publishTime": "2007-06-29",
+     "norm": "西界"
+    },
+    {
+     "id": "1034910",
+     "mid": "001NN3om4TIIse",
+     "name": "我为你祈祷",
+     "tranName": "",
+     "size": 1,
+     "company": "华纳唱片",
+     "publishTime": "2015-07-02",
+     "norm": "我为你祈祷"
+    },
+    {
+     "id": "60352",
+     "mid": "000KzVUN1wEZge",
+     "name": "I AM 世界巡回演唱会",
+     "tranName": "",
+     "size": 29,
+     "company": "海蝶音乐",
+     "publishTime": "2011-11-08",
+     "norm": "iam世界巡回演唱会"
+    },
+    {
+     "id": "1480048",
+     "mid": "004OOL8825c6iu",
+     "name": "超越无限",
+     "tranName": "",
+     "size": 1,
+     "company": "华纳唱片",
+     "publishTime": "2016-06-21",
+     "norm": "超越无限"
+    },
+    {
+     "id": "15829",
+     "mid": "0032QSzJ1XHsdG",
+     "name": "音乐进化全过程",
+     "tranName": "",
+     "size": 27,
+     "company": "海蝶音乐",
+     "publishTime": "2007-01-24",
+     "norm": "音乐进化全过程"
+    },
+    {
+     "id": "1151018",
+     "mid": "003ecgUW1RdVPm",
+     "name": "全面开战",
+     "tranName": "",
+     "size": 1,
+     "company": "华纳唱片",
+     "publishTime": "2015-09-24",
+     "norm": "全面开战"
+    },
+    {
+     "id": "1602482",
+     "mid": "002RmPKZ10U80d",
+     "name": "2infinity And Beyond",
+     "tranName": "",
+     "size": 1,
+     "company": "华纳唱片",
+     "publishTime": "2016-09-15",
+     "norm": "2infinityandbeyond"
+    },
+    {
+     "id": "1246273",
+     "mid": "002q7sod3V0WUk",
+     "name": "和自己对话-感动双推荐",
+     "tranName": "",
+     "size": 2,
+     "company": "未确定",
+     "publishTime": "2015-12-18",
+     "norm": "和自己对话感动双推荐"
+    },
+    {
+     "id": "303655",
+     "mid": "000kYs1E2jJK3x",
+     "name": "他是... JJ林俊杰",
+     "tranName": "",
+     "size": 32,
+     "company": "海蝶音乐",
+     "publishTime": "2012-12-21",
+     "norm": "他是jj林俊杰"
+    },
+    {
+     "id": "645762",
+     "mid": "0016ai4E2CYU4y",
+     "name": "iTunes Session",
+     "tranName": "",
+     "size": 6,
+     "company": "华纳唱片",
+     "publishTime": "2014-07-18",
+     "norm": "itunessession"
+    },
+    {
+     "id": "15714",
+     "mid": "003zzhok1oFRWM",
+     "name": "2006就是俊杰 世界巡回演唱会",
+     "tranName": "",
+     "size": 22,
+     "company": "海蝶音乐",
+     "publishTime": "2006-12-29",
+     "norm": "2006就是俊杰世界巡回演唱会"
+    },
+    {
+     "id": "193817",
+     "mid": "001l51x724nCXL",
+     "name": "感动每一刻",
+     "tranName": "",
+     "size": 1,
+     "company": "海螺唱片",
+     "publishTime": "2010-04-14",
+     "norm": "感动每一刻"
+    },
+    {
+     "id": "1282357",
+     "mid": "003yYmh63KWNvf",
+     "name": "Hurray一起摇",
+     "tranName": "",
+     "size": 1,
+     "company": "海蝶音乐",
+     "publishTime": "2007-11-08",
+     "norm": "hurray一起摇"
+    },
+    {
+     "id": "193816",
+     "mid": "004gdnOA15jSXD",
+     "name": "Cheer Singapore",
+     "tranName": "",
+     "size": 1,
+     "company": "海蝶音乐",
+     "publishTime": "2010-04-16",
+     "norm": "cheersingapore"
+    },
+    {
+     "id": "985591",
+     "mid": "003c4LGQ3VcQJy",
+     "name": "听见幸福",
+     "tranName": "",
+     "size": 1,
+     "company": "海蝶音乐",
+     "publishTime": "2008-03-28",
+     "norm": "听见幸福"
+    },
+    {
+     "id": "1614306",
+     "mid": "0042Hv7C2zYbpM",
+     "name": "Dreams (Theme of \"Chingay Parade Singapore 2015\")",
+     "tranName": "",
+     "size": 1,
+     "company": "People's Association",
+     "publishTime": "2015-10-23",
+     "norm": "dreams"
+    },
+    {
+     "id": "85988065",
+     "mid": "003Z2Hee3ZhPz5",
+     "name": "我对缘分小心翼翼（影视剧《逐玉》主题曲）",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2026-02-27",
+     "norm": "我对缘分小心翼翼"
+    },
+    {
+     "id": "8360702",
+     "mid": "000XEFal22lEwn",
+     "name": "Wonderland",
+     "tranName": "",
+     "size": 1,
+     "company": "华纳唱片",
+     "publishTime": "2019-10-14",
+     "norm": "wonderland"
+    },
+    {
+     "id": "80613025",
+     "mid": "004Blbw51R7eFw",
+     "name": "过",
+     "tranName": "",
+     "size": 2,
+     "company": "未确定",
+     "publishTime": "2020-12-18",
+     "norm": "过"
+    },
+    {
+     "id": "7876930",
+     "mid": "003MVnC94cNKbM",
+     "name": "将故事写成我们",
+     "tranName": "",
+     "size": 1,
+     "company": "华纳唱片",
+     "publishTime": "2019-09-20",
+     "norm": "将故事写成我们"
+    },
+    {
+     "id": "76165992",
+     "mid": "000AImqc0jgZOu",
+     "name": "明日坐标",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2025-10-09",
+     "norm": "明日坐标"
+    },
+    {
+     "id": "75905836",
+     "mid": "001a22ZU1kyrDf",
+     "name": "为你揭晓",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2025-10-03",
+     "norm": "为你揭晓"
+    },
+    {
+     "id": "7518309",
+     "mid": "000n9f7q2l8Yl9",
+     "name": "对的时间点/As I Believe",
+     "tranName": "",
+     "size": 2,
+     "company": "华纳唱片",
+     "publishTime": "2019-08-26",
+     "norm": "对的时间点asibelieve"
+    },
+    {
+     "id": "74657838",
+     "mid": "001xPVf51TwY9y",
+     "name": "瞬间的瞬间（电影《他年她日》主题曲）",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2025-09-15",
+     "norm": "瞬间的瞬间"
+    },
+    {
+     "id": "72827812",
+     "mid": "0038LA1y1MIGyD",
+     "name": "Skibidi",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2025-08-29",
+     "norm": "skibidi"
+    },
+    {
+     "id": "70223983",
+     "mid": "0035l0hM3s3wCH",
+     "name": "在月蚀里抱紧我",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2025-07-06",
+     "norm": "在月蚀里抱紧我"
+    },
+    {
+     "id": "7009032",
+     "mid": "000ADcn52UzdWj",
+     "name": "SHOW THE WORLD",
+     "tranName": "",
+     "size": 1,
+     "company": "华纳唱片",
+     "publishTime": "2019-06-20",
+     "norm": "showtheworld"
+    },
+    {
+     "id": "6968757",
+     "mid": "0010AYuF3nqxhw",
+     "name": "我们很好",
+     "tranName": "",
+     "size": 1,
+     "company": "华纳唱片",
+     "publishTime": "2019-06-13",
+     "norm": "我们很好"
+    },
+    {
+     "id": "59983171",
+     "mid": "004G4ZWA180RuH",
+     "name": "光阴副本 / Turn Of A Page",
+     "tranName": "",
+     "size": 2,
+     "company": "未确定",
+     "publishTime": "2024-12-24",
+     "norm": "光阴副本turnofapage"
+    },
+    {
+     "id": "5659426",
+     "mid": "000cc1cw4Gysl3",
+     "name": "进阶",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2018-12-27",
+     "norm": "进阶"
+    },
+    {
+     "id": "53175413",
+     "mid": "000cPuL32brjN5",
+     "name": "绝不绝",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2024-07-20",
+     "norm": "绝不绝"
+    },
+    {
+     "id": "49569582",
+     "mid": "002gd9hO2c4oBQ",
+     "name": "俯冲的灵魂",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2024-04-22",
+     "norm": "俯冲的灵魂"
+    },
+    {
+     "id": "46346101",
+     "mid": "0008T0Ba03UsN7",
+     "name": "新年到",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2008-12-01",
+     "norm": "新年到"
+    },
+    {
+     "id": "45335814",
+     "mid": "000PtuV63zCPGe",
+     "name": "The Show (Steve Aoki & Lucas & Steve Remix)",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2024-01-12",
+     "norm": "theshow"
+    },
+    {
+     "id": "4022297",
+     "mid": "000XAvOz4exGKL",
+     "name": "飞云之下",
+     "tranName": "",
+     "size": 1,
+     "company": "肆想文化",
+     "publishTime": "2018-04-23",
+     "norm": "飞云之下"
+    },
+    {
+     "id": "3889148",
+     "mid": "000iHuBG0KsgOh",
+     "name": "Despacito 缓缓 (Mandarin Version)",
+     "tranName": "",
+     "size": 1,
+     "company": "环球唱片",
+     "publishTime": "2018-01-26",
+     "norm": "despacito缓缓"
+    },
+    {
+     "id": "3848604",
+     "mid": "000nw1yB4XOs9j",
+     "name": "伟大的渺小",
+     "tranName": "",
+     "size": 11,
+     "company": "未确定",
+     "publishTime": "2017-12-28",
+     "norm": "伟大的渺小"
+    },
+    {
+     "id": "3847658",
+     "mid": "002kRWck0w3Dp5",
+     "name": "黑夜问白天",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2017-12-26",
+     "norm": "黑夜问白天"
+    },
+    {
+     "id": "38376370",
+     "mid": "000jywm83wKSw2",
+     "name": "The Show",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2023-05-26",
+     "norm": "theshow"
+    },
+    {
+     "id": "37088284",
+     "mid": "004ZOIop1doXru",
+     "name": "重拾_快乐",
+     "tranName": "",
+     "size": 12,
+     "company": "未确定",
+     "publishTime": "2023-04-21",
+     "norm": "重拾快乐"
+    },
+    {
+     "id": "36845119",
+     "mid": "001AFQWD2TbOF1",
+     "name": "In The Joy",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2023-04-07",
+     "norm": "inthejoy"
+    },
+    {
+     "id": "36504995",
+     "mid": "001Pevrs2AwNVQ",
+     "name": "谢幕",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2023-03-25",
+     "norm": "谢幕"
+    },
+    {
+     "id": "34922894",
+     "mid": "001qbyMM2byl8Q",
+     "name": "JJ的咖啡调调, Vol. 2",
+     "tranName": "",
+     "size": 6,
+     "company": "未确定",
+     "publishTime": "2023-02-04",
+     "norm": "jj的咖啡调调vol2"
+    },
+    {
+     "id": "34922451",
+     "mid": "003KCM1p2gta6y",
+     "name": "JJ的咖啡调调, Vol. 1",
+     "tranName": "",
+     "size": 10,
+     "company": "未确定",
+     "publishTime": "2023-02-04",
+     "norm": "jj的咖啡调调vol1"
+    },
+    {
+     "id": "3298423",
+     "mid": "002VdErv41kpa8",
+     "name": "小瓶子（《假如王子睡着了》电影印象曲）",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2017-11-27",
+     "norm": "小瓶子"
+    },
+    {
+     "id": "3298337",
+     "mid": "001oDaKN2Dtwv5",
+     "name": "伟大的渺小",
+     "tranName": "",
+     "size": 2,
+     "company": "未确定",
+     "publishTime": "2017-11-24",
+     "norm": "伟大的渺小"
+    },
+    {
+     "id": "31716302",
+     "mid": "001DyYEn16mUQm",
+     "name": "7千3百多天",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2022-11-01",
+     "norm": "7千3百多天"
+    },
+    {
+     "id": "30594370",
+     "mid": "000k4WMb4F1HQy",
+     "name": "那些你很冒险的梦 (JJ20版)",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2022-09-15",
+     "norm": "那些你很冒险的梦"
+    },
+    {
+     "id": "29907014",
+     "mid": "002Npu9h0QZLeZ",
+     "name": "无拘",
+     "tranName": "",
+     "size": 2,
+     "company": "未确定",
+     "publishTime": "2022-08-19",
+     "norm": "无拘"
+    },
+    {
+     "id": "23644240",
+     "mid": "004Xe3fb1dq6UD",
+     "name": "一定会 / After The Rain",
+     "tranName": "",
+     "size": 2,
+     "company": "未确定",
+     "publishTime": "2021-11-29",
+     "norm": "一定会aftertherain"
+    },
+    {
+     "id": "23462569",
+     "mid": "001lSnI84flkYe",
+     "name": "At Least I Had You",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2021-11-19",
+     "norm": "atleastihadyou"
+    },
+    {
+     "id": "2338085",
+     "mid": "003ap4Ax1KtVXs",
+     "name": "学不会 (Holiday Gift Live)",
+     "tranName": "",
+     "size": 3,
+     "company": "华纳唱片",
+     "publishTime": "2012-02-14",
+     "norm": "学不会"
+    },
+    {
+     "id": "23077911",
+     "mid": "0033R2xQ2I0Uyf",
+     "name": "新地球",
+     "tranName": "",
+     "size": 12,
+     "company": "未确定",
+     "publishTime": "2014-12-27",
+     "norm": "新地球"
+    },
+    {
+     "id": "2210323",
+     "mid": "002R45w725Mr2V",
+     "name": "丹宁执着",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2017-08-23",
+     "norm": "丹宁执着"
+    },
+    {
+     "id": "20174085",
+     "mid": "004LFNMl1kvYuJ",
+     "name": "裹着心的光",
+     "tranName": "",
+     "size": 1,
+     "company": "JFJ Productions",
+     "publishTime": "2021-06-09",
+     "norm": "裹着心的光"
+    },
+    {
+     "id": "15978527",
+     "mid": "004atgvK3uaRN4",
+     "name": "感爵这一刻",
+     "tranName": "",
+     "size": 2,
+     "company": "华纳唱片",
+     "publishTime": "2020-12-22",
+     "norm": "感爵这一刻"
+    },
+    {
+     "id": "14945077",
+     "mid": "001O8vnZ3OetWY",
+     "name": "Like You Do 如你",
+     "tranName": "",
+     "size": 8,
+     "company": "未确定",
+     "publishTime": "2020-10-20",
+     "norm": "likeyoudo如你"
+    },
+    {
+     "id": "14945041",
+     "mid": "003cnxEk2Pap9I",
+     "name": "幸存者 Drifter",
+     "tranName": "",
+     "size": 6,
+     "company": "未确定",
+     "publishTime": "2020-10-20",
+     "norm": "幸存者drifter"
+    },
+    {
+     "id": "14551265",
+     "mid": "004TvSd03uUezv",
+     "name": "交换余生",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2020-09-16",
+     "norm": "交换余生"
+    },
+    {
+     "id": "14034467",
+     "mid": "000DBkNc44oBhc",
+     "name": "Stay With You (英文版)",
+     "tranName": "",
+     "size": 1,
+     "company": "华纳唱片",
+     "publishTime": "2020-08-09",
+     "norm": "staywithyou"
+    },
+    {
+     "id": "13916553",
+     "mid": "002IuVU91dSslH",
+     "name": "无滤镜 (feat. 藤原浩)",
+     "tranName": "",
+     "size": 1,
+     "company": "华纳唱片",
+     "publishTime": "2020-07-30",
+     "norm": "无滤镜"
+    },
+    {
+     "id": "12608307",
+     "mid": "003qt4Zd19X2jr",
+     "name": "Hello (录音室版)",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2020-05-26",
+     "norm": "hello"
+    }
+   ]
+  },
+  "五月天": {
+   "ne": [
+    {
+     "id": 381149051,
+     "name": "如烟-Live",
+     "size": 1,
+     "company": "相信音乐",
+     "publishTime": 1781193600000,
+     "norm": "如烟live"
+    },
+    {
+     "id": 379928520,
+     "name": "达拉崩吧-Live",
+     "size": 1,
+     "company": "相信音乐",
+     "publishTime": 1780588800000,
+     "norm": "达拉崩吧live"
+    },
+    {
+     "id": 268593210,
+     "name": "《欢迎光临二代咖啡》电视剧原声带",
+     "size": 7,
+     "company": "相信音乐",
+     "publishTime": 1744560000000,
+     "norm": "欢迎光临二代咖啡电视剧原声带"
+    },
+    {
+     "id": 262894352,
+     "name": "电视剧《难哄》影视原声带·只喜欢你Love Moments",
+     "size": 14,
+     "company": "哇唧唧哇娱乐（天津）有限公司",
+     "publishTime": 1739808000000,
+     "norm": "电视剧难哄影视原声带只喜欢你lovemoments"
+    },
+    {
+     "id": 249022852,
+     "name": "今夜一起为爱鼓掌 电视剧原声带",
+     "size": 7,
+     "company": "相信音乐",
+     "publishTime": 1727625600000,
+     "norm": "今夜一起为爱鼓掌电视剧原声带"
+    },
+    {
+     "id": 242620969,
+     "name": "星期五晚上(庆功16蹲版)",
+     "size": 1,
+     "company": "相信音乐",
+     "publishTime": 1721318400000,
+     "norm": "星期五晚上"
+    },
+    {
+     "id": 168363641,
+     "name": "外人",
+     "size": 1,
+     "company": "相信音乐",
+     "publishTime": 1687708800000,
+     "norm": "外人"
+    },
+    {
+     "id": 167915414,
+     "name": "唯一",
+     "size": 1,
+     "company": "相信音乐",
+     "publishTime": 1687104000000,
+     "norm": "唯一"
+    },
+    {
+     "id": 163377398,
+     "name": "知足",
+     "size": 1,
+     "company": "相信音乐",
+     "publishTime": 1681056000000,
+     "norm": "知足"
+    },
+    {
+     "id": 162420140,
+     "name": "五月天 fly to 2023 诺亚方舟十周年线上特别版 LIVE",
+     "size": 10,
+     "company": "相信音乐",
+     "publishTime": 1680019200000,
+     "norm": "五月天flyto2023诺亚方舟十周年线上live"
+    },
+    {
+     "id": 159630209,
+     "name": "来看我们的演唱会 第5期",
+     "size": 3,
+     "company": "相信音乐",
+     "publishTime": 1671811200000,
+     "norm": "来看我们的演唱会第5期"
+    },
+    {
+     "id": 156893900,
+     "name": "为你写下这首情歌",
+     "size": 1,
+     "company": "相信音乐",
+     "publishTime": 1670947200000,
+     "norm": "为你写下这首情歌"
+    },
+    {
+     "id": 154183399,
+     "name": "你的神曲",
+     "size": 2,
+     "company": "相信音乐",
+     "publishTime": 1667232000000,
+     "norm": "你的神曲"
+    },
+    {
+     "id": 152291072,
+     "name": "《台北女子图鉴》电视剧原声带",
+     "size": 10,
+     "company": "相信音乐",
+     "publishTime": 1664467200000,
+     "norm": "台北女子图鉴电视剧原声带"
+    },
+    {
+     "id": 144010062,
+     "name": "五月天 好好好想见到你 Mayday fly to 2022 线上特别版 LIVE",
+     "size": 10,
+     "company": "相信音乐",
+     "publishTime": 1643472000000,
+     "norm": "五月天好好好想见到你maydayflyto2022线上live"
+    },
+    {
+     "id": 142568012,
+     "name": "刻在我心底的名字",
+     "size": 1,
+     "company": "相信音乐",
+     "publishTime": 1629388800000,
+     "norm": "刻在我心底的名字"
+    },
+    {
+     "id": 120858549,
+     "name": "因为你 所以我",
+     "size": 1,
+     "company": "相信音乐",
+     "publishTime": 1608825600000,
+     "norm": "因为你所以我"
+    },
+    {
+     "id": 95268315,
+     "name": "五月天 突然好想见到你 live in the sky",
+     "size": 12,
+     "company": "相信音乐",
+     "publishTime": 1594051200000,
+     "norm": "五月天突然好想见到你liveinthesky"
+    },
+    {
+     "id": 83913386,
+     "name": "干啦干啦",
+     "size": 1,
+     "company": "滚石唱片",
+     "publishTime": 1575388800000,
+     "norm": "干啦干啦"
+    },
+    {
+     "id": 84886007,
+     "name": "温柔 #MaydayBlue20th",
+     "size": 1,
+     "company": "相信音乐",
+     "publishTime": 1565193600000,
+     "norm": "温柔maydayblue20th"
+    },
+    {
+     "id": 80852840,
+     "name": "玫瑰少年",
+     "size": 1,
+     "company": "相信音乐",
+     "publishTime": 1565193600000,
+     "norm": "玫瑰少年"
+    },
+    {
+     "id": 80815021,
+     "name": "疯狂世界 #MaydayBlue20th",
+     "size": 1,
+     "company": "相信音乐",
+     "publishTime": 1562515200000,
+     "norm": "疯狂世界maydayblue20th"
+    },
+    {
+     "id": 79344239,
+     "name": "五月天 人生无限公司 Life Live 完整收录篇",
+     "size": 24,
+     "company": "相信音乐",
+     "publishTime": 1558540800000,
+     "norm": "五月天人生无限公司lifelive完整收录篇"
+    },
+    {
+     "id": 79160768,
+     "name": "五月天 人生无限公司 Life Live 好友加班篇",
+     "size": 12,
+     "company": "相信音乐",
+     "publishTime": 1557849600000,
+     "norm": "五月天人生无限公司lifelive好友加班篇"
+    },
+    {
+     "id": 78968898,
+     "name": "纯真 #MaydayBlue20th",
+     "size": 1,
+     "company": "相信音乐",
+     "publishTime": 1557072000000,
+     "norm": "纯真maydayblue20th"
+    },
+    {
+     "id": 74992008,
+     "name": "转眼 (2018自传最终章)",
+     "size": 1,
+     "company": "相信音乐",
+     "publishTime": 1546185600000,
+     "norm": "转眼"
+    },
+    {
+     "id": 38562055,
+     "name": "I Will Carry You",
+     "size": 1,
+     "company": "相信音乐",
+     "publishTime": 1524931200000,
+     "norm": "iwillcarryyou"
+    },
+    {
+     "id": 38373053,
+     "name": "后来的我们 (眼泪未干版)",
+     "size": 1,
+     "company": "相信音乐",
+     "publishTime": 1523548800000,
+     "norm": "后来的我们"
+    },
+    {
+     "id": 37391380,
+     "name": "什么歌",
+     "size": 1,
+     "company": "相信音乐",
+     "publishTime": 1517241600000,
+     "norm": "什么歌"
+    },
+    {
+     "id": 35445175,
+     "name": "志明与春娇",
+     "size": 1,
+     "company": "相信音乐",
+     "publishTime": 1493654400000,
+     "norm": "志明与春娇"
+    },
+    {
+     "id": 35241994,
+     "name": "凡人歌",
+     "size": 1,
+     "company": "相信音乐",
+     "publishTime": 1489939200000,
+     "norm": "凡人歌"
+    },
+    {
+     "id": 35158067,
+     "name": "自伝 History of Tomorrow",
+     "size": 19,
+     "company": "A-Sketch",
+     "publishTime": 1485878400007,
+     "norm": "自伝historyoftomorrow"
+    },
+    {
+     "id": 34746073,
+     "name": "自传",
+     "size": 13,
+     "company": "相信音乐",
+     "publishTime": 1469030400007,
+     "norm": "自传"
+    },
+    {
+     "id": 34841022,
+     "name": "勇敢",
+     "size": 1,
+     "company": "相信音乐",
+     "publishTime": 1451404800000,
+     "norm": "勇敢"
+    },
+    {
+     "id": 3171718,
+     "name": "女也 Herstory with Mayday",
+     "size": 10,
+     "company": "相信音乐",
+     "publishTime": 1435248000000,
+     "norm": "女也herstorywithmayday"
+    },
+    {
+     "id": 3165061,
+     "name": "Your Legend ~燃ゆる命~",
+     "size": 6,
+     "company": "相信音乐",
+     "publishTime": 1434470400000,
+     "norm": "yourlegend燃ゆる命"
+    },
+    {
+     "id": 3067018,
+     "name": "将军令",
+     "size": 1,
+     "company": "相信音乐",
+     "publishTime": 1419955200000,
+     "norm": "将军令"
+    },
+    {
+     "id": 2875076,
+     "name": "由我们主宰",
+     "size": 1,
+     "company": "相信音乐",
+     "publishTime": 1402502400007,
+     "norm": "由我们主宰"
+    },
+    {
+     "id": 2805329,
+     "name": "Do You Ever Shine?",
+     "size": 6,
+     "company": "相信音乐",
+     "publishTime": 1401811200000,
+     "norm": "doyouevershine"
+    },
+    {
+     "id": 2740205,
+     "name": "步步 自选作品辑",
+     "size": 30,
+     "company": "相信音乐",
+     "publishTime": 1388332800000,
+     "norm": "步步自选作品辑"
+    },
+    {
+     "id": 2702043,
+     "name": "Mayday×五月天 the Best of 1999-2013",
+     "size": 15,
+     "company": "A-Sketch",
+     "publishTime": 1384272000007,
+     "norm": "mayday×五月天thebestof19992013"
+    },
+    {
+     "id": 2674236,
+     "name": "五月天 诺亚方舟 世界巡回演唱会 LIVE",
+     "size": 26,
+     "company": "相信音乐",
+     "publishTime": 1380211200000,
+     "norm": "五月天诺亚方舟世界巡回演唱会live"
+    },
+    {
+     "id": 2665069,
+     "name": "Belief ～春を待つ君へ～",
+     "size": 1,
+     "company": "A-Sketch",
+     "publishTime": 1378915200007,
+     "norm": "belief春を待つ君へ"
+    },
+    {
+     "id": 2508238,
+     "name": "伤心的人别听慢歌",
+     "size": 1,
+     "company": "相信音乐",
+     "publishTime": 1370707200007,
+     "norm": "伤心的人别听慢歌"
+    },
+    {
+     "id": 2040001,
+     "name": "第二人生 (明日版)",
+     "size": 14,
+     "company": "相信音乐",
+     "publishTime": 1323964800000,
+     "norm": "第二人生"
+    },
+    {
+     "id": 38214,
+     "name": "第二人生 (末日版)",
+     "size": 14,
+     "company": "相信音乐",
+     "publishTime": 1323964800000,
+     "norm": "第二人生"
+    },
+    {
+     "id": 38219,
+     "name": "五月天《追梦3DNA》电影原声音乐专辑",
+     "size": 16,
+     "company": "相信音乐",
+     "publishTime": 1316102400000,
+     "norm": "五月天追梦3dna电影原声音乐专辑"
+    },
+    {
+     "id": 156295043,
+     "name": "DNA",
+     "size": 2,
+     "company": "相信音乐",
+     "publishTime": 1259856000000,
+     "norm": "dna"
+    },
+    {
+     "id": 156294876,
+     "name": "五月天 创造 小巨蛋 D.N.A LIVE 创记录音",
+     "size": 26,
+     "company": "相信音乐",
+     "publishTime": 1259856000000,
+     "norm": "五月天创造小巨蛋dnalive创记录音"
+    },
+    {
+     "id": 38229,
+     "name": "五月天 十万人出头天 LIVE",
+     "size": 18,
+     "company": "相信音乐",
+     "publishTime": 1237478400000,
+     "norm": "五月天十万人出头天live"
+    },
+    {
+     "id": 38235,
+     "name": "后青春期的诗",
+     "size": 12,
+     "company": "相信音乐",
+     "publishTime": 1224691200000,
+     "norm": "后青春期的诗"
+    },
+    {
+     "id": 38237,
+     "name": "小太阳",
+     "size": 1,
+     "company": "相信音乐",
+     "publishTime": 1206892800000,
+     "norm": "小太阳"
+    },
+    {
+     "id": 38239,
+     "name": "离开地球表面 Jump! The World 2007极限大碟",
+     "size": 19,
+     "company": "相信音乐",
+     "publishTime": 1184860800000,
+     "norm": "离开地球表面jumptheworld2007极限大碟"
+    },
+    {
+     "id": 38261,
+     "name": "Enrich Your Life",
+     "size": 6,
+     "company": "滚石唱片",
+     "publishTime": 1177344000000,
+     "norm": "enrichyourlife"
+    },
+    {
+     "id": 38241,
+     "name": "为爱而生",
+     "size": 13,
+     "company": "相信音乐",
+     "publishTime": 1167321600000,
+     "norm": "为爱而生"
+    },
+    {
+     "id": 38243,
+     "name": "盛夏光年 电影主题曲概念专辑",
+     "size": 5,
+     "company": "相信音乐",
+     "publishTime": 1160668800000,
+     "norm": "盛夏光年电影主题曲概念专辑"
+    },
+    {
+     "id": 38247,
+     "name": "知足 最真杰作选",
+     "size": 30,
+     "company": "滚石唱片",
+     "publishTime": 1124985600000,
+     "norm": "知足最真杰作选"
+    },
+    {
+     "id": 38253,
+     "name": "Final Home 当我们混在一起",
+     "size": 39,
+     "company": "滚石唱片",
+     "publishTime": 1117123200000,
+     "norm": "finalhome当我们混在一起"
+    },
+    {
+     "id": 38259,
+     "name": "神的孩子都在跳舞",
+     "size": 16,
+     "company": "滚石唱片",
+     "publishTime": 1099584000000,
+     "norm": "神的孩子都在跳舞"
+    },
+    {
+     "id": 38264,
+     "name": "五月之恋",
+     "size": 33,
+     "company": "滚石唱片",
+     "publishTime": 1089648000000,
+     "norm": "五月之恋"
+    },
+    {
+     "id": 38268,
+     "name": "天空之城 复出演唱会",
+     "size": 27,
+     "company": "滚石唱片",
+     "publishTime": 1080576000000,
+     "norm": "天空之城复出演唱会"
+    },
+    {
+     "id": 38274,
+     "name": "听不到",
+     "size": 2,
+     "company": "滚石唱片",
+     "publishTime": 1078416000000,
+     "norm": "听不到"
+    },
+    {
+     "id": 38276,
+     "name": "时光机",
+     "size": 15,
+     "company": "滚石唱片",
+     "publishTime": 1068480000000,
+     "norm": "时光机"
+    },
+    {
+     "id": 38279,
+     "name": "92全运会纪念EP",
+     "size": 5,
+     "company": "滚石唱片",
+     "publishTime": 1062345600000,
+     "norm": "92全运会纪念ep"
+    },
+    {
+     "id": 38283,
+     "name": "那些你不要的",
+     "size": 4,
+     "company": "滚石唱片",
+     "publishTime": 1050940800000,
+     "norm": "那些你不要的"
+    },
+    {
+     "id": 38285,
+     "name": "我们是五月天",
+     "size": 14,
+     "company": "滚石唱片",
+     "publishTime": 1050508800000,
+     "norm": "我们是五月天"
+    },
+    {
+     "id": 38289,
+     "name": "摇滚本事 电影音乐原声带",
+     "size": 4,
+     "company": "滚石唱片",
+     "publishTime": 1039536000000,
+     "norm": "摇滚本事电影音乐原声带"
+    },
+    {
+     "id": 38290,
+     "name": "你要去哪里Live全纪录",
+     "size": 35,
+     "company": "滚石唱片",
+     "publishTime": 1009382400000,
+     "norm": "你要去哪里live全纪录"
+    },
+    {
+     "id": 38297,
+     "name": "人生海海",
+     "size": 12,
+     "company": "滚石唱片",
+     "publishTime": 994348800000,
+     "norm": "人生海海"
+    },
+    {
+     "id": 38300,
+     "name": "候鸟 电影原声带",
+     "size": 13,
+     "company": "滚石唱片",
+     "publishTime": 990115200000,
+     "norm": "候鸟电影原声带"
+    },
+    {
+     "id": 38304,
+     "name": "十万青年站出来演唱会",
+     "size": 26,
+     "company": "滚石唱片",
+     "publishTime": 977414400000,
+     "norm": "十万青年站出来演唱会"
+    },
+    {
+     "id": 38308,
+     "name": "爱情万岁",
+     "size": 12,
+     "company": "滚石唱片",
+     "publishTime": 962899200000,
+     "norm": "爱情万岁"
+    },
+    {
+     "id": 38313,
+     "name": "台北市立体育场Live全纪录",
+     "size": 16,
+     "company": "滚石唱片",
+     "publishTime": 943891200000,
+     "norm": "台北市立体育场live全纪录"
+    },
+    {
+     "id": 38315,
+     "name": "第一张创作专辑",
+     "size": 12,
+     "company": "滚石唱片",
+     "publishTime": 931276800000,
+     "norm": "第一张创作专辑"
+    }
+   ],
+   "qq": [
+    {
+     "id": "36459",
+     "mid": "0020I7sO0ayXhN",
+     "name": "后青春期的诗",
+     "tranName": "",
+     "size": 12,
+     "company": "相信音乐",
+     "publishTime": "2008-10-23",
+     "norm": "后青春期的诗"
+    },
+    {
+     "id": "451706",
+     "mid": "0006MmDz4Hl2Ud",
+     "name": "步步 自选作品辑 the Best of 1999-2013",
+     "tranName": "",
+     "size": 30,
+     "company": "相信音乐",
+     "publishTime": "2013-12-30",
+     "norm": "步步自选作品辑thebestof19992013"
+    },
+    {
+     "id": "88493",
+     "mid": "001fbipy4azgKM",
+     "name": "第二人生（明日版）",
+     "tranName": "",
+     "size": 14,
+     "company": "相信音乐",
+     "publishTime": "2011-12-16",
+     "norm": "第二人生"
+    },
+    {
+     "id": "96252",
+     "mid": "0042miPf28nzum",
+     "name": "爱情万岁",
+     "tranName": "",
+     "size": 12,
+     "company": "滚石唱片",
+     "publishTime": "2000-07-07",
+     "norm": "爱情万岁"
+    },
+    {
+     "id": "780775",
+     "mid": "001dPqgq3NjUwl",
+     "name": "将军令",
+     "tranName": "",
+     "size": 1,
+     "company": "相信音乐",
+     "publishTime": "2014-11-12",
+     "norm": "将军令"
+    },
+    {
+     "id": "593084",
+     "mid": "000nQcMF20gj1h",
+     "name": "由我们主宰",
+     "tranName": "",
+     "size": 1,
+     "company": "相信音乐",
+     "publishTime": "2014-06-27",
+     "norm": "由我们主宰"
+    },
+    {
+     "id": "32775",
+     "mid": "002PYDbl3I5L2k",
+     "name": "离开地球表面 Jump!",
+     "tranName": "",
+     "size": 19,
+     "company": "相信音乐",
+     "publishTime": "2007-07-20",
+     "norm": "离开地球表面jump"
+    },
+    {
+     "id": "223898",
+     "mid": "003olHeb4CYhDf",
+     "name": "十万人出头天LIVE",
+     "tranName": "",
+     "size": 18,
+     "company": "相信音乐",
+     "publishTime": "2009-03-20",
+     "norm": "十万人出头天live"
+    },
+    {
+     "id": "54948",
+     "mid": "003tizfC1oyvfr",
+     "name": "D.N.A LIVE! 五月天创造 小巨蛋演唱会创纪录音",
+     "tranName": "",
+     "size": 26,
+     "company": "相信音乐",
+     "publishTime": "2009-12-04",
+     "norm": "dnalive五月天创造小巨蛋演唱会创纪录音"
+    },
+    {
+     "id": "96397",
+     "mid": "003PIMo40rxcAn",
+     "name": "知足 最真杰作选",
+     "tranName": "",
+     "size": 30,
+     "company": "滚石唱片",
+     "publishTime": "2005-08-26",
+     "norm": "知足最真杰作选"
+    },
+    {
+     "id": "96368",
+     "mid": "002plCgA0zOyYF",
+     "name": "神的孩子都在跳舞",
+     "tranName": "",
+     "size": 16,
+     "company": "滚石唱片",
+     "publishTime": "2004-11-05",
+     "norm": "神的孩子都在跳舞"
+    },
+    {
+     "id": "90142",
+     "mid": "000IPRft1LSCqL",
+     "name": "第二人生（末日版）",
+     "tranName": "",
+     "size": 14,
+     "company": "相信音乐",
+     "publishTime": "2011-12-16",
+     "norm": "第二人生"
+    },
+    {
+     "id": "96422",
+     "mid": "001Ak4EI1pwbIj",
+     "name": "盛夏光年电影主题曲概念专辑",
+     "tranName": "",
+     "size": 5,
+     "company": "相信音乐 / 滚石唱片",
+     "publishTime": "2006-10-13",
+     "norm": "盛夏光年电影主题曲概念专辑"
+    },
+    {
+     "id": "96361",
+     "mid": "001ntd0y01uQ4g",
+     "name": "音乐电影-五月之恋",
+     "tranName": "",
+     "size": 33,
+     "company": "滚石唱片",
+     "publishTime": "2004-07-01",
+     "norm": "音乐电影五月之恋"
+    },
+    {
+     "id": "15702",
+     "mid": "000hWSug0b5y3S",
+     "name": "为爱而生",
+     "tranName": "",
+     "size": 13,
+     "company": "相信音乐",
+     "publishTime": "2006-12-29",
+     "norm": "为爱而生"
+    },
+    {
+     "id": "445862",
+     "mid": "001lRV0S20EpYw",
+     "name": "Mayday × 五月天 the Best of 1999-2013",
+     "tranName": "",
+     "size": 13,
+     "company": "A-Sketch",
+     "publishTime": "2013-11-13",
+     "norm": "mayday×五月天thebestof19992013"
+    },
+    {
+     "id": "438517",
+     "mid": "003tYQpl2IPeuE",
+     "name": "诺亚方舟 世界巡回演唱会",
+     "tranName": "",
+     "size": 26,
+     "company": "相信音乐",
+     "publishTime": "2013-09-27",
+     "norm": "诺亚方舟世界巡回演唱会"
+    },
+    {
+     "id": "75140",
+     "mid": "002KUaz40FFgpP",
+     "name": "小太阳",
+     "tranName": "",
+     "size": 1,
+     "company": "相信音乐",
+     "publishTime": "2008-03-26",
+     "norm": "小太阳"
+    },
+    {
+     "id": "96215",
+     "mid": "001kHTTL0Vm88D",
+     "name": "第一张创作专辑",
+     "tranName": "",
+     "size": 12,
+     "company": "滚石唱片",
+     "publishTime": "1999-07-07",
+     "norm": "第一张创作专辑"
+    },
+    {
+     "id": "96353",
+     "mid": "002fiW9Z0KroM3",
+     "name": "时光机",
+     "tranName": "",
+     "size": 15,
+     "company": "滚石唱片",
+     "publishTime": "2003-11-11",
+     "norm": "时光机"
+    },
+    {
+     "id": "505155",
+     "mid": "001g35Hp0ZM20e",
+     "name": "Do You Ever Shine?",
+     "tranName": "",
+     "size": 6,
+     "company": "A-Sketch",
+     "publishTime": "2014-06-04",
+     "norm": "doyouevershine"
+    },
+    {
+     "id": "80928",
+     "mid": "001OSUSH0o32bC",
+     "name": "追梦3DNA 电影原声音乐",
+     "tranName": "",
+     "size": 16,
+     "company": "相信音乐",
+     "publishTime": "2011-09-16",
+     "norm": "追梦3dna电影原声音乐"
+    },
+    {
+     "id": "96399",
+     "mid": "00042Dad1CLpHz",
+     "name": "Final Home当我们混在一起",
+     "tranName": "",
+     "size": 39,
+     "company": "滚石唱片",
+     "publishTime": "2005-05-01",
+     "norm": "finalhome当我们混在一起"
+    },
+    {
+     "id": "1014707",
+     "mid": "003koohY2jHuFB",
+     "name": "YOUR LEGEND～燃ゆる命～ (YOUR LEGEND～燃烧的生命～)",
+     "tranName": "",
+     "size": 6,
+     "company": "相信音乐",
+     "publishTime": "2015-06-17",
+     "norm": "yourlegend燃ゆる命"
+    },
+    {
+     "id": "11306",
+     "mid": "0036qRYd26h2eI",
+     "name": "我们是五月天",
+     "tranName": "",
+     "size": 16,
+     "company": "滚石唱片",
+     "publishTime": "2003-04-17",
+     "norm": "我们是五月天"
+    },
+    {
+     "id": "253594",
+     "mid": "004CMjEx2cnboY",
+     "name": "DNA",
+     "tranName": "",
+     "size": 2,
+     "company": "相信音乐",
+     "publishTime": "2009-12-04",
+     "norm": "dna"
+    },
+    {
+     "id": "96325",
+     "mid": "004ZOVwH0Ql8SC",
+     "name": "你要去哪里台湾巡回演唱会Live全纪录",
+     "tranName": "",
+     "size": 35,
+     "company": "滚石唱片",
+     "publishTime": "2001-12-27",
+     "norm": "你要去哪里台湾巡回演唱会live全纪录"
+    },
+    {
+     "id": "62890",
+     "mid": "0006oAnx03zXUC",
+     "name": "Enrich Your Life",
+     "tranName": "",
+     "size": 6,
+     "company": "滚石唱片",
+     "publishTime": "2004-10-01",
+     "norm": "enrichyourlife"
+    },
+    {
+     "id": "96279",
+     "mid": "000b2kEy3Wgw2a",
+     "name": "十万青年站出来LIVE巡回演唱会全纪录",
+     "tranName": "",
+     "size": 26,
+     "company": "滚石唱片",
+     "publishTime": "2000-12-22",
+     "norm": "十万青年站出来live巡回演唱会全纪录"
+    },
+    {
+     "id": "96291",
+     "mid": "0032BHCb4D2LQX",
+     "name": "人生海海",
+     "tranName": "",
+     "size": 12,
+     "company": "滚石唱片",
+     "publishTime": "2001-07-06",
+     "norm": "人生海海"
+    },
+    {
+     "id": "296",
+     "mid": "000dYAKh3MWOy8",
+     "name": "听不到",
+     "tranName": "",
+     "size": 2,
+     "company": "未确定",
+     "publishTime": "2004-03-01",
+     "norm": "听不到"
+    },
+    {
+     "id": "145463",
+     "mid": "002BbsuR06kIDn",
+     "name": "那些你不要的",
+     "tranName": "",
+     "size": 4,
+     "company": "滚石唱片",
+     "publishTime": "2003-04-22",
+     "norm": "那些你不要的"
+    },
+    {
+     "id": "210637",
+     "mid": "003GPkzi4IKd58",
+     "name": "First Day",
+     "tranName": "",
+     "size": 1,
+     "company": "滚石唱片",
+     "publishTime": "2006-01-01",
+     "norm": "firstday"
+    },
+    {
+     "id": "96268",
+     "mid": "002fjcmZ3UDZmF",
+     "name": "候鸟：五月天电影音乐作品",
+     "tranName": "",
+     "size": 13,
+     "company": "滚石唱片",
+     "publishTime": "2001-05-18",
+     "norm": "候鸟五月天电影音乐作品"
+    },
+    {
+     "id": "96363",
+     "mid": "002BJ48l1bIfdx",
+     "name": "天空之城 复出演唱会",
+     "tranName": "",
+     "size": 27,
+     "company": "滚石唱片",
+     "publishTime": "2004-03-30",
+     "norm": "天空之城复出演唱会"
+    },
+    {
+     "id": "96335",
+     "mid": "0015r2I31enfaR",
+     "name": "摇滚本事 电影音乐原声带",
+     "tranName": "",
+     "size": 4,
+     "company": "滚石唱片",
+     "publishTime": "2002-12-01",
+     "norm": "摇滚本事电影音乐原声带"
+    },
+    {
+     "id": "96220",
+     "mid": "000jdA3p3ZXGUm",
+     "name": "台北市立体育场Live全纪录",
+     "tranName": "",
+     "size": 16,
+     "company": "滚石唱片",
+     "publishTime": "1999-11-30",
+     "norm": "台北市立体育场live全纪录"
+    },
+    {
+     "id": "292",
+     "mid": "0030nIkA0sZjOi",
+     "name": "92全运会纪念(EP)",
+     "tranName": "",
+     "size": 5,
+     "company": "滚石唱片",
+     "publishTime": "2003-09-01",
+     "norm": "92全运会纪念"
+    },
+    {
+     "id": "1393445",
+     "mid": "002fRO0N4FftzY",
+     "name": "自传",
+     "tranName": "",
+     "size": 13,
+     "company": "相信音乐",
+     "publishTime": "2016-07-21",
+     "norm": "自传"
+    },
+    {
+     "id": "1267307",
+     "mid": "000lId9u2rlQgo",
+     "name": "勇敢",
+     "tranName": "",
+     "size": 1,
+     "company": "相信音乐",
+     "publishTime": "2015-12-30",
+     "norm": "勇敢"
+    },
+    {
+     "id": "1916159",
+     "mid": "003z4XpS2eUZdN",
+     "name": "凡人歌",
+     "tranName": "",
+     "size": 1,
+     "company": "相信音乐",
+     "publishTime": "2017-03-21",
+     "norm": "凡人歌"
+    },
+    {
+     "id": "2007913",
+     "mid": "0005tsLz17Fiyl",
+     "name": "志明与春娇",
+     "tranName": "",
+     "size": 1,
+     "company": "相信音乐",
+     "publishTime": "2017-05-02",
+     "norm": "志明与春娇"
+    },
+    {
+     "id": "1890562",
+     "mid": "000c87aI1XJ3uw",
+     "name": "自伝 History of Tomorrow",
+     "tranName": "",
+     "size": 1,
+     "company": "相信音乐",
+     "publishTime": "2017-02-01",
+     "norm": "自伝historyoftomorrow"
+    },
+    {
+     "id": "9850190",
+     "mid": "003suBZs1Cy3uA",
+     "name": "温柔 #MaydayBlue20th",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2020-01-01",
+     "norm": "温柔maydayblue20th"
+    },
+    {
+     "id": "9519505",
+     "mid": "000YLvLv1bT39o",
+     "name": "干啦干啦",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2019-12-04",
+     "norm": "干啦干啦"
+    },
+    {
+     "id": "94724874",
+     "mid": "003K7C351Pjyl6",
+     "name": "如烟-Live",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2026-06-12",
+     "norm": "如烟live"
+    },
+    {
+     "id": "94148600",
+     "mid": "002PFRcR2kZx22",
+     "name": "达拉崩吧-Live",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2026-06-05",
+     "norm": "达拉崩吧live"
+    },
+    {
+     "id": "7353318",
+     "mid": "001YhoWf2XcCS7",
+     "name": "玫瑰少年",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2019-08-08",
+     "norm": "玫瑰少年"
+    },
+    {
+     "id": "7137392",
+     "mid": "000k9FSX2pRzT3",
+     "name": "疯狂世界 #MaydayBlue20th",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2019-07-08",
+     "norm": "疯狂世界maydayblue20th"
+    },
+    {
+     "id": "6874537",
+     "mid": "003uG8tB1q8Evk",
+     "name": "五月天 人生无限公司 Life Live 完整收录篇",
+     "tranName": "",
+     "size": 24,
+     "company": "未确定",
+     "publishTime": "2019-05-23",
+     "norm": "五月天人生无限公司lifelive完整收录篇"
+    },
+    {
+     "id": "6804234",
+     "mid": "000OA69E45IJ36",
+     "name": "五月天 人生无限公司 Life Live 好友加班篇",
+     "tranName": "",
+     "size": 12,
+     "company": "未确定",
+     "publishTime": "2019-05-15",
+     "norm": "五月天人生无限公司lifelive好友加班篇"
+    },
+    {
+     "id": "6729559",
+     "mid": "002OA4a84Wz8Nf",
+     "name": "纯真 #MaydayBlue20th",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2019-05-06",
+     "norm": "纯真maydayblue20th"
+    },
+    {
+     "id": "65847967",
+     "mid": "001HZUie1gxQti",
+     "name": "欢迎光临二代咖啡 电视剧原声带",
+     "tranName": "",
+     "size": 7,
+     "company": "未确定",
+     "publishTime": "2025-04-14",
+     "norm": "欢迎光临二代咖啡电视剧原声带"
+    },
+    {
+     "id": "63065889",
+     "mid": "001V8PDy1om05K",
+     "name": "电视剧《难哄》影视原声带·只喜欢你Love Moments",
+     "tranName": "",
+     "size": 14,
+     "company": "未确定",
+     "publishTime": "2025-02-18",
+     "norm": "电视剧难哄影视原声带只喜欢你lovemoments"
+    },
+    {
+     "id": "5747717",
+     "mid": "000ceWgY3iJIeG",
+     "name": "转眼（2018 自传最终章）",
+     "tranName": "",
+     "size": 1,
+     "company": "相信音乐",
+     "publishTime": "2018-12-31",
+     "norm": "转眼"
+    },
+    {
+     "id": "56247634",
+     "mid": "001Jhk1t0SC1FZ",
+     "name": "今夜一起为爱鼓掌 电视剧原声带",
+     "tranName": "",
+     "size": 7,
+     "company": "未确定",
+     "publishTime": "2024-09-30",
+     "norm": "今夜一起为爱鼓掌电视剧原声带"
+    },
+    {
+     "id": "53364239",
+     "mid": "000oHskh2t2cE3",
+     "name": "星期五晚上 (庆功16蹲版)",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2024-07-19",
+     "norm": "星期五晚上"
+    },
+    {
+     "id": "4029027",
+     "mid": "001xf32c0zs2so",
+     "name": "I Will Carry You",
+     "tranName": "",
+     "size": 1,
+     "company": "相信音乐",
+     "publishTime": "2018-04-29",
+     "norm": "iwillcarryyou"
+    },
+    {
+     "id": "4014716",
+     "mid": "000uON6c3WDXRG",
+     "name": "后来的我们",
+     "tranName": "",
+     "size": 1,
+     "company": "相信音乐",
+     "publishTime": "2018-04-13",
+     "norm": "后来的我们"
+    },
+    {
+     "id": "39337591",
+     "mid": "0000yBcT1Mpj2J",
+     "name": "外人",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2023-06-26",
+     "norm": "外人"
+    },
+    {
+     "id": "39128063",
+     "mid": "001OuP6f1doFrf",
+     "name": "唯一",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2023-06-19",
+     "norm": "唯一"
+    },
+    {
+     "id": "3897817",
+     "mid": "004Q5RrA2WFJAA",
+     "name": "什么歌",
+     "tranName": "",
+     "size": 1,
+     "company": "相信音乐",
+     "publishTime": "2018-01-30",
+     "norm": "什么歌"
+    },
+    {
+     "id": "37058612",
+     "mid": "000CDXbd0Kr6PS",
+     "name": "知足",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2023-04-10",
+     "norm": "知足"
+    },
+    {
+     "id": "36641657",
+     "mid": "003pedgi2s4wiW",
+     "name": "五月天 fly to 2023 诺亚方舟十周年线上特别版 LIVE",
+     "tranName": "",
+     "size": 10,
+     "company": "未确定",
+     "publishTime": "2023-03-29",
+     "norm": "五月天flyto2023诺亚方舟十周年线上live"
+    },
+    {
+     "id": "33637674",
+     "mid": "0048JkDO00Blk7",
+     "name": "为你写下这首情歌",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2022-12-14",
+     "norm": "为你写下这首情歌"
+    },
+    {
+     "id": "31814676",
+     "mid": "001yM5W345iIaw",
+     "name": "你的神曲",
+     "tranName": "",
+     "size": 2,
+     "company": "未确定",
+     "publishTime": "2022-10-31",
+     "norm": "你的神曲"
+    },
+    {
+     "id": "30973661",
+     "mid": "000HgCmS1h1S23",
+     "name": "台北女子图鉴 电视剧原声带",
+     "tranName": "",
+     "size": 10,
+     "company": "未确定",
+     "publishTime": "2022-09-30",
+     "norm": "台北女子图鉴电视剧原声带"
+    },
+    {
+     "id": "24986336",
+     "mid": "0040BqW91XFgut",
+     "name": "五月天 好好好想见到你 Mayday fly to 2022 线上特别版 LIVE",
+     "tranName": "",
+     "size": 10,
+     "company": "未确定",
+     "publishTime": "2022-01-30",
+     "norm": "五月天好好好想见到你maydayflyto2022线上live"
+    },
+    {
+     "id": "2243139",
+     "mid": "002yobeb3RvQhr",
+     "name": "Call Me No.1!",
+     "tranName": "",
+     "size": 12,
+     "company": "未确定",
+     "publishTime": "2001-07-20",
+     "norm": "callmeno1"
+    },
+    {
+     "id": "21660610",
+     "mid": "000fliT21hibxA",
+     "name": "刻在我心底的名字",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2021-08-20",
+     "norm": "刻在我心底的名字"
+    },
+    {
+     "id": "16468394",
+     "mid": "001DANdu3vmuVT",
+     "name": "因为你 所以我",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2020-12-25",
+     "norm": "因为你所以我"
+    },
+    {
+     "id": "13270512",
+     "mid": "003bcSN732DOXA",
+     "name": "五月天 突然好想见到你 live in the sky",
+     "tranName": "",
+     "size": 12,
+     "company": "未确定",
+     "publishTime": "2020-07-07",
+     "norm": "五月天突然好想见到你liveinthesky"
+    }
+   ]
+  },
+  "G.E.M.邓紫棋": {
+   "ne": [
+    {
+     "id": 398617121,
+     "name": "自由的你",
+     "size": 1,
+     "company": "G Nation Limited",
+     "publishTime": 1789574400000,
+     "norm": "自由的你"
+    },
+    {
+     "id": 351088947,
+     "name": "Sacrifice (Anyma Remix)",
+     "size": 1,
+     "company": "Riot Games",
+     "publishTime": 1763654400000,
+     "norm": "sacrifice"
+    },
+    {
+     "id": 287955140,
+     "name": "Sacrifice",
+     "size": 1,
+     "company": "Riot Games",
+     "publishTime": 1760284800000,
+     "norm": "sacrifice"
+    },
+    {
+     "id": 282980763,
+     "name": "Still Breathing",
+     "size": 2,
+     "company": "Liquid State Limited",
+     "publishTime": 1756396800000,
+     "norm": "stillbreathing"
+    },
+    {
+     "id": 274821019,
+     "name": "I AM GLORIA",
+     "size": 12,
+     "company": "G Nation Limited",
+     "publishTime": 1749657600000,
+     "norm": "iamgloria"
+    },
+    {
+     "id": 188209036,
+     "name": "Amazing Grace",
+     "size": 2,
+     "company": "G Nation Limited",
+     "publishTime": 1709827200000,
+     "norm": "amazinggrace"
+    },
+    {
+     "id": 174925713,
+     "name": "T.I.M.E.",
+     "size": 6,
+     "company": "G Nation Limited",
+     "publishTime": 1700928000000,
+     "norm": "time"
+    },
+    {
+     "id": 168097897,
+     "name": "Revelación",
+     "size": 14,
+     "company": "G Nation Limited",
+     "publishTime": 1688918400000,
+     "norm": "revelación"
+    },
+    {
+     "id": 156159267,
+     "name": "面壁者",
+     "size": 1,
+     "company": "上海宽娱 x G Nation Ltd.",
+     "publishTime": 1670428800000,
+     "norm": "面壁者"
+    },
+    {
+     "id": 149367827,
+     "name": "启示录",
+     "size": 14,
+     "company": "G Nation Limited",
+     "publishTime": 1663862400000,
+     "norm": "启示录"
+    },
+    {
+     "id": 147494109,
+     "name": "Bang Bang (From 'Minions: The Rise of Gru' Soundtrack)",
+     "size": 1,
+     "company": "Decca (UMO) (Classics)",
+     "publishTime": 1656604800000,
+     "norm": "bangbang"
+    },
+    {
+     "id": 137622667,
+     "name": "倒流时间",
+     "size": 2,
+     "company": "索尼音乐 x 银河方舟 x G Nation Ltd.",
+     "publishTime": 1640016000000,
+     "norm": "倒流时间"
+    },
+    {
+     "id": 136737491,
+     "name": "两个你",
+     "size": 2,
+     "company": "G NATION LIMITED",
+     "publishTime": 1638201600000,
+     "norm": "两个你"
+    },
+    {
+     "id": 130913838,
+     "name": "无双的王者",
+     "size": 1,
+     "company": "腾讯",
+     "publishTime": 1627315200000,
+     "norm": "无双的王者"
+    },
+    {
+     "id": 125360143,
+     "name": "超能力",
+     "size": 1,
+     "company": "G NATION LIMITED",
+     "publishTime": 1617206400000,
+     "norm": "超能力"
+    },
+    {
+     "id": 123719861,
+     "name": "平行世界",
+     "size": 1,
+     "company": "G Nation",
+     "publishTime": 1612713600000,
+     "norm": "平行世界"
+    },
+    {
+     "id": 96426263,
+     "name": "孤独",
+     "size": 1,
+     "company": "G NATION LIMITED",
+     "publishTime": 1602086400000,
+     "norm": "孤独"
+    },
+    {
+     "id": 95831891,
+     "name": "万国觉醒",
+     "size": 1,
+     "company": "G NATION LIMITED",
+     "publishTime": 1600790400000,
+     "norm": "万国觉醒"
+    },
+    {
+     "id": 86339613,
+     "name": "平凡天使",
+     "size": 1,
+     "company": "G Nation",
+     "publishTime": 1583769600000,
+     "norm": "平凡天使"
+    },
+    {
+     "id": 84391762,
+     "name": "摩天动物园",
+     "size": 13,
+     "company": "G Nation",
+     "publishTime": 1577376000000,
+     "norm": "摩天动物园"
+    },
+    {
+     "id": 81701817,
+     "name": "我说了算",
+     "size": 1,
+     "company": "G Nation",
+     "publishTime": 1568822400000,
+     "norm": "我说了算"
+    },
+    {
+     "id": 78375893,
+     "name": "热爱就一起",
+     "size": 1,
+     "company": "百事（中国）有限公司",
+     "publishTime": 1555430400000,
+     "norm": "热爱就一起"
+    },
+    {
+     "id": 74989312,
+     "name": "睡皇后",
+     "size": 3,
+     "company": "蜂鸟音乐",
+     "publishTime": 1544716800000,
+     "norm": "睡皇后"
+    },
+    {
+     "id": 74826488,
+     "name": "光年之外 (热爱版)",
+     "size": 1,
+     "company": "2018 Hummingbird Music Ltd.",
+     "publishTime": 1544371200000,
+     "norm": "光年之外"
+    },
+    {
+     "id": 74268393,
+     "name": "回忆的沙漏 (10周年版)",
+     "size": 1,
+     "company": "蜂鸟音乐",
+     "publishTime": 1543507200007,
+     "norm": "回忆的沙漏"
+    },
+    {
+     "id": 74265751,
+     "name": "毒苹果",
+     "size": 3,
+     "company": "蜂鸟音乐",
+     "publishTime": 1540483200000,
+     "norm": "毒苹果"
+    },
+    {
+     "id": 72709830,
+     "name": "另一个童话",
+     "size": 3,
+     "company": "蜂鸟音乐",
+     "publishTime": 1534348800000,
+     "norm": "另一个童话"
+    },
+    {
+     "id": 39723525,
+     "name": "爱如意",
+     "size": 1,
+     "company": "蜂鸟音乐",
+     "publishTime": 1529856000000,
+     "norm": "爱如意"
+    },
+    {
+     "id": 38596039,
+     "name": "我们的梦",
+     "size": 1,
+     "company": "Universal Music Ltd.",
+     "publishTime": 1525708800000,
+     "norm": "我们的梦"
+    },
+    {
+     "id": 36856013,
+     "name": "Victoria",
+     "size": 1,
+     "company": "蜂鸟音乐",
+     "publishTime": 1511452800007,
+     "norm": "victoria"
+    },
+    {
+     "id": 35886087,
+     "name": "穿越火线",
+     "size": 1,
+     "company": "腾讯",
+     "publishTime": 1501776000007,
+     "norm": "穿越火线"
+    },
+    {
+     "id": 35792383,
+     "name": "爱你A.I.N.Y.2017",
+     "size": 1,
+     "company": "蜂鸟音乐",
+     "publishTime": 1500566400007,
+     "norm": "爱你ainy2017"
+    },
+    {
+     "id": 35562438,
+     "name": "心之焰",
+     "size": 1,
+     "company": "听见时代",
+     "publishTime": 1496332800007,
+     "norm": "心之焰"
+    },
+    {
+     "id": 35093341,
+     "name": "光年之外",
+     "size": 1,
+     "company": "蜂鸟音乐",
+     "publishTime": 1483027200007,
+     "norm": "光年之外"
+    },
+    {
+     "id": 35022577,
+     "name": "死了都要 • 爱",
+     "size": 1,
+     "company": "蜂鸟音乐",
+     "publishTime": 1480780800007,
+     "norm": "死了都要•爱"
+    },
+    {
+     "id": 34897549,
+     "name": "25LOOKS",
+     "size": 4,
+     "company": "HUMMING BIRD",
+     "publishTime": 1475164800007,
+     "norm": "25looks"
+    },
+    {
+     "id": 34767676,
+     "name": "夜空中最亮的星",
+     "size": 1,
+     "company": "蜂鸟音乐",
+     "publishTime": 1468684800007,
+     "norm": "夜空中最亮的星"
+    },
+    {
+     "id": 34768653,
+     "name": "喜欢你(EDM Mix)",
+     "size": 1,
+     "company": "蜂鸟音乐",
+     "publishTime": 1468080000007,
+     "norm": "喜欢你"
+    },
+    {
+     "id": 34767677,
+     "name": "红蔷薇白玫瑰",
+     "size": 1,
+     "company": "蜂鸟音乐",
+     "publishTime": 1468080000007,
+     "norm": "红蔷薇白玫瑰"
+    },
+    {
+     "id": 34678769,
+     "name": "再见",
+     "size": 3,
+     "company": "蜂鸟音乐",
+     "publishTime": 1463932800007,
+     "norm": "再见"
+    },
+    {
+     "id": 34667125,
+     "name": "有心人",
+     "size": 1,
+     "company": "蜂鸟音乐",
+     "publishTime": 1461081600007,
+     "norm": "有心人"
+    },
+    {
+     "id": 34588321,
+     "name": "泡沫 (PÀO MÒ Remix)",
+     "size": 1,
+     "company": "蜂鸟音乐",
+     "publishTime": 1459180800007,
+     "norm": "泡沫"
+    },
+    {
+     "id": 34408143,
+     "name": "北京北京",
+     "size": 1,
+     "company": "蜂鸟音乐",
+     "publishTime": 1451577600007,
+     "norm": "北京北京"
+    },
+    {
+     "id": 3189002,
+     "name": "新的心跳",
+     "size": 10,
+     "company": "蜂鸟音乐",
+     "publishTime": 1446739200007,
+     "norm": "新的心跳"
+    },
+    {
+     "id": 3171718,
+     "name": "女也 Herstory with Mayday",
+     "size": 10,
+     "company": "相信音乐",
+     "publishTime": 1435248000000,
+     "norm": "女也herstorywithmayday"
+    },
+    {
+     "id": 3029079,
+     "name": "龙卷风",
+     "size": 1,
+     "company": "蜂鸟音乐",
+     "publishTime": 1411660800007,
+     "norm": "龙卷风"
+    },
+    {
+     "id": 2956076,
+     "name": "喜欢你",
+     "size": 1,
+     "company": "HUMMING BIRD",
+     "publishTime": 1408032000007,
+     "norm": "喜欢你"
+    },
+    {
+     "id": 2894210,
+     "name": "后会无期",
+     "size": 1,
+     "company": "劳雷影业",
+     "publishTime": 1404921600007,
+     "norm": "后会无期"
+    },
+    {
+     "id": 2706061,
+     "name": "我的秘密",
+     "size": 1,
+     "company": "蜂鸟音乐",
+     "publishTime": 1384790400007,
+     "norm": "我的秘密"
+    },
+    {
+     "id": 2698217,
+     "name": "G.E.M.X.X.X.Live",
+     "size": 23,
+     "company": "丰华唱片",
+     "publishTime": 1384099200007,
+     "norm": "gemxxxlive"
+    },
+    {
+     "id": 2685021,
+     "name": "偶尔",
+     "size": 2,
+     "company": "丰华唱片",
+     "publishTime": 1381334400007,
+     "norm": "偶尔"
+    },
+    {
+     "id": 2389401,
+     "name": "The Best of G.E.M. 2008 - 2012 (Deluxe Version)",
+     "size": 27,
+     "company": "蜂鸟音乐",
+     "publishTime": 1372867200000,
+     "norm": "thebestofgem20082012"
+    },
+    {
+     "id": 72558838,
+     "name": "The Best of G.E.M. 2008 - 2012",
+     "size": 24,
+     "company": "Hummingbird Music Ltd.",
+     "publishTime": 1364313600000,
+     "norm": "thebestofgem20082012"
+    },
+    {
+     "id": 23497,
+     "name": "Xposed",
+     "size": 10,
+     "company": "HUMMING BIRD",
+     "publishTime": 1341417600000,
+     "norm": "xposed"
+    },
+    {
+     "id": 23498,
+     "name": "Get Everybody Moving Concert 2011",
+     "size": 29,
+     "company": "HUMMING BIRD",
+     "publishTime": 1322409600000,
+     "norm": "geteverybodymovingconcert2011"
+    },
+    {
+     "id": 23499,
+     "name": "A.I.N.Y. 爱你",
+     "size": 21,
+     "company": "HUMMING BIRD",
+     "publishTime": 1297353600000,
+     "norm": "ainy爱你"
+    },
+    {
+     "id": 23500,
+     "name": "亚莉亚蒂之歌",
+     "size": 1,
+     "company": "HUMMING BIRD",
+     "publishTime": 1292688000000,
+     "norm": "亚莉亚蒂之歌"
+    },
+    {
+     "id": 2391062,
+     "name": "My Secret",
+     "size": 10,
+     "company": "丰华唱片",
+     "publishTime": 1288281600007,
+     "norm": "mysecret"
+    },
+    {
+     "id": 23504,
+     "name": "Good To Be Bad",
+     "size": 1,
+     "company": "HUMMING BIRD",
+     "publishTime": 1280937600000,
+     "norm": "goodtobebad"
+    },
+    {
+     "id": 23505,
+     "name": "18",
+     "size": 11,
+     "company": "HUMMING BIRD",
+     "publishTime": 1273766400000,
+     "norm": "18"
+    },
+    {
+     "id": 2400479,
+     "name": "18 Plus",
+     "size": 14,
+     "company": "HUMMING BIRD",
+     "publishTime": 1256572800007,
+     "norm": "18plus"
+    },
+    {
+     "id": 23509,
+     "name": "G.E.M.",
+     "size": 5,
+     "company": "HUMMING BIRD",
+     "publishTime": 1224000000000,
+     "norm": "gem"
+    }
+   ],
+   "qq": [
+    {
+     "id": "654246",
+     "mid": "000cFPKx3ZGzks",
+     "name": "喜欢你",
+     "tranName": "",
+     "size": 1,
+     "company": "蜂鸟音乐",
+     "publishTime": "2014-08-15",
+     "norm": "喜欢你"
+    },
+    {
+     "id": "123298",
+     "mid": "002YFufr4bXZyI",
+     "name": "Xposed",
+     "tranName": "",
+     "size": 10,
+     "company": "蜂鸟音乐",
+     "publishTime": "2012-07-05",
+     "norm": "xposed"
+    },
+    {
+     "id": "1196826",
+     "mid": "003c616O2Zlswm",
+     "name": "新的心跳",
+     "tranName": "",
+     "size": 10,
+     "company": "蜂鸟音乐",
+     "publishTime": "2015-11-06",
+     "norm": "新的心跳"
+    },
+    {
+     "id": "675370",
+     "mid": "002J1yeb1T8kzq",
+     "name": "龙卷风",
+     "tranName": "",
+     "size": 1,
+     "company": "蜂鸟音乐",
+     "publishTime": "2014-09-26",
+     "norm": "龙卷风"
+    },
+    {
+     "id": "430766",
+     "mid": "004O0uTZ28Uczp",
+     "name": "你把我灌醉 (Intoxicated)",
+     "tranName": "",
+     "size": 1,
+     "company": "蜂鸟音乐",
+     "publishTime": "2013-06-21",
+     "norm": "你把我灌醉"
+    },
+    {
+     "id": "57457",
+     "mid": "000HZzEx0QIMNM",
+     "name": "18...",
+     "tranName": "",
+     "size": 16,
+     "company": "Humming Bird",
+     "publishTime": "2009-10-27",
+     "norm": "18"
+    },
+    {
+     "id": "36427",
+     "mid": "003FBC9b4XV8i9",
+     "name": "G.E.M.",
+     "tranName": "",
+     "size": 5,
+     "company": "蜂鸟音乐",
+     "publishTime": "2008-10-15",
+     "norm": "gem"
+    },
+    {
+     "id": "68470",
+     "mid": "00412vqA22pvPi",
+     "name": "A.I.N.Y. 爱你",
+     "tranName": "",
+     "size": 22,
+     "company": "蜂鸟音乐",
+     "publishTime": "2011-02-11",
+     "norm": "ainy爱你"
+    },
+    {
+     "id": "425675",
+     "mid": "000mmrVb4fam2C",
+     "name": "The Best of G.E.M. 2008-2012",
+     "tranName": "",
+     "size": 26,
+     "company": "蜂鸟音乐",
+     "publishTime": "2013-03-21",
+     "norm": "thebestofgem20082012"
+    },
+    {
+     "id": "62251",
+     "mid": "002F059l1kCcdr",
+     "name": "My Secret",
+     "tranName": "",
+     "size": 10,
+     "company": "蜂鸟音乐",
+     "publishTime": "2010-10-29",
+     "norm": "mysecret"
+    },
+    {
+     "id": "439033",
+     "mid": "003KfoK11fkB1A",
+     "name": "偶尔",
+     "tranName": "",
+     "size": 1,
+     "company": "蜂鸟音乐",
+     "publishTime": "2013-10-10",
+     "norm": "偶尔"
+    },
+    {
+     "id": "445314",
+     "mid": "003oLIsS1rbdAz",
+     "name": "G.E.M.X.X.X. Live",
+     "tranName": "",
+     "size": 23,
+     "company": "蜂鸟音乐",
+     "publishTime": "2013-11-08",
+     "norm": "gemxxxlive"
+    },
+    {
+     "id": "1509968",
+     "mid": "004TGXEy0UxhfJ",
+     "name": "红蔷薇白玫瑰",
+     "tranName": "",
+     "size": 1,
+     "company": "蜂鸟音乐",
+     "publishTime": "2016-07-10",
+     "norm": "红蔷薇白玫瑰"
+    },
+    {
+     "id": "1509970",
+     "mid": "003Oi8QL1wyPQJ",
+     "name": "夜空中最亮的星",
+     "tranName": "",
+     "size": 1,
+     "company": "蜂鸟音乐",
+     "publishTime": "2016-07-17",
+     "norm": "夜空中最亮的星"
+    },
+    {
+     "id": "1796874",
+     "mid": "001mTkmb4GJlh4",
+     "name": "光年之外",
+     "tranName": "",
+     "size": 1,
+     "company": "蜂鸟音乐",
+     "publishTime": "2016-12-30",
+     "norm": "光年之外"
+    },
+    {
+     "id": "89773",
+     "mid": "000pUbJr1Aac6E",
+     "name": "Get Everybody Moving Concert 2011",
+     "tranName": "",
+     "size": 31,
+     "company": "蜂鸟音乐",
+     "publishTime": "2011-11-28",
+     "norm": "geteverybodymovingconcert2011"
+    },
+    {
+     "id": "1374365",
+     "mid": "002obDH53uiSTk",
+     "name": "画 (Live Piano Session Ⅱ)",
+     "tranName": "",
+     "size": 1,
+     "company": "蜂鸟音乐",
+     "publishTime": "2016-05-16",
+     "norm": "画"
+    },
+    {
+     "id": "1363974",
+     "mid": "000hDzMs1EOk3X",
+     "name": "给你的歌 (Live Piano Session Ⅱ)",
+     "tranName": "",
+     "size": 1,
+     "company": "蜂鸟音乐",
+     "publishTime": "2016-05-09",
+     "norm": "给你的歌"
+    },
+    {
+     "id": "1309713",
+     "mid": "000FyZ4M1bYVm8",
+     "name": "有心人",
+     "tranName": "",
+     "size": 1,
+     "company": "蜂鸟音乐",
+     "publishTime": "2016-04-20",
+     "norm": "有心人"
+    },
+    {
+     "id": "301254",
+     "mid": "001tptvz1Lgeqp",
+     "name": "情人",
+     "tranName": "",
+     "size": 1,
+     "company": "蜂鸟音乐",
+     "publishTime": "2011-11-28",
+     "norm": "情人"
+    },
+    {
+     "id": "1267352",
+     "mid": "000D2zKn2rdl0e",
+     "name": "北京北京",
+     "tranName": "",
+     "size": 1,
+     "company": "蜂鸟音乐",
+     "publishTime": "2016-01-01",
+     "norm": "北京北京"
+    },
+    {
+     "id": "1731191",
+     "mid": "000RslSk08SIUA",
+     "name": "死了都要 • 爱",
+     "tranName": "",
+     "size": 1,
+     "company": "蜂鸟音乐",
+     "publishTime": "2016-12-04",
+     "norm": "死了都要•爱"
+    },
+    {
+     "id": "1136860",
+     "mid": "004DWjLZ2MFCWc",
+     "name": "蝶恋花",
+     "tranName": "",
+     "size": 1,
+     "company": "广东电台音乐之声",
+     "publishTime": "2012-09-02",
+     "norm": "蝶恋花"
+    },
+    {
+     "id": "101654",
+     "mid": "000gKzZE3a8GE1",
+     "name": "Someday I'll Fly",
+     "tranName": "",
+     "size": 1,
+     "company": "蜂鸟音乐",
+     "publishTime": "2012-03-26",
+     "norm": "somedayillfly"
+    },
+    {
+     "id": "2094649",
+     "mid": "000YGZge12vRwH",
+     "name": "心之焰",
+     "tranName": "",
+     "size": 1,
+     "company": "北京听见时代娱乐传媒有限公司",
+     "publishTime": "2017-06-02",
+     "norm": "心之焰"
+    },
+    {
+     "id": "1392468",
+     "mid": "004W8IWK37xABb",
+     "name": "再见 (Live Piano Session Ⅱ)",
+     "tranName": "",
+     "size": 1,
+     "company": "蜂鸟音乐",
+     "publishTime": "2016-05-23",
+     "norm": "再见"
+    },
+    {
+     "id": "1310422",
+     "mid": "003lNCa11psnO1",
+     "name": "泡沫 (PÀO MÒ Remix)",
+     "tranName": "",
+     "size": 1,
+     "company": "蜂鸟音乐",
+     "publishTime": "2016-03-29",
+     "norm": "泡沫"
+    },
+    {
+     "id": "301245",
+     "mid": "004RS1vH2jVKgv",
+     "name": "Just The Way You Are",
+     "tranName": "",
+     "size": 1,
+     "company": "蜂鸟音乐",
+     "publishTime": "2011-11-28",
+     "norm": "justthewayyouare"
+    },
+    {
+     "id": "1631422",
+     "mid": "000GROwE30lDMA",
+     "name": "25LOOKS",
+     "tranName": "",
+     "size": 4,
+     "company": "蜂鸟音乐",
+     "publishTime": "2016-09-03",
+     "norm": "25looks"
+    },
+    {
+     "id": "1509976",
+     "mid": "003voidC3p6EQe",
+     "name": "喜欢你 (EDM Mix)",
+     "tranName": "",
+     "size": 1,
+     "company": "蜂鸟音乐",
+     "publishTime": "2016-07-10",
+     "norm": "喜欢你"
+    },
+    {
+     "id": "1403945",
+     "mid": "004RU2S04g2t6o",
+     "name": "G.E.M. (Live Piano Session)",
+     "tranName": "",
+     "size": 3,
+     "company": "蜂鸟音乐",
+     "publishTime": "2014-12-05",
+     "norm": "gem"
+    },
+    {
+     "id": "9812833",
+     "mid": "0049MVh824D7bM",
+     "name": "摩天动物园",
+     "tranName": "",
+     "size": 13,
+     "company": "未确定",
+     "publishTime": "2019-12-27",
+     "norm": "摩天动物园"
+    },
+    {
+     "id": "9272094",
+     "mid": "002wvl5a2hfaEr",
+     "name": "多远都要在一起",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2015-02-19",
+     "norm": "多远都要在一起"
+    },
+    {
+     "id": "7942661",
+     "mid": "002LZiXj1eUcQr",
+     "name": "我说了算（多芬秀发合作单曲）",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2019-09-16",
+     "norm": "我说了算"
+    },
+    {
+     "id": "78788942",
+     "mid": "000Pcqnc05whXG",
+     "name": "Sacrifice 争 (Anyma Remix)",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2025-11-21",
+     "norm": "sacrifice争"
+    },
+    {
+     "id": "76320259",
+     "mid": "002LICDP45fXGx",
+     "name": "Sacrifice (争)",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2025-10-13",
+     "norm": "sacrifice"
+    },
+    {
+     "id": "7353580",
+     "mid": "003hq1ge4aatEn",
+     "name": "亚莉亚蒂之歌",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2010-12-19",
+     "norm": "亚莉亚蒂之歌"
+    },
+    {
+     "id": "73097635",
+     "mid": "0019KAHB1BuNrz",
+     "name": "Still Breathing",
+     "tranName": "",
+     "size": 2,
+     "company": "未确定",
+     "publishTime": "2025-08-29",
+     "norm": "stillbreathing"
+    },
+    {
+     "id": "68917773",
+     "mid": "0019VvQv1htecA",
+     "name": "I AM GLORIA",
+     "tranName": "",
+     "size": 12,
+     "company": "未确定",
+     "publishTime": "2025-06-12",
+     "norm": "iamgloria"
+    },
+    {
+     "id": "6620953",
+     "mid": "0029q3xa2xXPXi",
+     "name": "热爱就一起",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2019-04-17",
+     "norm": "热爱就一起"
+    },
+    {
+     "id": "5500617",
+     "mid": "002YAM6K2f4hWJ",
+     "name": "光年之外 (热爱版)",
+     "tranName": "",
+     "size": 1,
+     "company": "蜂鸟音乐",
+     "publishTime": "2018-12-10",
+     "norm": "光年之外"
+    },
+    {
+     "id": "5447180",
+     "mid": "003w92u63Kz75u",
+     "name": "睡皇后",
+     "tranName": "",
+     "size": 3,
+     "company": "蜂鸟音乐",
+     "publishTime": "2018-12-14",
+     "norm": "睡皇后"
+    },
+    {
+     "id": "5349104",
+     "mid": "000BJ43K27bi6j",
+     "name": "回忆的沙漏 (10周年版)",
+     "tranName": "",
+     "size": 1,
+     "company": "蜂鸟音乐",
+     "publishTime": "2018-11-30",
+     "norm": "回忆的沙漏"
+    },
+    {
+     "id": "5002400",
+     "mid": "000Rw0D31EmX9R",
+     "name": "是否(Live Piano Session)",
+     "tranName": "",
+     "size": 1,
+     "company": "Music and Entertainment Rights Licensing Independent Network Limited",
+     "publishTime": "2013-11-08",
+     "norm": "是否"
+    },
+    {
+     "id": "4942316",
+     "mid": "0041lL5h00NNJM",
+     "name": "我的秘密 (Live Piano Session)",
+     "tranName": "",
+     "size": 1,
+     "company": "Music and Entertainment Rights Licensing Independent Network Limited",
+     "publishTime": "2013-11-19",
+     "norm": "我的秘密"
+    },
+    {
+     "id": "4809788",
+     "mid": "000Qy6FL03pkEU",
+     "name": "毒苹果",
+     "tranName": "",
+     "size": 3,
+     "company": "蜂鸟音乐",
+     "publishTime": "2018-10-26",
+     "norm": "毒苹果"
+    },
+    {
+     "id": "47798540",
+     "mid": "000cGuvr2B5smi",
+     "name": "Amazing Grace",
+     "tranName": "",
+     "size": 2,
+     "company": "未确定",
+     "publishTime": "2024-03-08",
+     "norm": "amazinggrace"
+    },
+    {
+     "id": "45258965",
+     "mid": "004QrGAR4M5d8h",
+     "name": "面壁者",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2022-12-08",
+     "norm": "面壁者"
+    },
+    {
+     "id": "4331954",
+     "mid": "003cKIKZ1J4Yyu",
+     "name": "另一个童话",
+     "tranName": "",
+     "size": 3,
+     "company": "蜂鸟音乐",
+     "publishTime": "2018-08-16",
+     "norm": "另一个童话"
+    },
+    {
+     "id": "41984589",
+     "mid": "002d6m7k0xCbSv",
+     "name": "T.I.M.E.",
+     "tranName": "",
+     "size": 6,
+     "company": "未确定",
+     "publishTime": "2023-11-26",
+     "norm": "time"
+    },
+    {
+     "id": "4094049",
+     "mid": "002Ysy2H41Uef8",
+     "name": "爱如意 (电影《阿修罗》主题曲)",
+     "tranName": "",
+     "size": 1,
+     "company": "蜂鸟音乐",
+     "publishTime": "2018-06-25",
+     "norm": "爱如意"
+    },
+    {
+     "id": "4037856",
+     "mid": "000MFxmm0EZh5v",
+     "name": "我们的梦",
+     "tranName": "",
+     "size": 1,
+     "company": "环球唱片",
+     "publishTime": "2018-05-08",
+     "norm": "我们的梦"
+    },
+    {
+     "id": "39227935",
+     "mid": "001io3OJ1P31VT",
+     "name": "Revelación",
+     "tranName": "",
+     "size": 14,
+     "company": "未确定",
+     "publishTime": "2023-07-10",
+     "norm": "revelación"
+    },
+    {
+     "id": "3298944",
+     "mid": "001I3LHr3rxd65",
+     "name": "Victoria",
+     "tranName": "",
+     "size": 1,
+     "company": "蜂鸟音乐",
+     "publishTime": "2017-11-24",
+     "norm": "victoria"
+    },
+    {
+     "id": "29779777",
+     "mid": "000CLxSh3wxvBt",
+     "name": "启示录",
+     "tranName": "",
+     "size": 14,
+     "company": "未确定",
+     "publishTime": "2022-08-09",
+     "norm": "启示录"
+    },
+    {
+     "id": "28791474",
+     "mid": "000BYYLS28QQmx",
+     "name": "Bang Bang (小黄人大眼萌：神偷奶爸前传 电影插曲)",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2022-07-01",
+     "norm": "bangbang"
+    },
+    {
+     "id": "28782549",
+     "mid": "003Rx00k39m0ke",
+     "name": "小黄人大眼萌：神偷奶爸前传 电影原声专辑",
+     "tranName": "",
+     "size": 19,
+     "company": "未确定",
+     "publishTime": "2022-07-01",
+     "norm": "小黄人大眼萌神偷奶爸前传电影原声专辑"
+    },
+    {
+     "id": "24194626",
+     "mid": "002wshdy46gOwC",
+     "name": "倒流时间",
+     "tranName": "",
+     "size": 2,
+     "company": "未确定",
+     "publishTime": "2021-12-21",
+     "norm": "倒流时间"
+    },
+    {
+     "id": "23760560",
+     "mid": "003XE27F1vk9lz",
+     "name": "两个你",
+     "tranName": "",
+     "size": 2,
+     "company": "未确定",
+     "publishTime": "2021-11-30",
+     "norm": "两个你"
+    },
+    {
+     "id": "2195549",
+     "mid": "004cjNY22OzFVF",
+     "name": "穿越火线",
+     "tranName": "",
+     "size": 1,
+     "company": "腾讯",
+     "publishTime": "2017-08-04",
+     "norm": "穿越火线"
+    },
+    {
+     "id": "2177284",
+     "mid": "0041XCLi3ACp0U",
+     "name": "爱你 A.I.N.Y. 2017",
+     "tranName": "",
+     "size": 1,
+     "company": "蜂鸟音乐",
+     "publishTime": "2017-07-21",
+     "norm": "爱你ainy2017"
+    },
+    {
+     "id": "21150438",
+     "mid": "000Te1Tn3vekd1",
+     "name": "无双的王者",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2021-07-27",
+     "norm": "无双的王者"
+    },
+    {
+     "id": "18770121",
+     "mid": "000IHeyP0bFnAD",
+     "name": "超能力",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2021-04-01",
+     "norm": "超能力"
+    },
+    {
+     "id": "17489836",
+     "mid": "00289zIL0RLAnE",
+     "name": "平行世界",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2021-02-08",
+     "norm": "平行世界"
+    },
+    {
+     "id": "14914471",
+     "mid": "004EQisu3Sh4J7",
+     "name": "孤独",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2020-10-08",
+     "norm": "孤独"
+    },
+    {
+     "id": "14702718",
+     "mid": "000YosxT0devdr",
+     "name": "万国觉醒",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2020-09-23",
+     "norm": "万国觉醒"
+    },
+    {
+     "id": "10848478",
+     "mid": "000hrBlD2EWvrv",
+     "name": "平凡天使",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2020-03-10",
+     "norm": "平凡天使"
+    },
+    {
+     "id": "102709956",
+     "mid": "002Cy8kL400ft2",
+     "name": "自由的你 (试听版)",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2026-09-17",
+     "norm": "自由的你"
+    }
+   ]
+  },
+  "薛之谦": {
+   "ne": [
+    {
+     "id": 387407402,
+     "name": "媚人",
+     "size": 1,
+     "company": "潮石音乐",
+     "publishTime": 1784217600000,
+     "norm": "媚人"
+    },
+    {
+     "id": 373448570,
+     "name": "人字拖",
+     "size": 1,
+     "company": "潮石音乐",
+     "publishTime": 1777478400000,
+     "norm": "人字拖"
+    },
+    {
+     "id": 370177856,
+     "name": "顽疾",
+     "size": 1,
+     "company": "潮石音乐",
+     "publishTime": 1775750400000,
+     "norm": "顽疾"
+    },
+    {
+     "id": 362050500,
+     "name": "湖泊",
+     "size": 1,
+     "company": "潮石音乐",
+     "publishTime": 1770998400000,
+     "norm": "湖泊"
+    },
+    {
+     "id": 285681457,
+     "name": "霸王别姬",
+     "size": 1,
+     "company": "潮石音乐",
+     "publishTime": 1758297600000,
+     "norm": "霸王别姬"
+    },
+    {
+     "id": 280426915,
+     "name": "金斧子银斧子",
+     "size": 1,
+     "company": "潮石音乐",
+     "publishTime": 1754323200000,
+     "norm": "金斧子银斧子"
+    },
+    {
+     "id": 278465961,
+     "name": "跃",
+     "size": 1,
+     "company": "潮石音乐",
+     "publishTime": 1752681600000,
+     "norm": "跃"
+    },
+    {
+     "id": 242274622,
+     "name": "守村人",
+     "size": 10,
+     "company": "潮石音乐",
+     "publishTime": 1732204800000,
+     "norm": "守村人"
+    },
+    {
+     "id": 151839715,
+     "name": "无数",
+     "size": 10,
+     "company": "潮石音乐",
+     "publishTime": 1663603200000,
+     "norm": "无数"
+    },
+    {
+     "id": 149878590,
+     "name": "你不是一个人",
+     "size": 1,
+     "company": "潮水音乐",
+     "publishTime": 1660752000000,
+     "norm": "你不是一个人"
+    },
+    {
+     "id": 121012393,
+     "name": "天外来物",
+     "size": 10,
+     "company": "潮石音乐",
+     "publishTime": 1609344000000,
+     "norm": "天外来物"
+    },
+    {
+     "id": 95509227,
+     "name": "一首歌一个故事",
+     "size": 13,
+     "company": "奔跑怪物",
+     "publishTime": 1600272000000,
+     "norm": "一首歌一个故事"
+    },
+    {
+     "id": 80003734,
+     "name": "尘",
+     "size": 10,
+     "company": "潮石音乐",
+     "publishTime": 1577376000000,
+     "norm": "尘"
+    },
+    {
+     "id": 86438370,
+     "name": "为了遇见你",
+     "size": 1,
+     "company": "潮石音乐",
+     "publishTime": 1562083200000,
+     "norm": "为了遇见你"
+    },
+    {
+     "id": 74999481,
+     "name": "怪咖",
+     "size": 10,
+     "company": "潮石音乐",
+     "publishTime": 1546185600000,
+     "norm": "怪咖"
+    },
+    {
+     "id": 36855053,
+     "name": "渡",
+     "size": 10,
+     "company": "潮石音乐",
+     "publishTime": 1511798400000,
+     "norm": "渡"
+    },
+    {
+     "id": 34861909,
+     "name": "来日方长",
+     "size": 1,
+     "company": "源丰泰坤",
+     "publishTime": 1473609600007,
+     "norm": "来日方长"
+    },
+    {
+     "id": 34780271,
+     "name": "初学者",
+     "size": 10,
+     "company": "潮石音乐",
+     "publishTime": 1468771200000,
+     "norm": "初学者"
+    },
+    {
+     "id": 3316028,
+     "name": "一半",
+     "size": 3,
+     "company": "潮石音乐",
+     "publishTime": 1445184000000,
+     "norm": "一半"
+    },
+    {
+     "id": 3154175,
+     "name": "绅士",
+     "size": 3,
+     "company": "潮石音乐",
+     "publishTime": 1433692800000,
+     "norm": "绅士"
+    },
+    {
+     "id": 2681139,
+     "name": "意外",
+     "size": 10,
+     "company": "潮石音乐",
+     "publishTime": 1384099200000,
+     "norm": "意外"
+    },
+    {
+     "id": 2302197,
+     "name": "方圆几里",
+     "size": 2,
+     "company": "潮石音乐",
+     "publishTime": 1356537600000,
+     "norm": "方圆几里"
+    },
+    {
+     "id": 17072,
+     "name": "几个薛之谦",
+     "size": 9,
+     "company": "潮石音乐",
+     "publishTime": 1344960000000,
+     "norm": "几个薛之谦"
+    },
+    {
+     "id": 2533172,
+     "name": "我们爱过就好",
+     "size": 1,
+     "company": "潮石音乐",
+     "publishTime": 1318176000000,
+     "norm": "我们爱过就好"
+    },
+    {
+     "id": 17074,
+     "name": "未完成的歌",
+     "size": 14,
+     "company": "潮石音乐",
+     "publishTime": 1260460800000,
+     "norm": "未完成的歌"
+    },
+    {
+     "id": 17077,
+     "name": "深深爱过你",
+     "size": 9,
+     "company": "潮石音乐",
+     "publishTime": 1227628800000,
+     "norm": "深深爱过你"
+    },
+    {
+     "id": 17079,
+     "name": "你过得好吗",
+     "size": 10,
+     "company": "潮石音乐",
+     "publishTime": 1185811200000,
+     "norm": "你过得好吗"
+    },
+    {
+     "id": 17081,
+     "name": "薛之谦",
+     "size": 10,
+     "company": "潮石音乐",
+     "publishTime": 1150041600000,
+     "norm": "薛之谦"
+    }
+   ],
+   "qq": [
+    {
+     "id": "989994",
+     "mid": "003y8dsH2wBHlo",
+     "name": "绅士",
+     "tranName": "",
+     "size": 3,
+     "company": "海蝶音乐",
+     "publishTime": "2015-06-05",
+     "norm": "绅士"
+    },
+    {
+     "id": "443691",
+     "mid": "000QgFcm0v8WaF",
+     "name": "意外",
+     "tranName": "",
+     "size": 10,
+     "company": "海蝶音乐",
+     "publishTime": "2013-11-11",
+     "norm": "意外"
+    },
+    {
+     "id": "1376305",
+     "mid": "000dcZ9I1nzO62",
+     "name": "初学者",
+     "tranName": "",
+     "size": 10,
+     "company": "海蝶音乐",
+     "publishTime": "2016-07-18",
+     "norm": "初学者"
+    },
+    {
+     "id": "55085",
+     "mid": "0036fT613sAeZn",
+     "name": "未完成的歌",
+     "tranName": "",
+     "size": 14,
+     "company": "环球唱片",
+     "publishTime": "2009-12-11",
+     "norm": "未完成的歌"
+    },
+    {
+     "id": "1174100",
+     "mid": "000dEfCC2ccVxz",
+     "name": "一半",
+     "tranName": "",
+     "size": 3,
+     "company": "海蝶音乐",
+     "publishTime": "2015-10-17",
+     "norm": "一半"
+    },
+    {
+     "id": "122328",
+     "mid": "003qp8IX21MXH0",
+     "name": "几个薛之谦",
+     "tranName": "",
+     "size": 9,
+     "company": "上腾娱乐",
+     "publishTime": "2012-08-15",
+     "norm": "几个薛之谦"
+    },
+    {
+     "id": "37055",
+     "mid": "001OdsAb1vBRlV",
+     "name": "深深爱过你",
+     "tranName": "",
+     "size": 9,
+     "company": "环球唱片",
+     "publishTime": "2008-11-26",
+     "norm": "深深爱过你"
+    },
+    {
+     "id": "1601728",
+     "mid": "001iXBa54Lz2Ck",
+     "name": "来日方长",
+     "tranName": "",
+     "size": 1,
+     "company": "慕音乐",
+     "publishTime": "2016-09-12",
+     "norm": "来日方长"
+    },
+    {
+     "id": "51504",
+     "mid": "003mUYW22JXKVK",
+     "name": "薛之谦",
+     "tranName": "",
+     "size": 10,
+     "company": "环球唱片",
+     "publishTime": "2006-06-09",
+     "norm": "薛之谦"
+    },
+    {
+     "id": "35403",
+     "mid": "002yvVYW1XXUWq",
+     "name": "传说",
+     "tranName": "",
+     "size": 1,
+     "company": "环球唱片",
+     "publishTime": "2008-07-01",
+     "norm": "传说"
+    },
+    {
+     "id": "32506",
+     "mid": "004PY3HK4cv5z4",
+     "name": "你过得好吗",
+     "tranName": "",
+     "size": 10,
+     "company": "上腾娱乐",
+     "publishTime": "2007-07-31",
+     "norm": "你过得好吗"
+    },
+    {
+     "id": "97601701",
+     "mid": "002vfBmm41fIRe",
+     "name": "媚人",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2026-07-17",
+     "norm": "媚人"
+    },
+    {
+     "id": "90794494",
+     "mid": "002hKiJX4bjcun",
+     "name": "人字拖",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2026-04-30",
+     "norm": "人字拖"
+    },
+    {
+     "id": "89256479",
+     "mid": "0033ZoPK0kL53m",
+     "name": "顽疾",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2026-04-10",
+     "norm": "顽疾"
+    },
+    {
+     "id": "85224277",
+     "mid": "002S9DPF009Y8J",
+     "name": "湖泊",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2026-02-14",
+     "norm": "湖泊"
+    },
+    {
+     "id": "75074335",
+     "mid": "0026kVRP0O1FEf",
+     "name": "霸王别姬",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2025-09-20",
+     "norm": "霸王别姬"
+    },
+    {
+     "id": "7350004",
+     "mid": "0009uIdf0lAsgg",
+     "name": "我们爱过就好",
+     "tranName": "",
+     "size": 2,
+     "company": "未确定",
+     "publishTime": "2011-10-10",
+     "norm": "我们爱过就好"
+    },
+    {
+     "id": "71888557",
+     "mid": "000vZ21Z3u98gK",
+     "name": "金斧子银斧子",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2025-08-05",
+     "norm": "金斧子银斧子"
+    },
+    {
+     "id": "70890244",
+     "mid": "003iQCrp1A4Ako",
+     "name": "跃",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2025-07-17",
+     "norm": "跃"
+    },
+    {
+     "id": "7064087",
+     "mid": "000DMpJ73yeITP",
+     "name": "尘",
+     "tranName": "",
+     "size": 10,
+     "company": "音之邦",
+     "publishTime": "2019-12-27",
+     "norm": "尘"
+    },
+    {
+     "id": "58722559",
+     "mid": "002N4fUq1kRST2",
+     "name": "守村人",
+     "tranName": "",
+     "size": 10,
+     "company": "未确定",
+     "publishTime": "2024-11-22",
+     "norm": "守村人"
+    },
+    {
+     "id": "5724335",
+     "mid": "0015rUVB2OUdGA",
+     "name": "怪咖",
+     "tranName": "",
+     "size": 10,
+     "company": "音之邦",
+     "publishTime": "2018-12-31",
+     "norm": "怪咖"
+    },
+    {
+     "id": "4071741",
+     "mid": "002RCBfC1QExPO",
+     "name": "那是你离开了北京的生活",
+     "tranName": "",
+     "size": 1,
+     "company": "音之邦",
+     "publishTime": "2018-06-08",
+     "norm": "那是你离开了北京的生活"
+    },
+    {
+     "id": "3310789",
+     "mid": "001L7UIu3GXVtT",
+     "name": "渡 The Crossing",
+     "tranName": "",
+     "size": 10,
+     "company": "音之邦",
+     "publishTime": "2017-11-28",
+     "norm": "渡thecrossing"
+    },
+    {
+     "id": "30717803",
+     "mid": "003kUptv2UE2iY",
+     "name": "无数",
+     "tranName": "",
+     "size": 10,
+     "company": "未确定",
+     "publishTime": "2022-09-20",
+     "norm": "无数"
+    },
+    {
+     "id": "29912692",
+     "mid": "003i7vXr1ScBjJ",
+     "name": "你不是一个人",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2022-08-18",
+     "norm": "你不是一个人"
+    },
+    {
+     "id": "28291311",
+     "mid": "000U44Sz4JMG8z",
+     "name": "方圆几里",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2012-12-27",
+     "norm": "方圆几里"
+    },
+    {
+     "id": "23940846",
+     "mid": "003G8aht0BesAD",
+     "name": "别",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2017-10-31",
+     "norm": "别"
+    },
+    {
+     "id": "20463084",
+     "mid": "003eRE1h1qgZLE",
+     "name": "电视剧《你微笑时很美》影视原声带",
+     "tranName": "",
+     "size": 11,
+     "company": "未确定",
+     "publishTime": "2021-06-23",
+     "norm": "电视剧你微笑时很美影视原声带"
+    },
+    {
+     "id": "16596032",
+     "mid": "000K9Zp13TZp5s",
+     "name": "天外来物",
+     "tranName": "",
+     "size": 10,
+     "company": "未确定",
+     "publishTime": "2020-12-31",
+     "norm": "天外来物"
+    },
+    {
+     "id": "15594998",
+     "mid": "003rSmMP3ExKFY",
+     "name": "最好",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2018-07-26",
+     "norm": "最好"
+    }
+   ]
+  },
+  "Taylor Swift": {
+   "ne": [
+    {
+     "id": 400456655,
+     "name": "The Life of a Showgirl: The Encore",
+     "size": 16,
+     "company": "Taylor Swift",
+     "publishTime": 1790265600000,
+     "norm": "thelifeofashowgirltheencore"
+    },
+    {
+     "id": 400455999,
+     "name": "The Life of a Showgirl: The Encore",
+     "size": 16,
+     "company": "Taylor Swift",
+     "publishTime": 1790265600000,
+     "norm": "thelifeofashowgirltheencore"
+    },
+    {
+     "id": 381339074,
+     "name": "I Knew It, I Knew You",
+     "size": 3,
+     "company": "Walt Disney Records / Pixar",
+     "publishTime": 1781193600000,
+     "norm": "iknewitiknewyou"
+    },
+    {
+     "id": 380483322,
+     "name": "I Knew It, I Knew You (Acoustic Version)",
+     "size": 1,
+     "company": "Walt Disney Records / Pixar",
+     "publishTime": 1780588800000,
+     "norm": "iknewitiknewyou"
+    },
+    {
+     "id": 380069042,
+     "name": "I Knew It, I Knew You",
+     "size": 1,
+     "company": "Walt Disney Records / Pixar",
+     "publishTime": 1780588800000,
+     "norm": "iknewitiknewyou"
+    },
+    {
+     "id": 380484304,
+     "name": "I Knew It, I Knew You (Piano Version)",
+     "size": 1,
+     "company": "Walt Disney Records / Pixar",
+     "publishTime": 1780588800000,
+     "norm": "iknewitiknewyou"
+    },
+    {
+     "id": 368715414,
+     "name": "Elizabeth Taylor",
+     "size": 3,
+     "company": "Taylor Swift",
+     "publishTime": 1774886400000,
+     "norm": "elizabethtaylor"
+    },
+    {
+     "id": 362507750,
+     "name": "Opalite (Chris Lake Remix)",
+     "size": 1,
+     "company": "Taylor Swift",
+     "publishTime": 1771516800000,
+     "norm": "opalite"
+    },
+    {
+     "id": 362597915,
+     "name": "Opalite (Skream Remix)",
+     "size": 1,
+     "company": "Taylor Swift",
+     "publishTime": 1771430400000,
+     "norm": "opalite"
+    },
+    {
+     "id": 362597916,
+     "name": "Opalite (Ely Oaks Remix)",
+     "size": 1,
+     "company": "Taylor Swift",
+     "publishTime": 1771430400000,
+     "norm": "opalite"
+    },
+    {
+     "id": 362597942,
+     "name": "Opalite (BUNT. Remix)",
+     "size": 1,
+     "company": "Taylor Swift",
+     "publishTime": 1771430400000,
+     "norm": "opalite"
+    },
+    {
+     "id": 362456437,
+     "name": "Opalite (Life Is A Song Acoustic Version)",
+     "size": 1,
+     "company": "Taylor Swift",
+     "publishTime": 1770652800000,
+     "norm": "opalite"
+    },
+    {
+     "id": 361135416,
+     "name": "Opalite",
+     "size": 1,
+     "company": "Taylor Swift",
+     "publishTime": 1770307200000,
+     "norm": "opalite"
+    },
+    {
+     "id": 358461738,
+     "name": "The Fate of Ophelia (TELYKAST & XanTz Remix (Extended Version))",
+     "size": 1,
+     "company": "Taylor Swift",
+     "publishTime": 1768406400000,
+     "norm": "thefateofophelia"
+    },
+    {
+     "id": 358337894,
+     "name": "The Fate of Ophelia (TELYKAST & XanTz Remix)",
+     "size": 1,
+     "company": "Taylor Swift",
+     "publishTime": 1768320000000,
+     "norm": "thefateofophelia"
+    },
+    {
+     "id": 357432500,
+     "name": "The Fate of Ophelia (The Chainsmokers Remix / Extended Version)",
+     "size": 1,
+     "company": "Taylor Swift",
+     "publishTime": 1767628800000,
+     "norm": "thefateofophelia"
+    },
+    {
+     "id": 352281767,
+     "name": "The Fate of Ophelia (The Chainsmokers Remix)",
+     "size": 3,
+     "company": "Taylor Swift",
+     "publishTime": 1764259200000,
+     "norm": "thefateofophelia"
+    },
+    {
+     "id": 351467694,
+     "name": "The Fate of Ophelia (Loud Luxury Remix / Extended Version)",
+     "size": 1,
+     "company": "Taylor Swift",
+     "publishTime": 1763654400000,
+     "norm": "thefateofophelia"
+    },
+    {
+     "id": 349608344,
+     "name": "The Life of a Showgirl + Acoustic Collection",
+     "size": 19,
+     "company": "Taylor Swift",
+     "publishTime": 1762444800000,
+     "norm": "thelifeofashowgirlacousticcollection"
+    },
+    {
+     "id": 349617410,
+     "name": "The Fate of Ophelia (Loud Luxury Remix)",
+     "size": 3,
+     "company": "Taylor Swift",
+     "publishTime": 1762358400000,
+     "norm": "thefateofophelia"
+    },
+    {
+     "id": 348727709,
+     "name": "The Fate of Ophelia",
+     "size": 1,
+     "company": "Taylor Swift",
+     "publishTime": 1761840000000,
+     "norm": "thefateofophelia"
+    },
+    {
+     "id": 348727693,
+     "name": "The Fate of Ophelia (Alone In My Tower Acoustic Version)",
+     "size": 2,
+     "company": "Taylor Swift",
+     "publishTime": 1761840000000,
+     "norm": "thefateofophelia"
+    },
+    {
+     "id": 348726867,
+     "name": "The Fate of Ophelia (Alone In My Tower Acoustic Version / Instrumental)",
+     "size": 1,
+     "company": "Taylor Swift",
+     "publishTime": 1761840000000,
+     "norm": "thefateofophelia"
+    },
+    {
+     "id": 348727487,
+     "name": "The Fate of Ophelia (Instrumental)",
+     "size": 1,
+     "company": "Taylor Swift",
+     "publishTime": 1761840000000,
+     "norm": "thefateofophelia"
+    },
+    {
+     "id": 348409902,
+     "name": "The Fate of Ophelia (Alone In My Tower Acoustic Version)",
+     "size": 1,
+     "company": "Taylor Swift",
+     "publishTime": 1761580800000,
+     "norm": "thefateofophelia"
+    },
+    {
+     "id": 284356964,
+     "name": "The Life of a Showgirl",
+     "size": 12,
+     "company": "Taylor Swift",
+     "publishTime": 1759420800000,
+     "norm": "thelifeofashowgirl"
+    },
+    {
+     "id": 287217112,
+     "name": "The Life of a Showgirl",
+     "size": 12,
+     "company": "Taylor Swift",
+     "publishTime": 1759420800000,
+     "norm": "thelifeofashowgirl"
+    },
+    {
+     "id": 287602194,
+     "name": "The Life of a Showgirl (Track by Track Version)",
+     "size": 26,
+     "company": "Taylor Swift",
+     "publishTime": 1759334400000,
+     "norm": "thelifeofashowgirl"
+    },
+    {
+     "id": 287602191,
+     "name": "The Life of a Showgirl (Track by Track Version)",
+     "size": 26,
+     "company": "Taylor Swift",
+     "publishTime": 1759334400000,
+     "norm": "thelifeofashowgirl"
+    },
+    {
+     "id": 249724768,
+     "name": "THE TORTURED POETS DEPARTMENT | TS The Eras Tour Setlist",
+     "size": 7,
+     "company": "Taylor Swift",
+     "publishTime": 1727884800000,
+     "norm": "thetorturedpoetsdepartmenttstheerastoursetlist"
+    },
+    {
+     "id": 249725443,
+     "name": "THE TORTURED POETS DEPARTMENT | TS The Eras Tour Setlist",
+     "size": 7,
+     "company": "Taylor Swift",
+     "publishTime": 1727884800000,
+     "norm": "thetorturedpoetsdepartmenttstheerastoursetlist"
+    },
+    {
+     "id": 247784521,
+     "name": "I Can Do It With a Broken Heart (Dombresky Remix)",
+     "size": 3,
+     "company": "Taylor Swift",
+     "publishTime": 1726156800000,
+     "norm": "icandoitwithabrokenheart"
+    },
+    {
+     "id": 247784203,
+     "name": "I Can Do It With a Broken Heart (Dombresky Remix)",
+     "size": 3,
+     "company": "Taylor Swift",
+     "publishTime": 1726156800000,
+     "norm": "icandoitwithabrokenheart"
+    },
+    {
+     "id": 242252246,
+     "name": "I Can Do It With a Broken Heart",
+     "size": 2,
+     "company": "Taylor Swift",
+     "publishTime": 1721059200000,
+     "norm": "icandoitwithabrokenheart"
+    },
+    {
+     "id": 242252248,
+     "name": "I Can Do It With a Broken Heart",
+     "size": 2,
+     "company": "Taylor Swift",
+     "publishTime": 1721059200000,
+     "norm": "icandoitwithabrokenheart"
+    },
+    {
+     "id": 242258860,
+     "name": "I Can Do It With a Broken Heart (Instrumental)",
+     "size": 1,
+     "company": "Taylor Swift",
+     "publishTime": 1721059200000,
+     "norm": "icandoitwithabrokenheart"
+    },
+    {
+     "id": 241604804,
+     "name": "Fortnight (Acoustic Version)",
+     "size": 3,
+     "company": "Taylor Swift",
+     "publishTime": 1720454400000,
+     "norm": "fortnight"
+    },
+    {
+     "id": 241613753,
+     "name": "Fortnight (Acoustic Version)",
+     "size": 1,
+     "company": "Taylor Swift",
+     "publishTime": 1720454400000,
+     "norm": "fortnight"
+    },
+    {
+     "id": 241613502,
+     "name": "Fortnight (Cults Remix)",
+     "size": 1,
+     "company": "Taylor Swift",
+     "publishTime": 1720454400000,
+     "norm": "fortnight"
+    },
+    {
+     "id": 196904897,
+     "name": "Fortnight (BLOND:ISH Remix)",
+     "size": 1,
+     "company": "TS/Republic",
+     "publishTime": 1716307200000,
+     "norm": "fortnight"
+    },
+    {
+     "id": 196892746,
+     "name": "Fortnight (BLOND:ISH Remix)",
+     "size": 2,
+     "company": "TS/Republic",
+     "publishTime": 1716307200000,
+     "norm": "fortnight"
+    },
+    {
+     "id": 192833347,
+     "name": "THE TORTURED POETS DEPARTMENT: THE ANTHOLOGY",
+     "size": 31,
+     "company": "Taylor Swift",
+     "publishTime": 1713456002000,
+     "norm": "thetorturedpoetsdepartmenttheanthology"
+    },
+    {
+     "id": 192832597,
+     "name": "THE TORTURED POETS DEPARTMENT: THE ANTHOLOGY",
+     "size": 31,
+     "company": "Taylor Swift",
+     "publishTime": 1713456001000,
+     "norm": "thetorturedpoetsdepartmenttheanthology"
+    },
+    {
+     "id": 191933626,
+     "name": "THE TORTURED POETS DEPARTMENT",
+     "size": 16,
+     "company": "Taylor Swift",
+     "publishTime": 1713456000000,
+     "norm": "thetorturedpoetsdepartment"
+    },
+    {
+     "id": 192820006,
+     "name": "THE TORTURED POETS DEPARTMENT",
+     "size": 16,
+     "company": "Taylor Swift",
+     "publishTime": 1713456000000,
+     "norm": "thetorturedpoetsdepartment"
+    },
+    {
+     "id": 180058878,
+     "name": "You're Losing Me (From The Vault)",
+     "size": 1,
+     "company": "Taylor Swift",
+     "publishTime": 1701187200000,
+     "norm": "yourelosingme"
+    },
+    {
+     "id": 177801646,
+     "name": "\"Slut!\" (Taylor's Version) (From The Vault)",
+     "size": 1,
+     "company": "Taylor Swift",
+     "publishTime": 1698336000000,
+     "norm": "slut"
+    },
+    {
+     "id": 177825165,
+     "name": "1989 (Taylor's Version) (Deluxe)",
+     "size": 22,
+     "company": "Taylor Swift",
+     "publishTime": 1698336000000,
+     "norm": "1989"
+    },
+    {
+     "id": 177237088,
+     "name": "1989 (Taylor's Version)",
+     "size": 21,
+     "company": "Taylor Swift",
+     "publishTime": 1698336000000,
+     "norm": "1989"
+    },
+    {
+     "id": 178677141,
+     "name": "The Cruelest Summer",
+     "size": 4,
+     "company": "Taylor Swift",
+     "publishTime": 1697644800000,
+     "norm": "thecruelestsummer"
+    },
+    {
+     "id": 177204663,
+     "name": "Cruel Summer (LP Giobbi Remix)",
+     "size": 1,
+     "company": "Taylor Swift",
+     "publishTime": 1697644800000,
+     "norm": "cruelsummer"
+    },
+    {
+     "id": 177205635,
+     "name": "Cruel Summer (Live from TS | The Eras Tour)",
+     "size": 1,
+     "company": "Taylor Swift",
+     "publishTime": 1697644800000,
+     "norm": "cruelsummer"
+    },
+    {
+     "id": 177207435,
+     "name": "The Cruelest Summer",
+     "size": 3,
+     "company": "Taylor Swift",
+     "publishTime": 1697644800000,
+     "norm": "thecruelestsummer"
+    },
+    {
+     "id": 178648879,
+     "name": "Cruel Summer (LP Giobbi Remix - Extended Version)",
+     "size": 1,
+     "company": "Taylor Swift",
+     "publishTime": 1697644800000,
+     "norm": "cruelsummer"
+    },
+    {
+     "id": 168588248,
+     "name": "Speak Now (Taylor's Version)",
+     "size": 22,
+     "company": "Taylor Swift",
+     "publishTime": 1688659200000,
+     "norm": "speaknow"
+    },
+    {
+     "id": 166435890,
+     "name": "Midnights (The Til Dawn Edition)",
+     "size": 23,
+     "company": "Taylor Swift",
+     "publishTime": 1685030400000,
+     "norm": "midnights"
+    },
+    {
+     "id": 166440089,
+     "name": "Midnights (The Til Dawn Edition)",
+     "size": 23,
+     "company": "Taylor Swift",
+     "publishTime": 1684944000000,
+     "norm": "midnights"
+    },
+    {
+     "id": 162827827,
+     "name": "Lavender Haze (Acoustic Version)",
+     "size": 1,
+     "company": "Taylor Swift",
+     "publishTime": 1680192000000,
+     "norm": "lavenderhaze"
+    },
+    {
+     "id": 162828104,
+     "name": "Lavender Haze (Acoustic Version)",
+     "size": 1,
+     "company": "Taylor Swift",
+     "publishTime": 1680192000000,
+     "norm": "lavenderhaze"
+    },
+    {
+     "id": 161989535,
+     "name": "The More Lover Chapter",
+     "size": 5,
+     "company": "Taylor Swift",
+     "publishTime": 1678982400000,
+     "norm": "themoreloverchapter"
+    },
+    {
+     "id": 161988783,
+     "name": "The More Red (Taylor’s Version) Chapter",
+     "size": 6,
+     "company": "Taylor Swift",
+     "publishTime": 1678982400000,
+     "norm": "themoreredchapter"
+    },
+    {
+     "id": 161989621,
+     "name": "The More Red (Taylor’s Version) Chapter",
+     "size": 6,
+     "company": "Taylor Swift",
+     "publishTime": 1678982400000,
+     "norm": "themoreredchapter"
+    },
+    {
+     "id": 161988867,
+     "name": "The More Fearless (Taylor’s Version) Chapter",
+     "size": 5,
+     "company": "Taylor Swift",
+     "publishTime": 1678982400000,
+     "norm": "themorefearlesschapter"
+    },
+    {
+     "id": 161981881,
+     "name": "All Of The Girls You Loved Before",
+     "size": 1,
+     "company": "Taylor Swift",
+     "publishTime": 1678982400000,
+     "norm": "allofthegirlsyoulovedbefore"
+    },
+    {
+     "id": 161983047,
+     "name": "Eyes Open (Taylor's Version)",
+     "size": 1,
+     "company": "Taylor Swift",
+     "publishTime": 1678982400000,
+     "norm": "eyesopen"
+    },
+    {
+     "id": 161981711,
+     "name": "If This Was A Movie (Taylor’s Version)",
+     "size": 1,
+     "company": "Taylor Swift",
+     "publishTime": 1678982400000,
+     "norm": "ifthiswasamovie"
+    },
+    {
+     "id": 161980893,
+     "name": "Safe & Sound (Taylor's Version)",
+     "size": 1,
+     "company": "Taylor Swift",
+     "publishTime": 1678982400000,
+     "norm": "safesound"
+    },
+    {
+     "id": 161187084,
+     "name": "Lavender Haze (Jungle Remix)",
+     "size": 1,
+     "company": "Taylor Swift",
+     "publishTime": 1677772800000,
+     "norm": "lavenderhaze"
+    },
+    {
+     "id": 161187101,
+     "name": "Lavender Haze (Jungle Remix)",
+     "size": 1,
+     "company": "Taylor Swift",
+     "publishTime": 1677772800000,
+     "norm": "lavenderhaze"
+    },
+    {
+     "id": 161181012,
+     "name": "Lavender Haze (Remixes)",
+     "size": 5,
+     "company": "Taylor Swift",
+     "publishTime": 1677772800000,
+     "norm": "lavenderhaze"
+    },
+    {
+     "id": 161186077,
+     "name": "Lavender Haze (Felix Jaehn Remix)",
+     "size": 1,
+     "company": "Taylor Swift",
+     "publishTime": 1677772800000,
+     "norm": "lavenderhaze"
+    },
+    {
+     "id": 161186080,
+     "name": "Lavender Haze (Tensnake Remix)",
+     "size": 1,
+     "company": "Taylor Swift",
+     "publishTime": 1677772800000,
+     "norm": "lavenderhaze"
+    },
+    {
+     "id": 161181011,
+     "name": "Lavender Haze (Remixes)",
+     "size": 5,
+     "company": "Taylor Swift",
+     "publishTime": 1677772800000,
+     "norm": "lavenderhaze"
+    },
+    {
+     "id": 161187083,
+     "name": "Lavender Haze (Snakehips Remix)",
+     "size": 1,
+     "company": "Taylor Swift",
+     "publishTime": 1677772800000,
+     "norm": "lavenderhaze"
+    },
+    {
+     "id": 161187080,
+     "name": "Lavender Haze (Snakehips Remix)",
+     "size": 1,
+     "company": "Taylor Swift",
+     "publishTime": 1677772800000,
+     "norm": "lavenderhaze"
+    },
+    {
+     "id": 161187085,
+     "name": "Lavender Haze (Tensnake Remix)",
+     "size": 1,
+     "company": "Taylor Swift",
+     "publishTime": 1677772800000,
+     "norm": "lavenderhaze"
+    },
+    {
+     "id": 159834169,
+     "name": "Lavender Haze (Felix Jaehn Remix)",
+     "size": 1,
+     "company": "Taylor Swift",
+     "publishTime": 1675958400000,
+     "norm": "lavenderhaze"
+    },
+    {
+     "id": 155516301,
+     "name": "Anti-Hero (Acoustic Version)",
+     "size": 1,
+     "company": "Taylor Swift",
+     "publishTime": 1669305600000,
+     "norm": "antihero"
+    },
+    {
+     "id": 155170506,
+     "name": "Anti-Hero (ILLENIUM Remix)",
+     "size": 1,
+     "company": "Taylor Swift",
+     "publishTime": 1668700800000,
+     "norm": "antihero"
+    },
+    {
+     "id": 154767443,
+     "name": "Anti-Hero (Roosevelt Remix)",
+     "size": 1,
+     "company": "Taylor Swift",
+     "publishTime": 1668096000000,
+     "norm": "antihero"
+    }
+   ],
+   "qq": [
+    {
+     "id": "190128",
+     "mid": "000XafSm26FA1L",
+     "name": "Red (Deluxe Edition)",
+     "tranName": "",
+     "size": 22,
+     "company": "环球唱片",
+     "publishTime": "2012-10-22",
+     "norm": "red"
+    },
+    {
+     "id": "92754",
+     "mid": "001xOcFI4XhF7s",
+     "name": "Long Live",
+     "tranName": "",
+     "size": 1,
+     "company": "Big Machine Records, LLC",
+     "publishTime": "2012-03-01",
+     "norm": "longlive"
+    },
+    {
+     "id": "138731",
+     "mid": "003FVV9l3ifGEP",
+     "name": "We Are Never Ever Getting Back Together",
+     "tranName": "",
+     "size": 1,
+     "company": "Big Machine Records, LLC",
+     "publishTime": "2012-09-01",
+     "norm": "weareneverevergettingbacktogether"
+    },
+    {
+     "id": "54362",
+     "mid": "002Q1XUj3HBAzw",
+     "name": "Fearless (Platinum Edition)",
+     "tranName": "",
+     "size": 23,
+     "company": "环球唱片",
+     "publishTime": "2009-01-01",
+     "norm": "fearless"
+    },
+    {
+     "id": "60294",
+     "mid": "001QmRCD2PGa4o",
+     "name": "Speak Now (Deluxe Package)",
+     "tranName": "",
+     "size": 22,
+     "company": "环球唱片",
+     "publishTime": "2010-11-05",
+     "norm": "speaknow"
+    },
+    {
+     "id": "656743",
+     "mid": "002Kz5Jo1uzHjz",
+     "name": "1989 (Deluxe)",
+     "tranName": "",
+     "size": 19,
+     "company": "Big Machine Records, LLC",
+     "publishTime": "2014-10-27",
+     "norm": "1989"
+    },
+    {
+     "id": "91693",
+     "mid": "000Vud1B17iKlX",
+     "name": "Safe & Sound (from The Hunger Games Soundtrack)",
+     "tranName": "",
+     "size": 1,
+     "company": "Big Machine Records, LLC",
+     "publishTime": "2011-12-26",
+     "norm": "safesound"
+    },
+    {
+     "id": "85409",
+     "mid": "003PQyfr3speG2",
+     "name": "Journey To Fearless The Ultimate Live Experience",
+     "tranName": "",
+     "size": 12,
+     "company": "环球唱片",
+     "publishTime": "2011-10-11",
+     "norm": "journeytofearlesstheultimateliveexperience"
+    },
+    {
+     "id": "150518",
+     "mid": "001xFefa3znD3Q",
+     "name": "Red",
+     "tranName": "",
+     "size": 1,
+     "company": "Big Machine Records, LLC",
+     "publishTime": "2012-10-02",
+     "norm": "red"
+    },
+    {
+     "id": "151875",
+     "mid": "003XgDKL12X3J1",
+     "name": "I Knew You Were Trouble.",
+     "tranName": "",
+     "size": 1,
+     "company": "环球唱片",
+     "publishTime": "2012-10-09",
+     "norm": "iknewyouweretrouble"
+    },
+    {
+     "id": "432985",
+     "mid": "003cFqtm2iCQLX",
+     "name": "Everything Has Changed (Remix)",
+     "tranName": "",
+     "size": 1,
+     "company": "环球唱片",
+     "publishTime": "2013-07-23",
+     "norm": "everythinghaschanged"
+    },
+    {
+     "id": "443292",
+     "mid": "000vfj0T0l6Ftg",
+     "name": "Sweeter Than Fiction",
+     "tranName": "",
+     "size": 1,
+     "company": "环球唱片",
+     "publishTime": "2013-01-01",
+     "norm": "sweeterthanfiction"
+    },
+    {
+     "id": "659985",
+     "mid": "000GYy8X45U7RX",
+     "name": "Taylor Swift",
+     "tranName": "",
+     "size": 16,
+     "company": "环球唱片",
+     "publishTime": "2006-10-24",
+     "norm": "taylorswift"
+    },
+    {
+     "id": "427996",
+     "mid": "002caVUa1osyJ6",
+     "name": "Everything Has Changed",
+     "tranName": "",
+     "size": 1,
+     "company": "Big Machine Records, LLC",
+     "publishTime": "2013-07-16",
+     "norm": "everythinghaschanged"
+    },
+    {
+     "id": "67481",
+     "mid": "00498kqV3zklee",
+     "name": "Unreleased Songs",
+     "tranName": "",
+     "size": 26,
+     "company": "未确定",
+     "publishTime": "2011-01-17",
+     "norm": "unreleasedsongs"
+    },
+    {
+     "id": "144868",
+     "mid": "003risp01CyWWE",
+     "name": "Ronan",
+     "tranName": "",
+     "size": 1,
+     "company": "Big Machine Records, LLC",
+     "publishTime": "2012-09-08",
+     "norm": "ronan"
+    },
+    {
+     "id": "83761",
+     "mid": "004R5OLz4Z4rZR",
+     "name": "Mine",
+     "tranName": "",
+     "size": 1,
+     "company": "环球唱片",
+     "publishTime": "2010-08-05",
+     "norm": "mine"
+    },
+    {
+     "id": "989466",
+     "mid": "001uugxk3TxVc3",
+     "name": "Bad Blood",
+     "tranName": "",
+     "size": 1,
+     "company": "环球唱片",
+     "publishTime": "2015-05-17",
+     "norm": "badblood"
+    },
+    {
+     "id": "1750698",
+     "mid": "0043jTK00GK3fI",
+     "name": "I Don't Wanna Live Forever (Fifty Shades Darker)",
+     "tranName": "",
+     "size": 1,
+     "company": "环球唱片",
+     "publishTime": "2016-12-09",
+     "norm": "idontwannaliveforever"
+    },
+    {
+     "id": "764384",
+     "mid": "001DSdRf2OXkO1",
+     "name": "Out Of The Woods",
+     "tranName": "",
+     "size": 1,
+     "company": "Big Machine Records, LLC",
+     "publishTime": "2014-10-14",
+     "norm": "outofthewoods"
+    },
+    {
+     "id": "83763",
+     "mid": "004DglOk3onM7h",
+     "name": "Speak Now",
+     "tranName": "",
+     "size": 14,
+     "company": "环球唱片",
+     "publishTime": "2010-10-25",
+     "norm": "speaknow"
+    },
+    {
+     "id": "427750",
+     "mid": "001NkXkP0GoTUD",
+     "name": "22",
+     "tranName": "",
+     "size": 1,
+     "company": "环球唱片",
+     "publishTime": "2013-04-23",
+     "norm": "22"
+    },
+    {
+     "id": "656632",
+     "mid": "003GEK3g1jAzq3",
+     "name": "Shake It Off",
+     "tranName": "",
+     "size": 1,
+     "company": "环球唱片",
+     "publishTime": "2014-08-19",
+     "norm": "shakeitoff"
+    },
+    {
+     "id": "1182277",
+     "mid": "003w3sNC2aEVHH",
+     "name": "Wildest Dreams (R3hab Remix)",
+     "tranName": "",
+     "size": 1,
+     "company": "Big Machine Records, LLC",
+     "publishTime": "2015-01-01",
+     "norm": "wildestdreams"
+    },
+    {
+     "id": "88044",
+     "mid": "003a1pR335XW7X",
+     "name": "Speak Now World Tour Live",
+     "tranName": "",
+     "size": 16,
+     "company": "环球唱片",
+     "publishTime": "2011-11-21",
+     "norm": "speaknowworldtourlive"
+    },
+    {
+     "id": "928600",
+     "mid": "003LT2th1L9plN",
+     "name": "Taylor Swift Karaoke: 1989 (Deluxe)",
+     "tranName": "",
+     "size": 16,
+     "company": "环球唱片",
+     "publishTime": "2015-02-01",
+     "norm": "taylorswiftkaraoke1989"
+    },
+    {
+     "id": "109527",
+     "mid": "003qawMF2M9YLh",
+     "name": "The Hunger Games: Songs From District 12 And Beyond",
+     "tranName": "",
+     "size": 4,
+     "company": "Big Machine Records, LLC",
+     "publishTime": "2012-03-27",
+     "norm": "thehungergamessongsfromdistrict12andbeyond"
+    },
+    {
+     "id": "439526",
+     "mid": "002bbIUq1uX8lA",
+     "name": "The Last Time",
+     "tranName": "",
+     "size": 1,
+     "company": "Big Machine Records, LLC",
+     "publishTime": "2013-10-19",
+     "norm": "thelasttime"
+    },
+    {
+     "id": "1035650",
+     "mid": "000N5u1x00XZFV",
+     "name": "You Belong With Me (Radio Mix)",
+     "tranName": "",
+     "size": 1,
+     "company": "Big Machine Records, LLC",
+     "publishTime": "2009-01-01",
+     "norm": "youbelongwithme"
+    },
+    {
+     "id": "35431",
+     "mid": "003pVFXk255yRv",
+     "name": "Beautiful Eyes",
+     "tranName": "",
+     "size": 6,
+     "company": "Big Machine Records, LLC",
+     "publishTime": "2008-07-15",
+     "norm": "beautifuleyes"
+    },
+    {
+     "id": "422374",
+     "mid": "003pImsR22VjqH",
+     "name": "Taylor Swift Karaoke: Red",
+     "tranName": "",
+     "size": 16,
+     "company": "环球唱片",
+     "publishTime": "2013-02-05",
+     "norm": "taylorswiftkaraokered"
+    },
+    {
+     "id": "775667",
+     "mid": "001IMv8y0sjoJT",
+     "name": "Riptide (Live from BBC 1's Radio Live Lounge)",
+     "tranName": "",
+     "size": 1,
+     "company": "暂无",
+     "publishTime": "2014-10-09",
+     "norm": "riptide"
+    },
+    {
+     "id": "108273",
+     "mid": "000axmAl3RoQs2",
+     "name": "Ours",
+     "tranName": "",
+     "size": 1,
+     "company": "Big Machine Records, LLC",
+     "publishTime": "2011-11-08",
+     "norm": "ours"
+    },
+    {
+     "id": "1035655",
+     "mid": "000mWPjr23w2lW",
+     "name": "Today Was A Fairytale",
+     "tranName": "",
+     "size": 1,
+     "company": "Big Machine Records, LLC",
+     "publishTime": "2011-02-15",
+     "norm": "todaywasafairytale"
+    },
+    {
+     "id": "1101466",
+     "mid": "001kflaq1ZqR9D",
+     "name": "Wildest Dreams",
+     "tranName": "",
+     "size": 1,
+     "company": "Big Machine Records, LLC",
+     "publishTime": "2015-08-25",
+     "norm": "wildestdreams"
+    },
+    {
+     "id": "1682889",
+     "mid": "002PkZgo1n3Egx",
+     "name": "Wildest Dreams (Acoustic)",
+     "tranName": "",
+     "size": 1,
+     "company": "Big Machine Records, LLC",
+     "publishTime": "2015-04-24",
+     "norm": "wildestdreams"
+    },
+    {
+     "id": "1035652",
+     "mid": "002rhc5T3XfdZG",
+     "name": "I Knew You Were Trouble (Live from the BRITs 2013)",
+     "tranName": "",
+     "size": 1,
+     "company": "Big Machine Records, LLC",
+     "publishTime": "2013-02-20",
+     "norm": "iknewyouweretrouble"
+    },
+    {
+     "id": "84770",
+     "mid": "000XWvPq1gLrJN",
+     "name": "Speak Now (Karaoke Version)",
+     "tranName": "",
+     "size": 14,
+     "company": "环球唱片",
+     "publishTime": "2010-01-01",
+     "norm": "speaknow"
+    },
+    {
+     "id": "1035646",
+     "mid": "000inosV0VAdlm",
+     "name": "Teardrops On My Guitar",
+     "tranName": "",
+     "size": 3,
+     "company": "未确定",
+     "publishTime": "2007-02-24",
+     "norm": "teardropsonmyguitar"
+    },
+    {
+     "id": "1035537",
+     "mid": "003BU0D42asBpf",
+     "name": "iTunes Live From SoHo",
+     "tranName": "",
+     "size": 8,
+     "company": "Big Machine Records, LLC",
+     "publishTime": "2008-01-15",
+     "norm": "ituneslivefromsoho"
+    },
+    {
+     "id": "1035647",
+     "mid": "002bii830ZIXjc",
+     "name": "Fifteen (Pop Mix Edit)",
+     "tranName": "",
+     "size": 1,
+     "company": "Big Machine Records, LLC",
+     "publishTime": "2009-01-01",
+     "norm": "fifteen"
+    },
+    {
+     "id": "847907",
+     "mid": "003AbASJ0yDZsr",
+     "name": "Love Story",
+     "tranName": "",
+     "size": 2,
+     "company": "环球唱片",
+     "publishTime": "2009-02-27",
+     "norm": "lovestory"
+    },
+    {
+     "id": "1808324",
+     "mid": "000MXmJs0nyRdR",
+     "name": "CMT Crossroads",
+     "tranName": "",
+     "size": 11,
+     "company": "Big Machine Records, LLC",
+     "publishTime": "2009-07-24",
+     "norm": "cmtcrossroads"
+    },
+    {
+     "id": "2104433",
+     "mid": "003oGg2f2h93pO",
+     "name": "Red",
+     "tranName": "",
+     "size": 16,
+     "company": "暂无",
+     "publishTime": "2012-10-22",
+     "norm": "red"
+    },
+    {
+     "id": "9551876",
+     "mid": "000FUOe80bzbP9",
+     "name": "Christmas Tree Farm",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2019-12-06",
+     "norm": "christmastreefarm"
+    },
+    {
+     "id": "94795822",
+     "mid": "003BXFyG4EIyEc",
+     "name": "I Knew It, I Knew You (From \"Toy Story 5\")",
+     "tranName": "",
+     "size": 3,
+     "company": "未确定",
+     "publishTime": "2026-06-12",
+     "norm": "iknewitiknewyou"
+    },
+    {
+     "id": "94411589",
+     "mid": "000iKH3Q0NSnwU",
+     "name": "I Knew It, I Knew You (Piano Version)",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2026-06-05",
+     "norm": "iknewitiknewyou"
+    },
+    {
+     "id": "94411529",
+     "mid": "003ycvnv2OZYrl",
+     "name": "I Knew It, I Knew You (Acoustic Version)",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2026-06-05",
+     "norm": "iknewitiknewyou"
+    },
+    {
+     "id": "94214410",
+     "mid": "000LGUxO3aVXky",
+     "name": "I Knew It, I Knew You",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2026-06-05",
+     "norm": "iknewitiknewyou"
+    },
+    {
+     "id": "9396570",
+     "mid": "001EjhWk4PvcTu",
+     "name": "Lover (First Dance Remix)",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2019-11-26",
+     "norm": "lover"
+    },
+    {
+     "id": "9207358",
+     "mid": "000wK7Fi3AR3FC",
+     "name": "Lover (Remix)",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2019-11-13",
+     "norm": "lover"
+    },
+    {
+     "id": "88634898",
+     "mid": "003bJYRQ2dEPPA",
+     "name": "Elizabeth Taylor",
+     "tranName": "",
+     "size": 3,
+     "company": "未确定",
+     "publishTime": "2026-03-31",
+     "norm": "elizabethtaylor"
+    },
+    {
+     "id": "85494585",
+     "mid": "002KpGLf2Q6Num",
+     "name": "Opalite (Ely Oaks Remix)",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2026-02-19",
+     "norm": "opalite"
+    },
+    {
+     "id": "85494584",
+     "mid": "003vGEJP1t3KOW",
+     "name": "Opalite (BUNT. Remix)",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2026-02-19",
+     "norm": "opalite"
+    },
+    {
+     "id": "85494583",
+     "mid": "000ssCwU2WIeKP",
+     "name": "Opalite (Skream Remix)",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2026-02-19",
+     "norm": "opalite"
+    },
+    {
+     "id": "85456668",
+     "mid": "000U3VPV1K3T9E",
+     "name": "Opalite (Chris Lake Remix)",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2026-02-20",
+     "norm": "opalite"
+    },
+    {
+     "id": "85428367",
+     "mid": "002vu3fz0CjKlD",
+     "name": "Opalite (Life Is A Song Acoustic Version)",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2026-02-10",
+     "norm": "opalite"
+    },
+    {
+     "id": "84687109",
+     "mid": "002mkDzm013VM7",
+     "name": "Opalite",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2026-02-06",
+     "norm": "opalite"
+    },
+    {
+     "id": "8425582",
+     "mid": "003QZrhf3tJN97",
+     "name": "Crazier",
+     "tranName": "",
+     "size": 1,
+     "company": "暂无",
+     "publishTime": "2009-03-20",
+     "norm": "crazier"
+    },
+    {
+     "id": "83231323",
+     "mid": "004AbbRe0HcGil",
+     "name": "The Fate of Ophelia (TELYKAST & XanTz Remix (Extended Version))",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2026-01-15",
+     "norm": "thefateofophelia"
+    },
+    {
+     "id": "83163929",
+     "mid": "001z2qM32eGcAP",
+     "name": "The Fate of Ophelia (TELYKAST & XanTz Remix)",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2026-01-14",
+     "norm": "thefateofophelia"
+    },
+    {
+     "id": "82604608",
+     "mid": "0008f8wC27AMLY",
+     "name": "The Fate of Ophelia (The Chainsmokers Remix / Extended Version)",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2026-01-06",
+     "norm": "thefateofophelia"
+    },
+    {
+     "id": "80595552",
+     "mid": "003niCLv3rUcli",
+     "name": "Taylor Swift",
+     "tranName": "",
+     "size": 11,
+     "company": "未确定",
+     "publishTime": "2006-01-01",
+     "norm": "taylorswift"
+    },
+    {
+     "id": "79438992",
+     "mid": "004Rxyjo1CpDAB",
+     "name": "The Fate of Ophelia (The Chainsmokers Remix)",
+     "tranName": "",
+     "size": 3,
+     "company": "未确定",
+     "publishTime": "2025-11-28",
+     "norm": "thefateofophelia"
+    },
+    {
+     "id": "78988503",
+     "mid": "002js3aJ1WAWOM",
+     "name": "The Fate of Ophelia (Loud Luxury Remix / Extended Version)",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2025-11-21",
+     "norm": "thefateofophelia"
+    },
+    {
+     "id": "77893217",
+     "mid": "000MzyXi0sDOV6",
+     "name": "The Fate of Ophelia (Loud Luxury Remix)",
+     "tranName": "",
+     "size": 3,
+     "company": "未确定",
+     "publishTime": "2025-11-06",
+     "norm": "thefateofophelia"
+    },
+    {
+     "id": "77888312",
+     "mid": "002hZG353NLZKu",
+     "name": "The Life of a Showgirl + Acoustic Collection (Explicit)",
+     "tranName": "",
+     "size": 19,
+     "company": "未确定",
+     "publishTime": "2025-11-07",
+     "norm": "thelifeofashowgirlacousticcollection"
+    },
+    {
+     "id": "77467287",
+     "mid": "001BH8Uw25pUSA",
+     "name": "The Fate of Ophelia (Alone In My Tower Acoustic Version / Instrumental)",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2025-10-31",
+     "norm": "thefateofophelia"
+    },
+    {
+     "id": "77466997",
+     "mid": "003pIiGM09A2yk",
+     "name": "The Fate of Ophelia",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2025-10-31",
+     "norm": "thefateofophelia"
+    },
+    {
+     "id": "77466979",
+     "mid": "004AkMrC1brJuI",
+     "name": "The Fate of Ophelia (Instrumental)",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2025-10-31",
+     "norm": "thefateofophelia"
+    },
+    {
+     "id": "77466957",
+     "mid": "000MfubQ1AL5em",
+     "name": "The Fate of Ophelia (Alone In My Tower Acoustic Version)",
+     "tranName": "",
+     "size": 2,
+     "company": "未确定",
+     "publishTime": "2025-10-31",
+     "norm": "thefateofophelia"
+    },
+    {
+     "id": "77325287",
+     "mid": "0025I2PI413RSg",
+     "name": "The Fate of Ophelia (Alone In My Tower Acoustic Version)",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2025-10-28",
+     "norm": "thefateofophelia"
+    },
+    {
+     "id": "76142906",
+     "mid": "002N1U4h0VKQFV",
+     "name": "The Life of a Showgirl (Track by Track Version)",
+     "tranName": "",
+     "size": 26,
+     "company": "未确定",
+     "publishTime": "2025-10-02",
+     "norm": "thelifeofashowgirl"
+    },
+    {
+     "id": "76142901",
+     "mid": "003GKnuL2dJoIG",
+     "name": "The Life of a Showgirl (Track by Track Version) [Explicit]",
+     "tranName": "",
+     "size": 26,
+     "company": "未确定",
+     "publishTime": "2025-10-02",
+     "norm": "thelifeofashowgirl"
+    },
+    {
+     "id": "75936683",
+     "mid": "002qv6Bl0xjt0D",
+     "name": "The Life of a Showgirl",
+     "tranName": "",
+     "size": 12,
+     "company": "未确定",
+     "publishTime": "2025-10-03",
+     "norm": "thelifeofashowgirl"
+    },
+    {
+     "id": "75936360",
+     "mid": "001cbh3e0ySVSz",
+     "name": "The Life of a Showgirl (Explicit)",
+     "tranName": "",
+     "size": 12,
+     "company": "未确定",
+     "publishTime": "2025-10-03",
+     "norm": "thelifeofashowgirl"
+    },
+    {
+     "id": "7518747",
+     "mid": "001kxYQW0yIa2p",
+     "name": "You Need To Calm Down (Clean Bandit Remix)",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2019-08-20",
+     "norm": "youneedtocalmdown"
+    },
+    {
+     "id": "7269469",
+     "mid": "002MRY88057AhY",
+     "name": "Lover",
+     "tranName": "",
+     "size": 20,
+     "company": "环球唱片",
+     "publishTime": "2019-08-23",
+     "norm": "lover"
+    },
+    {
+     "id": "6797843",
+     "mid": "003xaero2I6m6F",
+     "name": "Taylor Swift Karaoke (Instrumentals With Background Vocals)",
+     "tranName": "",
+     "size": 14,
+     "company": "未确定",
+     "publishTime": "2009-01-27",
+     "norm": "taylorswiftkaraoke"
+    },
+    {
+     "id": "62576455",
+     "mid": "003wslzX2tx25J",
+     "name": "You All Over Me (Taylor’s Version) (From The Vault)",
+     "tranName": "",
+     "size": 1,
+     "company": "未确定",
+     "publishTime": "2021-03-26",
+     "norm": "youalloverme"
+    }
+   ]
+  }
+ },
+ "pairs": [
+  {
+   "artist": "周杰伦",
+   "name": "Jay",
+   "qq_name": "Jay",
+   "ne_id": 18918,
+   "qq_mid": "000f01724fd7TH",
+   "ne_size": 10,
+   "qq_size": 10,
+   "ne_tracks": 10,
+   "qq_tracks": 10,
+   "track_overlap": 10,
+   "ratio": 1.0,
+   "confidence": "EXACT",
+   "ne_date": "2000",
+   "qq_date": "2000-11-07",
+   "ne_company": "",
+   "qq_company": "阿尔发音乐股份有限公司",
+   "title_equal": true,
+   "ne_only_tracks": [],
+   "qq_only_tracks": []
+  },
+  {
+   "artist": "周杰伦",
+   "name": "Mojito",
+   "qq_name": "Mojito",
+   "ne_id": 90743831,
+   "qq_mid": "0009C3rp3Kfwg0",
+   "ne_size": 1,
+   "qq_size": 1,
+   "ne_tracks": 1,
+   "qq_tracks": 1,
+   "track_overlap": 1,
+   "ratio": 1.0,
+   "confidence": "EXACT",
+   "ne_date": "2020",
+   "qq_date": "2020-06-12",
+   "ne_company": "",
+   "qq_company": "杰威尔音乐有限公司",
+   "title_equal": true,
+   "ne_only_tracks": [],
+   "qq_only_tracks": []
+  },
+  {
+   "artist": "周杰伦",
+   "name": "Six Degrees",
+   "qq_name": "Six Degrees",
+   "ne_id": 259316984,
+   "qq_mid": "001g7BIA0IyPBZ",
+   "ne_size": 1,
+   "qq_size": 1,
+   "ne_tracks": 1,
+   "qq_tracks": 1,
+   "track_overlap": 1,
+   "ratio": 1.0,
+   "confidence": "EXACT",
+   "ne_date": "2025",
+   "qq_date": "2025-01-10",
+   "ne_company": "",
+   "qq_company": "未确定",
+   "title_equal": true,
+   "ne_only_tracks": [],
+   "qq_only_tracks": []
+  },
+  {
+   "artist": "周杰伦",
+   "name": "Try",
+   "qq_name": "Try",
+   "ne_id": 34420153,
+   "qq_mid": "001V8fw21OdEnP",
+   "ne_size": 1,
+   "qq_size": 1,
+   "ne_tracks": 1,
+   "qq_tracks": 1,
+   "track_overlap": 1,
+   "ratio": 1.0,
+   "confidence": "EXACT",
+   "ne_date": "2016",
+   "qq_date": "2016-01-06",
+   "ne_company": "",
+   "qq_company": "杰威尔音乐有限公司",
+   "title_equal": true,
+   "ne_only_tracks": [],
+   "qq_only_tracks": []
+  },
+  {
+   "artist": "周杰伦",
+   "name": "七里香",
+   "qq_name": "七里香",
+   "ne_id": 18903,
+   "qq_mid": "003DFRzD192KKD",
+   "ne_size": 10,
+   "qq_size": 10,
+   "ne_tracks": 10,
+   "qq_tracks": 10,
+   "track_overlap": 10,
+   "ratio": 1.0,
+   "confidence": "EXACT",
+   "ne_date": "2004",
+   "qq_date": "2004-08-03",
+   "ne_company": "",
+   "qq_company": "阿尔发音乐股份有限公司",
+   "title_equal": true,
+   "ne_only_tracks": [],
+   "qq_only_tracks": []
+  },
+  {
+   "artist": "周杰伦",
+   "name": "不爱我就拉倒",
+   "qq_name": "不爱我就拉倒",
+   "ne_id": 38721188,
+   "qq_mid": "001CnPE31iJ899",
+   "ne_size": 1,
+   "qq_size": 1,
+   "ne_tracks": 1,
+   "qq_tracks": 1,
+   "track_overlap": 1,
+   "ratio": 1.0,
+   "confidence": "EXACT",
+   "ne_date": "2018",
+   "qq_date": "2018-05-15",
+   "ne_company": "",
+   "qq_company": "杰威尔音乐有限公司",
+   "title_equal": true,
+   "ne_only_tracks": [],
+   "qq_only_tracks": []
+  },
+  {
+   "artist": "周杰伦",
+   "name": "不能说的秘密 电影原声带",
+   "qq_name": "不能说的秘密 电影原声带",
+   "ne_id": 18888,
+   "qq_mid": "001UP7mW458ipG",
+   "ne_size": 25,
+   "qq_size": 25,
+   "ne_tracks": 24,
+   "qq_tracks": 24,
+   "track_overlap": 24,
+   "ratio": 1.0,
+   "confidence": "EXACT",
+   "ne_date": "2007",
+   "qq_date": "2007-08-13",
+   "ne_company": "",
+   "qq_company": "杰威尔音乐有限公司",
+   "title_equal": true,
+   "ne_only_tracks": [],
+   "qq_only_tracks": []
+  },
+  {
+   "artist": "周杰伦",
+   "name": "依然范特西",
+   "qq_name": "依然范特西",
+   "ne_id": 18893,
+   "qq_mid": "002jLGWe16Tf1H",
+   "ne_size": 10,
+   "qq_size": 10,
+   "ne_tracks": 10,
+   "qq_tracks": 10,
+   "track_overlap": 10,
+   "ratio": 1.0,
+   "confidence": "EXACT",
+   "ne_date": "2006",
+   "qq_date": "2006-09-05",
+   "ne_company": "",
+   "qq_company": "阿尔发音乐股份有限公司",
+   "title_equal": true,
+   "ne_only_tracks": [],
+   "qq_only_tracks": []
+  },
+  {
+   "artist": "林俊杰",
+   "name": "100天",
+   "qq_name": "100天",
+   "ne_id": 10766,
+   "qq_mid": "002C0kX720gMQi",
+   "ne_size": 13,
+   "qq_size": 13,
+   "ne_tracks": 13,
+   "qq_tracks": 13,
+   "track_overlap": 13,
+   "ratio": 1.0,
+   "confidence": "EXACT",
+   "ne_date": "2009",
+   "qq_date": "2009-12-18",
+   "ne_company": "海蝶音乐",
+   "qq_company": "海蝶音乐",
+   "title_equal": true,
+   "ne_only_tracks": [],
+   "qq_only_tracks": []
+  },
+  {
+   "artist": "林俊杰",
+   "name": "100天Love音乐实录",
+   "qq_name": "100天·Love音乐实录",
+   "ne_id": 10758,
+   "qq_mid": "004HNY674Nu68w",
+   "ne_size": 12,
+   "qq_size": 12,
+   "ne_tracks": 12,
+   "qq_tracks": 12,
+   "track_overlap": 11,
+   "ratio": 0.917,
+   "confidence": "EXACT",
+   "ne_date": "2010",
+   "qq_date": "2010-07-02",
+   "ne_company": "",
+   "qq_company": "海蝶音乐",
+   "title_equal": false,
+   "ne_only_tracks": [
+    "记得心墙当你"
+   ],
+   "qq_only_tracks": [
+    "组曲记得心墙当你"
+   ]
+  },
+  {
+   "artist": "林俊杰",
+   "name": "2006就是俊杰世界巡回演唱会",
+   "qq_name": "2006就是俊杰 世界巡回演唱会",
+   "ne_id": 10786,
+   "qq_mid": "003zzhok1oFRWM",
+   "ne_size": 23,
+   "qq_size": 22,
+   "ne_tracks": 23,
+   "qq_tracks": 22,
+   "track_overlap": 21,
+   "ratio": 0.955,
+   "confidence": "HIGH",
+   "ne_date": "2006",
+   "qq_date": "2006-12-29",
+   "ne_company": "海蝶（天津）文化传播有限公司",
+   "qq_company": "海蝶音乐",
+   "title_equal": false,
+   "ne_only_tracks": [
+    "莎郎嘿哟只对你说",
+    "被风吹过的夏天"
+   ],
+   "qq_only_tracks": [
+    "사랑해요只对你说"
+   ]
+  },
+  {
+   "artist": "林俊杰",
+   "name": "2infinity And Beyond",
+   "qq_name": "2infinity And Beyond",
+   "ne_id": 34875558,
+   "qq_mid": "002RmPKZ10U80d",
+   "ne_size": 1,
+   "qq_size": 1,
+   "ne_tracks": 1,
+   "qq_tracks": 1,
+   "track_overlap": 1,
+   "ratio": 1.0,
+   "confidence": "EXACT",
+   "ne_date": "2016",
+   "qq_date": "2016-09-15",
+   "ne_company": "",
+   "qq_company": "华纳唱片",
+   "title_equal": true,
+   "ne_only_tracks": [],
+   "qq_only_tracks": []
+  },
+  {
+   "artist": "林俊杰",
+   "name": "7千3百多天",
+   "qq_name": "7千3百多天",
+   "ne_id": 154001751,
+   "qq_mid": "001DyYEn16mUQm",
+   "ne_size": 1,
+   "qq_size": 1,
+   "ne_tracks": 1,
+   "qq_tracks": 1,
+   "track_overlap": 1,
+   "ratio": 1.0,
+   "confidence": "EXACT",
+   "ne_date": "2022",
+   "qq_date": "2022-11-01",
+   "ne_company": "JFJ Productions",
+   "qq_company": "未确定",
+   "title_equal": true,
+   "ne_only_tracks": [],
+   "qq_only_tracks": []
+  },
+  {
+   "artist": "林俊杰",
+   "name": "At Least I Had You",
+   "qq_name": "At Least I Had You",
+   "ne_id": 136159734,
+   "qq_mid": "001lSnI84flkYe",
+   "ne_size": 1,
+   "qq_size": 1,
+   "ne_tracks": 1,
+   "qq_tracks": 1,
+   "track_overlap": 1,
+   "ratio": 1.0,
+   "confidence": "EXACT",
+   "ne_date": "2021",
+   "qq_date": "2021-11-19",
+   "ne_company": "Cross Ratio Entertainment",
+   "qq_company": "未确定",
+   "title_equal": true,
+   "ne_only_tracks": [],
+   "qq_only_tracks": []
+  },
+  {
+   "artist": "林俊杰",
+   "name": "Cheer Singapore",
+   "qq_name": "Cheer Singapore",
+   "ne_id": 10762,
+   "qq_mid": "004gdnOA15jSXD",
+   "ne_size": 1,
+   "qq_size": 1,
+   "ne_tracks": 1,
+   "qq_tracks": 1,
+   "track_overlap": 1,
+   "ratio": 1.0,
+   "confidence": "EXACT",
+   "ne_date": "2010",
+   "qq_date": "2010-04-16",
+   "ne_company": "",
+   "qq_company": "海蝶音乐",
+   "title_equal": true,
+   "ne_only_tracks": [],
+   "qq_only_tracks": []
+  },
+  {
+   "artist": "林俊杰",
+   "name": "Despacito 缓缓",
+   "qq_name": "Despacito 缓缓 (Mandarin Version)",
+   "ne_id": 37251646,
+   "qq_mid": "000iHuBG0KsgOh",
+   "ne_size": 1,
+   "qq_size": 1,
+   "ne_tracks": 1,
+   "qq_tracks": 1,
+   "track_overlap": 1,
+   "ratio": 1.0,
+   "confidence": "EXACT",
+   "ne_date": "2018",
+   "qq_date": "2018-01-26",
+   "ne_company": "环球唱片",
+   "qq_company": "环球唱片",
+   "title_equal": false,
+   "ne_only_tracks": [],
+   "qq_only_tracks": []
+  },
+  {
+   "artist": "五月天",
+   "name": "DNA",
+   "qq_name": "DNA",
+   "ne_id": 156295043,
+   "qq_mid": "004CMjEx2cnboY",
+   "ne_size": 2,
+   "qq_size": 2,
+   "ne_tracks": 2,
+   "qq_tracks": 2,
+   "track_overlap": 2,
+   "ratio": 1.0,
+   "confidence": "EXACT",
+   "ne_date": "2009",
+   "qq_date": "2009-12-04",
+   "ne_company": "相信音乐",
+   "qq_company": "相信音乐",
+   "title_equal": true,
+   "ne_only_tracks": [],
+   "qq_only_tracks": []
+  },
+  {
+   "artist": "五月天",
+   "name": "Do You Ever Shine?",
+   "qq_name": "Do You Ever Shine?",
+   "ne_id": 2805329,
+   "qq_mid": "001g35Hp0ZM20e",
+   "ne_size": 6,
+   "qq_size": 6,
+   "ne_tracks": 5,
+   "qq_tracks": 5,
+   "track_overlap": 5,
+   "ratio": 1.0,
+   "confidence": "EXACT",
+   "ne_date": "2014",
+   "qq_date": "2014-06-04",
+   "ne_company": "相信音乐",
+   "qq_company": "A-Sketch",
+   "title_equal": true,
+   "ne_only_tracks": [],
+   "qq_only_tracks": []
+  },
+  {
+   "artist": "五月天",
+   "name": "Enrich Your Life",
+   "qq_name": "Enrich Your Life",
+   "ne_id": 38261,
+   "qq_mid": "0006oAnx03zXUC",
+   "ne_size": 6,
+   "qq_size": 6,
+   "ne_tracks": 5,
+   "qq_tracks": 5,
+   "track_overlap": 5,
+   "ratio": 1.0,
+   "confidence": "EXACT",
+   "ne_date": "2007",
+   "qq_date": "2004-10-01",
+   "ne_company": "",
+   "qq_company": "滚石唱片",
+   "title_equal": true,
+   "ne_only_tracks": [],
+   "qq_only_tracks": []
+  },
+  {
+   "artist": "五月天",
+   "name": "Final Home 当我们混在一起",
+   "qq_name": "Final Home当我们混在一起",
+   "ne_id": 38253,
+   "qq_mid": "00042Dad1CLpHz",
+   "ne_size": 39,
+   "qq_size": 39,
+   "ne_tracks": 39,
+   "qq_tracks": 39,
+   "track_overlap": 37,
+   "ratio": 0.949,
+   "confidence": "EXACT",
+   "ne_date": "2005",
+   "qq_date": "2005-05-01",
+   "ne_company": "滚石唱片",
+   "qq_company": "滚石唱片",
+   "title_equal": false,
+   "ne_only_tracks": [
+    "enrichyourlife",
+    "约翰蓝侬"
+   ],
+   "qq_only_tracks": [
+    "enrichyourlife让我照顾你",
+    "约翰列侬"
+   ]
+  },
+  {
+   "artist": "五月天",
+   "name": "I Will Carry You",
+   "qq_name": "I Will Carry You",
+   "ne_id": 38562055,
+   "qq_mid": "001xf32c0zs2so",
+   "ne_size": 1,
+   "qq_size": 1,
+   "ne_tracks": 1,
+   "qq_tracks": 1,
+   "track_overlap": 1,
+   "ratio": 1.0,
+   "confidence": "EXACT",
+   "ne_date": "2018",
+   "qq_date": "2018-04-29",
+   "ne_company": "相信音乐",
+   "qq_company": "相信音乐",
+   "title_equal": true,
+   "ne_only_tracks": [],
+   "qq_only_tracks": []
+  },
+  {
+   "artist": "五月天",
+   "name": "Mayday×五月天 the Best of 1999-2013",
+   "qq_name": "Mayday × 五月天 the Best of 1999-2013",
+   "ne_id": 2702043,
+   "qq_mid": "001lRV0S20EpYw",
+   "ne_size": 15,
+   "qq_size": 13,
+   "ne_tracks": 15,
+   "qq_tracks": 13,
+   "track_overlap": 10,
+   "ratio": 0.769,
+   "confidence": "MEDIUM",
+   "ne_date": "2013",
+   "qq_date": "2013-11-13",
+   "ne_company": "A-Sketch",
+   "qq_company": "A-Sketch",
+   "title_equal": false,
+   "ne_only_tracks": [
+    "乾杯",
+    "出陣の歌",
+    "孫悟空",
+    "恋愛ing"
+   ],
+   "qq_only_tracks": [
+    "孙悟空",
+    "干杯",
+    "恋爱ing"
+   ]
+  },
+  {
+   "artist": "五月天",
+   "name": "Your Legend ~燃ゆる命~",
+   "qq_name": "YOUR LEGEND～燃ゆる命～ (YOUR LEGEND～燃烧的生命～)",
+   "ne_id": 3165061,
+   "qq_mid": "003koohY2jHuFB",
+   "ne_size": 6,
+   "qq_size": 6,
+   "ne_tracks": 6,
+   "qq_tracks": 6,
+   "track_overlap": 5,
+   "ratio": 0.833,
+   "confidence": "MEDIUM",
+   "ne_date": "2015",
+   "qq_date": "2015-06-17",
+   "ne_company": "相信音乐",
+   "qq_company": "相信音乐",
+   "title_equal": false,
+   "ne_only_tracks": [
+    "盛夏光年"
+   ],
+   "qq_only_tracks": [
+    "青春の彼方盛夏光年"
+   ]
+  },
+  {
+   "artist": "五月天",
+   "name": "为你写下这首情歌",
+   "qq_name": "为你写下这首情歌",
+   "ne_id": 156893900,
+   "qq_mid": "0048JkDO00Blk7",
+   "ne_size": 1,
+   "qq_size": 1,
+   "ne_tracks": 1,
+   "qq_tracks": 1,
+   "track_overlap": 1,
+   "ratio": 1.0,
+   "confidence": "EXACT",
+   "ne_date": "2022",
+   "qq_date": "2022-12-14",
+   "ne_company": "相信音乐",
+   "qq_company": "未确定",
+   "title_equal": true,
+   "ne_only_tracks": [],
+   "qq_only_tracks": []
+  },
+  {
+   "artist": "G.E.M.邓紫棋",
+   "name": "18",
+   "qq_name": "18...",
+   "ne_id": 23505,
+   "qq_mid": "000HZzEx0QIMNM",
+   "ne_size": 11,
+   "qq_size": 16,
+   "ne_tracks": 11,
+   "qq_tracks": 15,
+   "track_overlap": 9,
+   "ratio": 0.818,
+   "confidence": "MEDIUM",
+   "ne_date": "2010",
+   "qq_date": "2009-10-27",
+   "ne_company": "HUMMING BIRD",
+   "qq_company": "Humming Bird",
+   "title_equal": false,
+   "ne_only_tracks": [
+    "ainy爱你",
+    "mascara烟熏妆"
+   ],
+   "qq_only_tracks": [
+    "ainy",
+    "mascara",
+    "wheredidugo20",
+    "写不完的温柔"
+   ]
+  },
+  {
+   "artist": "G.E.M.邓紫棋",
+   "name": "25LOOKS",
+   "qq_name": "25LOOKS",
+   "ne_id": 34897549,
+   "qq_mid": "000GROwE30lDMA",
+   "ne_size": 4,
+   "qq_size": 4,
+   "ne_tracks": 4,
+   "qq_tracks": 4,
+   "track_overlap": 4,
+   "ratio": 1.0,
+   "confidence": "EXACT",
+   "ne_date": "2016",
+   "qq_date": "2016-09-03",
+   "ne_company": "HUMMING BIRD",
+   "qq_company": "蜂鸟音乐",
+   "title_equal": true,
+   "ne_only_tracks": [],
+   "qq_only_tracks": []
+  },
+  {
+   "artist": "G.E.M.邓紫棋",
+   "name": "A.I.N.Y. 爱你",
+   "qq_name": "A.I.N.Y. 爱你",
+   "ne_id": 23499,
+   "qq_mid": "00412vqA22pvPi",
+   "ne_size": 21,
+   "qq_size": 22,
+   "ne_tracks": 21,
+   "qq_tracks": 22,
+   "track_overlap": 20,
+   "ratio": 0.952,
+   "confidence": "HIGH",
+   "ne_date": "2011",
+   "qq_date": "2011-02-11",
+   "ne_company": "",
+   "qq_company": "蜂鸟音乐",
+   "title_equal": true,
+   "ne_only_tracks": [
+    "allaboutu"
+   ],
+   "qq_only_tracks": [
+    "allaboutyou",
+    "美好的旧时光"
+   ]
+  },
+  {
+   "artist": "G.E.M.邓紫棋",
+   "name": "Amazing Grace",
+   "qq_name": "Amazing Grace",
+   "ne_id": 188209036,
+   "qq_mid": "000cGuvr2B5smi",
+   "ne_size": 2,
+   "qq_size": 2,
+   "ne_tracks": 1,
+   "qq_tracks": 1,
+   "track_overlap": 1,
+   "ratio": 1.0,
+   "confidence": "EXACT",
+   "ne_date": "2024",
+   "qq_date": "2024-03-08",
+   "ne_company": "G Nation Limited",
+   "qq_company": "未确定",
+   "title_equal": true,
+   "ne_only_tracks": [],
+   "qq_only_tracks": []
+  },
+  {
+   "artist": "G.E.M.邓紫棋",
+   "name": "Bang Bang (From 'Minions: The Rise of Gru' Soundtrack)",
+   "qq_name": "Bang Bang (小黄人大眼萌：神偷奶爸前传 电影插曲)",
+   "ne_id": 147494109,
+   "qq_mid": "000BYYLS28QQmx",
+   "ne_size": 1,
+   "qq_size": 1,
+   "ne_tracks": 1,
+   "qq_tracks": 1,
+   "track_overlap": 1,
+   "ratio": 1.0,
+   "confidence": "EXACT",
+   "ne_date": "2022",
+   "qq_date": "2022-07-01",
+   "ne_company": "Decca (UMO) (Classics)",
+   "qq_company": "未确定",
+   "title_equal": false,
+   "ne_only_tracks": [],
+   "qq_only_tracks": []
+  },
+  {
+   "artist": "G.E.M.邓紫棋",
+   "name": "G.E.M.",
+   "qq_name": "G.E.M.",
+   "ne_id": 23509,
+   "qq_mid": "003FBC9b4XV8i9",
+   "ne_size": 5,
+   "qq_size": 5,
+   "ne_tracks": 5,
+   "qq_tracks": 5,
+   "track_overlap": 5,
+   "ratio": 1.0,
+   "confidence": "EXACT",
+   "ne_date": "2008",
+   "qq_date": "2008-10-15",
+   "ne_company": "HUMMING BIRD",
+   "qq_company": "蜂鸟音乐",
+   "title_equal": true,
+   "ne_only_tracks": [],
+   "qq_only_tracks": []
+  },
+  {
+   "artist": "G.E.M.邓紫棋",
+   "name": "G.E.M.X.X.X.Live",
+   "qq_name": "G.E.M.X.X.X. Live",
+   "ne_id": 2698217,
+   "qq_mid": "003oLIsS1rbdAz",
+   "ne_size": 23,
+   "qq_size": 23,
+   "ne_tracks": 23,
+   "qq_tracks": 23,
+   "track_overlap": 23,
+   "ratio": 1.0,
+   "confidence": "EXACT",
+   "ne_date": "2013",
+   "qq_date": "2013-11-08",
+   "ne_company": "丰华唱片",
+   "qq_company": "蜂鸟音乐",
+   "title_equal": false,
+   "ne_only_tracks": [],
+   "qq_only_tracks": []
+  },
+  {
+   "artist": "G.E.M.邓紫棋",
+   "name": "Get Everybody Moving Concert 2011",
+   "qq_name": "Get Everybody Moving Concert 2011",
+   "ne_id": 23498,
+   "qq_mid": "000pUbJr1Aac6E",
+   "ne_size": 29,
+   "qq_size": 31,
+   "ne_tracks": 28,
+   "qq_tracks": 30,
+   "track_overlap": 24,
+   "ratio": 0.857,
+   "confidence": "MEDIUM",
+   "ne_date": "2011",
+   "qq_date": "2011-11-28",
+   "ne_company": "",
+   "qq_company": "蜂鸟音乐",
+   "title_equal": true,
+   "ne_only_tracks": [
+    "thevoicewithin遗失的声音",
+    "wannabestartinsomethin",
+    "我的秘密",
+    "美好的旧时光inmyheart"
+   ],
+   "qq_only_tracks": [
+    "lupo眼中的gem",
+    "mysecret",
+    "tan幕后的故事",
+    "thevoicewithin"
+   ]
+  },
+  {
+   "artist": "薛之谦",
+   "name": "一半",
+   "qq_name": "一半",
+   "ne_id": 3316028,
+   "qq_mid": "000dEfCC2ccVxz",
+   "ne_size": 3,
+   "qq_size": 3,
+   "ne_tracks": 3,
+   "qq_tracks": 3,
+   "track_overlap": 3,
+   "ratio": 1.0,
+   "confidence": "EXACT",
+   "ne_date": "2015",
+   "qq_date": "2015-10-17",
+   "ne_company": "潮石音乐",
+   "qq_company": "海蝶音乐",
+   "title_equal": true,
+   "ne_only_tracks": [],
+   "qq_only_tracks": []
+  },
+  {
+   "artist": "薛之谦",
+   "name": "人字拖",
+   "qq_name": "人字拖",
+   "ne_id": 373448570,
+   "qq_mid": "002hKiJX4bjcun",
+   "ne_size": 1,
+   "qq_size": 1,
+   "ne_tracks": 1,
+   "qq_tracks": 1,
+   "track_overlap": 1,
+   "ratio": 1.0,
+   "confidence": "EXACT",
+   "ne_date": "2026",
+   "qq_date": "2026-04-30",
+   "ne_company": "潮石音乐",
+   "qq_company": "未确定",
+   "title_equal": true,
+   "ne_only_tracks": [],
+   "qq_only_tracks": []
+  },
+  {
+   "artist": "薛之谦",
+   "name": "你不是一个人",
+   "qq_name": "你不是一个人",
+   "ne_id": 149878590,
+   "qq_mid": "003i7vXr1ScBjJ",
+   "ne_size": 1,
+   "qq_size": 1,
+   "ne_tracks": 1,
+   "qq_tracks": 1,
+   "track_overlap": 1,
+   "ratio": 1.0,
+   "confidence": "EXACT",
+   "ne_date": "2022",
+   "qq_date": "2022-08-18",
+   "ne_company": "潮水音乐",
+   "qq_company": "未确定",
+   "title_equal": true,
+   "ne_only_tracks": [],
+   "qq_only_tracks": []
+  },
+  {
+   "artist": "薛之谦",
+   "name": "你过得好吗",
+   "qq_name": "你过得好吗",
+   "ne_id": 17079,
+   "qq_mid": "004PY3HK4cv5z4",
+   "ne_size": 10,
+   "qq_size": 10,
+   "ne_tracks": 9,
+   "qq_tracks": 9,
+   "track_overlap": 9,
+   "ratio": 1.0,
+   "confidence": "EXACT",
+   "ne_date": "2007",
+   "qq_date": "2007-07-31",
+   "ne_company": "潮石音乐",
+   "qq_company": "上腾娱乐",
+   "title_equal": true,
+   "ne_only_tracks": [],
+   "qq_only_tracks": []
+  },
+  {
+   "artist": "薛之谦",
+   "name": "几个薛之谦",
+   "qq_name": "几个薛之谦",
+   "ne_id": 17072,
+   "qq_mid": "003qp8IX21MXH0",
+   "ne_size": 9,
+   "qq_size": 9,
+   "ne_tracks": 9,
+   "qq_tracks": 9,
+   "track_overlap": 9,
+   "ratio": 1.0,
+   "confidence": "EXACT",
+   "ne_date": "2012",
+   "qq_date": "2012-08-15",
+   "ne_company": "潮石音乐",
+   "qq_company": "上腾娱乐",
+   "title_equal": true,
+   "ne_only_tracks": [],
+   "qq_only_tracks": []
+  },
+  {
+   "artist": "薛之谦",
+   "name": "初学者",
+   "qq_name": "初学者",
+   "ne_id": 34780271,
+   "qq_mid": "000dcZ9I1nzO62",
+   "ne_size": 10,
+   "qq_size": 10,
+   "ne_tracks": 10,
+   "qq_tracks": 10,
+   "track_overlap": 10,
+   "ratio": 1.0,
+   "confidence": "EXACT",
+   "ne_date": "2016",
+   "qq_date": "2016-07-18",
+   "ne_company": "潮石音乐",
+   "qq_company": "海蝶音乐",
+   "title_equal": true,
+   "ne_only_tracks": [],
+   "qq_only_tracks": []
+  },
+  {
+   "artist": "薛之谦",
+   "name": "天外来物",
+   "qq_name": "天外来物",
+   "ne_id": 121012393,
+   "qq_mid": "000K9Zp13TZp5s",
+   "ne_size": 10,
+   "qq_size": 10,
+   "ne_tracks": 10,
+   "qq_tracks": 10,
+   "track_overlap": 10,
+   "ratio": 1.0,
+   "confidence": "EXACT",
+   "ne_date": "2020",
+   "qq_date": "2020-12-31",
+   "ne_company": "潮石音乐",
+   "qq_company": "未确定",
+   "title_equal": true,
+   "ne_only_tracks": [],
+   "qq_only_tracks": []
+  },
+  {
+   "artist": "薛之谦",
+   "name": "媚人",
+   "qq_name": "媚人",
+   "ne_id": 387407402,
+   "qq_mid": "002vfBmm41fIRe",
+   "ne_size": 1,
+   "qq_size": 1,
+   "ne_tracks": 1,
+   "qq_tracks": 1,
+   "track_overlap": 1,
+   "ratio": 1.0,
+   "confidence": "EXACT",
+   "ne_date": "2026",
+   "qq_date": "2026-07-17",
+   "ne_company": "潮石音乐",
+   "qq_company": "未确定",
+   "title_equal": true,
+   "ne_only_tracks": [],
+   "qq_only_tracks": []
+  },
+  {
+   "artist": "Taylor Swift",
+   "name": "1989 (Taylor's Version) (Deluxe)",
+   "qq_name": "1989 (Deluxe)",
+   "ne_id": 177825165,
+   "qq_mid": "002Kz5Jo1uzHjz",
+   "ne_size": 22,
+   "qq_size": 19,
+   "ne_tracks": 21,
+   "qq_tracks": 16,
+   "track_overlap": 16,
+   "ratio": 1.0,
+   "confidence": "HIGH",
+   "ne_date": "2023",
+   "qq_date": "2014-10-27",
+   "ne_company": "Taylor Swift",
+   "qq_company": "Big Machine Records, LLC",
+   "title_equal": false,
+   "ne_only_tracks": [
+    "isitovernow",
+    "nowthatwedonttalk",
+    "saydontgo",
+    "slut"
+   ],
+   "qq_only_tracks": []
+  },
+  {
+   "artist": "Taylor Swift",
+   "name": "Elizabeth Taylor",
+   "qq_name": "Elizabeth Taylor",
+   "ne_id": 368715414,
+   "qq_mid": "003bJYRQ2dEPPA",
+   "ne_size": 3,
+   "qq_size": 3,
+   "ne_tracks": 1,
+   "qq_tracks": 1,
+   "track_overlap": 1,
+   "ratio": 1.0,
+   "confidence": "EXACT",
+   "ne_date": "2026",
+   "qq_date": "2026-03-31",
+   "ne_company": "Taylor Swift",
+   "qq_company": "未确定",
+   "title_equal": true,
+   "ne_only_tracks": [],
+   "qq_only_tracks": []
+  },
+  {
+   "artist": "Taylor Swift",
+   "name": "I Knew It, I Knew You",
+   "qq_name": "I Knew It, I Knew You (From \"Toy Story 5\")",
+   "ne_id": 381339074,
+   "qq_mid": "003BXFyG4EIyEc",
+   "ne_size": 3,
+   "qq_size": 3,
+   "ne_tracks": 1,
+   "qq_tracks": 1,
+   "track_overlap": 1,
+   "ratio": 1.0,
+   "confidence": "EXACT",
+   "ne_date": "2026",
+   "qq_date": "2026-06-12",
+   "ne_company": "Walt Disney Records / Pixar",
+   "qq_company": "未确定",
+   "title_equal": false,
+   "ne_only_tracks": [],
+   "qq_only_tracks": []
+  },
+  {
+   "artist": "Taylor Swift",
+   "name": "Opalite (Chris Lake Remix)",
+   "qq_name": "Opalite (Ely Oaks Remix)",
+   "ne_id": 362507750,
+   "qq_mid": "002KpGLf2Q6Num",
+   "ne_size": 1,
+   "qq_size": 1,
+   "ne_tracks": 1,
+   "qq_tracks": 1,
+   "track_overlap": 1,
+   "ratio": 1.0,
+   "confidence": "EXACT",
+   "ne_date": "2026",
+   "qq_date": "2026-02-19",
+   "ne_company": "Taylor Swift",
+   "qq_company": "未确定",
+   "title_equal": false,
+   "ne_only_tracks": [],
+   "qq_only_tracks": []
+  },
+  {
+   "artist": "Taylor Swift",
+   "name": "Safe & Sound (Taylor's Version)",
+   "qq_name": "Safe & Sound (from The Hunger Games Soundtrack)",
+   "ne_id": 161980893,
+   "qq_mid": "000Vud1B17iKlX",
+   "ne_size": 1,
+   "qq_size": 1,
+   "ne_tracks": 1,
+   "qq_tracks": 1,
+   "track_overlap": 1,
+   "ratio": 1.0,
+   "confidence": "EXACT",
+   "ne_date": "2023",
+   "qq_date": "2011-12-26",
+   "ne_company": "Taylor Swift",
+   "qq_company": "Big Machine Records, LLC",
+   "title_equal": false,
+   "ne_only_tracks": [],
+   "qq_only_tracks": []
+  },
+  {
+   "artist": "Taylor Swift",
+   "name": "Speak Now (Taylor's Version)",
+   "qq_name": "Speak Now (Deluxe Package)",
+   "ne_id": 168588248,
+   "qq_mid": "001QmRCD2PGa4o",
+   "ne_size": 22,
+   "qq_size": 22,
+   "ne_tracks": 22,
+   "qq_tracks": 17,
+   "track_overlap": 16,
+   "ratio": 0.941,
+   "confidence": "EXACT",
+   "ne_date": "2023",
+   "qq_date": "2010-11-05",
+   "ne_company": "Taylor Swift",
+   "qq_company": "环球唱片",
+   "title_equal": false,
+   "ne_only_tracks": [
+    "castlescrumbling",
+    "electrictouch",
+    "foolishone",
+    "icanseeyou"
+   ],
+   "qq_only_tracks": [
+    "ifthiswasamovie"
+   ]
+  },
+  {
+   "artist": "Taylor Swift",
+   "name": "The Fate of Ophelia (TELYKAST & XanTz Remix (Extended Version))",
+   "qq_name": "The Fate of Ophelia (TELYKAST & XanTz Remix (Extended Version))",
+   "ne_id": 358461738,
+   "qq_mid": "004AbbRe0HcGil",
+   "ne_size": 1,
+   "qq_size": 1,
+   "ne_tracks": 1,
+   "qq_tracks": 1,
+   "track_overlap": 1,
+   "ratio": 1.0,
+   "confidence": "EXACT",
+   "ne_date": "2026",
+   "qq_date": "2026-01-15",
+   "ne_company": "Taylor Swift",
+   "qq_company": "未确定",
+   "title_equal": true,
+   "ne_only_tracks": [],
+   "qq_only_tracks": []
+  },
+  {
+   "artist": "Taylor Swift",
+   "name": "The Life of a Showgirl",
+   "qq_name": "The Life of a Showgirl (Track by Track Version)",
+   "ne_id": 284356964,
+   "qq_mid": "002N1U4h0VKQFV",
+   "ne_size": 12,
+   "qq_size": 26,
+   "ne_tracks": 12,
+   "qq_tracks": 14,
+   "track_overlap": 12,
+   "ratio": 1.0,
+   "confidence": "HIGH",
+   "ne_date": "2025",
+   "qq_date": "2025-10-02",
+   "ne_company": "Taylor Swift",
+   "qq_company": "未确定",
+   "title_equal": false,
+   "ne_only_tracks": [],
+   "qq_only_tracks": [
+    "thelifeofashowgirlintro",
+    "thelifeofashowgirloutro"
+   ]
+  }
+ ]
+}

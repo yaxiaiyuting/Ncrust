@@ -19,6 +19,7 @@ import com.takahashirinta.ncrust.network.OriginSongRef
 import com.takahashirinta.ncrust.network.SongItem
 import com.takahashirinta.ncrust.network.SongPrivilege
 import com.takahashirinta.ncrust.network.model.ArtistItem
+import com.takahashirinta.ncrust.search.TrackAvailability
 import com.takahashirinta.ncrust.source.MusicSource
 import com.takahashirinta.ncrust.ui.i18n.zhCN
 import org.junit.Assert.assertEquals
@@ -217,5 +218,68 @@ class SongTagsTest {
         val tags = SongTags.of(qq(memberOnly = null), strings)
         assertEquals(1, tags.size)
         assertEquals(SongTagKind.SOURCE, tags.single().kind)
+    }
+
+    // ------------------------------------------------ v2.4.0 · 探测结果覆盖 ----
+
+    @Test
+    fun `探测结果覆盖 优先于 SongItem 推导出来的可用性`() {
+        // SongItem 自己说「可播放」（st=0 且 pl=320000），但本次探测说「需会员」。
+        // 聚合页看到的必须是**探测结果** —— 它才是与账号和时刻绑定的那个事实。
+        val song = ne(st = 0, pl = 320000)
+        val tags = SongTags.of(song, strings, TrackAvailability.MEMBER_ONLY)
+        assertTrue(tags.any { it.kind == SongTagKind.AVAILABILITY && it.text == strings.tagMemberOnly })
+        assertFalse(tags.any { it.text == strings.tagPlayable })
+    }
+
+    @Test
+    fun `探测结果覆盖 为 UNKNOWN 时不显示可用性角标（哪怕 SongItem 说可播）`() {
+        // 探测缺席 / 探测不出来 ⇒ 沉默。这既是「不允许在搜索阶段假设某源可播」，
+        // 也是它的反面：不允许拿**落盘的旧结论**去补一个角标。
+        val tags = SongTags.of(ne(st = 0, pl = 320000), strings, TrackAvailability.UNKNOWN)
+        assertFalse(tags.any { it.kind == SongTagKind.AVAILABILITY })
+    }
+
+    @Test
+    fun `null 覆盖 与既有 2 参重载逐字节等价`() {
+        // 这一条是「默认行为不能因为多了一条通道就变」的保证：两源、四种可用性、
+        // 版本标签齐全/缺失都过一遍。默认值 null 必须与 v2.3.0 的实现完全一致。
+        val samples = listOf(
+            ne(st = -1, pl = 0, fee = 0),
+            ne(st = 0, pl = 320000),
+            ne(fee = 1, st = 0, pl = 0),
+            ne(fee = 1, st = 0, pl = 0, noCopyright = true),
+            ne(oct = 1),
+            ne(oct = 2, originSong = OriginSongRef(1L, "原曲", null)),
+            ne(),
+            qq(memberOnly = true),
+            qq(memberOnly = null),
+        )
+        for (song in samples) {
+            assertEquals(SongTags.of(song, strings), SongTags.of(song, strings, null))
+        }
+    }
+
+    @Test
+    fun `覆盖可用性不影响音源与版本角标`() {
+        val song = ne(st = 0, pl = 320000, oct = 1)
+        val tags = SongTags.of(song, strings, TrackAvailability.NO_COPYRIGHT)
+        assertEquals(
+            listOf(SongTagKind.SOURCE, SongTagKind.AVAILABILITY, SongTagKind.VERSION),
+            tags.map { it.kind },
+        )
+        assertEquals(strings.sourceNetease, tags[0].text)
+        assertEquals(strings.tagNoCopyright, tags[1].text)
+        assertEquals(strings.tagOriginal, tags[2].text)
+    }
+
+    @Test
+    fun `QQ 侧的探测结果同样能覆盖（QQ 推导永远只有会员一档）`() {
+        // QQ 的 `of` 只有 pay.pay_play 一个判据，推导不出「可播放」；
+        // 只有**探测**（去要一次 purl）才知道。这条是那条通道的用法示例。
+        val song = qq(memberOnly = null)
+        assertEquals(1, SongTags.of(song, strings).size)
+        val tags = SongTags.of(song, strings, TrackAvailability.PLAYABLE)
+        assertTrue(tags.any { it.kind == SongTagKind.AVAILABILITY && it.text == strings.tagPlayable })
     }
 }

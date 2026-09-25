@@ -152,8 +152,13 @@ android {
         //   ③ 工作区 build.gradle（上一版收敛成单处赋值）= 38
         //   ⇒ max = 38 ⇒ 本版 **39**（取 max+1 是硬纪律：撞号会导致无法覆盖安装）。
         //   实测记录：docs/verification/v2.3.0/verification/version-check.txt
-        versionCode = 39
-        versionName = "2.3.0-gpl"
+        // v2.4.0（本版）：versionCode 出处：`tools/next-version.sh`（**带 fetch**）三源交叉验证 ——
+        //   ① 最近 5 个 tag 内 build.gradle 最大值；② `dist/*.apk` 的 aapt2 badging（唯一可信的
+        //   「这个号已经发布出去了」来源，本次实测 v2.3.0-gpl = 39）；③ 仓库当前 build.gradle。
+        //   三者一致 = 39 ⇒ 本版 **40**。打 tag 前会用
+        //   `git show v2.4.0-gpl:app/build.gradle.kts | grep version` 再自证一次。
+        versionCode = 40
+        versionName = "2.4.0-gpl"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 

@@ -1,0 +1,22 @@
+# v2.4.0 真机冒烟（WGR-W09 / HarmonyOS 报告 Android 12 / 1600x2560）
+
+2026-09-25 18:49
+
+## 已完成
+1. `adb install -r dist/Ncrust-v2.4.0-gpl-release.apk` → **Success**（覆盖安装，versionCode 40）
+2. `adb logcat -c` 清空日志 → `am force-stop` → `am start -n com.takahashirinta.ncrust/.MainActivity`
+3. 冷启动 18 秒后：
+   - `adb logcat -b crash` → **无输出**（零崩溃）
+   - `adb logcat | grep -E "FATAL|ClassFormatError|VerifyError|AndroidRuntime.*ncrust"` → **无匹配**
+   - `adb shell pidof com.takahashirinta.ncrust` → `4080`（进程存活）
+   → release 包（R8 混淆 + resource shrink）**能安装、能冷启动、不崩**。
+   这一条对 v2.4.0 尤其重要：本版新增了 20 条文案（全在 SourceStrings 嵌套组，
+   主构造器一个参数都没加）与一个新的落盘结构（`ncrust_match_cache`，已加 R8 keep），
+   两类改动在历史上都出现过「debug 正常、release 启动即崩」。
+
+## 未完成（阻塞）
+**交互式 UI 全链路验证（搜索「周杰伦」→ 艺人主页 → 专辑 → 播放）未执行。**
+原因：设备停在**锁屏**（需人脸识别/密码），本 session 没有解锁凭证，
+`adb shell input` 的点击落在锁屏上，截图证实（`screenshots/v240-01-app.png` = 锁屏界面）。
+这是**未绕过的阻塞**，不是失败——按任务书要求如实列出，不以任何方式伪造。
+详见上级目录 EVIDENCE.md 的「未验证缺口清单」。

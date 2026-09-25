@@ -2974,3 +2974,86 @@ media3 的 `ChannelMixingMatrix` 只实现 `N→N / 1→2 / 2→1`，**6→1 抛
 `DetailScaffold` 多了两个**可选**参数（`listState` / `contentModifier`），默认值让既有调用点零改动。
 `PlayerCard` 在 `usesSideCover` 为真时给歌词面板传 `centeredLayout = true`。
 `NewPlaylistGridItem` 多了一个**可选**的 `label`。
+
+## v2.4.0 新增（本 fork · 艺人/专辑/单曲双源聚合 + 版权可用性优先）
+
+> **探针**：`docs/verification/v2.4.0/PROBE-SUMMARY.md` + 七份 `probe-*.md` + `probe-raw/`。
+> **发布说明**：`docs/verification/v2.4.0/CHANGELOG-v2.4.0.md`。
+> **真机证据**：`docs/verification/v2.4.0/verification/` 与 `screenshots/`。
+
+### 三条新规则（本版起是硬约束）
+
+1. **匹配不准时宁可分开展示，也不能给错专辑 / 错单曲。**
+   这不是一句口号，是探针里真实失败过的一次：`probe-artist-mapping.md` P6 的 `邓紫棋` 那一行，
+   「归一化名称完全相等」的朴素算法锚到了网易云的**仿冒号** `邓紫棋`(62017015, 1 张专辑)，
+   于是两侧都配不上，判定 `NONE` —— 而真身 `G.E.M.邓紫棋`（网易云 7763 / QQ 001fNHEF1SFEFN，
+   专辑重合 54 张）明明是 `EXACT`。**名字对了不等于身份对了。**
+   落地要求：任何跨源合并都必须有**结构判据**（专辑列表重合、曲目名集合重合、时长差），
+   名字只能用来**召回**。
+2. **跨源身份匹配必须有置信度分级，低于阈值不自动合并。**
+   `MatchConfidence`（`EXACT/HIGH/MEDIUM/LOW/NONE`）的 `mergeable` 是**全应用唯一的合并阈值**
+   （`>= MEDIUM`），不要在调用方写 `confidence >= HIGH` 这类比较。
+   阈值取 `MEDIUM` 而不是 `HIGH` 是探针给的：单曲样本 230 首里 `MEDIUM` 占 46 条（20%），
+   它们的判据是「曲名 + 艺人一致、时长口径不可比」，全拒掉会让双源聚合失去一半价值。
+   低于阈值的行**必须两侧各出现一次**（`CatalogAggregatorTest` 有一条用例专门钉住
+   「LOW 匹配的次源曲目既不能合并、也不能消失」——第一版就是把它弄丢了）。
+3. **匹配结果必须可追溯、可手动覆盖。**
+   `AggregatedSong.matchReason` / `AggregatedAlbum.reason` 携带一句人能看懂的依据
+   （「同名 + 专辑重合 33 张」），UI 通过 `strings.source.aggMatchReason` 显示；
+   三个页面都必须提供「双源 / 只看网易云 / 只看 QQ」三档口径（`SourceFilter`）。
+   匹配结果**不能是用户看不见也改不了的隐式状态**。
+
+### 本版的关键取舍（有意为之，不是遗漏）
+
+| 取舍 | 理由 |
+|---|---|
+| 艺人页**不逐张专辑探测版权** | 44 张专辑 × 2 源 = 88 次请求，页面会变得不可用。改为探测该艺人的**曲目列表**（≤60 首，1~3 次请求），用**艺人级**的可播放比例决定专辑行的默认源 |
+| QQ 侧**不标「无版权」** | 探针（`probe-copyright-field.md` C4）证明 QQ 没有任何字段能证明「这首歌没上架」：`action.switch` bit0 在 97/97 上恒为 1，`action.alert` 语义无定义，`pay.pay_play` 只说明「要不要钱」。拿不到 `purl` 只判 `MEMBER_ONLY`（`result==104003`）或 `UNKNOWN` |
+| `UNKNOWN` 排在 `MEMBER_ONLY` / `NO_COPYRIGHT` **之前** | 「不知道」不等于「不能播」。把它沉底等于凭空说它不能播。这条与 v2.3.0 的 `rankGroup` 是同一条约定，只是详情页需要四档 |
+| 可用性**不落盘** | 它与账号和时刻绑定（VIP 到期、版权下架、地区）。落盘必然出现「上周探测过能播、今天显示可播放、点下去 404」。只有**匹配结果**进 `ncrust_match_cache`（TTL 7 天） |
+| 合并后的那一行归属**可播放的那一源** | 否则界面标着「可播放」、点下去播的还是那个无版权的版本。平级时才保持主源（不把用户从自己点进来的源拽走） |
+
+### 本版新增的存储
+
+| prefs 文件 | 内容 | 容量 / TTL |
+|---|---|---|
+| **`ncrust_match_cache`** | `<kind>:<source>:<id>` → 匹配信封（`schemaVersion` / `algorithmVersion` / `savedAt` / `confidence` / `reason` / `overlap` / `aliasesJson`） | ≤ 400 条，TTL **7 天**，写入时按 `savedAt` LRU 裁剪 |
+
+- 这是本版**唯一**新增的落盘结构；`ncrust_library` / `ncrust_playback_state` / `ncrust_lyrics_cache` /
+  `ncrust_offline` / `ncrust_qq_playlists` / `ncrust_local_playlists` **一个字节未动**；
+- 它有两个版本号，第二个是本版特有的：`SCHEMA_VERSION`（结构）与 `ALGORITHM_VERSION`（**算法**）。
+  算法一变，旧结论**整体作废**（`STALE_ALGORITHM`）—— 解释一个用旧阈值算出来的 `EXACT` 没有意义，
+  而它的 `confidence` 看起来仍然合法，用户会看到「明明不一样的两条被合并了」且只能清缓存恢复；
+- **低于 `MEDIUM` 的结果不允许编码**（`encode` 用 `require` 直接拒绝），失败留给下次重试；
+- R8 keep：`-keep class com.takahashirinta.ncrust.crosssource.** { *; }`
+  + `MatchCacheCodecTest` 断言**确切 key 名**（字段改名让用例变红，而不是让缓存静默失效）。
+
+### 本版新增的文件与约定
+
+| 文件 | 作用 |
+|---|---|
+| `crosssource/NameNormalizer.kt` | 名称归一化（强/宽松）、包含召回、版本标记。**只做召回，不做判定** |
+| `crosssource/CrossSourceModels.kt` | `MatchConfidence` / `ArtistKey` / `AlbumKey` / `MergedArtist` / `MergedAlbum` / `MergedTrack` / `AggregatedSong` / `SourceFilter` |
+| `crosssource/CrossSourceMatcher.kt` | 召回 → 校验 → 分级的**唯一算法落点**；可用性排序与「默认选可播放的那一源」 |
+| `crosssource/MatchCacheCodec.kt` | 匹配缓存的 DTO + 双版本号 + TTL（纯逻辑） |
+| `crosssource/MatchCacheStore.kt` | `ncrust_match_cache` 读写 + 写入侧 LRU |
+| `crosssource/CatalogAggregator.kt` | 三个页面的双源聚合编排（IO + 纯装配分离） |
+| `qq/QqCatalog.kt` | QQ 目录接口的请求构造 + 响应映射 + **批量可播放性预检**的判据 |
+| `qq/QqCatalogApi.kt` | QQ 目录查询与预检的 IO 层（**绝不抛异常**） |
+| `network/NeteaseAvailabilityApi.kt` | 网易云的**批量 privilege** 探测（专辑页/艺人页唯一拿得到版权字段的路径） |
+
+**两条与探针逐字对应的实现约束**（改代码前先看这两条）：
+
+1. `NameNormalizer` 的三个归一化函数与 `docs/verification/v2.4.0/probe_lib.py` 里的
+   `normalize_name` / `normalize_loose` / `has_edition_marker` **必须逐字对应** ——
+   探针算出来的准确率只有在两侧一致时才代表线上行为。改一边必须改另一边并重跑探针。
+2. 时长容差 `DURATION_TOLERANCE_MS = 2000` 是实测出来的（≤2s 占 184/230，>30s 的 15 条
+   全是同名不同版本）。改它之前先重跑 `probe-song-mapping.py`。
+
+### 本版的新文案一律进 `SourceStrings`，**不进 `Strings` 主构造器**
+
+主构造器的 245 个参数槽**已经用满**（`this(1) + 245 + 8 mask + 1 marker == 255`），
+再加一个就是真机类加载期 `ClassFormatError`。本版新增的 20 条聚合文案全部放进
+`SourceStrings`（37 → 57，上限 60）。`AggregateStringsTest` 同时钉住
+「八个语言都非空」与「SourceStrings ≤ 60」。
+**下一次要加文案时，SourceStrings 只剩 3 个槽位 —— 请先拆新组，而拆组前必须先给主构造器腾位置。**

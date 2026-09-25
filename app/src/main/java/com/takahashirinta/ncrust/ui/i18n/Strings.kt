@@ -705,6 +705,52 @@ data class SourceStrings(
     val sourceQqDeviceLimit: String,
     /** 登录过于频繁（104604）。 */
     val sourceQqLoginRateLimited: String,
+
+    // ---------------------------------------------------------------- v2.4.0 · 双源聚合 ----
+    // 这七条是「跨源聚合」的口径文案。放在 SourceStrings 而不是 Strings 主构造器里，
+    // 原因见 `StringsConstructorBudgetTest`：主构造器的 245 个参数槽**已经用满**，
+    // 再加一个就会在真机上类加载期抛 ClassFormatError。
+
+    /** 「双源聚合」口径。 */
+    val aggFilterBoth: String,
+    /** 「只看网易云」口径。 */
+    val aggFilterNetease: String,
+    /** 「只看 QQ 音乐」口径。 */
+    val aggFilterQq: String,
+    /** 默认播放源的一行说明，(音源名) -> 文案。 */
+    val aggPreferredSource: (String) -> String,
+    /** 「为什么默认这一源」的补充说明（来自探测结果，不编理由），(说明) -> 文案。 */
+    val aggAvailabilityNote: (String) -> String,
+    /** 匹配置信度文案，(等级) -> 文案。等级由 MatchConfidence 决定，不是自由文本。 */
+    val aggConfidence: (String) -> String,
+    /** 可追溯：匹配依据，(依据) -> 文案。 */
+    val aggMatchReason: (String) -> String,
+    /** 另一源没有可校验的对应条目。 */
+    val aggUnmatched: String,
+    /** 正在探测版权可用性。 */
+    val aggProbing: String,
+    /** 单曲页的两源版本区标题。 */
+    val aggVersionsTitle: String,
+    /** 单曲信息页标题。 */
+    val aggSongDetailTitle: String,
+    /** 歌曲长按菜单里的「单曲信息」入口。 */
+    val aggSongDetailAction: String,
+    /** 已默认选中有版权的音源。 */
+    val aggDefaultPlayable: String,
+    /** 两源都未能确证可播放（如实说明，不是「无版权」）。 */
+    val aggNoPlayable: String,
+    /** 只在某一源有，(音源名) -> 文案。 */
+    val aggOnlyOn: (String) -> String,
+    /** 匹配等级名：完全一致。 */
+    val aggConfidenceExact: String,
+    /** 匹配等级名：高度一致。 */
+    val aggConfidenceHigh: String,
+    /** 匹配等级名：可能一致。 */
+    val aggConfidenceMedium: String,
+    /** 匹配等级名：仅同名（不合并）。 */
+    val aggConfidenceLow: String,
+    /** 匹配等级名：未匹配。 */
+    val aggConfidenceNone: String,
 )
 
 /**
