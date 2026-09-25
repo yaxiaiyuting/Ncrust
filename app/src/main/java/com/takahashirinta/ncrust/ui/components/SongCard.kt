@@ -17,6 +17,8 @@ import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -98,22 +100,35 @@ fun SongCard(
                 }
 
                 Column(Modifier.weight(1f)) {
-                    MetroText(
-                        song.name,
-                        color = if (isCurrentPlaying) LocalMetroColors.current.primary else LocalMetroColors.current.onBackground,
-                        style = LocalMetroTypography.current.bodyLarge,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                    // v2.3.0 · C/D：歌名 + 角标。**角标必须与歌名同一行**，不能接在副标题末尾 ——
+                    // release 真机验证时发现：副标题是 maxLines=1 + Ellipsis，而它已经装着
+                    // 「艺人 · 专辑  时长  · 音源」，长专辑名（如
+                    // `The Life of a Showgirl: The Encore`）会把后面的「可播放 / 原唱」
+                    // 整段省略掉。而那两个角标恰恰是**用户唯一需要一眼看到的信息**
+                    // （任务书 5.4「用户能一眼看出哪首歌能播、用哪个源」）。
+                    // 任务书 6.3 也要求「标签位置：歌曲名前面或后面，统一」。
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        MetroText(
+                            song.name,
+                            color = if (isCurrentPlaying) LocalMetroColors.current.primary else LocalMetroColors.current.onBackground,
+                            style = LocalMetroTypography.current.bodyLarge,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            // weight 而不是 wrapContent：歌名过长时**让歌名自己省略**，
+                            // 角标始终留在屏上。
+                            modifier = Modifier.weight(1f, fill = false),
+                        )
+                        if (extraBadges.isNotEmpty()) {
+                            Spacer(Modifier.width(6.dp))
+                            SongTagChips(extraBadges)
+                        }
+                    }
                     MetroText(
                         buildString {
                             append(artistStr)
                             if (albumName.isNotEmpty()) append(" · $albumName")
                             if (durationStr.isNotEmpty()) append("  $durationStr")
                             if (sourceBadge.isNotEmpty()) append("  · $sourceBadge")
-                            // v2.3.0 · C：可播放 / 需会员 / 无版权。UNKNOWN 时这里**什么都不加**
-                            // ——见 SongTags.availabilityLabel 的契约。
-                            extraBadges.forEach { append(" · ${it.text}") }
                         },
                         color = LocalMetroColors.current.onSurfaceVariant,
                         style = LocalMetroTypography.current.bodySmall,
@@ -176,25 +191,64 @@ fun SongCard(
                     contentScale = ContentScale.Crop
                 )
                 Spacer(Modifier.height(8.dp))
+                // 网格格子里空间更紧，所以角标只显示**可用性**（能不能播），
+                // 版本标签留给列表形态 —— 一格里塞三个角标会变成噪音。
+                val gridBadges = extraBadges.filter { it.kind == SongTagKind.AVAILABILITY }
                 MetroText(
-                    song.name,
+                    if (gridBadges.isEmpty()) {
+                        song.name
+                    } else {
+                        song.name + "  " + gridBadges.joinToString(" ") { it.text }
+                    },
                     color = LocalMetroColors.current.onBackground,
                     style = LocalMetroTypography.current.bodyMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
                 MetroText(
-                    // v2.3.0 · C：网格副标题保持一行 —— 音源 + 可用性角标都拼进来，
-                    // 溢出的部分交给 Ellipsis（网格格子本来就窄）。
-                    buildString {
-                        append(artistStr)
-                        if (sourceBadge.isNotEmpty()) append(" · $sourceBadge")
-                        extraBadges.forEach { append(" · ${it.text}") }
-                    },
+                    if (sourceBadge.isEmpty()) "$artistStr · $albumName" else "$artistStr · $sourceBadge",
                     color = LocalMetroColors.current.onSurfaceVariant,
                     style = LocalMetroTypography.current.bodySmall,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
+                )
+            }
+        }
+    }
+}
+
+/**
+ * v2.3.0 · C/D：一行小角标（可播放 / 需会员 / 无版权 / 原唱 / 翻唱）。
+ *
+ * 直角、无圆角、小字号、低饱和底色 —— Kanesumi Design 的「信息优先、不抢主视觉」。
+ * 颜色按 [SongTagKind] 分：可用性用主题色系（能不能播是要紧信息），版本用中性色
+ * （原唱/翻唱是补充信息）。
+ *
+ * 尺寸刻意压到 [chipFontSp]：它要能与歌名同行而不把歌名挤没。
+ */
+private val chipFontSp = 10
+
+@Composable
+private fun SongTagChips(tags: List<SongTag>, modifier: Modifier = Modifier) {
+    val colors = LocalMetroColors.current
+    Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
+        tags.forEachIndexed { index, tag ->
+            if (index > 0) Spacer(Modifier.width(4.dp))
+            val tint = when (tag.kind) {
+                SongTagKind.AVAILABILITY -> colors.primary
+                SongTagKind.VERSION -> colors.onSurfaceVariant
+                SongTagKind.SOURCE -> colors.onSurfaceVariant
+            }
+            Box(
+                modifier = Modifier
+                    .background(colors.surfaceVariant)
+                    .padding(horizontal = 5.dp, vertical = 1.dp),
+            ) {
+                MetroText(
+                    tag.text,
+                    color = tint,
+                    style = TextStyle(fontSize = chipFontSp.sp, lineHeight = (chipFontSp + 2).sp),
+                    maxLines = 1,
                 )
             }
         }
