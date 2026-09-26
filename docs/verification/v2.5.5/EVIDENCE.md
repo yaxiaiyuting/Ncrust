@@ -267,10 +267,22 @@ $ grep -rn "RetrofitClient\|OkHttp\|HttpURLConnection\|java.net" \
 
 | 设备 | 改了什么 | 还原了吗 |
 |---|---|---|
-| PLC110 | 临时 `disable_ipv6=1`（wlan0） | ✅ 已还原为 `0`（复查过） |
+| PLC110 | 临时 `disable_ipv6=1`（wlan0） | ✅ 已还原为 `0`（**收尾复查过一次**，见本节末尾） |
 | PLC110 | 注入一条测试用的旧形状 `tracks` 条目（§2.4 的迁移闭环） | ⚠️ **未还原** —— 它就留在离线索引里（一条真实曲目的正确元数据，不影响功能；如需清掉，走「清空离线缓存」即可）。如实记录 |
-| PLC110 | `adb root`（读 prefs 用） | 设备本身是 root；未做 `unroot` |
+| PLC110 | `adb root`（读 prefs 用） | 设备探测前本来就是 root（探针记录），未做 `unroot` |
 | WGR-W09 | 安装 v2.5.5 release + benchmark APK；跑基准时临时改系统动画比例 | ✅ 动画已由脚本还原并**回读自证**（`window=1.0 transition=1.0 animator=null`） |
 | WGR-W09 | `wm size` / `wm user-rotation` 尝试强制竖屏 | ❌ EMUI 未采纳（`wm size` 仍显示 override 1600×2560，实窗仍是 2560×1600）。**未新增改动**，原样保留 |
 | SM-G9209 | 安装 v2.5.5 release（覆盖安装，登录态保留） | 不适用（安装是有意的） |
 | `ncrust_tablet_api34` AVD | 新建（不修改任何既有 AVD）；`user_rotation=1` 强制竖屏；注入种子播放状态 | AVD 是本版新建的；未改既有 AVD |
+
+### 收尾复查（本 session 结束时逐台回读）
+
+```
+PLC110  wlan0 disable_ipv6 = 0         ← 已还原
+PLC110  window/transition/animator = 1.0 / 1.0 / null   ← 已还原（null 用 settings delete 删掉）
+WGR-W09 window/transition/animator = 1.0 / 1.0 / null   ← 已还原
+WGR-W09 user_rotation = 1              ← 与验证前一致（v2.5.4 遗留值，本版未改）
+S6      window/transition/animator = 0 / 0 / 0          ← 与验证前一致（v2.5.4 遗留值，本版未改）
+```
+
+本 session 新建的 `ncrust_tablet_api34` AVD 已 `emu kill` 关闭；**未修改任何既有 AVD**。

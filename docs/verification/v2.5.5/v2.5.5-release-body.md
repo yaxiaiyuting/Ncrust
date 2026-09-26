@@ -232,7 +232,7 @@ D/PlayReporter: weblog resp: 200 duration=0/0     ← 一个 QQ 合成 id 被 PO
 | 项 | 值 |
 |---|---|
 | tag | `v2.5.5-gpl`（annotated，指向 `de304d3835f8defa48d6d33e0d2a6029b624d563`） |
-| draft release | https://github.com/yaxiaiyuting/Ncrust/releases/tag/untagged-13900a93fc99a6b2b25a |
+| draft release | https://github.com/yaxiaiyuting/Ncrust/releases/tag/untagged-9f93db0a0ba04ce77dd9 （编辑说明后 URL 会变，以 `gh release view v2.5.5-gpl` 为准） |
 | 附件 | `Ncrust-v2.5.5-gpl-release.apk`（10 059 204 字节，`sha256:0506650a85efb9730e5079ce619fed2dd13882130ac83d2846a1f93ac97a187e`，GitHub 侧 digest 与本地一致） |
 | 产物源码自证 | APK 的 `META-INF/version-control-info.textproto` 里 `revision` = `de304d3…` = `git rev-parse v2.5.5-gpl^{commit}`，**逐字相同** |
 | versionCode 三源 | tag = APK badging = `build.gradle.kts` = **46** |
