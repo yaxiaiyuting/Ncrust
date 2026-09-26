@@ -41,6 +41,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.takahashirinta.ncrust.library.LibraryManager
 import com.takahashirinta.ncrust.library.SearchHistoryManager
+import com.takahashirinta.ncrust.library.SearchHistoryMigration
 import com.takahashirinta.ncrust.network.SongItem
 import com.takahashirinta.ncrust.network.model.AlbumItem
 import com.takahashirinta.ncrust.network.model.ArtistItem
@@ -249,39 +250,69 @@ fun SearchScreen(
                                 clearLabel = strings.searchHistoryClear
                             )
                         }
-                        items(songHistory, key = { "s_${it.id}" }) { item ->
+                        items(songHistory, key = { "s_${SearchHistoryMigration.dedupeKey(it)}" }) { item ->
                             val song = item.toSongItem()
                             SearchHistoryItemCard(
                                 item = item,
                                 onClick = {
-                                    onSongClick(song)
+                                    // v2.5.4 · B：老 QQ 条目（v2.5.4 之前只存了裸 id，
+                                    // 而 songmid 不可逆）点下去**必然取不到链**。旧行为是
+                                    // 静默入队 → 被跳歌 → 还弹一条方向错误的「可切到网易云」
+                                    // 提示（它其实已经是 QQ 了）。现在把标题填回搜索框、让用户
+                                    // 重新点一次带 songmid 的结果：一次请求都不多发，
+                                    // 也不会拿猜出来的 mid 去要一条坏链。
+                                    if (SearchHistoryMigration.isIncomplete(item)) {
+                                        Toast.makeText(
+                                            context,
+                                            strings.searchHistoryLegacyHint,
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        dismissKeyboard()
+                                        viewModel.onQueryChanged(item.title)
+                                    } else {
+                                        onSongClick(song)
+                                    }
                                 },
                                 menuContent = { onDismiss ->
                                     MetroDropdownMenuItem(
                                         text = strings.playButton,
                                         textColor = LocalMetroColors.current.onBackground,
-                                        onClick = { onDismiss(); onSongClick(song) },
-                                    )
-                                    MetroDropdownMenuItem(
-                                        text = strings.actionInsertNext,
-                                        textColor = LocalMetroColors.current.onBackground,
-                                        onClick = { onDismiss(); onInsertNext(song) },
-                                    )
-                                    MetroDropdownMenuItem(
-                                        text = strings.actionAddToLibrary,
-                                        textColor = LocalMetroColors.current.onBackground,
+                                        // 同 onClick 的判据：不完整的老条目走「重搜」。
                                         onClick = {
                                             onDismiss()
-                                            LibraryManager.saveSong(context, song)
-                                            Toast.makeText(context, strings.addedToLibrary, Toast.LENGTH_SHORT).show()
+                                            if (SearchHistoryMigration.isIncomplete(item)) {
+                                                viewModel.onQueryChanged(item.title)
+                                            } else {
+                                                onSongClick(song)
+                                            }
                                         },
                                     )
+                                    // 「添加到下一首」「加入库」对不完整条目**不挂载**：
+                                    // 它们会把一首取不到链、音源标识也不全的歌写进队列/收藏库
+                                    // （收藏走裸 id，QQ 的合成 id 会被发给网易云的 like 接口）。
+                                    // 不挂载而不是置灰 —— 见 AGENTS.md 触摸陷阱第 1/4 条。
+                                    if (!SearchHistoryMigration.isIncomplete(item)) {
+                                        MetroDropdownMenuItem(
+                                            text = strings.actionInsertNext,
+                                            textColor = LocalMetroColors.current.onBackground,
+                                            onClick = { onDismiss(); onInsertNext(song) },
+                                        )
+                                        MetroDropdownMenuItem(
+                                            text = strings.actionAddToLibrary,
+                                            textColor = LocalMetroColors.current.onBackground,
+                                            onClick = {
+                                                onDismiss()
+                                                LibraryManager.saveSong(context, song)
+                                                Toast.makeText(context, strings.addedToLibrary, Toast.LENGTH_SHORT).show()
+                                            },
+                                        )
+                                    }
                                     MetroDropdownMenuItem(
                                         text = strings.searchHistoryDelete,
                                         textColor = Color.Red.copy(alpha = 0.85f),
                                         onClick = {
                                             onDismiss()
-                                            SearchHistoryManager.remove(context, SearchHistoryManager.TYPE_SONG, item.id)
+                                            SearchHistoryManager.remove(context, SearchHistoryManager.TYPE_SONG, item)
                                             refreshHistory()
                                         },
                                     )
@@ -301,7 +332,7 @@ fun SearchScreen(
                                 clearLabel = strings.searchHistoryClear
                             )
                         }
-                        items(albumHistory, key = { "a_${it.id}" }) { item ->
+                        items(albumHistory, key = { "a_${SearchHistoryMigration.dedupeKey(it)}" }) { item ->
                             SearchHistoryItemCard(
                                 item = item,
                                 onClick = { onAlbumClick(item.id) },
@@ -316,7 +347,7 @@ fun SearchScreen(
                                         textColor = Color.Red.copy(alpha = 0.85f),
                                         onClick = {
                                             onDismiss()
-                                            SearchHistoryManager.remove(context, SearchHistoryManager.TYPE_ALBUM, item.id)
+                                            SearchHistoryManager.remove(context, SearchHistoryManager.TYPE_ALBUM, item)
                                             refreshHistory()
                                         },
                                     )
@@ -336,7 +367,7 @@ fun SearchScreen(
                                 clearLabel = strings.searchHistoryClear
                             )
                         }
-                        items(artistHistory, key = { "r_${it.id}" }) { item ->
+                        items(artistHistory, key = { "r_${SearchHistoryMigration.dedupeKey(it)}" }) { item ->
                             SearchHistoryItemCard(
                                 item = item,
                                 onClick = { dismissKeyboard(); onArtistClick(item.id) },
@@ -351,7 +382,7 @@ fun SearchScreen(
                                         textColor = Color.Red.copy(alpha = 0.85f),
                                         onClick = {
                                             onDismiss()
-                                            SearchHistoryManager.remove(context, SearchHistoryManager.TYPE_ARTIST, item.id)
+                                            SearchHistoryManager.remove(context, SearchHistoryManager.TYPE_ARTIST, item)
                                             refreshHistory()
                                         },
                                     )
@@ -746,13 +777,12 @@ private fun SearchHistoryItemCard(
     }
 }
 
-private fun SearchHistoryManager.HistoryItem.toSongItem(): SongItem = SongItem(
-    id = id,
-    name = title,
-    artists = subtitle?.let { listOf(ArtistItem(name = it)) },
-    album = AlbumItem(id = null, name = null, picUrl = coverUrl),
-    duration = null
-)
+// v2.5.4 · B：重建逻辑搬到 `library/SearchHistoryMigration.toSongItem`。
+// 搬家的理由不是"整洁"，而是**它必须能被单测够到** —— 音源恢复是否正确
+// （bit62 推断、网易云写成 null、老 QQ 条目不猜 songmid）全部靠那个纯函数上的用例钉住，
+// 留在这里（一个 Composable 文件里的 private 扩展）就只能靠真机点一遍看角标。
+private fun SearchHistoryManager.HistoryItem.toSongItem(): SongItem =
+    SearchHistoryMigration.toSongItem(this)
 
 @Composable
 fun SongSearchItem(

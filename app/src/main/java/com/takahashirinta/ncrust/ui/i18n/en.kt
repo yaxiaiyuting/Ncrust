@@ -317,6 +317,7 @@ val en = Strings(
     searchHistoryClear = "Clear",
     searchHistoryEmpty = "No search history",
     searchHistoryDelete = "Remove from history",
+    searchHistoryLegacyHint = "This entry is from an older version and lacks source info — searching again",
 
     addedToLibrary = "Added to Library",
     removedFromLibrary = "Removed from Library",

@@ -317,6 +317,7 @@ val jpMY = Strings(
     searchHistoryClear = "消",
     searchHistoryEmpty = "無 記録",
     searchHistoryDelete = "記録 削除",
+    searchHistoryLegacyHint = "此 記録 古 版 也 音源 無 再 検索 為",
 
     addedToLibrary = "庫 追加",
     removedFromLibrary = "庫 刪除",

@@ -317,6 +317,7 @@ val ruRU = Strings(
     searchHistoryClear = "Очистить",
     searchHistoryEmpty = "История поиска пуста",
     searchHistoryDelete = "Удалить из истории",
+    searchHistoryLegacyHint = "Эта запись из старой версии, нет данных об источнике — поиск выполнен заново",
 
     addedToLibrary = "Добавлено в медиатеку",
     removedFromLibrary = "Удалено из медиатеки",

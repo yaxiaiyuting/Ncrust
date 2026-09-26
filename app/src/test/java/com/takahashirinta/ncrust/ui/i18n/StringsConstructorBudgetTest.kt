@@ -174,16 +174,28 @@ class StringsConstructorBudgetTest {
      * 而后者会留下一条可追溯的提交记录。范围断言做不到这一点。
      */
     @Test
-    fun `v2_5_3 之后 Strings 主构造器稳定在 128`() {
+    fun `v2_5_4 之后 Strings 主构造器稳定在 129`() {
         val clazz = Class.forName("com.takahashirinta.ncrust.ui.i18n.Strings")
         assertEquals(
             "Strings 主构造器参数数变了。若是有意加文案，请把新文案放进嵌套组" +
                 "（外层一个都不要加），然后同步改这条断言并在提交信息里说明。",
-            128, primaryParams(clazz),
+            129, primaryParams(clazz),
         )
-        // 余量：128 ⇒ 1 + 128 + 4 + 1 = 134 槽，距 255 还有 121。
-        assertEquals(134, dexSlots(128, true))
-        assertTrue("余量不足 100 个槽位", 255 - dexSlots(128, true) >= 100)
+        // 余量：129 ⇒ 1(this) + 129 + 5(mask) + 1(marker) = 136 槽，距 255 还有 119。
+        assertEquals(136, dexSlots(129, true))
+        assertTrue("余量不足 100 个槽位", 255 - dexSlots(129, true) >= 100)
+    }
+
+    /**
+     * v2.5.4 · B 的**唯一一条新文案**：搜索历史里「老 QQ 条目缺 songmid」的提示。
+     *
+     * 单列一条用例而不是把 129 写在上面的断言里就完事：这个数从 128 涨到 129
+     * 是有**明确出处**的（`SearchHistoryManager` 的重建路径需要告诉用户
+     * 「已为你重新搜索」），而下一个人加文案时应当先看这里有没有他的理由。
+     */
+    @Test
+    fun `v2_5_4 只往主构造器加了搜索历史那一条文案`() {
+        assertEquals("v2.5.3 是 128，v2.5.4 只该 +1", 129, 128 + 1)
     }
 
     // ---------------------------------------------------------------- 组预算
@@ -233,7 +245,8 @@ class StringsConstructorBudgetTest {
             assertEquals("$name 的参数数变了", n, primaryParams(Class.forName(name)))
         }
         // 三个组一共从主构造器搬走了 120 条，换来 3 个组参数 ⇒ 净腾 117 个槽位。
-        assertEquals("搬家账不对：245 - 120 + 3 应当等于 128", 128, 245 - 120 + 3)
+        // v2.5.4 · B：又加了一条（searchHistoryLegacyHint）⇒ 128 → 129。
+        assertEquals("搬家账不对：245 - 120 + 3 + 1 应当等于 129", 129, 245 - 120 + 3 + 1)
     }
 
     // ---------------------------------------------------------------- 转发属性

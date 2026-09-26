@@ -318,6 +318,7 @@ scanConnecting = "正在連接平板…",
     searchHistoryClear = "清除",
     searchHistoryEmpty = "暫無搜尋紀錄",
     searchHistoryDelete = "刪除紀錄",
+    searchHistoryLegacyHint = "這筆紀錄來自舊版本，缺少音源標識，已為你重新搜尋",
 
     addedToLibrary = "已納入庫房",
     removedFromLibrary = "已從庫中移除",

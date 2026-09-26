@@ -317,6 +317,7 @@ scanConnecting = "평판에 연결중…",
     searchHistoryClear = "지우기",
     searchHistoryEmpty = "검색 기록 없음",
     searchHistoryDelete = "기록 삭제",
+    searchHistoryLegacyHint = "이 기록은 이전 버전의 것으로 음원 정보가 없습니다. 다시 검색했습니다",
 
     addedToLibrary = "저장소에 추가됨",
     removedFromLibrary = "저장소에서 제거됨",

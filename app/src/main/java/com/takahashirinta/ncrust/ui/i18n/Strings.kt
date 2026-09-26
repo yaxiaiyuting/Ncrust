@@ -285,6 +285,15 @@ data class Strings(
     val searchHistoryEmpty: String,
     val searchHistoryDelete: String,
 
+    /**
+     * v2.5.4 · B：点了一条「信息不完整」的老搜索历史时给的提示。
+     *
+     * 什么算不完整：音源是 QQ、但记录里没有 songmid（v2.5.4 之前这张表只存裸 id，
+     * 而 songmid 不可逆 —— 见 `SearchHistoryMigration`）。这种条目点下去必然取不到链，
+     * 所以不静默入队，而是把标题填回搜索框让用户重新点一次带 songmid 的结果。
+     */
+    val searchHistoryLegacyHint: String,
+
     // Feedback toasts
     val addedToLibrary: String,
     val removedFromLibrary: String,

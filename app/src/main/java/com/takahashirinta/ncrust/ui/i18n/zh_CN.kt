@@ -318,6 +318,7 @@ val zhCN = Strings(
     searchHistoryClear = "清除",
     searchHistoryEmpty = "暂无搜索记录",
     searchHistoryDelete = "删除记录",
+    searchHistoryLegacyHint = "这条记录来自旧版本，缺少音源标识，已为你重新搜索",
 
     addedToLibrary = "已加入库",
     removedFromLibrary = "已从库中移除",

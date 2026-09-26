@@ -317,6 +317,7 @@ val deDE = Strings(
     searchHistoryClear = "Löschen",
     searchHistoryEmpty = "Kein Suchverlauf",
     searchHistoryDelete = "Aus Verlauf entfernen",
+    searchHistoryLegacyHint = "Dieser Eintrag stammt aus einer älteren Version und hat keine Quellenangabe — erneut gesucht",
 
     addedToLibrary = "Zur Bibliothek hinzugefügt",
     removedFromLibrary = "Aus der Bibliothek entfernt",

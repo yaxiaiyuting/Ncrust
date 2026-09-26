@@ -1,12 +1,37 @@
 package com.takahashirinta.ncrust.library
 
 import android.content.Context
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.takahashirinta.ncrust.network.AlbumSearchItem
 import com.takahashirinta.ncrust.network.ArtistSearchItem
 import com.takahashirinta.ncrust.network.SongItem
+import com.takahashirinta.ncrust.source.musicSource
 
+/**
+ * 搜索历史（三段：单曲 / 专辑 / 歌手）。
+ *
+ * ## v2.5.4 · B：音源不再丢
+ *
+ * 本表原先只存裸 `id`，读回来重建的 `SongItem` 没有 `source` / `sourceId` / `mediaId`：
+ * 一首 QQ 曲目会被**字符串口径**（[com.takahashirinta.ncrust.source.SongItem.musicSource]）
+ * 认成网易云（角标错、单曲页路由错、收藏与点赞会拿合成 id 去调网易云的接口），
+ * 而真正取链时 bit62 又把它认回 QQ、却因为没有 songmid 必然失败
+ * （`QqApi.kt:134` 是硬要求）—— 用户看到的是「点了一条历史，歌被跳过了」。
+ *
+ * 现在：
+ * - **写**：`source` 一律写规范值（网易云也显式写 `"netease"`，见下），
+ *   `sourceId` / `mediaId` 原样带上；
+ * - **读**：老条目（`source == null`）按 bit62 推断，规则收敛在 [SearchHistoryMigration]；
+ * - **判重 / 删除 / LazyColumn key** 三处统一走 [SearchHistoryMigration.dedupeKey]；
+ * - **落盘形状**由 [SearchHistoryCodec] 的显式 `@SerializedName` 固定，不再由 R8 决定
+ *   （真机证据与论证见该文件的 KDoc）。
+ *
+ * ## 为什么写网易云也显式写 `"netease"`
+ *
+ * 不写的话 `source` 就是 `null`，而 `null` 在本表里的语义是「**v2.5.4 之前写入的老条目**」
+ * —— 新数据会长成老条目的形状，[SearchHistoryMigration.isIncomplete] 之类的判据就失效了。
+ * 代价是重建 `SongItem` 时仍要把网易云还原成 `null`（与 `songRefOf` 同一条约定），
+ * 这一层转换在 [SearchHistoryMigration.toSongItem] 里。
+ */
 object SearchHistoryManager {
     private const val PREFS_NAME = "search_history"
     private const val MAX_ITEMS = 10
@@ -21,7 +46,17 @@ object SearchHistoryManager {
         val title: String,
         val coverUrl: String?,
         val subtitle: String?,
-        val timestamp: Long = System.currentTimeMillis()
+        val timestamp: Long = System.currentTimeMillis(),
+        /**
+         * 音源 key（`"netease"` / `"qqmusic"`）。**可空 + 默认值是硬要求**：
+         * `null` 的语义是「v2.5.4 之前写入的老条目，字段缺失」，不是「这首歌没有音源」。
+         * 判定请用 [SearchHistoryMigration.effectiveSource]，不要直接读这个字符串。
+         */
+        val source: String? = null,
+        /** QQ 的 `songmid`。网易云恒为 null。**老条目不可推断 ⇒ 保持 null，绝不猜。** */
+        val sourceId: String? = null,
+        /** QQ 的 `media_mid`。网易云恒为 null。 */
+        val mediaId: String? = null,
     )
 
     fun addSong(context: Context, song: SongItem) = add(
@@ -30,7 +65,11 @@ object SearchHistoryManager {
             id = song.id,
             title = song.name,
             coverUrl = song.album?.picUrl,
-            subtitle = song.artists?.firstOrNull()?.name
+            subtitle = song.artists?.firstOrNull()?.name,
+            // 规范值：网易云也显式写 "netease"（见类文档）。
+            source = song.musicSource.key,
+            sourceId = song.sourceId,
+            mediaId = song.mediaId,
         )
     )
 
@@ -58,10 +97,19 @@ object SearchHistoryManager {
     fun getAlbums(context: Context) = getAll(context, TYPE_ALBUM)
     fun getArtists(context: Context) = getAll(context, TYPE_ARTIST)
 
-    fun remove(context: Context, type: Int, id: Long) {
+    /**
+     * 删一条。
+     *
+     * 签名从 `(type, id)` 换成 `(type, item)` 是有意的：判据必须是
+     * [SearchHistoryMigration.dedupeKey]，而它需要 `source`。
+     * 只传 id 的话调用方得自己再拼一次键 —— 正是「同一规则两份写法」的形状
+     * （v2.5.3 把队列身份收敛进 `QueueKeys` 修的就是这个）。
+     */
+    fun remove(context: Context, type: Int, item: HistoryItem) {
         val key = keyFor(type)
         val items = load(context, key)
-        items.removeAll { it.id == id }
+        val target = SearchHistoryMigration.dedupeKey(item)
+        items.removeAll { SearchHistoryMigration.dedupeKey(it) == target }
         save(context, key, items)
     }
 
@@ -74,7 +122,8 @@ object SearchHistoryManager {
         val now = System.currentTimeMillis()
         val items = load(context, key)
         items.removeAll { now - it.timestamp > TTL_MS }
-        items.removeAll { it.id == item.id }
+        val target = SearchHistoryMigration.dedupeKey(item)
+        items.removeAll { SearchHistoryMigration.dedupeKey(it) == target }
         items.add(0, item.copy(timestamp = now))
         if (items.size > MAX_ITEMS) items.subList(MAX_ITEMS, items.size).clear()
         save(context, key, items)
@@ -97,17 +146,12 @@ object SearchHistoryManager {
 
     private fun load(context: Context, key: String): MutableList<HistoryItem> {
         val json = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-            .getString(key, null) ?: return mutableListOf()
-        return try {
-            val type = object : TypeToken<MutableList<HistoryItem>>() {}.type
-            Gson().fromJson(json, type) ?: mutableListOf()
-        } catch (_: Exception) {
-            mutableListOf()
-        }
+            .getString(key, null)
+        return SearchHistoryCodec.decode(json).toMutableList()
     }
 
     private fun save(context: Context, key: String, items: List<HistoryItem>) {
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-            .edit().putString(key, Gson().toJson(items)).apply()
+            .edit().putString(key, SearchHistoryCodec.encode(items)).apply()
     }
 }

@@ -318,6 +318,7 @@ val jpJP = Strings(
     searchHistoryClear = "クリア",
     searchHistoryEmpty = "検索履歴なし",
     searchHistoryDelete = "履歴から削除",
+    searchHistoryLegacyHint = "この記録は旧バージョンのもので音源情報が欠けています。再検索しました",
 
     addedToLibrary = "ライブラリに追加しました",
     removedFromLibrary = "ライブラリから削除しました",
