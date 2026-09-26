@@ -268,7 +268,7 @@ $ grep -rn "RetrofitClient\|OkHttp\|HttpURLConnection\|java.net" \
 | 设备 | 改了什么 | 还原了吗 |
 |---|---|---|
 | PLC110 | 临时 `disable_ipv6=1`（wlan0） | ✅ 已还原为 `0`（**收尾复查过一次**，见本节末尾） |
-| PLC110 | 注入一条测试用的旧形状 `tracks` 条目（§2.4 的迁移闭环） | ⚠️ **未还原** —— 它就留在离线索引里（一条真实曲目的正确元数据，不影响功能；如需清掉，走「清空离线缓存」即可）。如实记录 |
+| PLC110 | 注入一条测试用的旧形状 `tracks` 条目（§2.4 的迁移闭环） | ⚠️ **未还原** —— 它就留在离线索引里（一条真实曲目的正确元数据，不影响功能）。**v2.5.6 已用「打开离线缓存管理即对账」清除**；⚠️ 原建议「走『清空离线缓存』即可」**已被 v2.5.6 推翻**，理由见下 |
 | PLC110 | `adb root`（读 prefs 用） | 设备探测前本来就是 root（探针记录），未做 `unroot` |
 | WGR-W09 | 安装 v2.5.5 release + benchmark APK；跑基准时临时改系统动画比例 | ✅ 动画已由脚本还原并**回读自证**（`window=1.0 transition=1.0 animator=null`） |
 | WGR-W09 | `wm size` / `wm user-rotation` 尝试强制竖屏 | ❌ EMUI 未采纳（`wm size` 仍显示 override 1600×2560，实窗仍是 2560×1600）。**未新增改动**，原样保留 |
@@ -286,3 +286,49 @@ S6      window/transition/animator = 0 / 0 / 0          ← 与验证前一致�
 ```
 
 本 session 新建的 `ncrust_tablet_api34` AVD 已 `emu kill` 关闭；**未修改任何既有 AVD**。
+
+---
+
+## v2.5.6 对本文件的两处更正（**读上面那张表之前先看这里**）
+
+### 更正 1：「如需清掉，走『清空离线缓存』即可」是**有害**建议
+
+那条建议写于 2026-09-26 早些时候，而到 v2.5.6 探针复核时，这台 PLC110 上已经有
+**用户真实的 2.3 GB / 50 首**离线数据（529 个 `.v3.exo` 片段）。在那个状态下照做
+⇒ `OfflineAudioCache.clear()` 会把**真实数据一起清掉**。
+
+正确的清除方式（v2.5.6 实测采用的）是**打开「设置 → 离线缓存管理」**：
+它触发 `OfflineCacheOverlay.kt:128` → `OfflineAudioCache.reconcileLibrary` →
+`OfflineLibrary.retain(缓存里还有片段的 songId)`，**精确**只删那一条
+（`urls` 一个字不动、音频一个字节不动）。
+
+判据也一并钉住了：**「没有 `urls` 条目」不是删除理由** ——
+该机 50 条索引里有 **6 条真实条目没有 `urls` 条目**
+（`1854421609 / 1380176 / 1983686033 / 22259257 / 381962 / 1970006`），
+因为写 URL 的路径不覆盖所有起播路径。唯一正确的判据是**音频缓存里还有没有片段**。
+复现与全部证据见 `docs/verification/v2.5.6/probe-offline-index-cleanup.md`。
+
+### 更正 2：「本仓库无 `androidx.profileinstaller` 依赖」是**假**的（§3.2）
+
+§3.2 的结论「这个仓库根本没有依赖 `androidx.profileinstaller` 这个库」**不成立**：
+该依赖自 v1.2.1（`f9d45f4`）起就在 `app/build.gradle.kts` 里，
+v2.5.3/2.5.4/v2.5.5 三个 tag 的 APK 清单里都有 `ProfileInstallReceiver`（命中 7 处），
+且在 **API 24 真机**上 `am broadcast …INSTALL_PROFILE` 返回
+`D ProfileInstaller: RESULT_INSTALL_SUCCESS`。
+
+根因是那条取证命令**本身失败了**，而失败伪装成了阴性结果：
+
+```
+$ aapt2 dump xmltree app-release.apk AndroidManifest.xml
+missing required flag --file          # ← stderr，被管道吞掉
+$ … | grep -ci profile
+0                                     # ← 空 stdout 的计数，被读成「没有」
+```
+
+连带被推翻的还有同节的「API 24~30 的设备永远不会安装这份 baseline profile」
+与遗留清单第 3 条「三条 macrobenchmark 基准结构上跑不了」——
+后者实测两台设备 `result=14`（= 期望值），**接收器在、广播有人应答**。
+
+⇒ 已写进 `AGENTS.md` 新铁律 22 的配套条款：
+**任何「计数为 0 / 无命中」的结论必须同时留 stderr 与退出码，
+并用一条独立路径交叉验证。**
