@@ -184,10 +184,42 @@ fun FullPlayerControls(
                 DurationText(durationFlow = durationFlow, modifier = Modifier)
             }
             Spacer(Modifier.height(6.dp))
-            // 对称三段：左=面板开关，中=传输（主控居中），右=音质。
-            Box(modifier = Modifier.fillMaxWidth()) {
+            // v2.5.6 · P1：三段式控制条。
+            //
+            // ## 为什么从 `Box` + 三个 `align` 的 Row 改成**一条顺序 `Row`**
+            //
+            // 旧写法（v2.5.5）是：
+            //     Box(fillMaxWidth) {
+            //         Row(align(CenterStart)) { 左组 }   // 歌词/队列/收藏/[⤢]
+            //         Row(align(Center))      { 传输三键 }
+            //         if (showQuality) PlayerQualityChip(align(CenterEnd))
+            //     }
+            // 三个子节点**互相独立定位**，容器一窄就必然叠在一起，而 Compose 里
+            // **后声明的赢命中测试** ⇒ 居中的传输组盖住左组第 4 个按钮（⤢）。
+            //
+            // WGR-W09 竖屏真机实测（`docs/verification/v2.5.6/probe-tablet-rotate.md`）：
+            // 容器 352dp、左组 8~168dp、传输组 103~247dp，重叠 65dp，
+            // ⤢ 的槽位（128~168dp）100% 在重叠区里 —— 点它触发的是「播放/暂停」。
+            // 横屏容器 563dp 不重叠，所以这个缺陷**只在竖屏出现**。
+            //
+            // 顺序 `Row` 的子节点是**依次摆放**的，结构上不可能重叠 ——
+            // 这比「算准一个阈值别让它叠」可靠：阈值会随按钮增减/字号/语言漂移，
+            // 而顺序布局的这条性质不随任何东西漂移。
+            //
+            // 让位规则见 [PlayerLayout.qualityChipFits]：左组（含 ⤢）与传输组不可让，
+            // 让的是音质片。真机上平板竖屏会因此不挂音质片（它在竖屏控制条里仍在），
+            // 平板横屏（563dp）则照旧挂载。
+            BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                val bigScreenEntryVisible = showBigScreenEntry
+                val qualityFits = PlayerLayout.qualityChipFits(
+                    availableWidthDp = maxWidth.value,
+                    sideButtonCount = PlayerLayout.sideButtonCount(bigScreenEntryVisible),
+                )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Row(
-                    modifier = Modifier.align(Alignment.CenterStart),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Box(
@@ -262,8 +294,12 @@ fun FullPlayerControls(
                         }
                     }
                 }
+                // 中组：吃掉左组与右组之外的剩余空间，三键在**这段空间内**居中。
+                // 用 `weight(1f)`（参与顺序布局、拿到的是一段确定的空间）而不是
+                // `align(Center)`（相对整个 Box 独立定位）—— 后者正是重叠的来源。
                 Row(
-                    modifier = Modifier.align(Alignment.Center),
+                    modifier = Modifier.weight(1f),
+                    horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Box(
@@ -315,7 +351,10 @@ fun FullPlayerControls(
                         )
                     }
                 }
-                if (showQuality) {
+                // 右组。v2.5.6 · P1：音质片只在**放得下**时挂载，判据见
+                // `PlayerLayout.qualityChipFits`。放不下时让位的是它 ——
+                // 左组（含 ⤢）与传输三键都不可让（后者是铁律 19 点名的核心功能）。
+                if (showQuality && qualityFits) {
                     // v1.8.0 · T2：宽屏竖屏（平板/折叠展开）的控制条右端也改成就地选择器，
                     // 与竖屏 / 横屏大屏两处共用同一个组件。
                     PlayerQualityChip(
@@ -324,13 +363,13 @@ fun FullPlayerControls(
                         options = qualityOptions,
                         preferredIndexProvider = preferredQualityIndexProvider,
                         onSelect = onQualitySelect,
-                        modifier = Modifier.align(Alignment.CenterEnd),
                         maxHeightDp = qualityPickerMaxHeightDp,
                         horizontalAlignment = Alignment.End,
                     )
                 } else if (trailing != null) {
-                    Box(modifier = Modifier.align(Alignment.CenterEnd)) { trailing() }
+                    Box { trailing() }
                 }
+            }
             }
         }
         return

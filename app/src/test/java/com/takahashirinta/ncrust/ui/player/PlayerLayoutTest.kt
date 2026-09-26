@@ -109,3 +109,82 @@ class PlayerLayoutTest {
         assertEquals(636f, PlayerLayout.coverFallbackSizePx(2800f, 1272f), 1e-3f)
     }
 }
+
+/**
+ * v2.5.6 · P1：横向控制条的宽度预算（平板 ⤢ 在竖屏被盖住的回归防线）。
+ *
+ * 全部数值取自真机实测（WGR-W09 / EMUI 14.2.0 / Android 12 / API 31，
+ * 见 `docs/verification/v2.5.6/probe-tablet-rotate.md`）：
+ * 竖屏控制条容器 **352dp**（左栏 = 0.44 × 800dp），横屏 **563dp**。
+ * 缺陷形状是「⤢ 被居中的传输组整个盖住」——
+ * 那是**布局重叠**问题，纯函数只能钉住「谁该让位」，所以这里测的是判据本身，
+ * 命中区本身由真机 uiautomator 断言（见验收脚本）。
+ */
+class ControlsBarBudgetTest {
+
+    private val tabletPortraitDp = 352f
+    private val tabletLandscapeDp = 563f
+    private val phoneLandscapeDp = 640f
+
+    @Test
+    fun `真机平板竖屏——4 个左键时音质片必须让位`() {
+        // 352dp 装不下 4×40 + 142 + 72 = 374dp ⇒ 不挂音质片，但左组与传输组都留得住。
+        assertFalse(
+            PlayerLayout.qualityChipFits(
+                availableWidthDp = tabletPortraitDp,
+                sideButtonCount = PlayerLayout.sideButtonCount(bigScreenEntryVisible = true),
+            )
+        )
+    }
+
+    @Test
+    fun `真机平板竖屏——让位后剩下的两组确实放得下`() {
+        // 把音质片摘掉之后，左组 + 传输组 = 160 + 142 = 302 ≤ 352 - 16 = 336 ⇒ 放得下。
+        // 这条是上一条的**互补断言**：只说「音质片让位」不够，
+        // 还要证明让位之后 ⤢ 那 40dp 真的在预算之内。
+        val left = PlayerLayout.CONTROLS_SIDE_BUTTON_DP * 4
+        val usable = tabletPortraitDp - PlayerLayout.CONTROLS_HORIZONTAL_PADDING_DP
+        assertTrue(left + PlayerLayout.CONTROLS_TRANSPORT_DP <= usable)
+    }
+
+    @Test
+    fun `真机平板横屏与手机横屏——音质片照旧挂载`() {
+        listOf(tabletLandscapeDp, phoneLandscapeDp).forEach { width ->
+            assertTrue(
+                "width=$width 应该放得下",
+                PlayerLayout.qualityChipFits(
+                    availableWidthDp = width,
+                    sideButtonCount = PlayerLayout.sideButtonCount(bigScreenEntryVisible = true),
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `没有 ⤢ 时（手机）预算更宽裕——手机竖屏 360dp 也放得下`() {
+        // 手机竖屏 360dp：3×40 + 142 + 72 = 334 > 344? 不 —— 344 是可用宽，
+        // 334 ≤ 344 ⇒ 放得下。这条钉住「本版的让位规则**没有**顺手改掉手机的既有行为」。
+        assertTrue(
+            PlayerLayout.qualityChipFits(
+                availableWidthDp = 360f,
+                sideButtonCount = PlayerLayout.sideButtonCount(bigScreenEntryVisible = false),
+            )
+        )
+    }
+
+    @Test
+    fun `边界——恰好放下与差 1dp 放不下`() {
+        val exact = PlayerLayout.CONTROLS_HORIZONTAL_PADDING_DP +
+            PlayerLayout.CONTROLS_SIDE_BUTTON_DP * 3 +
+            PlayerLayout.CONTROLS_TRANSPORT_DP +
+            PlayerLayout.CONTROLS_QUALITY_CHIP_DP
+        assertTrue(PlayerLayout.qualityChipFits(exact, sideButtonCount = 3))
+        assertFalse(PlayerLayout.qualityChipFits(exact - 1f, sideButtonCount = 3))
+    }
+
+    @Test
+    fun `sideButtonCount 只有 3 与 4 两格`() {
+        assertEquals(3, PlayerLayout.sideButtonCount(bigScreenEntryVisible = false))
+        assertEquals(4, PlayerLayout.sideButtonCount(bigScreenEntryVisible = true))
+    }
+}

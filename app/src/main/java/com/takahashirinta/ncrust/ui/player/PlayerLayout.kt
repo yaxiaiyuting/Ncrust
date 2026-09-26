@@ -120,6 +120,65 @@ object PlayerLayout {
     fun bigScreenEntrySlot(isLargeScreen: Boolean, bigScreenActive: Boolean): Boolean =
         isLargeScreen && !bigScreenActive
 
+    // ── v2.5.6 · P1：横向控制条的宽度预算 ──────────────────────────────────
+
+    /** 横向控制条左组每个按钮的边长（dp）。与 `FullPlayerControls` 的 `.size(40.dp)` 同值。 */
+    const val CONTROLS_SIDE_BUTTON_DP = 40f
+
+    /** 传输三键（上一首 / 播放暂停 / 下一首）的边长合计（dp）：44 + 54 + 44。 */
+    const val CONTROLS_TRANSPORT_DP = 142f
+
+    /** 控制条左右各留的边距（dp）。 */
+    const val CONTROLS_HORIZONTAL_PADDING_DP = 16f
+
+    /** 音质选择器（`PlayerQualityChip`）的保守宽度估计（dp）。 */
+    const val CONTROLS_QUALITY_CHIP_DP = 72f
+
+    /**
+     * 音质选择器在给定容器宽度下**放得下吗**。
+     *
+     * ## 为什么需要这个判据（真机 P0，不是预防性设计）
+     *
+     * v2.5.5 给的平板 ⤢ 入口在 **EMUI 平板的竖屏下点不到**：
+     * `FullPlayerControls` 的横向控制条当时是 `Box(fillMaxWidth)` + 三个各自
+     * `align(CenterStart/Center/CenterEnd)` 的 `Row`。三组**互相独立定位**，
+     * 容器一窄就必然叠在一起，而**后声明的赢命中测试** ——
+     * 于是左组第 4 个按钮（⤢）被居中的传输组整个盖住。
+     *
+     * WGR-W09 竖屏实测（`docs/verification/v2.5.6/probe-tablet-rotate.md`）：
+     * 控制条容器宽 **352dp**，左组占 8~168dp，传输组占 103~247dp ——
+     * 重叠 65dp，⤢ 的槽位（128~168dp）**100% 落在重叠区**，
+     * 点它实际触发的是「播放/暂停」。横屏容器 563dp 则完全不重叠，
+     * 所以这个缺陷**只在竖屏出现**（也正因如此，只在模拟器/单方向测是发现不了的）。
+     *
+     * ## 判据与优先级
+     *
+     * 左组（含 ⤢）与传输组是**不可让**的两组：前者是本版要修的入口，
+     * 后者是铁律 19 点名的核心播放控制。让的只能是音质选择器 ——
+     * 它在竖屏控制条（另一条分支）里仍在，不构成功能缺失。
+     *
+     * 于是：左组 + 传输组 + 音质片 ≤ 可用宽 时留音质片，否则**不挂**它。
+     * 挂载判据是纯函数（本函数），因此可以被单测按真机实测的宽度逐格钉住。
+     */
+    fun qualityChipFits(
+        availableWidthDp: Float,
+        sideButtonCount: Int,
+        qualityChipDp: Float = CONTROLS_QUALITY_CHIP_DP,
+    ): Boolean {
+        val usable = availableWidthDp - CONTROLS_HORIZONTAL_PADDING_DP
+        val left = CONTROLS_SIDE_BUTTON_DP * sideButtonCount.coerceAtLeast(0)
+        return left + CONTROLS_TRANSPORT_DP + qualityChipDp <= usable
+    }
+
+    /**
+     * 横向控制条左组挂 ⤢ 之后的按钮个数。
+     *
+     * 抽出来是为了让 [qualityChipFits] 的调用点不必重复「⤢ 在不在」这个判断 ——
+     * 两处各写一遍正是 v2.5.5 那个重叠缺陷的同形状温床。
+     */
+    fun sideButtonCount(bigScreenEntryVisible: Boolean): Int =
+        3 + if (bigScreenEntryVisible) 1 else 0
+
     /**
      * 可视化条的高度（dp）：窗口高 × [VISUALIZER_HEIGHT_FRACTION]，夹在
      * [VISUALIZER_MIN_HEIGHT_DP]~[VISUALIZER_MAX_HEIGHT_DP] 之间。
