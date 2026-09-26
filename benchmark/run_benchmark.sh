@@ -6,7 +6,7 @@
 # 差 2~7 倍(R8 + 非 debuggable), 只有 release 数字才有参考价值。
 #
 # 用法:
-#   benchmark/run_benchmark.sh [startup|scroll|all]
+#   benchmark/run_benchmark.sh [startup|scroll|settings|expand|all]
 #
 # 流程:
 #   1. 构建 release 并安装(若系统无 keystore.properties, 用临时 key 签,
@@ -127,10 +127,13 @@ ensure_bench_apk
 case "$TARGET" in
   startup) disable_animations; run com.takahashirinta.ncrust.benchmark.StartupBenchmark ;;
   scroll)  run com.takahashirinta.ncrust.benchmark.HomeScrollBenchmark ;;
+  # v2.5.4 · A：设置页（转发属性最密集的一面）的滚动帧率。
+  settings) run com.takahashirinta.ncrust.benchmark.SettingsScrollBenchmark ;;
   expand)  run com.takahashirinta.ncrust.benchmark.ExpandPlayerBenchmark ;;
   all)     disable_animations; run com.takahashirinta.ncrust.benchmark.StartupBenchmark
            restore_animations
            run com.takahashirinta.ncrust.benchmark.HomeScrollBenchmark
+           run com.takahashirinta.ncrust.benchmark.SettingsScrollBenchmark
            run com.takahashirinta.ncrust.benchmark.ExpandPlayerBenchmark ;;
   *) echo "用法: $0 [startup|scroll|expand|all]"; exit 2 ;;
 esac
