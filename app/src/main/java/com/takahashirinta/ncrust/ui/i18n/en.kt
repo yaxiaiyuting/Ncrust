@@ -203,6 +203,7 @@ val en = Strings(
         aggConfidenceMedium = "Probable match",
         aggConfidenceLow = "Same title only (not merged)",
         aggConfidenceNone = "No match",
+        artistNavSearchFallback = "Couldn't pin down this artist, so we searched instead",
     ),
 
     dailySongsTitle = "Daily Recommendations",

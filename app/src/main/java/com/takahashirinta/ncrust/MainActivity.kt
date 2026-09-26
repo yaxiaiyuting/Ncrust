@@ -82,10 +82,13 @@ import com.takahashirinta.ncrust.network.SongItem
 import com.takahashirinta.ncrust.network.model.AlbumItem
 import com.takahashirinta.ncrust.network.model.ArtistItem
 import com.takahashirinta.ncrust.reco.ArtistReco
+import com.takahashirinta.ncrust.source.ArtistNav
+import com.takahashirinta.ncrust.source.ArtistNavigator
 import com.takahashirinta.ncrust.source.MusicSource
 import com.takahashirinta.ncrust.source.SourceIds
 import com.takahashirinta.ncrust.source.TrackKey
 import com.takahashirinta.ncrust.source.musicSource
+import com.takahashirinta.ncrust.source.trackKey
 import com.takahashirinta.ncrust.player.PlayOrigin
 import com.takahashirinta.ncrust.player.PlaybackStateManager
 import com.takahashirinta.ncrust.player.QueueKeys
@@ -706,6 +709,18 @@ private fun songIdForRoute(song: SongItem): String =
     }
 
 /**
+ * v2.6.1 · P0：底部导航里「搜索」是第 2 个 tab（首页 0 / 库 1 / 搜索 2 / 用户 3）。
+ *
+ * 抽成常量而不是就地写 `2`：这条索引同时被「跳搜索兜底」和导航栏本身消费，
+ * 两处各写一个字面量，将来插入一个 tab 时**只有一处会跟着改**，
+ * 表现是「点转到歌手跳到了用户页」—— 一个只在特定入口复现的错页。
+ */
+private const val SEARCH_TAB_INDEX = 2
+
+/** v2.6.1 · P0：艺人跳转的日志标签。降级为搜索时必须留痕，否则线上只能看到「没反应」。 */
+private const val TAG_ARTIST_NAV = "ArtistNav"
+
+/**
  * v1.8.0 · T4：自动进入大屏的**观察者**（无 UI，只做判定与回调）。
  *
  * 为什么单独抽成一个 composable：它要订阅「应用内开关」「播放器展开态」「窗口方向」三个状态，
@@ -840,6 +855,18 @@ fun MainScreen(
     onKeepScreenOnChange: (Boolean) -> Unit = {}
 ) {
     var selectedTab by remember { mutableIntStateOf(1) }
+
+    /**
+     * v2.6.1 · P0：待投递给搜索页的关键词（null = 没有待办）。
+     *
+     * 为什么需要它：搜索是**一个 tab**，不是一条导航路由（`NavRoutes` 里没有 search，
+     * `SearchScreen` 也不接任何查询参数、自己 `viewModel()` 持有一个私有 VM）。
+     * 于是「转到歌手时身份不可信 ⇒ 跳搜索」这条兜底**没有现成的落点**。
+     *
+     * 形状取「一次性待办」而不是「双向状态」：投递方设值 → 搜索页消费后回调清空。
+     * 这样它不会变成一个跨页面的粘滞状态（下一次点搜索 tab 不会又被预填一次）。
+     */
+    var pendingSearchQuery by remember { mutableStateOf<String?>(null) }
     // 根布局实测高度(px)：车机会把窗口内容区 inset 到系统栏之间，但 WindowInsets
     // 全为 0、screenHeightDp 又是整屏高度，只有实测高度才准。
     var rootHeightPx by remember { mutableStateOf(0f) }
@@ -1831,33 +1858,80 @@ fun MainScreen(
     val isInMain = navBackStackEntry?.destination?.route == NavRoutes.HOME
 
     /**
+     * 「转到歌手」的**唯一出口**（v2.6.1 · P0）。
+     *
+     * 三态处置，判据全部来自 [ArtistNavigator]（纯函数、有单测）：
+     *
+     * - [ArtistNav.Direct] → 带 source 的两段路由 `artist/{source}/{artistId}`，
+     *   进**本源**艺人页。QQ 曲目走的是 `singerMID`，不再经过网易云。
+     * - [ArtistNav.Search] → 切到搜索 tab 并预填艺人名。这是「**找不到但用户能理解**」
+     *   的那条路：身份不可信时绝不猜一个艺人出来（AGENTS.md 铁律 20/21）。
+     * - [ArtistNav.Unavailable] → 什么都不做（连名字都没有，跳搜索也搜不出东西）。
+     *
+     * 定义顺序在 [resolveAndNavigate] **之前**是硬要求：Kotlin 的局部函数不能前向引用
+     * （写成反过来会直接编译不过，不会静默）。
+     */
+    fun navigateToArtist(song: SongItem) {
+        when (val nav = ArtistNavigator.resolve(song)) {
+            is ArtistNav.Direct -> {
+                if (progress.value > 0.01f) collapseCard()
+                navController.navigate(NavRoutes.artist(nav.source, nav.id))
+            }
+
+            is ArtistNav.Search -> {
+                if (progress.value > 0.01f) collapseCard()
+                // 先切 tab 再投递关键词：SearchScreen 只在可见时才消费它
+                // （见那里的 LaunchedEffect），顺序反了会丢掉这次预填。
+                selectedTab = SEARCH_TAB_INDEX
+                pendingSearchQuery = nav.keyword
+                snackbar.show(mainStrings.source.artistNavSearchFallback)
+                Log.i(
+                    TAG_ARTIST_NAV,
+                    "转到歌手降级为搜索 reason=${nav.reason} song=${song.trackKey} keyword=${nav.keyword}",
+                )
+            }
+
+            ArtistNav.Unavailable -> {
+                Log.w(TAG_ARTIST_NAV, "转到歌手：无艺人信息，忽略 song=${song.trackKey}")
+            }
+        }
+    }
+
+    /**
      * 从歌曲跳到歌手/专辑页(需求: 类 Apple Music 的来源回溯)。
-     * 列表接口的解析点大多不带 artist/album id——缺失时先用 song/detail
-     * 现拉全量再跳; 拉取失败静默放弃, 不给出死链接。
+     *
+     * ## v2.6.1 · P0：这条路以前会把 QQ 曲目送到**错误的艺人页**
+     *
+     * 旧实现在 artist 分支上做两件事，两件都错：
+     *
+     * 1. **补 id 的回落是网易云的**：`PlaylistApi.getSongsByIds(listOf(song.id))` 打的是
+     *    `/eapi/v3/song/detail`。QQ 曲目的 `song.id` 带 [SourceIds.QQ_ID_FLAG]（bit62），
+     *    问网易云必然查不到 ⇒ `?: song` ⇒ `artistId` 仍是 null ⇒ `when` 一个分支都不匹配
+     *    ⇒ **点了毫无反应**（PCL110 真机复现：冷启动恢复的 QQ 曲目走这条）。
+     * 2. **跳的是硬编码网易云的老路由**：`NavRoutes.artist(artistId: Long)` 在 composable 里
+     *    写死 `MusicSource.NETEASE`，于是 QQ 的数字 `singerID` 被当成网易云艺人 id 查 ——
+     *    周杰伦 `4558` → **马洪波**（WGR-W09 真机复现）。
+     *
+     * 现在身份判定收在 [ArtistNavigator] 一处，本函数只负责**执行**它的结论。
+     *
+     * ## 专辑分支为什么还留着网易云回落
+     *
+     * 与 artist 分支同形的那处 bug（QQ 的 `album.id` 被当网易云 album id）**本版不修**：
+     * 它需要 QQ 侧的 `albumMID`，而 `AlbumItem` 目前不带（本次只给 `ArtistItem` 加了字段）。
+     * 为它单独加一次跨表迁移 + 5 张持久化结构的回归，会把这次 hotfix 的面扩大到
+     * 半个数据层 —— 如实记进 release notes 的未修清单，不在这里顺手做。
      */
     fun resolveAndNavigate(song: SongItem, toArtist: Boolean) {
+        if (toArtist) {
+            navigateToArtist(song)
+            return
+        }
         coroutineScope.launch(Dispatchers.IO) {
-            var target = song
-            val idMissing = if (toArtist)
-                target.artists?.firstOrNull()?.id == null
-            else
-                target.album?.id == null
-            if (idMissing) {
-                target = runCatching { PlaylistApi.getSongsByIds(listOf(song.id)) }
-                    .getOrDefault(emptyList()).firstOrNull() ?: song
-            }
-            val artistId = target.artists?.firstOrNull()?.id
-            val albumId = target.album?.id
-            withContext(Dispatchers.Main) {
-                when {
-                    toArtist && artistId != null -> {
-                        if (progress.value > 0.01f) collapseCard()
-                        navController.navigate(NavRoutes.artist(artistId))
-                    }
-                    !toArtist && albumId != null -> {
-                        if (progress.value > 0.01f) collapseCard()
-                        navController.navigate(NavRoutes.album(albumId))
-                    }
+            val albumId = song.album?.id
+            if (albumId != null && albumId > 0L) {
+                withContext(Dispatchers.Main) {
+                    if (progress.value > 0.01f) collapseCard()
+                    navController.navigate(NavRoutes.album(albumId))
                 }
             }
         }
@@ -1908,7 +1982,11 @@ fun MainScreen(
                         navController.navigate(NavRoutes.playlist(playlistId))
                     }
                     artistId != null -> withContext(Dispatchers.Main) {
-                        navController.navigate(NavRoutes.artist(artistId))
+                        // v2.6.1 · P0：显式声明音源。这个 id 由 `music.163.com/artist?id=` 的
+                        // 正则解析而来，**按构造**就是网易云身份 —— 而「按构造」正是本 P0 里
+                        // 唯一没被写下来的东西。老的单参数重载会把 source 静默补成网易云，
+                        // 于是「谁都可以用它」；写成两段路由之后，用错必须由作者显式写错。
+                        navController.navigate(NavRoutes.artist(MusicSource.NETEASE, artistId.toString()))
                     }
                     songId != null -> {
                         // 单曲: 载入播放器但不自动播放, 等用户按下播放键
@@ -2166,7 +2244,12 @@ fun MainScreen(
             // v2.5.4 · E：竖屏托盘第二行「作者」那一段 → 直接进艺人页。
             // 与 `onSongInfoClick` 的分工：那一个是「先在菜单里选转到歌手/转到专辑」，
             // 这一个已经是明确意图，不再多一次选择。
-            onArtistClick = { artistId -> navController.navigate(NavRoutes.artist(artistId)) },
+            //
+            // v2.6.1 · P0：这里以前收一个裸 `Long` 再拼老路由（硬编码网易云），
+            // 于是 QQ 曲目点作者名 = 跳到网易云的同号艺人（周杰伦 4558 → 马洪波）。
+            // 现在整首歌交给 `navigateToArtist`，身份判定与「跳搜索」兜底都在那里，
+            // 与长按菜单走**同一个出口** —— 两个入口两套判据正是本 P0 的形状。
+            onArtistClick = { song -> navigateToArtist(song) },
             // B2：保存当前队列为云歌单（创建 + 批量加歌两步走，写操作由 PlaylistWriteGate 串行）。
             onSavePlaylist = {
                 playlistSnapshot = playbackQueue
@@ -2252,7 +2335,12 @@ fun MainScreen(
                             // v1.4.0 · 音乐人推荐：本地口味命中才给 id，否则 null（卡片整块不渲染）。
                             // 判定纯本地（收藏单曲艺人 ∩ 锚点），不发请求；配置默认空 → 其他用户看不到。
                             artistRecoArtistId = artistRecoArtistId,
-                            onArtistRecoClick = { id -> navController.navigate(NavRoutes.artist(id)) }
+                            // v2.6.1 · P0：推荐卡的 id 来自 `reco/ArtistReco.kt` 的
+                            // `artist_reco_target_id`，是配置里写死的**网易云** id；
+                            // 显式带音源，理由同上面的剪贴板入口。
+                            onArtistRecoClick = { id ->
+                                navController.navigate(NavRoutes.artist(MusicSource.NETEASE, id.toString()))
+                            }
                         )
 
                         1 -> LibraryScreen(
@@ -2312,7 +2400,18 @@ fun MainScreen(
                         2 -> SearchScreen(
                             onSongClick = { playSongItem(it) },
                             onAlbumClick = { albumId -> navController.navigate(NavRoutes.album(albumId)) },
-                            onArtistClick = { artistId -> navController.navigate(NavRoutes.artist(artistId)) },
+                            // v2.6.1 · P0：搜索页的艺人 tab 至今**只**由网易云的
+                            // `cloudsearch/pc type=100` 填充（见 SearchViewModel 的 100 分支），
+                            // 所以这里的 id 恒是网易云十进制 id，走带 source 的两段路由同样正确
+                            // —— 顺带把「老路由 = 网易云身份」这个隐式约定显式化。
+                            onArtistClick = { artistId ->
+                                navController.navigate(
+                                    NavRoutes.artist(MusicSource.NETEASE, artistId.toString())
+                                )
+                            },
+                            // v2.6.1 · P0：艺人跳转的搜索兜底投递口（见 pendingSearchQuery）。
+                            externalQuery = pendingSearchQuery,
+                            onExternalQueryConsumed = { pendingSearchQuery = null },
                             // E：空查询态榜单入口 → 复用歌单详情（榜单就是歌单）。
                             onPlaylistClick = { playlistId -> navController.navigate(NavRoutes.playlist(playlistId)) },
                             onInsertNext = { insertNext(it) },

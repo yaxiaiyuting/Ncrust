@@ -89,6 +89,19 @@ fun SearchScreen(
     onAlbumBatch: (albumId: Long, action: BatchQueueAction) -> Unit = { _, _ -> },
     onArtistBatch: (artistName: String, action: BatchQueueAction) -> Unit = { _, _ -> },
     themeIndex: Int = 0,
+    /**
+     * v2.6.1 · P0：**外部投递的搜索关键词**（null = 没有待办）。
+     *
+     * 为什么是「投递 + 消费回调」而不是把 `query` 提升成受控参数：本页自己
+     * `viewModel()` 持有一个私有 VM，而它的查询状态同时被输入框、历史、防抖、
+     * 两源聚合四条路写。把 query 提升上来等于让 MainScreen 参与这四条路 ——
+     * 那是把「跳搜索兜底」这一件事的代价扩散到整个搜索页。
+     *
+     * 语义是**一次性**的：消费后立刻回调 [onExternalQueryConsumed] 清空。
+     * 否则用户切走再切回搜索 tab 会被再预填一次 —— 那不是他这次的动作。
+     */
+    externalQuery: String? = null,
+    onExternalQueryConsumed: () -> Unit = {},
     // E：空查询态的榜单入口需要跳转到歌单/榜单详情。
     onPlaylistClick: (Long) -> Unit = {}
 ) {
@@ -151,6 +164,17 @@ fun SearchScreen(
 
     LaunchedEffect(query) {
         if (query.isEmpty()) refreshHistory()
+    }
+
+    // v2.6.1 · P0：消费外部投递的关键词（「转到歌手」身份不可信时的兜底落点）。
+    //
+    // key 用 externalQuery 而不是 Unit：投递方可能在**本页已经可见**时再投一次
+    // （用户在搜索结果里连着长按两首 QQ 歌），那时页面不会重新进入组合，
+    // 只有 key 变化才会重跑。消费后立刻清空，所以同一次投递不会重复触发。
+    LaunchedEffect(externalQuery) {
+        val q = externalQuery?.trim().takeIf { !it.isNullOrEmpty() } ?: return@LaunchedEffect
+        viewModel.onQueryChanged(q)
+        onExternalQueryConsumed()
     }
 
     val showHistory = query.isEmpty() &&

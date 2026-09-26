@@ -31,7 +31,9 @@ fun PlayerCardOverlay(
     onPlayNothing: () -> Unit = {},
     onSongInfoClick: () -> Unit = {},
     // v2.5.4 · E：托盘第二行「作者」那一段的点击（纯透传，见 PlayerCard 的同名参数）。
-    onArtistClick: (Long) -> Unit = {},
+    // v2.6.1 · P0：形参从 `Long` 改成整首 [SongItem] —— 只传数值 id 会让调用方
+    // 无法判断它属于哪个音源（那正是「周杰伦跳到马洪波」的成因）。
+    onArtistClick: (SongItem) -> Unit = {},
     onClearQueue: () -> Unit = {},
     onSavePlaylist: () -> Unit = {},
     // P1：大屏幕模式（横屏桌面播放器布局）开关与入口/出口按钮回调，纯透传。

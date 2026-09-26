@@ -110,7 +110,25 @@ object PlaylistCacheCodec {
         val addedAt: Long? = null,
     )
 
-    internal data class ArtistDto(val id: Long? = null, val name: String? = null)
+    /**
+     * 曲目里一个艺人的落盘形状（v2.6.1：新增 [mid]）。
+     *
+     * **这不是冗余字段**：详情缓存存的是扁平 DTO，而不是直接把 `SongItem` 丢给 Gson，
+     * 所以 `ArtistItem` 上新增的字段**不会**自动跟过来 —— 漏掉这一处，
+     * 「QQ 歌单详情 → 长按曲目 → 转到歌手」就会退化成跳搜索
+     * （网易云歌单不受影响，因为它的身份就是 [id]）。
+     *
+     * [mid] 可空 + 有默认值：本字段出现之前落盘的条目里没有这个 key，
+     * Gson 走 Unsafe 反序列化、不调用构造函数 ⇒ 读出来是 `null` ⇒
+     * `ArtistNavigator` 判为「身份不可信」并跳搜索。这**是自愈的**：
+     * 下一次联网刷新详情就会写回带 mid 的数据，所以**不需要** bump schema。
+     */
+    internal data class ArtistDto(
+        val id: Long? = null,
+        val name: String? = null,
+        /** v2.6.1：QQ 音乐的 `singerMID`；网易云恒为 null。 */
+        val mid: String? = null,
+    )
 
     internal data class AlbumDto(val id: Long? = null, val name: String? = null, val picUrl: String? = null)
 
@@ -417,7 +435,7 @@ object PlaylistCacheCodec {
     private fun SongItem.toDto() = SongDto(
         id = id,
         name = name,
-        artists = artists?.map { ArtistDto(id = it.id, name = it.name) },
+        artists = artists?.map { ArtistDto(id = it.id, name = it.name, mid = it.mid) },
         album = album?.let { AlbumDto(id = it.id, name = it.name, picUrl = it.picUrl) },
         duration = duration ?: 0L,
         source = source,
@@ -442,7 +460,7 @@ object PlaylistCacheCodec {
             name = name.orEmpty(),
             artists = artists?.mapNotNull { a ->
                 val n = a.name?.takeIf { it.isNotBlank() } ?: return@mapNotNull null
-                ArtistItem(id = a.id?.takeIf { it > 0L }, name = n)
+                ArtistItem(id = a.id?.takeIf { it > 0L }, name = n, mid = a.mid?.takeIf { it.isNotBlank() })
             },
             album = album?.let {
                 AlbumItem(

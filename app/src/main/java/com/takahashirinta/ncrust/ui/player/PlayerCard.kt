@@ -119,8 +119,22 @@ fun PlayerCard(
      * 默认空实现是**有意的降级**：调用方没接线时点作者等于什么都没发生，
      * 而不是掉进「转到歌手/转到专辑」菜单 —— 后者是 [onSongInfoClick] 的语义，
      * 混用会让同一个手势在不同调用点做两件事。
+     *
+     * ## v2.6.1 · P0：形参从 `Long` 改成整首 [SongItem]
+     *
+     * 旧形状是 `(Long) -> Unit`，调用方拿到的只有 `artists[0].id`。对 QQ 曲目那是
+     * **QQ 域的数字 `singerID`**，而调用方拼的是硬编码网易云的老路由 —— 周杰伦 `4558`
+     * 于是跳到了马洪波（真机复现）。改成整首歌之后，身份判定由
+     * [com.takahashirinta.ncrust.source.ArtistNavigator] 统一做
+     * （它同时看得到 `musicSource` 与 `artists[0].mid`），
+     * 与长按菜单的「转到歌手」走**同一个出口**。
+     *
+     * 顺带修掉的第二个缺陷：以前 `id == null` 时这里回落到 [onSongInfoClick]（弹菜单），
+     * 而冷启动恢复的曲目 `id` **恒为 null**（`PlaybackStateManager` 只存了艺人**名字**）
+     * —— 用户点作者名只会看到一个菜单，菜单里再点「转到歌手」又是静默失败。
+     * 现在一律交给调用方，由它决定「进艺人页」还是「跳搜索」。
      */
-    onArtistClick: (Long) -> Unit = {},
+    onArtistClick: (SongItem) -> Unit = {},
     onClearQueue: () -> Unit = {},
     onSavePlaylist: () -> Unit = {},
     // P1：大屏幕模式（横屏桌面播放器布局）开关 + 入口/出口回调。
@@ -1512,10 +1526,14 @@ fun PlayerCard(
                                             interactionSource = remember { MutableInteractionSource() },
                                             indication = null,
                                         ) {
-                                            // 只在这一处让路：有艺人 id 才进艺人页
-                                            // （QQ 侧 `id` 可能缺失，那时保持整条托盘的展开行为）。
-                                            val id = artist.id
-                                            if (id != null && id > 0L) onArtistClick(id) else onSongInfoClick()
+                                            // v2.6.1 · P0：把**整首歌**交出去，不再在这里
+                                            // 按 `id != null` 分流。理由有两条：
+                                            //  ① 用 `id` 判断「能不能进艺人页」是错的判据 ——
+                                            //     QQ 曲目的数字 id 恒存在，但它不是网易云的 id；
+                                            //  ② 冷启动恢复的曲目 `id` 恒为 null，而它**恰恰**
+                                            //     是最该跳搜索（而不是弹一个点了也没反应的菜单）的那一种。
+                                            // 身份判定收在 ArtistNavigator 一处，这里只做转发。
+                                            onArtistClick(s)
                                         }
                                 )
                             } else {

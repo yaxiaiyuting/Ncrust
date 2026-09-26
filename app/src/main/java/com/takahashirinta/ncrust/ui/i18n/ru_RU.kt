@@ -203,6 +203,7 @@ val ruRU = Strings(
         aggConfidenceMedium = "Вероятное совпадение",
         aggConfidenceLow = "Только название (не объединено)",
         aggConfidenceNone = "Совпадений нет",
+        artistNavSearchFallback = "Не удалось точно определить исполнителя — выполняется поиск",
     ),
 
     dailySongsTitle = "Ежедневные рекомендации",

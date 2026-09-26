@@ -203,6 +203,7 @@ val zhTW = Strings(
         aggConfidenceMedium = "可能一致",
         aggConfidenceLow = "僅同名（未合併）",
         aggConfidenceNone = "未匹配",
+        artistNavSearchFallback = "未找到該歌手的準確身分，已為你搜尋",
     ),
 
     dailySongsTitle = "日薦之曲",

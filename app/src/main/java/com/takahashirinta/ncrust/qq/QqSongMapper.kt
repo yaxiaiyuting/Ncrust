@@ -107,7 +107,17 @@ object QqSongMapper {
             (0 until arr.length()).mapNotNull { i ->
                 val a = arr.optJSONObject(i) ?: return@mapNotNull null
                 val name = a.optString("name").takeIf { it.isNotEmpty() } ?: return@mapNotNull null
-                ArtistItem(id = a.optLong("id", 0L).takeIf { it > 0L }, name = name)
+                // v2.6.1 · P0：`singer[].mid`（singerMID）是**唯一**能打开 QQ 艺人页的身份，
+                // 必须在这里带出去。旧代码只取数字 `id`，于是「转到歌手」把它当网易云 id 查，
+                // 周杰伦(4558) 跳到马洪波 —— 真机复现过的 P0。
+                // 实测 QQ 搜索响应里 `singer[]` 条目的字段是
+                // `{id, mid, name, pmid, title, title_highlight, type, uin}`（2026-09，匿名可复现）；
+                // v2.4.0 注释里「QQ 一侧拿不到 singerMID」是对**专辑接口**的观察，不适用于搜索。
+                ArtistItem(
+                    id = a.optLong("id", 0L).takeIf { it > 0L },
+                    name = name,
+                    mid = a.optString("mid").takeIf { it.isNotEmpty() },
+                )
             }
         }
 

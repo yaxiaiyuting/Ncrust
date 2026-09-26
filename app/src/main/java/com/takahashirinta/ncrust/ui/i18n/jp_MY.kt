@@ -203,6 +203,7 @@ val jpMY = Strings(
         aggConfidenceMedium = "恐らく合へり",
         aggConfidenceLow = "同名のみ（合はせず）",
         aggConfidenceNone = "合はず",
+        artistNavSearchFallback = "歌手を 定めかねつ 故、搜さむ",
     ),
 
     dailySongsTitle = "毎日 推奨",

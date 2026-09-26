@@ -849,6 +849,16 @@ data class SourceStrings(
     val aggConfidenceLow: String,
     /** 匹配等级名：未匹配。 */
     val aggConfidenceNone: String,
+
+    /**
+     * v2.6.1 · P0：歌曲找不到可信的艺人身份时，提示已改为搜索（见 `ArtistNavigator`）。
+     *
+     * 为什么必须有这句提示：旧行为是**静默失败**（点了没反应，PCL110 真机复现），
+     * 用户无法区分「应用坏了」与「这首曲子没有可用的艺人信息」。降级本身是正确处置，
+     * 但降级必须被说出来 —— 这正是 AGENTS.md 铁律 21
+     * 「找不到用户能理解，跳错会让用户以为数据错乱」的落点。
+     */
+    val artistNavSearchFallback: String,
 )
 
 /**

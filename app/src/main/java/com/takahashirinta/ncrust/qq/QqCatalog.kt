@@ -327,7 +327,14 @@ object QqCatalogMapper {
         for (i in 0 until arr.length()) {
             val a = arr.optJSONObject(i) ?: continue
             val name = a.optString("name").takeIf { it.isNotEmpty() } ?: continue
-            out += ArtistItem(id = a.optLong("id", 0L).takeIf { it > 0L }, name = name)
+            // v2.6.1 · P0：与 [QqSongMapper] 同一条纪律 —— `singer.mid` 必须带出去，
+            // 否则这条路上的曲目一样会把 QQ 的数字 singerID 当网易云 id 用。
+            // 两条映射路径的行为必须逐值一致（有单测钉住）。
+            out += ArtistItem(
+                id = a.optLong("id", 0L).takeIf { it > 0L },
+                name = name,
+                mid = a.optString("mid").takeIf { it.isNotEmpty() },
+            )
         }
         return out
     }

@@ -203,6 +203,7 @@ val deDE = Strings(
         aggConfidenceMedium = "Wahrscheinliche Übereinstimmung",
         aggConfidenceLow = "Nur gleicher Titel (nicht zusammengeführt)",
         aggConfidenceNone = "Keine Übereinstimmung",
+        artistNavSearchFallback = "Interpret nicht eindeutig bestimmbar – Suche stattdessen",
     ),
 
     dailySongsTitle = "Tägliche Empfehlungen",
