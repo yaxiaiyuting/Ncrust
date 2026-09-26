@@ -30,6 +30,8 @@ fun PlayerCardOverlay(
     onTogglePlayMode: () -> Unit = {},
     onPlayNothing: () -> Unit = {},
     onSongInfoClick: () -> Unit = {},
+    // v2.5.4 · E：托盘第二行「作者」那一段的点击（纯透传，见 PlayerCard 的同名参数）。
+    onArtistClick: (Long) -> Unit = {},
     onClearQueue: () -> Unit = {},
     onSavePlaylist: () -> Unit = {},
     // P1：大屏幕模式（横屏桌面播放器布局）开关与入口/出口按钮回调，纯透传。
@@ -65,6 +67,7 @@ fun PlayerCardOverlay(
             onTogglePlayMode = onTogglePlayMode,
             onPlayNothing = onPlayNothing,
             onSongInfoClick = onSongInfoClick,
+            onArtistClick = onArtistClick,
             onClearQueue = onClearQueue,
             onSavePlaylist = onSavePlaylist,
             bigScreen = bigScreen,
