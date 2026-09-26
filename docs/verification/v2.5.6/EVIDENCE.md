@@ -329,14 +329,61 @@ IAccessibilityServiceClient$Stub$Proxy@… already registered!
 | 离线索引：注入记录清除 before/after | 见 §7.2 | — |
 | release 包装机验证 | 见 §7.3 | — |
 
-### 7.1 平板 ⤢ 复测
+### 7.1 平板 ⤢ 复测 —— ❌ **未完成（设备掉线）**
 
-（待填）
+修复已实现（顺序 `Row` + 宽度预算）并有 6 条单测，但**修复后的 EMUI 真机复测没做成**：
 
-### 7.2 离线索引收尾
+```
+$ adb devices -l
+List of devices attached
+0715f763f54c023a  device  ... model:SM_G9209      # S6 在
+3B15CD00GB700000  device  ... model:PLC110       # PLC110 在
+                                                 # ← WGR-W09 不在列表里
+$ adb -s WVQ6R22124000968 install -r app-release.apk
+adb: device 'WVQ6R22124000968' not found
+```
 
-（待填）
+平板在会话中途**从 USB 掉线**（`adb reconnect offline` 无效，不是 adb 侧问题）。
+⇒ 平板上装的仍是 **v2.5.5（vc46）**，v2.5.6 的修复**没有在真机上验证过**。
 
-### 7.3 release 包
+**这条缺口不能算通过**（新铁律 21 正是为此写的：「平台特定行为必须在目标平台真机验证」）。
+复测脚本已经具备（探针 C 的 uiautomator 断言路径），需要的断言是：
 
-（待填）
+1. 平板**竖屏**展开播放器 → a11y 树里 `大屏幕模式` 节点**存在**，
+   且其 `bounds` 与 `上一首`/`播放`/`下一首` 的 `bounds` **不相交**（旧实现在此必然相交 65dp）；
+2. 点它 → `mOrientation=SENSOR_LANDSCAPE` + 大屏布局生效（截图）；
+3. 平板**横屏**回归一次（旧实现本来就通过，用同一套断言防回归）。
+
+### 7.2 离线索引收尾 —— ✅ **完成**（PLC110 / v2.5.6 vc47）
+
+**操作**：设置 → 用户 → 存储与缓存 → **「离线缓存管理」**（只打开，未点任何删除）。
+
+**回读对账**（`verification/offline-BEFORE.xml` / `offline-AFTER.xml`）：
+
+| 项 | BEFORE | AFTER | 判定 |
+|---|---|---|---|
+| `tracks` 条数 | 59 | **58** | 精确少 1 条 |
+| `urls` 条数 | 147 | **147** | **一个都没动** |
+| `503616` 在 `tracks` 里 | ✅ 在 | ❌ **已消失** | 注入记录已清除 |
+| 管理页显示 | — | 「已缓存曲目（**58**）」 | 与 prefs 自洽 |
+
+⚠️ 与探针的**确定性预测**对比：探针在更早的设备状态（tracks 50 / urls 145）上预测
+`50→49 / 145→145`；实际执行时设备已被正常使用（tracks 涨到 59、urls 涨到 147），
+**增量完全一致（−1 / 0）** ⇒ 机制判断正确，且**用户真实数据一条没少**。
+音频缓存未被触碰（`retain` 只丢索引条目）。
+
+### 7.3 release 包 —— ✅
+
+| 项 | 值 |
+|---|---|
+| tag | `v2.5.6-gpl`（附注 tag 对象 `d2654ef2` → 提交 `fb2aef1`） |
+| draft release | `https://github.com/yaxiaiyuting/Ncrust/releases/tag/untagged-c5b7134f914b447f13a7`（draft 未发布，URL 为 `untagged-…` 属正常） |
+| 资产 | `Ncrust-v2.5.6-gpl-release.apk` 10 059 208 B / `-debug.apk` 30 811 502 B / `SHA256SUMS-v2.5.6-gpl.txt` |
+| release sha256 | `d56606248d0b16503ed250640558365909c8f27ecc8e9705d83b69667fa6e97b`（与 GitHub 侧 digest **一致**） |
+| debug sha256 | `bf3a410b61150ce3aa53d8bb7970fcf6505b95d5f5224563fb440af20e3b9a06`（一致） |
+| badging | `versionCode='47' versionName='2.5.6-gpl'` |
+| 签名 | `CN=Ncrust GPL Fork, OU=Personal, O=yaxiaiyuting` / SHA-256 `e75af3ff…5511`（项目既有 key） |
+| profile 资产 | `assets/dexopt/baseline.prof` 6464 B + `baseline.profm` 841 B（**仍是手写清单**，见 §6.1） |
+| versionCode 三源交叉 | tag `47` / badging `47` / build.gradle `47` ⇒ **一致** |
+| 产物源码 == HEAD 源码 | `git diff v2.5.6-gpl^{} HEAD -- app/ benchmark/ build.gradle.kts settings.gradle.kts .github/` **为空**（tag 之后只有 docs 提交） |
+| 已发布 tag 是否移动 | **否** —— v2.5.0~v2.5.5 的 peeled commit 与打 tag 前逐条一致（推送时用 `refs/tags/v2.5.6-gpl`，未用 `--force`） |
