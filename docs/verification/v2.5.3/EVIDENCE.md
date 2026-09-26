@@ -230,7 +230,22 @@ PreloadSlotTest                  tests=  19 failures=0   ← 未改动，证明�
 ShuffleRoundTest                 tests=   9 failures=0   ← 未改动，证明随机模式未回归
 ```
 
-### 5.3 一条工具纪律（本版踩到并记录）
+### 5.3 发布产物的可复现性（**实测到的意外，如实记录**）
+
+同一个提交跑两次 `assembleRelease`，APK 的 **sha256 不同**。
+逐 zip 条目比对后定位：**470 / 471 个条目的 CRC 完全相同**，
+唯一差异是 `META-INF/version-control-info.textproto` —— AGP 写进 APK 的
+**构建时 VCS 状态**（提交号）。两次构建之间 HEAD 变了一次（一个只改 `docs/` 的提交）。
+
+⇒ **不要拿 sha256 当「产物 == 源码」的判据**。本版用两条独立证据满足该纪律：
+① `git diff --stat <build-commit> HEAD -- app/` 为空；
+② 两次 APK 的内容条目 CRC 全部相同。
+细节与复现脚本：`apk-reproducibility.md`。
+
+本版**没有**为了「让 sha256 稳定」而关掉 VCS 戳 ——
+「这个 APK 是哪个提交构建的」这条溯源信息在排查线上问题时比一个稳定哈希更值钱。
+
+### 5.4 一条工具纪律（本版踩到并记录）
 
 `tools/StringsSnapshotDumpTest.kt` 生成黄金快照后**必须从 test 源集移出** ——
 留着它，任何一次 `./gradlew test` 都会**覆盖黄金快照**，
