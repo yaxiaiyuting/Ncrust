@@ -90,6 +90,13 @@ class PersistenceFieldNameContractTest {
         // 必须进注册表 —— v2.6.1 给它加了 `mid`（QQ 的 `singerMID`），
         // 这个名字一旦被 R8 改掉，QQ 曲目的「转到歌手」会静默退化成跳搜索。
         "com.takahashirinta.ncrust.network.model.ArtistItem",
+        // v2.6.2 · P0：曲目里的专辑。与 ArtistItem 同一处境 —— 它**嵌在 `SongItem.album`
+        // 里**落盘（同样那 5 张表），所以它自己的字段名也必须进注册表：
+        // v2.6.2 给它加了 `mid`（QQ 的 `albumMID`），这个名字一旦被 R8 改掉，
+        // QQ 曲目的「转到专辑」会静默退化成跳搜索，而**页面上完全看不出是字段丢了**。
+        // （`network.model.**` 有 `-keep` 兜底，但注册表是**显式**契约：
+        //  keep 规则被误删时这里会红，而不是等下一次发布后由用户的数据发现。）
+        "com.takahashirinta.ncrust.network.model.AlbumItem",
     )
 
     /**

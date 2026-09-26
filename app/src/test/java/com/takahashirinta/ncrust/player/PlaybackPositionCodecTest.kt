@@ -149,11 +149,21 @@ class SavedAlbumCodecTest {
         picUrl = "https://p1.music.126.net/x.jpg",
         artist = "艺人",
         songCount = 12,
+        // v2.6.2 · P0：网易云一侧**没有字符串身份**，`mid` 恒为 null。
+        // 夹具保持 null 是**有意的** —— 它同时覆盖「v2.6.2 之前落盘的老条目」
+        // 与「网易云专辑」两种情形，而两者的处置相同（身份不可信）。
     )
+
+    /** v2.6.2 · P0：QQ 专辑 —— 有字符串身份（albumMID）。 */
+    private val qqSample = sample.copy(mid = "000MkMni19ClKG")
 
     @Test
     fun `新写入的 key 是稳定字段名而不是单字母`() {
-        val json = SavedAlbumCodec.encode(listOf(sample))
+        // ⚠️ v2.6.2 起 `albumMid` 是**可空**字段，Gson 默认跳过 null ⇒ 网易云那条
+        // （`mid = null`）落盘时**本来就不该有** `albumMid` 这个 key。
+        // 所以「每个 stable key 都出现在 JSON 里」这条断言必须**用身份可信的样本**跑，
+        // 否则它会把「可空字段被正确跳过」误判成「字段名被交给 R8 了」。
+        val json = SavedAlbumCodec.encode(listOf(qqSample))
         for (key in SavedAlbumCodec.stableKeys()) {
             assertTrue("落盘 JSON 缺稳定 key '$key'：$json", json.contains("\"$key\""))
         }
@@ -163,9 +173,28 @@ class SavedAlbumCodecTest {
         )
     }
 
+    /**
+     * v2.6.2 · P0：**空身份的条目不许凭空多出 `albumMid` 这个 key**。
+     *
+     * 这条与上一条是一对：上一条防「字段名被混淆」，这一条防「把 null 写成可见的 key」。
+     * 后者会让**下一次**读到它的人分不清「字段缺失（老数据）」与「字段是 null（新数据）」——
+     * 而 AGENTS.md v1.9.3 规则 2 明确要求判老条目只看字段缺失。
+     */
+    @Test
+    fun `身份为空的条目落盘时不写 albumMid 这个 key`() {
+        val json = SavedAlbumCodec.encode(listOf(sample))
+        assertFalse("网易云专辑不该写出 albumMid：$json", json.contains("\"albumMid\""))
+        assertTrue("其余 5 个字段照常写出：$json", json.contains("\"albumId\""))
+    }
+
     @Test
     fun `稳定 key 与旧单字母 key 一一对应`() {
-        assertEquals(listOf("albumId", "name", "picUrl", "artist", "songCount"), SavedAlbumCodec.stableKeys())
+        assertEquals(
+            listOf("albumId", "name", "picUrl", "artist", "songCount", "albumMid"),
+            SavedAlbumCodec.stableKeys(),
+        )
+        // v2.6.2：**故意不往 LEGACY_KEYS 里补第六个字母** —— v1 的结构只写过五个字段，
+        // 补一个 `f` 等于发明一条没有取证支撑的映射（比读不出来更糟）。
         assertEquals(listOf("a", "b", "c", "d", "e"), SavedAlbumCodec.legacyKeys())
     }
 
