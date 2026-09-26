@@ -16,6 +16,10 @@ import com.takahashirinta.ncrust.source.SourceRouter
 import com.takahashirinta.ncrust.source.trackKey
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import com.takahashirinta.ncrust.ui.components.SourceCounts
+import com.takahashirinta.ncrust.ui.components.SourceSearchStatus
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -66,8 +70,14 @@ class SearchViewModel : ViewModel() {
      *
      * `null` = 还没搜过（不显示那一行）。
      */
-    private val _sourceCounts = MutableStateFlow<Pair<Int, Int>?>(null)
-    val sourceCounts: StateFlow<Pair<Int, Int>?> = _sourceCounts
+    /**
+     * v2.5.5 · G：逐源统计（含**状态**）。
+     *
+     * 旧类型是 `Pair<Int, Int>?` —— 它只能表达计数，于是「QQ 还没回来」被迫写成 0，
+     * 界面上就是「QQ 音乐 0 首」那句假话。新类型见 [SourceCounts]。
+     */
+    private val _sourceCounts = MutableStateFlow<SourceCounts?>(null)
+    val sourceCounts: StateFlow<SourceCounts?> = _sourceCounts
 
     private val _currentType = MutableStateFlow(1)
     val currentType: StateFlow<Int> = _currentType
@@ -105,106 +115,159 @@ class SearchViewModel : ViewModel() {
         }
     }
 
+    /**
+     * v2.5.5 · G：把两侧结果排序后发布。
+     *
+     * 从 `searchByType` 的 `1 ->` 分支里提出来只是因为那个分支现在多了一层
+     * `coroutineScope { }`，内联的局部函数会横跨协程边界 —— 语义没变，
+     * v2.1.4 的会员排序与 v2.3.0 的沉底规则**一个字没动**。
+     */
+    private fun publish(neteaseList: List<SongItem>, qqList: List<SongItem>) {
+        val (neteaseVip, qqVip) = vipFlagsProvider()
+        // v2.3.0 · C：`order` = v2.1.4 的 `rank`（会员买在哪家哪家先出）
+        // + 把「服务端显式声明无版权」的行沉底。两者作用在不同的层，见其 KDoc。
+        _songs.value = SearchRanking.order(
+            netease = neteaseList.map {
+                RankedSong(
+                    it,
+                    TrackAccess.ofNeteaseFee(it.fee),
+                    TrackAvailability.of(it),
+                )
+            },
+            qq = qqList.map {
+                RankedSong(
+                    it,
+                    TrackAccess.ofQqMemberOnly(it.memberOnly),
+                    TrackAvailability.of(it),
+                )
+            },
+            neteaseVip = neteaseVip,
+            qqVip = qqVip,
+        ).map { it.value }.distinctBy { it.trackKey }
+    }
+
     private suspend fun searchByType(type: Int) {
         _isLoading.value = true
         _error.value = null
         try {
             when (type) {
                 1 -> {
-                    // v2.1.0 · E：**聚合搜索** —— 网易云在前、QQ 音乐接在后。
+                    // v2.1.0 · E：**聚合搜索** —— 网易云与 QQ 音乐。
                     //
-                    // ## hotfix 3：两个源不能串行等待（真机「搜索一直转圈」的根因）
+                    // ## hotfix 3 留下的顺序契约（**本版没有改它**）
                     //
                     // 第一版写成「先 await 网易云、再 await QQ，最后一起发布」。这在 QQ 那条
                     // 通道慢或不可达时是灾难：OkHttp 的 connect/read 超时是 15/20 秒，
                     // 网易云的结果明明已经到手，却要陪着一起等 —— 用户看到的就是**一直转圈**。
-                    // 更糟的是同一时刻只看到「空结果 + 转圈」，连错误提示都没有：
-                    // 因为网易云的异常被 `runCatching` 吞了，而原来那条路径会把 `_error` 交出去。
-                    //
                     // 现在的顺序：
                     //  ① 网易云（主源）拿到就**立刻发布并停止转圈**；
                     //  ② QQ（补充源）带**硬预算**地追加，超时就放弃这一轮；
                     //  ③ 两个源都空且网易云报过错 ⇒ 把错误交出去，界面不留一块哑掉的空白。
+                    //
+                    // ## v2.5.5 · G 改了两件事（都是「并发」与「状态」，不是「顺序」）
+                    //
+                    // **(1) 两个请求并发发起。** 旧实现是「await 网易云 → 再发 QQ」——
+                    // 整体耗时是**和**而不是**最大值**。用户报告的「网易云秒出、QQ 5 秒后到」
+                    // 里，那 5 秒中其实有一段是白白串行等出来的。
+                    // `async`（默认 start = DEFAULT，立即开始）把两段重叠起来，
+                    // 而**发布顺序一个字没改**：仍然是网易云一到就 publish。
+                    //
+                    // **(2) 统计量能表达「还没回来」。** 旧代码在网易云到手时写
+                    // `_sourceCounts.value = netease.size to 0` —— 那个 0 在界面上是
+                    // 「QQ 音乐 0 首」，而它的真实含义是「QQ 还没回来」。
+                    // 用户据此以为 QQ 搜不到那首歌。现在写 [SourceSearchStatus.PENDING]，
+                    // 界面显示「搜索中…」，QQ 回来后原地更新成计数。
                     val keyword = _query.value
                     val startedAt = System.currentTimeMillis()
-                    var neteaseError: Throwable? = null
-                    val netease = runCatching {
-                        RetrofitClient.api.search(keyword = keyword, type = 1).result?.songs
-                    }.onFailure {
-                        neteaseError = it
-                        android.util.Log.w("SearchViewModel", "netease search failed", it)
-                    }.getOrNull().orEmpty()
+                    val qqAllowed = QqClient.isLoggedIn() || QqAccountAvailability.allowAnonymousSearch
 
-                    // ① 主源到手即发布 —— 转圈到此结束，后面的 QQ 只是锦上添花。
-                    //
-                    // v2.1.4：发布前先按「用户有哪些平台的会员」排一次。此时 QQ 还没到，
-                    // 但网易云自己的会员专享已经可以先排上去；等 QQ 到手会再排一次。
-                    // 排序是纯函数且幂等，排两次不会抖。
-                    fun publish(neteaseList: List<SongItem>, qqList: List<SongItem>) {
-                        val (neteaseVip, qqVip) = vipFlagsProvider()
-                        // v2.3.0 · C：`order` = v2.1.4 的 `rank`（会员买在哪家哪家先出）
-                        // + 把「服务端显式声明无版权」的行沉底。两者作用在不同的层，见其 KDoc。
-                        _songs.value = SearchRanking.order(
-                            netease = neteaseList.map {
-                                RankedSong(
-                                    it,
-                                    TrackAccess.ofNeteaseFee(it.fee),
-                                    TrackAvailability.of(it),
-                                )
-                            },
-                            qq = qqList.map {
-                                RankedSong(
-                                    it,
-                                    TrackAccess.ofQqMemberOnly(it.memberOnly),
-                                    TrackAvailability.of(it),
-                                )
-                            },
-                            neteaseVip = neteaseVip,
-                            qqVip = qqVip,
-                        ).map { it.value }.distinctBy { it.trackKey }
-                    }
-
-                    publish(netease, emptyList())
-                    _albums.value = emptyList()
-                    _artists.value = emptyList()
-                    _sourceCounts.value = netease.size to 0
-                    _isLoading.value = false
-
-                    // ② 补充源：**硬预算**。超时/异常都只是「这一轮没有 QQ 结果」，
-                    // 绝不能让它把已经可用的搜索结果拖住或清掉。
-                    val qq = if (QqClient.isLoggedIn() || QqAccountAvailability.allowAnonymousSearch) {
+                    coroutineScope {
+                        // 网易云：结果与异常一起回传，不用共享可变变量跨协程写。
+                        // ⚠️ 只发**一次**请求：`runCatching` 包住调用，异常从 `exceptionOrNull()` 取，
+                        // 绝不能为了拿异常而再调一次 `search(...)`（那会把一次搜索变成两次）。
+                        val neteaseDeferred = async {
+                            val outcome = runCatching {
+                                RetrofitClient.api.search(keyword = keyword, type = 1).result?.songs
+                            }
+                            val failure = outcome.exceptionOrNull()
+                            if (failure != null) {
+                                android.util.Log.w("SearchViewModel", "netease search failed", failure)
+                            }
+                            outcome.getOrNull().orEmpty() to failure
+                        }
+                        // QQ：**硬预算**。超时/异常都只是「这一轮没有 QQ 结果」，
+                        // 绝不能让它把已经可用的搜索结果拖住或清掉。
+                        //
                         // 注意：这里不能用 `runCatching { withTimeoutOrNull { ... } }` ——
                         // runCatching 的 lambda 不是 suspend 的，里面调不了挂起函数。
-                        try {
-                            withTimeoutOrNull(QQ_SEARCH_BUDGET_MS) {
-                                SourceRouter.searchSongs(MusicSource.QQMUSIC, keyword, 30)
-                            }.orEmpty()
-                        } catch (e: Exception) {
-                            android.util.Log.w("SearchViewModel", "qq search failed", e)
-                            emptyList()
+                        val qqDeferred = if (qqAllowed) async {
+                            try {
+                                val r = withTimeoutOrNull(QQ_SEARCH_BUDGET_MS) {
+                                    SourceRouter.searchSongs(MusicSource.QQMUSIC, keyword, 30)
+                                }
+                                // `withTimeoutOrNull` 返回 null = 预算用完 ⇒ 记成 TIMEOUT
+                                // 而不是「0 首」。这两件事在界面上必须能区分。
+                                r?.let { QqOutcome(it, timedOut = false) } ?: QqOutcome(emptyList(), timedOut = true)
+                            } catch (e: Exception) {
+                                android.util.Log.w("SearchViewModel", "qq search failed", e)
+                                QqOutcome(emptyList(), timedOut = true)
+                            }
+                        } else {
+                            null
                         }
-                    } else {
-                        emptyList()
-                    }
 
-                    // 只在「查询没变」时追加：用户已经改了关键词的话，这批结果已经过期，
-                    // 写回去就是「搜 A 显示 B」。
-                    if (qq.isNotEmpty() && _query.value == keyword) {
-                        publish(netease, qq)
+                        // ① 主源到手即发布 —— 转圈到此结束，后面的 QQ 只是锦上添花。
+                        //
+                        // v2.1.4：发布前先按「用户有哪些平台的会员」排一次。此时 QQ 还没到，
+                        // 但网易云自己的会员专享已经可以先排上去；等 QQ 到手会再排一次。
+                        // 排序是纯函数且幂等，排两次不会抖。
+                        val (netease, neteaseError) = neteaseDeferred.await()
+                        publish(netease, emptyList())
+                        _albums.value = emptyList()
+                        _artists.value = emptyList()
+                        _sourceCounts.value = SourceCounts(
+                            neteaseCount = netease.size,
+                            neteaseStatus = SourceSearchStatus.DONE,
+                            qqCount = 0,
+                            qqStatus = if (qqAllowed) SourceSearchStatus.PENDING else SourceSearchStatus.SKIPPED,
+                        )
+                        _isLoading.value = false
+
+                        // ② 等补充源（预算已经在上面卡死，这里不会无限等）。
+                        val qqOutcome = qqDeferred?.await() ?: QqOutcome(emptyList(), timedOut = false)
+                        val qq = qqOutcome.songs
+
+                        // 只在「查询没变」时追加：用户已经改了关键词的话，这批结果已经过期，
+                        // 写回去就是「搜 A 显示 B」。
+                        if (qq.isNotEmpty() && _query.value == keyword) {
+                            publish(netease, qq)
+                        }
+                        if (_query.value == keyword) {
+                            _sourceCounts.value = SourceCounts(
+                                neteaseCount = netease.size,
+                                neteaseStatus = SourceSearchStatus.DONE,
+                                qqCount = qq.size,
+                                qqStatus = when {
+                                    !qqAllowed -> SourceSearchStatus.SKIPPED
+                                    qqOutcome.timedOut -> SourceSearchStatus.TIMEOUT
+                                    else -> SourceSearchStatus.DONE
+                                },
+                            )
+                        }
+                        // ③ 两个源都没结果，且主源确实报过错 ⇒ 让界面能显示错误/重试，
+                        // 而不是一块什么都没有的空白。
+                        if (netease.isEmpty() && qq.isEmpty() && neteaseError != null) {
+                            _error.value = neteaseError?.message
+                        }
+                        val (nVip, qVip) = vipFlagsProvider()
+                        android.util.Log.i(
+                            "SearchViewModel",
+                            "aggregate query='$keyword' netease=${netease.size} qq=${qq.size} " +
+                                "qqTimedOut=${qqOutcome.timedOut} qqAllowed=$qqAllowed " +
+                                "vip(netease=$nVip qq=$qVip) " +
+                                "elapsed=${System.currentTimeMillis() - startedAt}ms",
+                        )
                     }
-                    _sourceCounts.value = netease.size to qq.size
-                    // ③ 两个源都没结果，且主源确实报过错 ⇒ 让界面能显示错误/重试，
-                    // 而不是一块什么都没有的空白。
-                    if (netease.isEmpty() && qq.isEmpty() && neteaseError != null) {
-                        _error.value = neteaseError?.message
-                    }
-                    val (nVip, qVip) = vipFlagsProvider()
-                    android.util.Log.i(
-                        "SearchViewModel",
-                        "aggregate query='$keyword' netease=${netease.size} qq=${qq.size} " +
-                            "vip(netease=$nVip qq=$qVip) " +
-                            "elapsed=${System.currentTimeMillis() - startedAt}ms",
-                    )
                 }
                 10 -> {
                     _sourceCounts.value = null
@@ -247,3 +310,16 @@ class SearchViewModel : ViewModel() {
         _sourceCounts.value = null
     }
 }
+
+/**
+ * v2.5.5 · G：QQ 补充源这一轮的结果。
+ *
+ * 单独一个类型（而不是 `List<SongItem>`）是为了把「超时」这件事**带出来**：
+ * 旧代码只有一个列表，超时与「确实 0 条」在类型上完全一样，
+ * 于是界面只能显示「QQ 音乐 0 首」—— 而对超时来说那句话是错的。
+ */
+private data class QqOutcome(
+    val songs: List<SongItem>,
+    /** `withTimeoutOrNull` 返回 null（用完预算）或抛异常。 */
+    val timedOut: Boolean,
+)

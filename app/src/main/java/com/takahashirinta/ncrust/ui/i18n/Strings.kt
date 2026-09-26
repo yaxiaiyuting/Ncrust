@@ -340,6 +340,32 @@ data class Strings(
     /** 移除成功的提示（与 removeFromPlaylist 这个动作名分开，避免出现「从歌单移除」当反馈）。 */
     val removedFromPlaylist: String,
     val playlistDelete: String,
+
+    // ---------------------------------------------------------------- v2.5.5 · G：聚合搜索的加载态 ----
+    //
+    // 这一组修的是「搜『晴天』先显示『QQ 音乐 0 首』、5 秒后才变成真实数字」——
+    // 那 5 秒里 0 是**假话**（它把"还没回来"显示成了"真的没有"）。
+    // 根因是统计量的类型只能表达计数，不能表达「未知」；这五条给它一个合法的表示。
+    //
+    // ⚠️ 放在**主构造器**（而不是 SourceStrings 组）是有意的：`SourceStrings` 当时是 57 个参数、
+    // 上限 60，只剩 3 个槽位；而主构造器 v2.5.4 只到 129，预算 150。
+    // 加完之后主构造器是 134，仍然显著低于预算（`StringsConstructorBudgetTest` 会钉住）。
+
+    /** 某一源还在检索中（**不显示 0**）。 */
+    val searchSourcePending: String,
+    /** 某一源超时/失败。与「搜索中」分开：前者会自动有结果，后者需要用户动一下。 */
+    val searchSourceTimeout: String,
+    /** 这一轮没有发起该源的请求（未登录且不允许匿名）。同样不能显示 0。 */
+    val searchSourceSkipped: String,
+    /** 计数文案：`(条数) -> "30 首"`。 */
+    val searchSourceCount: (Int) -> String,
+    /**
+     * 统计行：`(网易云侧文案, QQ 侧文案) -> "网易云 %s · QQ 音乐 %s"`。
+     *
+     * 与 [sourceSummary] 的关系：那个只收两个**整数**，因此无法表达「未知」。
+     * 两源都返回时两条路径必须产出**逐字相同**的文案（`SourceCountsTest` 在 8 种语言上钉住）。
+     */
+    val searchSourceSummaryWithStatus: (String, String) -> String,
 ) {
     // ---------- 转发属性（v2.0.0 · HF1）----------
     // 离线 / 缓存那一组（19 条）的构造参数已经挪进 [OfflineStrings]，这里用**成员**转发属性把

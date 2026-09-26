@@ -424,4 +424,13 @@ val deDE = Strings(
             pageTransitionLabel = "Seitenübergänge",
             pageTransitionDescription = "Ausschalten verbessert die Flüssigkeit auf schwachen Geräten",
         ),
+        // v2.5.5 · G：聚合搜索的加载态（未返回时显示「搜索中…」而不是 0）。
+        searchSourcePending = "Suche läuft…",
+        searchSourceTimeout = "Zeitüberschreitung",
+        searchSourceSkipped = "Nicht angemeldet",
+        // 与既有 sourceSummary 的口径对齐（那三个语言的格式是 "NetEase $a · QQ Music $b"，
+        // 没有单位词）—— 带单位会让「两源都返回时新旧路径逐字相同」这条不变量破掉。
+        searchSourceCount = { n -> "$n" },
+        searchSourceSummaryWithStatus = { a, b -> "NetEase $a · QQ Music $b" },
+
 )

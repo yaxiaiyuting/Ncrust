@@ -424,4 +424,11 @@ val jpMY = Strings(
             pageTransitionLabel = "頁面 切替 の 動效",
             pageTransitionDescription = "閉づれば 低端 の 端末 に て 滑 らか に なる",
         ),
+        // v2.5.5 · G：聚合搜索的加载态（未返回时显示「搜索中…」而不是 0）。
+        searchSourcePending = "搜索中…",
+        searchSourceTimeout = "搜索超時",
+        searchSourceSkipped = "未登入",
+        searchSourceCount = { n -> "$n 曲" },
+        searchSourceSummaryWithStatus = { a, b -> "NetEase $a · QQ Music $b" },
+
 )

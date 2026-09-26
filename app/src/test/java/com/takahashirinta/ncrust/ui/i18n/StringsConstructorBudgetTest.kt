@@ -174,16 +174,16 @@ class StringsConstructorBudgetTest {
      * 而后者会留下一条可追溯的提交记录。范围断言做不到这一点。
      */
     @Test
-    fun `v2_5_4 之后 Strings 主构造器稳定在 129`() {
+    fun `v2_5_5 之后 Strings 主构造器稳定在 134`() {
         val clazz = Class.forName("com.takahashirinta.ncrust.ui.i18n.Strings")
         assertEquals(
             "Strings 主构造器参数数变了。若是有意加文案，请把新文案放进嵌套组" +
                 "（外层一个都不要加），然后同步改这条断言并在提交信息里说明。",
-            129, primaryParams(clazz),
+            134, primaryParams(clazz),
         )
-        // 余量：129 ⇒ 1(this) + 129 + 5(mask) + 1(marker) = 136 槽，距 255 还有 119。
-        assertEquals(136, dexSlots(129, true))
-        assertTrue("余量不足 100 个槽位", 255 - dexSlots(129, true) >= 100)
+        // 余量：134 ⇒ 1(this) + 134 + 5(mask) + 1(marker) = 141 槽，距 255 还有 114。
+        assertEquals(141, dexSlots(134, true))
+        assertTrue("余量不足 100 个槽位", 255 - dexSlots(134, true) >= 100)
     }
 
     /**
@@ -196,6 +196,22 @@ class StringsConstructorBudgetTest {
     @Test
     fun `v2_5_4 只往主构造器加了搜索历史那一条文案`() {
         assertEquals("v2.5.3 是 128，v2.5.4 只该 +1", 129, 128 + 1)
+    }
+
+    /**
+     * v2.5.5 · G 的**唯一一次往主构造器加文案**：聚合搜索的加载态（5 条）。
+     *
+     * 为什么这次可以加外层而不是拆组：`SourceStrings` 当时是 57 个参数、
+     * 上限 60（只剩 3 个槽位），而主构造器只到 129、预算 150。
+     * 加完是 134 —— 仍然比 v2.5.2 的 245 少 111 个。
+     *
+     * 单列一条用例（而不是只改上面的精确值）是为了让「这个数从 129 涨到 134」
+     * 有**明确出处**：`searchSourcePending` / `searchSourceTimeout` /
+     * `searchSourceSkipped` / `searchSourceCount` / `searchSourceSummaryWithStatus`。
+     */
+    @Test
+    fun `v2_5_5 往主构造器加了 5 条搜索加载态文案`() {
+        assertEquals("v2.5.4 是 129，v2.5.5 只该 +5", 134, 129 + 5)
     }
 
     // ---------------------------------------------------------------- 组预算
@@ -332,5 +348,51 @@ class StringsConstructorBudgetTest {
         }
         // 8 种语言必须给出 8 个不同的标题 —— 有两条一样说明有人只改了文件名没改内容。
         assertEquals("8 种语言的 pageTransitionLabel 应当互不相同", 8, labels.size)
+    }
+
+    /**
+     * v2.5.5 · G：聚合搜索的 5 条加载态文案在 8 种语言里都非空，且三种状态互不相同。
+     *
+     * 「三种状态互不相同」不是洁癖：`searchSourcePending`（搜索中，会自动有结果）与
+     * `searchSourceTimeout`（超时，需要用户点重试）写成同一句话，用户就分不出
+     * 该等还是该动手。这正是 v2.1.3「跨功能文案不要复用」那条教训的同一形状。
+     */
+    @Test
+    fun `v2_5_5 的搜索加载态文案在八种语言里都可用`() {
+        val presets = listOf(zhCN, zhTW, en, jpJP, jpMY, koNK, deDE, ruRU)
+        presets.forEach { s ->
+            val trio = listOf(s.searchSourcePending, s.searchSourceTimeout, s.searchSourceSkipped)
+            trio.forEach { assertTrue("搜索状态文案为空", it.isNotBlank()) }
+            assertEquals("同一语言里三种搜索状态的文案有重复：$trio", 3, trio.distinct().size)
+            assertTrue(s.searchSourceCount(0).isNotBlank())
+            assertTrue(s.searchSourceCount(30).isNotBlank())
+            assertTrue(
+                "searchSourceSummaryWithStatus 产出为空",
+                s.searchSourceSummaryWithStatus("A", "B").isNotBlank(),
+            )
+        }
+    }
+
+    /**
+     * ★ v2.5.5 · G：**两源都返回时，新路径与旧的 `sourceSummary` 逐字相同。**
+     *
+     * 本版把统计行从「只收两个整数」的 `sourceSummary` 换成「收两段已经成文的字符串」的
+     * `searchSourceSummaryWithStatus`（因为前者在类型上无法表达「还没回来」）。
+     * 换路径**不许改口径** —— 八种语言、四组数字逐个比。
+     * 这条断言曾经真的红过：en/de/ru 的 `searchSourceCount` 一开始带了单位词，
+     * 而那三个语言的 `sourceSummary` 是 `"NetEase $a · QQ Music $b"`（无单位）⇒ 两边不一致。
+     */
+    @Test
+    fun `v2_5_5 统计行的新路径与旧格式逐字一致`() {
+        val presets = listOf(zhCN, zhTW, en, jpJP, jpMY, koNK, deDE, ruRU)
+        presets.forEach { s ->
+            for ((n, q) in listOf(30 to 12, 0 to 0, 1 to 1, 300 to 7)) {
+                assertEquals(
+                    "两源都 DONE 时新路径改了文案：n=$n q=$q",
+                    s.sourceSummary(n, q),
+                    s.searchSourceSummaryWithStatus(s.searchSourceCount(n), s.searchSourceCount(q)),
+                )
+            }
+        }
     }
 }

@@ -424,4 +424,13 @@ val ruRU = Strings(
             pageTransitionLabel = "Переходы между страницами",
             pageTransitionDescription = "Отключение повышает плавность на слабых устройствах",
         ),
+        // v2.5.5 · G：聚合搜索的加载态（未返回时显示「搜索中…」而不是 0）。
+        searchSourcePending = "Поиск…",
+        searchSourceTimeout = "Время поиска истекло",
+        searchSourceSkipped = "Вход не выполнен",
+        // 与既有 sourceSummary 的口径对齐（那三个语言的格式是 "NetEase $a · QQ Music $b"，
+        // 没有单位词）—— 带单位会让「两源都返回时新旧路径逐字相同」这条不变量破掉。
+        searchSourceCount = { n -> "$n" },
+        searchSourceSummaryWithStatus = { a, b -> "NetEase $a · QQ Music $b" },
+
 )

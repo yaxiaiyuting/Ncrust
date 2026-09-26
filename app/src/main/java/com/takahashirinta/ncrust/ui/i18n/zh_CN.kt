@@ -425,4 +425,11 @@ val zhCN = Strings(
             pageTransitionLabel = "页面切换动效",
             pageTransitionDescription = "关闭可提升低端机流畅度",
         ),
+        // v2.5.5 · G：聚合搜索的加载态（未返回时显示「搜索中…」而不是 0）。
+        searchSourcePending = "搜索中…",
+        searchSourceTimeout = "搜索超时",
+        searchSourceSkipped = "未登录",
+        searchSourceCount = { n -> "$n 首" },
+        searchSourceSummaryWithStatus = { a, b -> "网易云 $a · QQ 音乐 $b" },
+
 )

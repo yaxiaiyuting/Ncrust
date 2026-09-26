@@ -456,14 +456,33 @@ fun SearchScreen(
                                 // 而这里只需要一行字。
                                 sourceCounts?.let { counts ->
                                     item(key = "source-summary") {
-                                        MetroText(
-                                            text = strings.sourceSummary(counts.first, counts.second),
-                                            color = LocalMetroColors.current.onSurfaceVariant,
-                                            style = TextStyle(fontSize = 12.sp),
-                                            modifier = Modifier.padding(
-                                                start = 16.dp, end = 16.dp, top = 8.dp, bottom = 4.dp,
-                                            ),
+                                        // v2.5.5 · G：统计行现在能表达「还没回来」。
+                                        // 旧代码在 QQ 未返回时写 0 ⇒ 界面显示「QQ 音乐 0 首」，
+                                        // 而那句话是假的（QQ 只是慢）。现在显示「搜索中…」。
+                                        val summaryModifier = Modifier.padding(
+                                            start = 16.dp, end = 16.dp, top = 8.dp, bottom = 4.dp,
                                         )
+                                        val summaryText = counts.summary(strings)
+                                        if (counts.qqUnavailable) {
+                                            // 超时：给一条**可点**的重试提示。
+                                            // 不用自动重试 —— 那会在用户已经往下翻的时候
+                                            // 突然往列表里插结果；手动重试把时机交给用户。
+                                            MetroText(
+                                                text = summaryText + "  ·  " + strings.retry,
+                                                color = LocalMetroColors.current.primary,
+                                                style = TextStyle(fontSize = 12.sp),
+                                                modifier = summaryModifier.clickable {
+                                                    viewModel.onQueryChanged(viewModel.query.value)
+                                                },
+                                            )
+                                        } else {
+                                            MetroText(
+                                                text = summaryText,
+                                                color = LocalMetroColors.current.onSurfaceVariant,
+                                                style = TextStyle(fontSize = 12.sp),
+                                                modifier = summaryModifier,
+                                            )
+                                        }
                                     }
                                 }
                                 // v2.5.0 · A：列表入场（淡入 + 上滑）。items → itemsIndexed
