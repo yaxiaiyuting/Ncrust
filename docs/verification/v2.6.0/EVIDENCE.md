@@ -296,3 +296,45 @@ bash docs/verification/v2.6.0/verification/ui-drive.sh <serial> prefs ncrust_set
 S6 上安装的是 `v2.6.0-gpl / versionCode 48`（release，项目签名）；
 探针注入的条目已删除并回读确认（`saved_songs entries = 147, probe entry present = False`）；
 登录态（网易云 + QQ）全程未动；原 prefs 备份仍在 `/data/local/tmp/ncrust_library.bak`。
+
+---
+
+## 9. 另两台设备：安装 + 启动冒烟（发布后补做）
+
+按用户要求，把**与 draft release 完全同一个** `Ncrust-v2.6.0-gpl-release.apk`
+（`sha256:08d861d6…`）覆盖安装到另外两台设备。
+
+| 设备 | 型号 / Android | 安装前 | 安装后 | 数据 |
+|---|---|---|---|---|
+| `3B15CD00GB700000` | PLC110 / Android 16 | 47 / 2.5.6-gpl | **48 / 2.6.0-gpl** | 保留（`-r` 覆盖） |
+| `WVQ6R22124000968` | WGR-W09（华为平板）/ EMUI 12 | 47 / 2.5.6-gpl | **48 / 2.6.0-gpl** | 保留（`firstInstallTime` 仍是 2026-09-24，证明是升级不是新装） |
+
+### 启动冒烟（**这一条单测证明不了**，所以必须真机跑一次）
+
+对照 AGENTS.md v2.5.3 规则 3：`Strings` 家族的 `ClassFormatError` 只是被单测**提前挡下**，
+真机仍要跑一次；启动路径上的任何 `VerifyError` / 类加载问题也只在真机暴露。
+
+口径：`logcat -c` → `am force-stop` → `monkey … LAUNCHER` → 等 18s →
+查进程存活 → 全量 logcat 里数 `FATAL EXCEPTION` / `ClassFormatError` / `VerifyError`。
+
+| 设备 | 进程 | 崩溃命中 | 界面 |
+|---|---|---|---|
+| PLC110 | 存活（pid 29731） | **0** | 库页正常渲染（1063 首；三段控制键 上一首/播放/下一首 均在） |
+| WGR-W09 | 存活（pid 6798） | **0** | **宽屏侧栏布局**正常渲染（侧栏 + 库页 + 播放条）；三段控制键均在 |
+
+原始留档：`verification/smoke-<serial>-logcat.txt`、`verification/smoke-<serial>-launch.png`。
+
+**这次冒烟顺带证明了两件在 S6 上没能一起看到的事**：
+
+1. **v1 → v2 收藏表迁移在真实用户数据上跑通**：两台设备升级前的 `saved_songs` 都是
+   v1 裸 `SongItem` 数组（v2.5.6 写的），升级后库页照常列出 1063 首、无重复 key 异常
+   —— 也就是「147 条老数据一条不少地读出来了」在**三台设备**上都成立；
+2. **本版改动在宽屏形态下不炸**：WGR-W09 走的是 `MetroSidebar` + 更宽的网格列数那条分支，
+   与手机上的 `MetroBottomNav` 不是同一条布局路径。
+
+### 仍然**没有**做的事（不要因为装了包就以为验过了）
+
+- **布局切换 / 区块折叠 / 全部播放 的「真机点一下」在三台设备上都还没做** ——
+  本次只到「装上了、启动不崩、库页渲染正常」。这三条仍列在第 5 节的未验证清单里；
+- PLC110 与 WGR-W09 上都**没有 root**，读不到私有 prefs，所以这两台上**没有**做
+  第 2.1 节那种「读回磁盘」的 A/B（那是只有 S6 能做的）。
