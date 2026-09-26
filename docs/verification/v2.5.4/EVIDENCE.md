@@ -313,3 +313,15 @@ com.takahashirinta.ncrust.cache.OfflineTrack -> F4.h:      ← 与本版无关�
 | APK | `Ncrust-v2.5.4-gpl-release.apk`，`sha256 = 1d831d56064d4111f1c8135c20a9862d4ffd420756aa1d27c87040a1f2da2d1e` |
 | release | draft，`https://github.com/yaxiaiyuting/Ncrust/releases/tag/untagged-a190cbd0136d74fc1524`（发布后 URL 会变成 `…/releases/tag/v2.5.4-gpl`） |
 | 推送 | `master` → `cc30c75` + 后续两个 docs 提交（`git push origin master`） |
+
+---
+
+## 9. 对测试设备做的改动（如实列出，便于复原）
+
+| 设备 | 改动 | 是否已复原 |
+|---|---|---|
+| S6 `SM-G9209` | 覆盖安装 `v2.5.2(43)` → `v2.5.4(45)`；触发了一次 `Activity.onStop` 落盘（`ncrust_qq_probe.xml`）；用搜索/播放做了功能验证 | 「安装新版本」是本任务的目的，**不回滚**；其余都是正常使用行为 |
+| Cuttlefish `127.0.0.1:6524` | 显示改成 `2560x1600 @320dpi`（当平板用）；装了 v2.5.4 / v2.5.3；`adb root`；写入过宿主机的 `ncrust_prefs.xml` / `ncrust_playback_state.xml`（含 S6 的网易云 cookie） | **已复原显示**（`wm size reset` / `wm density reset`）。它是测试用模拟器，其余改动不影响任何人 |
+| WGR-W09 平板 | 覆盖安装 `v2.5.2(43)` → `v2.5.4(45)`；**`settings put system user_rotation 1 → 0`**（为了取竖屏截图）；短暂 `svc power stayon true` | ⚠️ **`user_rotation` 没有还原**：平板在收尾前掉线（`adb devices` 里已不存在），无法再写回。它的原值是 `1`（横屏），我改成了 `0`（竖屏）。`accelerometer_rotation` 全程未动（原值就是 `0`）。**请手动把屏幕转回横屏**，或 `adb shell settings put system user_rotation 1`。`svc power stayon` 已还原为 `false` |
+
+> 这条写在这里而不是省略：它是本版执行过程中**唯一一处没有完全复原的用户设备状态**。
