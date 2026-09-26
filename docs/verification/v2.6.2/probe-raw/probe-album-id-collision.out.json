@@ -1,0 +1,154 @@
+[
+  {
+    "artist": "周杰伦",
+    "keyword": "晴天 周杰伦",
+    "qq": {
+      "song": "晴天",
+      "songmid": "0039MnYb0qxYhV",
+      "songid": 97773,
+      "album_keys": [
+        "id",
+        "mid",
+        "name",
+        "pmid",
+        "subtitle",
+        "time_public",
+        "title",
+        "title_highlight"
+      ],
+      "album_id": 8220,
+      "album_mid": "000MkMni19ClKG",
+      "album_pmid": "000MkMni19ClKG_5",
+      "album_name": "叶惠美"
+    },
+    "netease": {
+      "song": "晴天(深情版)",
+      "song_id": 2652820720,
+      "album_id": 255723258,
+      "album_name": "晴天(深情版)"
+    },
+    "qq_album_id_as_netease": {
+      "http": 200,
+      "code": 404,
+      "album_id": null,
+      "album_name": null,
+      "artist": null,
+      "size": null,
+      "song_count": 0
+    }
+  },
+  {
+    "artist": "林俊杰",
+    "keyword": "江南 林俊杰",
+    "qq": {
+      "song": "江南",
+      "songmid": "004TXEXY2G2c7C",
+      "songid": 9063002,
+      "album_keys": [
+        "id",
+        "mid",
+        "name",
+        "pmid",
+        "subtitle",
+        "time_public",
+        "title",
+        "title_highlight"
+      ],
+      "album_id": 8036,
+      "album_mid": "000y5gq7449K9I",
+      "album_pmid": "000y5gq7449K9I_3",
+      "album_name": "第二天堂"
+    },
+    "netease": {
+      "song": "江南",
+      "song_id": 108914,
+      "album_id": 10804,
+      "album_name": "第二天堂"
+    },
+    "qq_album_id_as_netease": {
+      "http": 200,
+      "code": 404,
+      "album_id": null,
+      "album_name": null,
+      "artist": null,
+      "size": null,
+      "song_count": 0
+    }
+  },
+  {
+    "artist": "陈奕迅",
+    "keyword": "富士山下 陈奕迅",
+    "qq": {
+      "song": "富士山下",
+      "songmid": "003aAPj81VWrbL",
+      "songid": 260678,
+      "album_keys": [
+        "id",
+        "mid",
+        "name",
+        "pmid",
+        "subtitle",
+        "time_public",
+        "title",
+        "title_highlight"
+      ],
+      "album_id": 22276,
+      "album_mid": "004Z85XP1c25b7",
+      "album_pmid": "004Z85XP1c25b7_5",
+      "album_name": "What's Going On...?"
+    },
+    "netease": {
+      "song": "富士山下",
+      "song_id": 65766,
+      "album_id": 6451,
+      "album_name": "What's Going On…?"
+    },
+    "qq_album_id_as_netease": {
+      "http": 200,
+      "code": 200,
+      "album_id": 22276,
+      "album_name": "百万金曲 陈小云2 苦恋梦 免失志",
+      "artist": "陈小云",
+      "size": 12,
+      "song_count": 12
+    }
+  },
+  {
+    "artist": "邓紫棋",
+    "keyword": "光年之外 邓紫棋",
+    "qq": {
+      "song": "光年之外",
+      "songmid": "002E3MtF0IAMMY",
+      "songid": 200255722,
+      "album_keys": [
+        "id",
+        "mid",
+        "name",
+        "pmid",
+        "subtitle",
+        "time_public",
+        "title",
+        "title_highlight"
+      ],
+      "album_id": 1796874,
+      "album_mid": "001mTkmb4GJlh4",
+      "album_pmid": "001mTkmb4GJlh4_3",
+      "album_name": "光年之外"
+    },
+    "netease": {
+      "song": "光年之外",
+      "song_id": 449818741,
+      "album_id": 35093341,
+      "album_name": "光年之外"
+    },
+    "qq_album_id_as_netease": {
+      "http": 200,
+      "code": 404,
+      "album_id": null,
+      "album_name": null,
+      "artist": null,
+      "size": null,
+      "song_count": 0
+    }
+  }
+]

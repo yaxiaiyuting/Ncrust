@@ -1,0 +1,27 @@
+== v2.6.2 版本三源交叉校验（铁律 6/7：先 fetch 再定号） ==
+生成时间：2026-09-27 00:10:04 +0800
+
+---- 定号那一刻的真实脚本输出（仓库文件当时还是 49）----
+$ bash tools/next-version.sh
+  MAX versionCode (所有来源) = 49   [Ncrust-v2.6.1-gpl-debug.apk]
+  下一个可用 versionCode     = 50
+
+---- 下列三条可逐条复跑，证明上面的结论 ----
+
+-- ① tag 指向的 app/build.gradle.kts（取文件里最后一个 versionCode 赋值）--
+  v2.6.1-gpl     versionCode=49
+  v2.6.0-gpl     versionCode=48
+  v2.5.6-gpl     versionCode=47
+
+-- ② dist/*.apk 的 aapt2 dump badging（唯一可信的「这个号已经发布出去了」来源）--
+  Ncrust-v2.6.1-gpl-release.apk                versionCode=49
+  Ncrust-v2.6.1-gpl-debug.apk                  versionCode=49
+  Ncrust-v2.6.0-gpl-release.apk                versionCode=48
+
+-- ③ 仓库当前 app/build.gradle.kts --
+  284:        versionCode = 50
+  285:        versionName = "2.6.2-gpl"
+
+== 结论 ==
+  定号时三源一致 = 49 ⇒ 下一个可用 versionCode = 50，versionName = "2.6.2-gpl"。
+  本文件生成于「仓库文件已改成 50」之后，所以 ③ 显示 50 —— ①② 不受影响，仍是定号当时的取值。

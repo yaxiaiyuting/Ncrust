@@ -4085,3 +4085,70 @@ media3 的 `ChannelMixingMatrix` 只实现 `N→N / 1→2 / 2→1`，**6→1 抛
 （这正是铁律 6「平台假设必须 A/B 对照」存在的意义：不做这一步，
 修复方向会跑去找 ColorOS / HarmonyOS 的差异，而真因在 `MainActivity.kt:920`
 那行 `ArtistItem(name = artist)` 里。）
+
+## v2.6.2 新增（本 fork · QQ 曲目「转到专辑」跳到错误专辑 · P0 hotfix）
+
+> **探针**：`docs/verification/v2.6.2/PROBE-SUMMARY.md`（静态链路审计 / 接口撞号矩阵 /
+> 三台真机复现与同机 A/B / 「修复前零日志」取证）
+> **证据**：`docs/verification/v2.6.2/EVIDENCE.md`
+> **发布说明**：`docs/verification/v2.6.2/CHANGELOG-v2.6.2.md`
+
+**这是 v2.6.1 的孪生缺陷，四个环节一一对应**（v2.6.1 的 KDoc 里当时就写明了"本版不修"）：
+
+| 环节 | 艺人（v2.6.1） | 专辑（v2.6.2） |
+|---|---|---|
+| ① 映射层丢掉源内字符串身份 | `singer[].mid` 被丢 | `album.mid` **只喂给了封面 URL** |
+| ② 跳转层不看 `song.musicSource` | 只读 `artists[0].id` | 只读 `album.id` |
+| ③ 老路由 source 写死 | `artist/{id}` → `NETEASE` | `album/{id}` → `NETEASE` |
+| ④ 身份不可信时静默失败 | 补 id 回落打**网易云**接口 ⇒ 查空 | **连回落都没有** ⇒ 直接 no-op（连网络请求都不发） |
+
+实测撞号（2026-09 匿名可复现，`tools/probe-album-cross-domain.py`）：
+
+| QQ 曲目 | QQ `album.id` | QQ `album.mid` | 当成网易云专辑 id 查出来 |
+|---|---|---|---|
+| 富士山下 / 陈奕迅《What's Going On...?》 | `22276` | `004Z85XP1c25b7` | **《百万金曲 陈小云2 苦恋梦 免失志》/ 陈小云**（页面完全正常） |
+| 葡萄成熟时 / 陈奕迅《U 87》 | `7879` | `003J6fvc0bVJon` | **《爱的供养》/ 邓杰** |
+| 晴天 / 周杰伦《叶惠美》 | `8220` | `000MkMni19ClKG` | 404（静默失败） |
+
+### 一条新铁律（本版起是硬约束）
+
+29. **值域判据（"这个 id 属于哪个源"）只能有一份实现。**
+
+    v2.6.1 把它写在 `ArtistNavigator.idDomainMatches` 里；修专辑时最自然的动作是**再抄一份**，
+    而抄一份的代价是两处会漂移的规则 —— 症状恰好是「艺人跳得对、专辑跳错」，
+    只在特定入口复现。所以它搬到了 **`source/SourceIdDomain.kt`**，两个 Navigator 都委托它，
+    `SourceIdDomainTest` 穷举断言两边逐值一致（分叉即红）。
+
+    **搬迁必须行为零变化**：`ArtistNavigator.NETEASE_ID_MAX` 与 `idDomainMatches` 的签名、
+    取值、语义一字未改，v2.6.1 的 17 个用例**一行没动**地作为回归网。
+
+### 三个容易踩的坑（都写进了 KDoc 与单测）
+
+1. **QQ 的 `pmid` 不是专辑身份，是封面照片 id**（`<albumMid>_<封面序号>`，如
+   `004Z85XP1c25b7_5`）。现有代码**优先取 `pmid`**（对封面是对的），照抄它当路由参数就是错的形状。
+   实测 QQ 服务端**碰巧能容忍**把它当 `albumMid` 传（内部剥掉 `_N`），
+   但那是服务端的宽容、不是契约 —— 身份只认 `mid`，闸门（base62，`_` 不合法）把 `pmid` 挡下。
+2. **老缓存里连专辑名都没有**。S6 真机 `ncrust_playback_state` 的真实条目：
+   `{"al":{"picUrl":"…T002R500x500M000002Neh8l0uciQZ_3.jpg"}}` —— 没有 `id`、没有 `name`。
+   所以"跳搜索"这个动作本身也需要回落链：**专辑名 → 「曲名 + 艺人名」**。
+   没有这条回落，这些曲目会退化成 `Unavailable`，也就是本 P0 的第二种症状「点了没反应」。
+3. **可空字段不许写出可见的 key**。`albumMid` 是第 6 个声明字段且可空，Gson 默认跳过 null ——
+   于是"字段缺失（老数据）"与"字段是 null（新数据）"能被分开，符合 v1.9.3 的规则 2。
+   有两条单测同时钉住"有身份要写出去"与"没身份不许写出来"。
+
+### 入口的收敛情况（与艺人不同，值得记一笔）
+
+**动作 1 个构造点、宿主页面 9 个、出口 1 个**：全树只有 `MainActivity.kt` 的
+`SongMenuAction(… actionGoToAlbum) { resolveAndNavigate(song, toArtist = false) }` 一处；
+首页 / 库页 / 搜索 / 歌单 / QQ 歌单 / 本地歌单 / 专辑 / 艺人 / 播放器卡这 9 个宿主
+都经 `showSongMenu` 汇到同一张 `SongMenuSheet`。
+所以本版**不需要**像 v2.6.1 那样逐个入口改代码 —— 只要出口正确，9 个入口自动正确。
+
+### 未修（已记入未修清单）
+
+- **折叠态播放器卡的命中带**会吞掉二级菜单最后几行（WGR-W09 实测：`y=648` 的「加入歌单」
+  可点、`y≥1320` 的「转到歌手/转到专辑/单曲信息」打不到）。这是 `AGENTS.md` 既有
+  「Compose 触摸陷阱」第 2/5/6 条的同一类问题，**与本 P0 无关**，本版不修；
+  真机验证时靠"清空播放队列"或"旋转到竖屏"绕开（见 `probe-album-jump.md` §5）。
+- **搜索历史里没有专辑字段**（`HistoryItem` 只有 `coverUrl`），所以从历史重开的 QQ 曲目
+  走「跳搜索」—— 这是正确处置，不是缺陷。

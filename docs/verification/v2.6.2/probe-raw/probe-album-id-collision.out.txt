@@ -1,0 +1,28 @@
+==============================================================================
+艺人: 周杰伦   关键词: 晴天 周杰伦
+  QQ    曲目 晴天           songmid=0039MnYb0qxYhV songid=97773
+        album: id=8220 mid=000MkMni19ClKG pmid=000MkMni19ClKG_5 name=叶惠美
+        album 对象的字段集: id, mid, name, pmid, subtitle, time_public, title, title_highlight
+  网易云 曲目 晴天(深情版)      album.id=255723258 name=晴天(深情版)
+  → 拿 QQ album.id=8220 查网易云 api/v1/album: {"http": 200, "code": 404, "album_id": null, "album_name": null, "artist": null, "size": null, "song_count": 0}
+==============================================================================
+艺人: 林俊杰   关键词: 江南 林俊杰
+  QQ    曲目 江南           songmid=004TXEXY2G2c7C songid=9063002
+        album: id=8036 mid=000y5gq7449K9I pmid=000y5gq7449K9I_3 name=第二天堂
+        album 对象的字段集: id, mid, name, pmid, subtitle, time_public, title, title_highlight
+  网易云 曲目 江南           album.id=10804 name=第二天堂
+  → 拿 QQ album.id=8036 查网易云 api/v1/album: {"http": 200, "code": 404, "album_id": null, "album_name": null, "artist": null, "size": null, "song_count": 0}
+==============================================================================
+艺人: 陈奕迅   关键词: 富士山下 陈奕迅
+  QQ    曲目 富士山下         songmid=003aAPj81VWrbL songid=260678
+        album: id=22276 mid=004Z85XP1c25b7 pmid=004Z85XP1c25b7_5 name=What's Going On...?
+        album 对象的字段集: id, mid, name, pmid, subtitle, time_public, title, title_highlight
+  网易云 曲目 富士山下         album.id=6451 name=What's Going On…?
+  → 拿 QQ album.id=22276 查网易云 api/v1/album: {"http": 200, "code": 200, "album_id": 22276, "album_name": "百万金曲 陈小云2 苦恋梦 免失志", "artist": "陈小云", "size": 12, "song_count": 12}
+==============================================================================
+艺人: 邓紫棋   关键词: 光年之外 邓紫棋
+  QQ    曲目 光年之外         songmid=002E3MtF0IAMMY songid=200255722
+        album: id=1796874 mid=001mTkmb4GJlh4 pmid=001mTkmb4GJlh4_3 name=光年之外
+        album 对象的字段集: id, mid, name, pmid, subtitle, time_public, title, title_highlight
+  网易云 曲目 光年之外         album.id=35093341 name=光年之外
+  → 拿 QQ album.id=1796874 查网易云 api/v1/album: {"http": 200, "code": 404, "album_id": null, "album_name": null, "artist": null, "size": null, "song_count": 0}

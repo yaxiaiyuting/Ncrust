@@ -1,0 +1,654 @@
+> Task :Kanesumi-sec-a:kanesumi-anim:preBuild UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:preDebugBuild UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:writeDebugAarMetadata UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:preBuild UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:preDebugBuild UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:writeDebugAarMetadata UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:preBuild UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:preDebugBuild UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:writeDebugAarMetadata UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:preBuild UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:preDebugBuild UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:writeDebugAarMetadata UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:generateDebugResValues UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:generateDebugResources UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:packageDebugResources UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:generateDebugResValues UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:generateDebugResources UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:packageDebugResources UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:generateDebugResValues UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:generateDebugResources UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:packageDebugResources UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:generateDebugResValues UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:generateDebugResources UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:packageDebugResources UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:processDebugManifest UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:extractDeepLinksDebug UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:extractDeepLinksDebug UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:extractDeepLinksDebug UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:processDebugManifest UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:processDebugManifest UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:extractDeepLinksDebug UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:processDebugManifest UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:compileDebugLibraryResources UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:parseDebugLocalResources UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:generateDebugRFile UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:compileDebugLibraryResources UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:parseDebugLocalResources UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:generateDebugRFile UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:compileDebugLibraryResources UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:parseDebugLocalResources UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:generateDebugRFile UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:parseDebugLocalResources UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:generateDebugRFile UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:compileDebugLibraryResources UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:checkKotlinGradlePluginConfigurationErrors
+> Task :Kanesumi-sec-a:kanesumi-anim:compileDebugKotlin UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:javaPreCompileDebug UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:compileDebugJavaWithJavac NO-SOURCE
+> Task :Kanesumi-sec-a:kanesumi-anim:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:checkKotlinGradlePluginConfigurationErrors
+> Task :Kanesumi-sec-a:kanesumi-core:checkKotlinGradlePluginConfigurationErrors
+> Task :Kanesumi-sec-a:kanesumi-core:compileDebugKotlin UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:javaPreCompileDebug UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:compileDebugJavaWithJavac NO-SOURCE
+> Task :Kanesumi-sec-a:kanesumi-core:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:compileDebugKotlin UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:javaPreCompileDebug UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:compileDebugJavaWithJavac NO-SOURCE
+> Task :Kanesumi-sec-a:kanesumi-controls:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:checkKotlinGradlePluginConfigurationErrors
+> Task :Kanesumi-sec-a:kanesumi-structure:compileDebugKotlin UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:javaPreCompileDebug UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:compileDebugJavaWithJavac NO-SOURCE
+> Task :Kanesumi-sec-a:kanesumi-structure:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:processDebugJavaRes UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:processDebugJavaRes UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:processDebugJavaRes UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:processDebugJavaRes UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:mergeDebugJniLibFolders UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:mergeDebugNativeLibs NO-SOURCE
+> Task :Kanesumi-sec-a:kanesumi-structure:stripDebugDebugSymbols NO-SOURCE
+> Task :Kanesumi-sec-a:kanesumi-structure:copyDebugJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:extractDebugAnnotations UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:extractDeepLinksForAarDebug UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:mergeDebugGeneratedProguardFiles UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:mergeDebugConsumerProguardFiles UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:mergeDebugShaders UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:compileDebugShaders NO-SOURCE
+> Task :Kanesumi-sec-a:kanesumi-structure:generateDebugAssets UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:packageDebugAssets UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:prepareDebugArtProfile UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:prepareLintJarForPublish UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:mergeDebugJavaResource UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:syncDebugLibJars UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:bundleDebugLocalLintAar UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:mergeDebugJniLibFolders UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:mergeDebugNativeLibs NO-SOURCE
+> Task :Kanesumi-sec-a:kanesumi-controls:stripDebugDebugSymbols NO-SOURCE
+> Task :Kanesumi-sec-a:kanesumi-controls:copyDebugJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:extractDebugAnnotations UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:extractDeepLinksForAarDebug UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:mergeDebugGeneratedProguardFiles UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:mergeDebugConsumerProguardFiles UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:mergeDebugShaders UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:compileDebugShaders NO-SOURCE
+> Task :Kanesumi-sec-a:kanesumi-controls:generateDebugAssets UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:packageDebugAssets UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:prepareDebugArtProfile UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:prepareLintJarForPublish UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:mergeDebugJavaResource UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:syncDebugLibJars UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:bundleDebugLocalLintAar UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:mergeDebugJniLibFolders UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:mergeDebugNativeLibs NO-SOURCE
+> Task :Kanesumi-sec-a:kanesumi-core:stripDebugDebugSymbols NO-SOURCE
+> Task :Kanesumi-sec-a:kanesumi-core:copyDebugJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:extractDebugAnnotations UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:extractDeepLinksForAarDebug UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:mergeDebugGeneratedProguardFiles UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:mergeDebugConsumerProguardFiles UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:mergeDebugShaders UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:compileDebugShaders NO-SOURCE
+> Task :Kanesumi-sec-a:kanesumi-core:generateDebugAssets UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:packageDebugAssets UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:prepareDebugArtProfile UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:prepareLintJarForPublish UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:mergeDebugJavaResource UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:syncDebugLibJars UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:bundleDebugLocalLintAar UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:mergeDebugJniLibFolders UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:mergeDebugNativeLibs NO-SOURCE
+> Task :Kanesumi-sec-a:kanesumi-anim:stripDebugDebugSymbols NO-SOURCE
+> Task :Kanesumi-sec-a:kanesumi-anim:copyDebugJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:extractDebugAnnotations UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:extractDeepLinksForAarDebug UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:mergeDebugGeneratedProguardFiles UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:mergeDebugConsumerProguardFiles UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:mergeDebugShaders UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:compileDebugShaders NO-SOURCE
+> Task :Kanesumi-sec-a:kanesumi-anim:generateDebugAssets UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:packageDebugAssets UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:prepareDebugArtProfile UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:prepareLintJarForPublish UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:mergeDebugJavaResource UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:syncDebugLibJars UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:bundleDebugLocalLintAar UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:writeDebugLintModelMetadata UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:createFullJarDebug UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:createFullJarDebug UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:writeDebugLintModelMetadata UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:writeDebugLintModelMetadata UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:writeDebugLintModelMetadata UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:createFullJarDebug UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:createFullJarDebug UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:extractProguardFiles UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:generateDebugLintModel UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:extractProguardFiles UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:extractProguardFiles UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:generateDebugLintModel UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:generateDebugLintModel UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:extractProguardFiles UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:generateDebugLintModel UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:lintAnalyzeDebug UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:lintAnalyzeDebug UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:lintAnalyzeDebug UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:lintAnalyzeDebug UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:preDebugUnitTestBuild UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:lintAnalyzeDebugUnitTest UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:preDebugUnitTestBuild UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:generateDebugUnitTestLintModel UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:preDebugAndroidTestBuild UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:generateDebugAndroidTestResValues UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:generateDebugAndroidTestLintModel UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:preDebugAndroidTestBuild UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:generateDebugAndroidTestResValues UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:lintAnalyzeDebugAndroidTest UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:preDebugUnitTestBuild UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:generateDebugUnitTestLintModel UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:generateDebugAndroidTestLintModel UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:preDebugAndroidTestBuild UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:generateDebugAndroidTestResValues UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:lintAnalyzeDebugAndroidTest UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:lintAnalyzeDebugAndroidTest UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:generateDebugUnitTestLintModel UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:preDebugAndroidTestBuild UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:generateDebugAndroidTestResValues UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:lintAnalyzeDebugAndroidTest UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:preDebugUnitTestBuild UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:lintAnalyzeDebugUnitTest UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:generateDebugAndroidTestLintModel UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:generateDebugAndroidTestLintModel UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:generateDebugUnitTestLintModel UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:lintAnalyzeDebugUnitTest UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:lintAnalyzeDebugUnitTest UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:bundleLibRuntimeToDirDebug UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:bundleLibRuntimeToDirDebug UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:bundleLibRuntimeToDirDebug UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:bundleLibRuntimeToDirDebug UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:preReleaseBuild UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:writeReleaseAarMetadata UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:preReleaseBuild UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:writeReleaseAarMetadata UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:preReleaseBuild UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:writeReleaseAarMetadata UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:preReleaseBuild UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:writeReleaseAarMetadata UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:generateReleaseResValues UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:generateReleaseResources UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:packageReleaseResources UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:generateReleaseResValues UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:generateReleaseResources UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:packageReleaseResources UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:generateReleaseResValues UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:generateReleaseResources UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:packageReleaseResources UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:generateReleaseResValues UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:generateReleaseResources UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:packageReleaseResources UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:extractDeepLinksRelease UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:processReleaseManifest UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:processReleaseManifest UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:extractDeepLinksRelease UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:processReleaseManifest UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:extractDeepLinksRelease UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:processReleaseManifest UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:extractDeepLinksRelease UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:parseReleaseLocalResources UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:generateReleaseRFile UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:parseReleaseLocalResources UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:generateReleaseRFile UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:parseReleaseLocalResources UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:generateReleaseRFile UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:parseReleaseLocalResources UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:generateReleaseRFile UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:compileReleaseKotlin UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:javaPreCompileRelease UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:compileReleaseJavaWithJavac NO-SOURCE
+> Task :Kanesumi-sec-a:kanesumi-core:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:compileReleaseKotlin UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:javaPreCompileRelease UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:compileReleaseJavaWithJavac NO-SOURCE
+> Task :Kanesumi-sec-a:kanesumi-anim:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:compileReleaseKotlin UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:javaPreCompileRelease UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:compileReleaseJavaWithJavac NO-SOURCE
+> Task :Kanesumi-sec-a:kanesumi-controls:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:compileReleaseKotlin UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:javaPreCompileRelease UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:compileReleaseJavaWithJavac NO-SOURCE
+> Task :Kanesumi-sec-a:kanesumi-structure:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:processReleaseJavaRes UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:createFullJarRelease UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:generateReleaseLintModel UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:processReleaseJavaRes UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:createFullJarRelease UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:processReleaseJavaRes UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:createFullJarRelease UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:generateReleaseLintModel UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:generateReleaseLintModel UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:generateReleaseLintModel UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:processReleaseJavaRes UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:createFullJarRelease UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:mergeReleaseNativeLibs NO-SOURCE
+> Task :Kanesumi-sec-a:kanesumi-structure:stripReleaseDebugSymbols NO-SOURCE
+> Task :Kanesumi-sec-a:kanesumi-structure:copyReleaseJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:extractReleaseAnnotations UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:mergeReleaseShaders UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:compileReleaseShaders NO-SOURCE
+> Task :Kanesumi-sec-a:kanesumi-structure:generateReleaseAssets UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:packageReleaseAssets UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:prepareReleaseArtProfile UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:mergeReleaseJavaResource UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:syncReleaseLibJars UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:bundleReleaseLocalLintAar UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:mergeReleaseNativeLibs NO-SOURCE
+> Task :Kanesumi-sec-a:kanesumi-controls:stripReleaseDebugSymbols NO-SOURCE
+> Task :Kanesumi-sec-a:kanesumi-controls:copyReleaseJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:extractReleaseAnnotations UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:mergeReleaseShaders UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:compileReleaseShaders NO-SOURCE
+> Task :Kanesumi-sec-a:kanesumi-controls:generateReleaseAssets UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:packageReleaseAssets UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:prepareReleaseArtProfile UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:mergeReleaseJavaResource UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:syncReleaseLibJars UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:bundleReleaseLocalLintAar UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:mergeReleaseNativeLibs NO-SOURCE
+> Task :Kanesumi-sec-a:kanesumi-core:stripReleaseDebugSymbols NO-SOURCE
+> Task :Kanesumi-sec-a:kanesumi-core:copyReleaseJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:extractReleaseAnnotations UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:mergeReleaseShaders UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:compileReleaseShaders NO-SOURCE
+> Task :Kanesumi-sec-a:kanesumi-core:generateReleaseAssets UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:packageReleaseAssets UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:prepareReleaseArtProfile UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:mergeReleaseJavaResource UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:syncReleaseLibJars UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:bundleReleaseLocalLintAar UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:mergeReleaseNativeLibs NO-SOURCE
+> Task :Kanesumi-sec-a:kanesumi-anim:stripReleaseDebugSymbols NO-SOURCE
+> Task :Kanesumi-sec-a:kanesumi-anim:copyReleaseJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:extractReleaseAnnotations UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:mergeReleaseShaders UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:compileReleaseShaders NO-SOURCE
+> Task :Kanesumi-sec-a:kanesumi-anim:generateReleaseAssets UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:packageReleaseAssets UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:prepareReleaseArtProfile UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:mergeReleaseJavaResource UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:syncReleaseLibJars UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:bundleReleaseLocalLintAar UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:lintVitalAnalyzeRelease UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:lintVitalAnalyzeRelease UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:lintVitalAnalyzeRelease UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:lintVitalAnalyzeRelease UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:generateReleaseLintVitalModel UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:generateReleaseLintVitalModel UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:generateReleaseLintVitalModel UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:generateReleaseLintVitalModel UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-structure:exportReleaseConsumerProguardFiles UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-controls:exportReleaseConsumerProguardFiles UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-core:exportReleaseConsumerProguardFiles UP-TO-DATE
+> Task :Kanesumi-sec-a:kanesumi-anim:exportReleaseConsumerProguardFiles UP-TO-DATE
+> Task :app:clean
+> Task :benchmark:clean
+> Task :app:checkKotlinGradlePluginConfigurationErrors
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:generateDebugBuildConfig
+> Task :app:generateDebugResValues
+> Task :app:mapDebugSourceSetPaths
+> Task :app:generateDebugResources
+> Task :app:checkDebugAarMetadata
+> Task :app:packageDebugResources
+> Task :app:createDebugCompatibleScreenManifests
+> Task :app:extractDeepLinksDebug
+> Task :app:parseDebugLocalResources
+> Task :app:processDebugMainManifest
+> Task :app:processDebugManifest
+> Task :app:preDebugUnitTestBuild UP-TO-DATE
+> Task :app:javaPreCompileDebug
+> Task :app:preDebugAndroidTestBuild SKIPPED
+> Task :app:javaPreCompileDebugUnitTest
+> Task :app:generateDebugAndroidTestResValues
+> Task :app:extractProguardFiles
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :app:mergeDebugShaders
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :app:mergeDebugAssets
+> Task :app:mergeDebugResources
+> Task :app:compressDebugAssets
+> Task :app:desugarDebugFileDependencies
+> Task :app:mergeDebugStartupProfile UP-TO-DATE
+> Task :app:mergeDebugJniLibFolders
+> Task :app:validateSigningDebug
+> Task :app:checkDebugDuplicateClasses
+> Task :app:writeDebugAppMetadata
+> Task :app:mergeDebugNativeLibs
+> Task :app:processDebugManifestForPackage
+> Task :app:writeDebugSigningConfigVersions
+> Task :benchmark:preBuild UP-TO-DATE
+> Task :benchmark:preDebugBuild UP-TO-DATE
+> Task :benchmark:checkTestedAppObfuscationDebug UP-TO-DATE
+> Task :benchmark:checkKotlinGradlePluginConfigurationErrors
+> Task :benchmark:generateDebugResValues
+> Task :benchmark:checkDebugAarMetadata
+> Task :benchmark:mapDebugSourceSetPaths
+
+> Task :app:stripDebugDebugSymbols
+Unable to strip the following libraries, packaging them as they are: libandroidx.graphics.path.so, libffmpegJNI.so, libimage_processing_util_jni.so, libsurface_util_jni.so.
+
+> Task :benchmark:generateDebugResources
+> Task :benchmark:mergeDebugResources
+
+> Task :benchmark:processDebugManifest
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/benchmark/src/main/AndroidManifest.xml:16:5-18:31 Warning:
+	uses-permission#android.permission.READ_EXTERNAL_STORAGE was tagged at AndroidManifest.xml:16 to remove other declarations but no other declaration present
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/benchmark/src/main/AndroidManifest.xml:19:5-21:31 Warning:
+	uses-permission#android.permission.WRITE_EXTERNAL_STORAGE was tagged at AndroidManifest.xml:19 to remove other declarations but no other declaration present
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/benchmark/build/intermediates/tmp/manifest/debug/tempFile2ProcessTestManifest11699041785891693470.xml:23:5-25:31 Warning:
+	uses-permission#android.permission.READ_EXTERNAL_STORAGE was tagged at tempFile2ProcessTestManifest11699041785891693470.xml:23 to remove other declarations but no other declaration present
+
+> Task :benchmark:javaPreCompileDebug
+> Task :benchmark:mergeDebugShaders
+> Task :benchmark:compileDebugShaders NO-SOURCE
+> Task :benchmark:generateDebugAssets UP-TO-DATE
+> Task :benchmark:mergeDebugAssets
+> Task :benchmark:desugarDebugFileDependencies
+> Task :benchmark:checkDebugDuplicateClasses
+> Task :benchmark:mergeDebugJniLibFolders
+> Task :benchmark:mergeLibDexDebug
+> Task :benchmark:validateSigningDebug
+> Task :benchmark:writeDebugSigningConfigVersions
+> Task :app:buildKotlinToolingMetadata
+> Task :app:preReleaseBuild UP-TO-DATE
+> Task :app:mergeLibDexDebug
+> Task :app:generateReleaseBuildConfig
+> Task :app:generateReleaseResValues
+> Task :app:checkReleaseAarMetadata
+> Task :app:mapReleaseSourceSetPaths
+> Task :app:generateReleaseResources
+> Task :benchmark:mergeDebugNativeLibs
+> Task :benchmark:processDebugResources
+> Task :benchmark:compressDebugAssets
+> Task :app:processDebugResources
+> Task :app:packageReleaseResources
+> Task :app:createReleaseCompatibleScreenManifests
+> Task :app:extractDeepLinksRelease
+> Task :app:parseReleaseLocalResources
+
+> Task :benchmark:stripDebugDebugSymbols
+Unable to strip the following libraries, packaging them as they are: libbenchmarkNative.so, libtracing_perfetto.so.
+
+> Task :app:processReleaseMainManifest
+> Task :app:processReleaseManifest
+> Task :app:processReleaseManifestForPackage
+> Task :app:javaPreCompileRelease
+> Task :app:mergeReleaseJniLibFolders
+> Task :app:mergeReleaseNativeLibs
+> Task :app:checkReleaseDuplicateClasses
+> Task :app:mergeReleaseStartupProfile UP-TO-DATE
+> Task :app:mergeReleaseShaders
+> Task :app:compileReleaseShaders NO-SOURCE
+> Task :app:generateReleaseAssets UP-TO-DATE
+> Task :app:mergeReleaseArtProfile
+> Task :app:mergeReleaseAssets
+> Task :app:compressReleaseAssets
+
+> Task :app:stripReleaseDebugSymbols
+Unable to strip the following libraries, packaging them as they are: libandroidx.graphics.path.so, libffmpegJNI.so, libimage_processing_util_jni.so, libsurface_util_jni.so.
+
+> Task :app:extractReleaseVersionControlInfo
+> Task :app:processApplicationManifestReleaseForBundle
+> Task :app:extractReleaseNativeSymbolTables
+> Task :app:mergeReleaseResources
+> Task :app:collectReleaseDependencies
+> Task :app:mergeReleaseNativeDebugMetadata NO-SOURCE
+> Task :benchmark:compileDebugKotlin
+> Task :app:sdkReleaseDependencyData
+> Task :benchmark:compileDebugJavaWithJavac NO-SOURCE
+> Task :benchmark:processDebugJavaRes
+> Task :app:processReleaseResources
+> Task :benchmark:mergeDebugJavaResource
+> Task :benchmark:dexBuilderDebug
+> Task :benchmark:mergeProjectDexDebug
+> Task :app:validateSigningRelease
+> Task :app:writeReleaseAppMetadata
+> Task :app:writeReleaseSigningConfigVersions
+> Task :benchmark:mergeExtDexDebug
+> Task :app:bundleReleaseResources
+> Task :benchmark:packageDebug
+> Task :benchmark:createDebugApkListingFileRedirect
+> Task :benchmark:assembleDebug
+> Task :app:mergeExtDexDebug
+> Task :app:compileDebugKotlin
+> Task :app:compileReleaseKotlin
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/MainActivity.kt:801:26 'LocalLifecycleOwner: ProvidableCompositionLocal<LifecycleOwner>' is deprecated. Moved to lifecycle-runtime-compose library in androidx.lifecycle.compose package.
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/MainActivity.kt:916:9 Variable 'sidebarWidthPx' is never used
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/MainActivity.kt:1998:55 'LocalLifecycleOwner: ProvidableCompositionLocal<LifecycleOwner>' is deprecated. Moved to lifecycle-runtime-compose library in androidx.lifecycle.compose package.
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/MainActivity.kt:2631:43 'PlaylistAdd: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.PlaylistAdd
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/MainActivity.kt:2641:43 'PlaylistPlay: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.PlaylistPlay
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/NcrustApplication.kt:75:42 'TRIM_MEMORY_RUNNING_LOW: Int' is deprecated. Deprecated in Java
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/NcrustApplication.kt:82:42 'TRIM_MEMORY_RUNNING_MODERATE: Int' is deprecated. Deprecated in Java
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/auth/QrPairClient.kt:54:24 Type mismatch: inferred type is Pair<String?, Int> but Pair<String, Int>? was expected
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/crosssource/CatalogAggregator.kt:489:28 Elvis operator (?:) always returns the left operand of non-nullable type Long
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/crosssource/CatalogAggregator.kt:490:30 Elvis operator (?:) always returns the left operand of non-nullable type Long
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/crosssource/CatalogAggregator.kt:568:45 Elvis operator (?:) always returns the left operand of non-nullable type Long
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/crosssource/CatalogAggregator.kt:622:32 Elvis operator (?:) always returns the left operand of non-nullable type Long
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/crosssource/CatalogAggregator.kt:623:34 Elvis operator (?:) always returns the left operand of non-nullable type Long
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/network/PlaylistApi.kt:735:50 Type mismatch: inferred type is JSONArray? but JSONArray was expected
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/network/PlaylistApi.kt:736:51 Unsafe use of a nullable receiver of type JSONObject?
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/network/PlaylistApi.kt:736:51 Type mismatch: inferred type is JSONArray? but JSONArray was expected
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/network/RetrofitClient.kt:129:55 No cast needed
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/player/LiveUpdateNotifier.kt:85:9 Parameter 'isPlaying' is never used
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/player/PlaybackService.kt:765:22 This declaration overrides deprecated member but not marked as deprecated itself. Please add @Deprecated annotation or suppress. See https://youtrack.jetbrains.com/issue/KT-47902 for details
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/player/PlaybackService.kt:783:23 'onPlayerCommandRequest(MediaSession, MediaSession.ControllerInfo, Int): Int' is deprecated. Deprecated in Java
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/player/PlaybackService.kt:1691:52 'getter for sessionCompatToken: MediaSessionCompat.Token' is deprecated. Deprecated in Java
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/qq/QqApi.kt:280:55 Destructured parameter 't' is never used
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/source/ArtistNavigator.kt:204:32 Unnecessary safe call on a non-null receiver of type ArtistItem?
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/CustomBackgroundLayer.kt:62:26 'LocalLifecycleOwner: ProvidableCompositionLocal<LifecycleOwner>' is deprecated. Moved to lifecycle-runtime-compose library in androidx.lifecycle.compose package.
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/components/DetailScaffold.kt:58:5 Parameter 'title' is never used
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/components/EditPlaylistDialog.kt:161:35 Variable 'outcome' is never used
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/components/PullToRefreshBox.kt:88:46 'Drag: NestedScrollSource' is deprecated. This has been replaced by UserInput.
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/components/QrScannerScreen.kt:79:26 'LocalLifecycleOwner: ProvidableCompositionLocal<LifecycleOwner>' is deprecated. Moved to lifecycle-runtime-compose library in androidx.lifecycle.compose package.
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/player/PlayerCard.kt:753:33 Condition 'cur != null' is always 'true'
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/player/PlayerCard.kt:848:51 Unnecessary safe call on a non-null receiver of type SongItem?
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/player/PlayerCard.kt:915:78 'PlaylistPlay: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.PlaylistPlay
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/player/QueueView.kt:353:59 Parameter 'visualRow' is never used, could be renamed to _
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/screen/AlbumDetailScreen.kt:333:66 'PlaylistPlay: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.PlaylistPlay
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/screen/AlbumDetailScreen.kt:336:66 'PlaylistAdd: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.PlaylistAdd
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/screen/ArtistDetailScreen.kt:351:74 'PlaylistPlay: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.PlaylistPlay
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/screen/ArtistDetailScreen.kt:354:74 'PlaylistAdd: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.PlaylistAdd
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/screen/HomeScreen.kt:303:38 'PlaylistPlay: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.PlaylistPlay
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/screen/HomeScreen.kt:304:38 'PlaylistAdd: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.PlaylistAdd
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/screen/LibraryPlaylistsTab.kt:664:49 'PlaylistPlay: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.PlaylistPlay
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/screen/LibraryScreen.kt:342:74 'PlaylistPlay: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.PlaylistPlay
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/screen/LibraryScreen.kt:345:74 'PlaylistAdd: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.PlaylistAdd
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/screen/PlaylistDetailScreen.kt:276:62 'PlaylistPlay: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.PlaylistPlay
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/screen/PlaylistDetailScreen.kt:279:62 'PlaylistAdd: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.PlaylistAdd
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/screen/QqPlaylistDetailScreen.kt:77:5 Parameter 'onSongInsertNext' is never used
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/screen/QqPlaylistDetailScreen.kt:78:5 Parameter 'onSongAppendToQueue' is never used
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/screen/SearchScreen.kt:535:78 'PlaylistPlay: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.PlaylistPlay
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/screen/SearchScreen.kt:539:78 'PlaylistAdd: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.PlaylistAdd
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/screen/SongDetailScreen.kt:90:9 Variable 'translatedLyric' is never used
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/screen/UserScreen.kt:285:77 This declaration needs opt-in. Its usage should be marked with '@coil.annotation.ExperimentalCoilApi' or '@OptIn(coil.annotation.ExperimentalCoilApi::class)'
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/viewmodel/PlayerViewModel.kt:2145:9 Parameter 'load' is never used
+
+> Task :app:compileDebugKotlin
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/MainActivity.kt:801:26 'LocalLifecycleOwner: ProvidableCompositionLocal<LifecycleOwner>' is deprecated. Moved to lifecycle-runtime-compose library in androidx.lifecycle.compose package.
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/MainActivity.kt:916:9 Variable 'sidebarWidthPx' is never used
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/MainActivity.kt:1998:55 'LocalLifecycleOwner: ProvidableCompositionLocal<LifecycleOwner>' is deprecated. Moved to lifecycle-runtime-compose library in androidx.lifecycle.compose package.
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/MainActivity.kt:2631:43 'PlaylistAdd: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.PlaylistAdd
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/MainActivity.kt:2641:43 'PlaylistPlay: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.PlaylistPlay
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/NcrustApplication.kt:75:42 'TRIM_MEMORY_RUNNING_LOW: Int' is deprecated. Deprecated in Java
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/NcrustApplication.kt:82:42 'TRIM_MEMORY_RUNNING_MODERATE: Int' is deprecated. Deprecated in Java
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/auth/QrPairClient.kt:54:24 Type mismatch: inferred type is Pair<String?, Int> but Pair<String, Int>? was expected
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/crosssource/CatalogAggregator.kt:489:28 Elvis operator (?:) always returns the left operand of non-nullable type Long
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/crosssource/CatalogAggregator.kt:490:30 Elvis operator (?:) always returns the left operand of non-nullable type Long
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/crosssource/CatalogAggregator.kt:568:45 Elvis operator (?:) always returns the left operand of non-nullable type Long
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/crosssource/CatalogAggregator.kt:622:32 Elvis operator (?:) always returns the left operand of non-nullable type Long
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/crosssource/CatalogAggregator.kt:623:34 Elvis operator (?:) always returns the left operand of non-nullable type Long
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/network/PlaylistApi.kt:735:50 Type mismatch: inferred type is JSONArray? but JSONArray was expected
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/network/PlaylistApi.kt:736:51 Unsafe use of a nullable receiver of type JSONObject?
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/network/PlaylistApi.kt:736:51 Type mismatch: inferred type is JSONArray? but JSONArray was expected
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/network/RetrofitClient.kt:129:55 No cast needed
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/player/LiveUpdateNotifier.kt:85:9 Parameter 'isPlaying' is never used
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/player/PlaybackService.kt:765:22 This declaration overrides deprecated member but not marked as deprecated itself. Please add @Deprecated annotation or suppress. See https://youtrack.jetbrains.com/issue/KT-47902 for details
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/player/PlaybackService.kt:783:23 'onPlayerCommandRequest(MediaSession, MediaSession.ControllerInfo, Int): Int' is deprecated. Deprecated in Java
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/player/PlaybackService.kt:1691:52 'getter for sessionCompatToken: MediaSessionCompat.Token' is deprecated. Deprecated in Java
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/qq/QqApi.kt:280:55 Destructured parameter 't' is never used
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/source/ArtistNavigator.kt:204:32 Unnecessary safe call on a non-null receiver of type ArtistItem?
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/CustomBackgroundLayer.kt:62:26 'LocalLifecycleOwner: ProvidableCompositionLocal<LifecycleOwner>' is deprecated. Moved to lifecycle-runtime-compose library in androidx.lifecycle.compose package.
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/components/DetailScaffold.kt:58:5 Parameter 'title' is never used
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/components/EditPlaylistDialog.kt:161:35 Variable 'outcome' is never used
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/components/PullToRefreshBox.kt:88:46 'Drag: NestedScrollSource' is deprecated. This has been replaced by UserInput.
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/components/QrScannerScreen.kt:79:26 'LocalLifecycleOwner: ProvidableCompositionLocal<LifecycleOwner>' is deprecated. Moved to lifecycle-runtime-compose library in androidx.lifecycle.compose package.
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/player/PlayerCard.kt:753:33 Condition 'cur != null' is always 'true'
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/player/PlayerCard.kt:848:51 Unnecessary safe call on a non-null receiver of type SongItem?
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/player/PlayerCard.kt:915:78 'PlaylistPlay: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.PlaylistPlay
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/player/QueueView.kt:353:59 Parameter 'visualRow' is never used, could be renamed to _
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/screen/AlbumDetailScreen.kt:333:66 'PlaylistPlay: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.PlaylistPlay
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/screen/AlbumDetailScreen.kt:336:66 'PlaylistAdd: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.PlaylistAdd
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/screen/ArtistDetailScreen.kt:351:74 'PlaylistPlay: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.PlaylistPlay
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/screen/ArtistDetailScreen.kt:354:74 'PlaylistAdd: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.PlaylistAdd
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/screen/HomeScreen.kt:303:38 'PlaylistPlay: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.PlaylistPlay
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/screen/HomeScreen.kt:304:38 'PlaylistAdd: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.PlaylistAdd
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/screen/LibraryPlaylistsTab.kt:664:49 'PlaylistPlay: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.PlaylistPlay
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/screen/LibraryScreen.kt:342:74 'PlaylistPlay: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.PlaylistPlay
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/screen/LibraryScreen.kt:345:74 'PlaylistAdd: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.PlaylistAdd
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/screen/PlaylistDetailScreen.kt:276:62 'PlaylistPlay: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.PlaylistPlay
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/screen/PlaylistDetailScreen.kt:279:62 'PlaylistAdd: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.PlaylistAdd
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/screen/QqPlaylistDetailScreen.kt:77:5 Parameter 'onSongInsertNext' is never used
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/screen/QqPlaylistDetailScreen.kt:78:5 Parameter 'onSongAppendToQueue' is never used
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/screen/SearchScreen.kt:535:78 'PlaylistPlay: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.PlaylistPlay
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/screen/SearchScreen.kt:539:78 'PlaylistAdd: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.PlaylistAdd
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/screen/SongDetailScreen.kt:90:9 Variable 'translatedLyric' is never used
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/screen/UserScreen.kt:285:77 This declaration needs opt-in. Its usage should be marked with '@coil.annotation.ExperimentalCoilApi' or '@OptIn(coil.annotation.ExperimentalCoilApi::class)'
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/viewmodel/PlayerViewModel.kt:2145:9 Parameter 'load' is never used
+
+> Task :app:compileDebugJavaWithJavac
+> Task :app:processDebugJavaRes
+> Task :app:generateDebugLintReportModel
+> Task :app:bundleDebugClassesToCompileJar
+> Task :app:bundleDebugClassesToRuntimeJar
+> Task :app:mergeDebugJavaResource
+> Task :app:dexBuilderDebug
+> Task :app:generateDebugAndroidTestLintModel
+> Task :app:generateDebugUnitTestLintModel
+> Task :app:mergeProjectDexDebug
+> Task :app:compileReleaseJavaWithJavac
+> Task :app:generateReleaseLintVitalReportModel
+> Task :app:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :app:processReleaseJavaRes
+> Task :app:packageDebug
+> Task :app:createDebugApkListingFileRedirect
+> Task :app:assembleDebug
+> Task :app:mergeReleaseJavaResource
+> Task :app:expandReleaseArtProfileWildcards
+> Task :app:lintAnalyzeDebug
+> Task :app:compileDebugUnitTestKotlin
+> Task :app:lintAnalyzeDebugAndroidTest
+> Task :app:lintAnalyzeDebugUnitTest
+> Task :app:minifyReleaseWithR8
+
+> Task :app:compileDebugUnitTestKotlin
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/test/java/com/takahashirinta/ncrust/cache/OfflineKeysTest.kt:28:9 Name contains characters which can cause problems on Windows: ?
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/test/java/com/takahashirinta/ncrust/library/SearchHistoryCodecTest.kt:197:9 Name contains characters which can cause problems on Windows: "
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/test/java/com/takahashirinta/ncrust/library/SearchHistoryMigrationTest.kt:123:9 Name contains characters which can cause problems on Windows: "
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/test/java/com/takahashirinta/ncrust/search/TrackAvailabilityTest.kt:101:9 Name contains characters which can cause problems on Windows: %
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/test/java/com/takahashirinta/ncrust/ui/i18n/StringsSnapshot.kt:149:18 Unchecked cast: Any to Function1<Any?, Any?>
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/test/java/com/takahashirinta/ncrust/ui/i18n/StringsSnapshot.kt:149:21 This class shouldn't be used in Kotlin. Use kotlin.Function1 instead.
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/test/java/com/takahashirinta/ncrust/ui/i18n/StringsSnapshot.kt:150:18 Unchecked cast: Any to Function2<Any?, Any?, Any?>
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/test/java/com/takahashirinta/ncrust/ui/i18n/StringsSnapshot.kt:150:21 This class shouldn't be used in Kotlin. Use kotlin.Function2 instead.
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/test/java/com/takahashirinta/ncrust/ui/i18n/StringsSnapshot.kt:151:18 Unchecked cast: Any to Function3<Any?, Any?, Any?, Any?>
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/test/java/com/takahashirinta/ncrust/ui/i18n/StringsSnapshot.kt:151:21 This class shouldn't be used in Kotlin. Use kotlin.Function3 instead.
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/test/java/com/takahashirinta/ncrust/ui/i18n/StringsSnapshot.kt:153:18 Unchecked cast: Any to Function4<Any?, Any?, Any?, Any?, Any?>
+w: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/test/java/com/takahashirinta/ncrust/ui/i18n/StringsSnapshot.kt:153:21 This class shouldn't be used in Kotlin. Use kotlin.Function4 instead.
+
+> Task :app:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :app:processDebugUnitTestJavaRes
+> Task :app:testDebugUnitTest
+> Task :app:lintVitalAnalyzeRelease
+> Task :app:compileReleaseArtProfile
+> Task :app:shrinkReleaseRes
+> Task :app:optimizeReleaseResources
+> Task :app:packageRelease
+> Task :app:createReleaseApkListingFileRedirect
+> Task :app:lintVitalReportRelease SKIPPED
+> Task :app:lintVitalRelease SKIPPED
+> Task :app:assembleRelease
+
+> Task :app:lintReportDebug
+Wrote HTML report to file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build/reports/lint-results-debug.html
+
+> Task :app:lintDebug
+> Task :app:lint
+
+[Incubating] Problems report is available at: file:///home/duanjb666/deepseek/ncrust-gpl/Ncrust/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.3.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 4m 15s
+421 actionable tasks: 133 executed, 288 up-to-date
+Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.3.1/userguide/configuration_cache_enabling.html

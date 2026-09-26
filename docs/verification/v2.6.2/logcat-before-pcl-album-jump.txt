@@ -1,0 +1,12 @@
+--------- beginning of main
+09-26 23:59:11.101 16910 16910 I DynamicFramerate [AnimationSpeedAware]: onEventHandled: info: InputEventInfo: mX = 0, mY = 0, mAction = 0, mVsyncTime = 14240821, mIsMoving = true, mUpdated = true
+09-26 23:59:11.101 16910 16910 V AutofillManager: requestHideFillUi(null): anchor = null
+09-26 23:59:11.105 16910 16910 I DynamicFramerate [AnimationSpeedAware]: onEventHandled: info: InputEventInfo: mX = 0, mY = 0, mAction = 1, mVsyncTime = 14240825, mIsMoving = false, mUpdated = true
+09-26 23:59:11.107 16910 16910 D ViewRootImplExtImpl: the up motion event handled by client, just return
+09-26 23:59:11.135 16910 16910 D WindowOnBackDispatcher:  predictive settings is disabled for ApplicationInfo{ff4b91c com.takahashirinta.ncrust}
+09-26 23:59:11.135 16910 16910 W WindowOnBackDispatcher: OnBackInvokedCallback is not enabled for the application.
+09-26 23:59:11.135 16910 16910 W WindowOnBackDispatcher: Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.
+09-26 23:59:11.458 16910 22005 I NcrustHttpTiming: path=/api/v1/album/7879 ttfb=305ms body=3ms total=310ms
+09-26 23:59:11.664 16910 22005 I NcrustHttpTiming: path=/api/v1/album/7879 ttfb=201ms body=3ms total=205ms
+09-26 23:59:14.324 16910 22005 I NcrustHttpTiming: path=/api/v1/album/7879 ttfb=295ms body=5ms total=302ms
+09-26 23:59:14.826 16910 21208 I NcrustHttpTiming: path=/eapi/v3/song/detail ttfb=298ms body=1ms total=299ms

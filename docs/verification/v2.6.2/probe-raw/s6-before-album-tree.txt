@@ -1,0 +1,17 @@
+  720   816  clickable=false  封面
+  600  1737  clickable=false  百万金曲 陈小云2 苦恋梦 免失志
+  144  1915  clickable=true  陈小云
+  256  1990  clickable=false  发行: 2010-01-03
+  485  2063  clickable=false  厂牌: 吉馬唱片錄音帶有限公司/ Selina
+  166  2136  clickable=false  13首歌曲
+ 1280  1712  clickable=false  播放全部
+ 1190  2251  clickable=false  收藏整张专辑
+  112   304  clickable=false  返回
+  180  2448  clickable=false  首页
+  180  2496  clickable=false  首页
+  540  2448  clickable=false  库
+  540  2496  clickable=false  库
+  900  2448  clickable=false  搜索
+  900  2496  clickable=false  搜索
+ 1260  2448  clickable=false  用户
+ 1260  2496  clickable=false  用户

@@ -1,0 +1,17 @@
+==============================================================================
+专辑《叶惠美》  期望: id=8220 mid=000MkMni19ClKG pmid=000MkMni19ClKG_5
+  按 mid                请求 albumMid=000MkMni19ClKG         -> {"code": 0, "totalNum": 11, "songList_len": 11, "album_name_from_response": "叶惠美", "album_mid_from_response": "000MkMni19ClKG", "first_song": "双刀"}   命中
+  按 pmid               请求 albumMid=000MkMni19ClKG_5       -> {"code": 0, "totalNum": 11, "songList_len": 11, "album_name_from_response": "叶惠美", "album_mid_from_response": "000MkMni19ClKG", "first_song": "双刀"}   命中
+  按 id(数字当字符串)         请求 albumMid=8220                   -> {"code": 104400, "totalNum": 0, "songList_len": 0, "album_name_from_response": null, "album_mid_from_response": null, "first_song": null}   **不命中**
+==============================================================================
+专辑《第二天堂》  期望: id=8036 mid=000y5gq7449K9I pmid=000y5gq7449K9I_3
+  按 mid                请求 albumMid=000y5gq7449K9I         -> {"code": 0, "totalNum": 15, "songList_len": 15, "album_name_from_response": "第二天堂", "album_mid_from_response": "000y5gq7449K9I", "first_song": "Endless Road"}   命中
+  按 pmid               请求 albumMid=000y5gq7449K9I_3       -> {"code": 0, "totalNum": 15, "songList_len": 15, "album_name_from_response": "第二天堂", "album_mid_from_response": "000y5gq7449K9I", "first_song": "Endless Road"}   命中
+  按 id(数字当字符串)         请求 albumMid=8036                   -> {"code": 104400, "totalNum": 0, "songList_len": 0, "album_name_from_response": null, "album_mid_from_response": null, "first_song": null}   **不命中**
+==============================================================================
+专辑《What's Going On...?》  期望: id=22276 mid=004Z85XP1c25b7 pmid=004Z85XP1c25b7_5
+  按 mid                请求 albumMid=004Z85XP1c25b7         -> {"code": 0, "totalNum": 10, "songList_len": 10, "album_name_from_response": "What's Going On...?", "album_mid_from_response": "004Z85XP1c25b7", "first_song": "粤语残片"}   命中
+  按 pmid               请求 albumMid=004Z85XP1c25b7_5       -> {"code": 0, "totalNum": 10, "songList_len": 10, "album_name_from_response": "What's Going On...?", "album_mid_from_response": "004Z85XP1c25b7", "first_song": "粤语残片"}   命中
+  按 id(数字当字符串)         请求 albumMid=22276                  -> {"code": 104400, "totalNum": 0, "songList_len": 0, "album_name_from_response": null, "album_mid_from_response": null, "first_song": null}   **不命中**
+==============================================================================
+结论：只有 `mid` 是 QQ 专辑曲目接口认识的身份。

@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<issues format="6" by="lint 8.5.0">
+
+    <issue
+        id="LintBaseline"
+        severity="Information"
+        message="56 errors and 102 warnings were filtered out because they are listed in the baseline file, lint-baseline.xml"
+        category="Lint"
+        priority="10"
+        summary="Baseline Applied"
+        explanation="Lint can be configured with a &quot;baseline&quot;; a set of current issues found in a codebase, which future runs of lint will silently ignore. Only new issues not found in the baseline are reported.&#xA;&#xA;Note that while opening files in the IDE, baseline issues are not filtered out; the purpose of baselines is to allow you to get started using lint and break the build on all newly introduced errors, without having to go back and fix the entire codebase up front. However, when you open up existing files you still want to be aware of and fix issues as you come across them.&#xA;&#xA;This issue type is used to emit an informational-only warning if any issues were filtered out due to baseline matching. That way, you don&apos;t have a false sense of security if you forgot that you&apos;ve checked in a baseline file.">
+        <location
+            file="/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/lint-baseline.xml"/>
+    </issue>
+
+    <issue
+        id="LintBaselineFixed"
+        severity="Information"
+        message="1 errors/warnings were listed in the baseline file (lint-baseline.xml) but not found in the project; perhaps they have been fixed? Another possible explanation is that lint recently stopped analyzing (and including results from) dependent projects by default. You can turn this back on with `android.lintOptions.checkDependencies=true`. Unmatched issue types: MissingOnPlayFromSearch"
+        category="Lint"
+        priority="10"
+        summary="Baselined Issues Fixed"
+        explanation="If a lint baseline describes a problem which is no longer reported, then the problem has either been fixed, or perhaps the issue type has been disabled. In any case, the entry can be removed from the baseline (such that if the issue is reintroduced at some point, lint will complain rather than just silently starting to match the old baseline entry again.)">
+        <location
+            file="/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/lint-baseline.xml"/>
+    </issue>
+
+    <issue
+        id="ApplySharedPref"
+        severity="Warning"
+        message="Consider using `apply()` instead; `commit` writes its data to persistent storage immediately, whereas `apply` will handle it in the background"
+        category="Correctness"
+        priority="6"
+        summary="Use `apply()` on `SharedPreferences`"
+        explanation="Consider using `apply()` instead of `commit` on shared preferences. Whereas `commit` blocks and writes its data to persistent storage immediately, `apply` will handle it in the background."
+        errorLine1="        editor.commit()"
+        errorLine2="               ~~~~~~~~">
+        <location
+            file="/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/local/LocalPlaylistStore.kt"
+            line="91"
+            column="16"/>
+    </issue>
+
+    <issue
+        id="ApplySharedPref"
+        severity="Warning"
+        message="Consider using `apply()` instead; `commit` writes its data to persistent storage immediately, whereas `apply` will handle it in the background"
+        category="Correctness"
+        priority="6"
+        summary="Use `apply()` on `SharedPreferences`"
+        explanation="Consider using `apply()` instead of `commit` on shared preferences. Whereas `commit` blocks and writes its data to persistent storage immediately, `apply` will handle it in the background."
+        errorLine1="            .commit()"
+        errorLine2="             ~~~~~~~~">
+        <location
+            file="/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/local/LocalPlaylistStore.kt"
+            line="108"
+            column="14"/>
+    </issue>
+
+    <issue
+        id="ApplySharedPref"
+        severity="Warning"
+        message="Consider using `apply()` instead; `commit` writes its data to persistent storage immediately, whereas `apply` will handle it in the background"
+        category="Correctness"
+        priority="6"
+        summary="Use `apply()` on `SharedPreferences`"
+        explanation="Consider using `apply()` instead of `commit` on shared preferences. Whereas `commit` blocks and writes its data to persistent storage immediately, `apply` will handle it in the background."
+        errorLine1="        prefs(context).edit().remove(tracksKey(key)).commit()"
+        errorLine2="                                                     ~~~~~~~~">
+        <location
+            file="/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/local/LocalPlaylistStore.kt"
+            line="113"
+            column="54"/>
+    </issue>
+
+    <issue
+        id="ApplySharedPref"
+        severity="Warning"
+        message="Consider using `apply()` instead; `commit` writes its data to persistent storage immediately, whereas `apply` will handle it in the background"
+        category="Correctness"
+        priority="6"
+        summary="Use `apply()` on `SharedPreferences`"
+        explanation="Consider using `apply()` instead of `commit` on shared preferences. Whereas `commit` blocks and writes its data to persistent storage immediately, `apply` will handle it in the background."
+        errorLine1="        e.commit()"
+        errorLine2="          ~~~~~~~~">
+        <location
+            file="/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/qq/QqPlaylistStore.kt"
+            line="159"
+            column="11"/>
+    </issue>
+
+    <issue
+        id="ApplySharedPref"
+        severity="Warning"
+        message="Consider using `apply()` instead; `commit` writes its data to persistent storage immediately, whereas `apply` will handle it in the background"
+        category="Correctness"
+        priority="6"
+        summary="Use `apply()` on `SharedPreferences`"
+        explanation="Consider using `apply()` instead of `commit` on shared preferences. Whereas `commit` blocks and writes its data to persistent storage immediately, `apply` will handle it in the background."
+        errorLine1="        prefs(context).edit().clear().commit()"
+        errorLine2="                                      ~~~~~~~~">
+        <location
+            file="/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/qq/QqPlaylistStore.kt"
+            line="164"
+            column="39"/>
+    </issue>
+
+    <issue
+        id="ApplySharedPref"
+        severity="Warning"
+        message="Consider using `apply()` instead; `commit` writes its data to persistent storage immediately, whereas `apply` will handle it in the background"
+        category="Correctness"
+        priority="6"
+        summary="Use `apply()` on `SharedPreferences`"
+        explanation="Consider using `apply()` instead of `commit` on shared preferences. Whereas `commit` blocks and writes its data to persistent storage immediately, `apply` will handle it in the background."
+        errorLine1="        e.commit()"
+        errorLine2="          ~~~~~~~~">
+        <location
+            file="/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/qq/QqPlaylistStore.kt"
+            line="181"
+            column="11"/>
+    </issue>
+
+    <issue
+        id="ModifierParameter"
+        severity="Warning"
+        message="Modifier parameter should be named modifier"
+        category="Correctness"
+        priority="3"
+        summary="Guidelines for Modifier parameters in a Composable function"
+        explanation="The first (or only) Modifier parameter in a Composable function should follow the following rules:&#xA;- Be named `modifier`&#xA;- Have a type of `Modifier`&#xA;- Either have no default value, or have a default value of `Modifier`&#xA;- If optional, be the first optional parameter in the parameter list"
+        errorLine1="    contentModifier: Modifier = Modifier,"
+        errorLine2="    ~~~~~~~~~~~~~~~">
+        <location
+            file="/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/components/DetailScaffold.kt"
+            line="88"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="ModifierParameter"
+        severity="Warning"
+        message="Modifier parameter should be the first optional parameter"
+        category="Correctness"
+        priority="3"
+        summary="Guidelines for Modifier parameters in a Composable function"
+        explanation="The first (or only) Modifier parameter in a Composable function should follow the following rules:&#xA;- Be named `modifier`&#xA;- Have a type of `Modifier`&#xA;- Either have no default value, or have a default value of `Modifier`&#xA;- If optional, be the first optional parameter in the parameter list"
+        errorLine1="    contentModifier: Modifier = Modifier,"
+        errorLine2="    ~~~~~~~~~~~~~~~">
+        <location
+            file="/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/components/DetailScaffold.kt"
+            line="88"
+            column="5"/>
+    </issue>
+
+</issues>

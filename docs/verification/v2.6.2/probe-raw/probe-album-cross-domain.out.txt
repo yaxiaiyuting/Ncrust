@@ -1,0 +1,25 @@
+==============================================================================
+专辑《叶惠美》/ 周杰伦
+  QQ   身份: album.id=8220   album.mid=000MkMni19ClKG
+  网易云 同专辑真实 id: {"id": 18905, "name": "叶惠美", "artist": "周杰伦", "size": 11}
+  → 拿 QQ album.id=8220 查网易云: {"http": 200, "code": 404, "album_id": null, "album_name": null, "artist": null, "size": null}   静默失败（404）
+==============================================================================
+专辑《第二天堂》/ 林俊杰
+  QQ   身份: album.id=8036   album.mid=000y5gq7449K9I
+  网易云 同专辑真实 id: {"id": 10804, "name": "第二天堂", "artist": "林俊杰", "size": 15}
+  → 拿 QQ album.id=8036 查网易云: {"http": 200, "code": 404, "album_id": null, "album_name": null, "artist": null, "size": null}   静默失败（404）
+==============================================================================
+专辑《What's Going On...?》/ 陈奕迅
+  QQ   身份: album.id=22276   album.mid=004Z85XP1c25b7
+  网易云 同专辑真实 id: {"id": 6451, "name": "What's Going On…?", "artist": "陈奕迅", "size": 15}
+  → 拿 QQ album.id=22276 查网易云: {"http": 200, "code": 200, "album_id": 22276, "album_name": "百万金曲 陈小云2 苦恋梦 免失志", "artist": "陈小云", "size": 12}   ★ 跳到另一张真实专辑：百万金曲 陈小云2 苦恋梦 免失志 / 陈小云（12 首）
+==============================================================================
+专辑《光年之外》/ 邓紫棋
+  QQ   身份: album.id=1796874   album.mid=001mTkmb4GJlh4
+  网易云 同专辑真实 id: {"id": 74826488, "name": "光年之外 (热爱版)", "artist": "G.E.M.邓紫棋", "size": 1}
+  → 拿 QQ album.id=1796874 查网易云: {"http": 200, "code": 404, "album_id": null, "album_name": null, "artist": null, "size": null}   静默失败（404）
+==============================================================================
+专辑《U 87》/ 陈奕迅
+  QQ   身份: album.id=7879   album.mid=003J6fvc0bVJon
+  网易云 同专辑真实 id: {"id": 139009292, "name": "陳7囍-15", "artist": "一禾", "size": 1}
+  → 拿 QQ album.id=7879 查网易云: {"http": 200, "code": 200, "album_id": 7879, "album_name": "爱的供养", "artist": "邓杰", "size": 12}   ★ 跳到另一张真实专辑：爱的供养 / 邓杰（12 首）
