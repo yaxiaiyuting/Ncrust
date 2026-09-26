@@ -1,0 +1,36 @@
+=================== QQ 搜索：稻香 ===================
+  song='稻香' songmid='003aAYrm3GE0Ac' songid=449205
+     singer: id=4558 mid='0025NhlN2yWrP4' name='周杰伦'
+             (该 singer 对象的全部字段: ['id', 'mid', 'name', 'pmid', 'title', 'title_highlight', 'type', 'uin'])
+  song='稻香' songmid='002PZvTU4YHsBI' songid=108708068
+     singer: id=1997489 mid='002imk7R0gXnWl' name='贝瓦儿歌'
+             (该 singer 对象的全部字段: ['id', 'mid', 'name', 'pmid', 'title', 'title_highlight', 'type', 'uin'])
+  song='晴天' songmid='0039MnYb0qxYhV' songid=97773
+     singer: id=4558 mid='0025NhlN2yWrP4' name='周杰伦'
+             (该 singer 对象的全部字段: ['id', 'mid', 'name', 'pmid', 'title', 'title_highlight', 'type', 'uin'])
+=================== QQ 搜索：林俊杰 ===================
+  song='Always Online' songmid='001N8e5Q4Gjxda' songid=447257
+     singer: id=4286 mid='001BLpXF2DyJe2' name='林俊杰'
+             (该 singer 对象的全部字段: ['id', 'mid', 'name', 'pmid', 'title', 'title_highlight', 'type', 'uin'])
+  song='江南' songmid='004TXEXY2G2c7C' songid=9063002
+     singer: id=4286 mid='001BLpXF2DyJe2' name='林俊杰'
+             (该 singer 对象的全部字段: ['id', 'mid', 'name', 'pmid', 'title', 'title_highlight', 'type', 'uin'])
+  song='美人鱼' songmid='002ASCKm3ROw7t' songid=95292
+     singer: id=4286 mid='001BLpXF2DyJe2' name='林俊杰'
+             (该 singer 对象的全部字段: ['id', 'mid', 'name', 'pmid', 'title', 'title_highlight', 'type', 'uin'])
+=================== QQ 搜索：陈奕迅 ===================
+  song='葡萄成熟时' songmid='0029Zemv0kR1ur' songid=1251167
+     singer: id=143 mid='003Nz2So3XXYek' name='陈奕迅'
+             (该 singer 对象的全部字段: ['id', 'mid', 'name', 'pmid', 'title', 'title_highlight', 'type', 'uin'])
+  song='最佳损友' songmid='003hFxQh276Cv5' songid=1338414
+     singer: id=143 mid='003Nz2So3XXYek' name='陈奕迅'
+             (该 singer 对象的全部字段: ['id', 'mid', 'name', 'pmid', 'title', 'title_highlight', 'type', 'uin'])
+  song='富士山下' songmid='003aAPj81VWrbL' songid=260678
+     singer: id=143 mid='003Nz2So3XXYek' name='陈奕迅'
+             (该 singer 对象的全部字段: ['id', 'mid', 'name', 'pmid', 'title', 'title_highlight', 'type', 'uin'])
+
+=================== 撞号验证：把 QQ 的 singer.id 当网易云 artist id 查 ===================
+  QQ singer id=4558     name=周杰伦    → 网易云 api/artist/4558 = {"code": 200, "id": 4558, "name": "马洪波", "albumSize": 1, "musicSize": 32}
+  QQ singer id=1997489  name=贝瓦儿歌 → 网易云 api/artist/1997489 = {"code": 404, "id": null, "name": null, "albumSize": null, "musicSize": null}
+  QQ singer id=4286     name=林俊杰    → 网易云 api/artist/4286 = {"code": 200, "id": 4286, "name": "刘子译", "albumSize": 0, "musicSize": 0}
+  QQ singer id=143      name=陈奕迅    → 网易云 api/artist/143 = {"code": 404, "id": null, "name": null, "albumSize": null, "musicSize": null}

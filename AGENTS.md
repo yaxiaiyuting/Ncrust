@@ -3944,3 +3944,144 @@ media3 的 `ChannelMixingMatrix` 只实现 `N→N / 1→2 / 2→1`，**6→1 抛
 | §2.1 问「是否与 v2.2.0 只加不减 + tombstone 冲突 / tombstone 是否反向」 | **不冲突也没关系**：`local/LocalPlaylistSync` 只追加、从不删除、从不 tombstone，方向正确。丢歌的 `library/LibraryManager` **根本没有 origin/tombstone 概念** | 根因是「这条纪律从未被应用到收藏库」，不是「tombstone 反向」 |
 | §1「P0：QQ 歌曲长按入库后刷新消失」的**确切点击路径** | HEAD 的 `QqPlaylistDetailScreen.kt:257` 传 `emptyList()`，那张菜单里**没有**「加入库」（`grep -c LibraryAdd` = 0；阳性对照 `PlaylistDetailScreen` = 2） | 本版修的是**共享的存储与同步层**，路径差异不影响修复有效性；如实列入「需用户截图才能定案」的未验证项 |
 | §2.5「draft release 已创建，或阻塞原因明确」隐含「只需一次构建」 | 版本号提交必须在**产出 APK 的那个提交之前**（v2.1.3 踩过），所以 release 构建要跑两轮（一轮验证 lint/编译，一轮出正式产物） | 按既有纪律做：先全量验证，再 `build: 升级至 v2.6.0-gpl`，再出产物、再打 tag |
+
+## v2.6.1 新增（本 fork · QQ 曲目「转到歌手」跳到错误艺人 · P0 hotfix）
+
+> **探针**：`docs/verification/v2.6.1/PROBE-SUMMARY.md`（四份探针：静态链路审计 /
+> 接口撞号取证 / 真机复现与交叉 A/B / 「修复前零日志」取证）
+> **证据**：`docs/verification/v2.6.1/EVIDENCE.md`
+> **发布说明**：`docs/verification/v2.6.1/CHANGELOG-v2.6.1.md`
+
+### 三条新铁律（本版起是硬约束）
+
+26. **跨源身份跳转必须携带 source，不得只传数值 ID。**
+
+    P0 本体：QQ 曲目《稻香》的二级菜单「转到歌手」把用户送到了网易云的**马洪波**。
+    链条是三段，每一段单独看都"合理"：
+
+    | # | 位置（v2.6.0） | 做了什么 |
+    |---|---|---|
+    | 1 | `qq/QqSongMapper.kt:110` | 只取 `singer[].id`，**丢掉同一个对象上的 `singer[].mid`**（singerMID，base62） |
+    | 2 | `MainActivity.resolveAndNavigate` | 只读 `artists[0].id` 就跳，**从不读 `song.musicSource`** |
+    | 3 | `NavGraph.kt` 的 `ARTIST` composable | `sourceKey = MusicSource.NETEASE.key` **写死** |
+
+    实测撞号（2026-09，匿名可复现，脚本见 `probe-raw/probe-artist-id-collision.sh`）：
+
+    | QQ 歌手 | QQ `singer.id` | 当成网易云 id 查出来 |
+    |---|---|---|
+    | 周杰伦 | `4558` | **马洪波**（专辑 1 / 单曲 32 —— 页面看起来完全正常） |
+    | 林俊杰 | `4286` | 刘子译（0 / 0） |
+    | 陈奕迅 | `143` | 404 |
+
+    落地要求：
+
+    - **身份必须是 `(source, id)` 一对**：艺人走 `ArtistKey` / 新增的
+      `ArtistNav.Direct(source, id)`，曲目走 `TrackKey`。**不许**在路由、回调、
+      事件里传裸 `Long` —— 裸 `Long` 无法回答「它属于哪个源」；
+    - **形状不同就是最好的闸门**：网易云艺人是十进制、QQ 艺人是 base62 的 `singerMID`，
+      所以 `ArtistNavigator.idDomainMatches(source, id)` 能**结构性**拦下「传错域」。
+      QQ 的**数字 `singerID` 在 QQ 域不是合法身份**（它是诊断/排序用的），
+      这一条把本 P0 的错法变成"过不了闸门"；
+    - **路由必须带源段**：用 `NavRoutes.artist(source, id)`（`artist/{source}/{artistId}`）。
+      单参数的 `NavRoutes.artist(artistId: Long)` **只为历史调用点保留**，
+      任何新调用点都必须带源；`ArtistRouteContractTest` 会**扫源码**把违规行报出来；
+    - **按构造就是网易云的入口也要显式写出来**（剪贴板链接、音乐人推荐卡、搜索艺人 tab）：
+      「按构造正确」正是本 P0 里唯一没被写下来的东西，而它一旦没写下来，
+      下一个人就会以为这个重载"谁都能用"。
+
+27. **匹配置信度不足时宁可跳搜索，不可跳错误艺人。**
+
+    v2.4.0 的 `MatchConfidence.mergeable`（>= MEDIUM）是**全应用唯一的合并阈值**。
+    本 P0 的探针结论是：这条路径**根本没有走跨源匹配**（`CrossSourceMatcher` /
+    `MatchCacheStore` 一次都没被调用），所以「置信度不足」不是本次的根因 ——
+    但**下一处**跨源跳转一定会遇到它，因此闸门必须先立好。
+
+    落地要求：
+
+    - **身份判定收成一个纯函数**：`source/ArtistNavigator.kt` 产出三态
+      `Direct(source, id)` / `Search(keyword, reason)` / `Unavailable`。
+      **类型上不存在第四种「跳到另一个源」**——把它排除在类型之外，
+      比在实现里小心不提更可靠；
+    - **跨源候选两道闸**：`crossSourceJump(confidence, targetSource, targetId)` 要求
+      ① `MatchConfidence.mergeable`；② 目标源内有一个**该源值域合法**的身份。
+      任一不满足 ⇒ **返回 null ⇒ 调用方跳搜索**。阈值**不许**在调用方写
+      （`confidence >= HIGH` 这类比较一律视为 bug，同 v2.4.0 铁律 2）；
+    - **降级必须被说出来**：跳搜索时给一句 `snackbar`（`SourceStrings.artistNavSearchFallback`）
+      并打一条 `Log.i(TAG_ARTIST_NAV, "…reason=…")`。
+      旧行为是**静默失败**（点「转到歌手」什么都不发生），
+      它正是这个 P0 拖到用户报告才被发现的原因之一；
+    - **名字只能召回，不能当身份**（v2.4.0 铁律 1 的同一条）：`ArtistItem.name`
+      在本路径上**只**用来生成搜索关键词，**从不**参与 `Direct` 的构造。
+
+28. **跳转错误比找不到更严重 —— 找不到用户能理解，跳错会让用户以为数据错乱。**
+
+    这不是修辞。本次三档失败里，只有周杰伦那一档是"跳到真人"：
+
+    | 症状 | 用户的解释 | 后果 |
+    |---|---|---|
+    | 跳到马洪波（页面有头像/专辑/单曲） | 「**这个应用的艺人数据是错的**」 | 对整个数据层失去信任 |
+    | 跳到空艺人页（林俊杰 → 刘子译 0/0） | 「这首歌没数据吧」 | 归因到歌，可接受 |
+    | 404（陈奕迅） | 「网络出问题了」 | 归因到网络，可接受 |
+    | 没反应（冷启动恢复的曲目） | 「**应用坏了 / 我点错了**」 | 归因到应用质量 |
+
+    落地要求：
+
+    - **任何身份不确定的跳转，默认动作是「跳搜索」而不是「尽力猜一个」**。
+      搜索页会把正确结果摆在用户面前，他一步就能自己走对；
+    - **不许有"跳到某个默认/兜底艺人"的逻辑**。本仓库现在没有，
+      将来也不许加 —— 兜底值（0 / -1 / null 转换后的值）在服务端往往**真的对应一个艺人**，
+      马洪波就是 `4552+206` 这种巧合的产物；
+    - **fallback 必须与"身份补全"分开**：v2.6.0 的回落是「补一次 `song/detail`」，
+      而它打的是**网易云**接口、QQ 曲目的 id 带 bit62 ⇒ 必然查空 ⇒ 静默放弃。
+      补全必须**在曲目自己的源上做**（`isResolvable` / `musicSource` 判据），
+      做不了就跳搜索，**不要**跨源试一次；
+    - **降级路径要有界**：`ArtistNav` 只有三态、没有循环、没有重试，
+      所以它天然没有「重试风暴」面。任何将来加的"再试一次"都必须带熔断（铁律 5）。
+
+### 本版的单一落点与新增守卫
+
+| 文件 | 作用 | 守卫 |
+|---|---|---|
+| `source/ArtistNavigator.kt` | 「转到歌手」的**唯一**身份判定（纯逻辑、无 Android 依赖） | `ArtistNavigatorTest`（14 例：三态、值域闸门、置信度闸门、绝不跨源） |
+| `network/model/SongDetail.kt` `ArtistItem.mid` | QQ `singerMID` 的载体（可空 + 默认值，Gson/Unsafe 安全） | `QqArtistMidMappingTest`（7 例）+ `PersistenceFieldNameContractTest` 注册表 |
+| `MainActivity.navigateToArtist` | 唯一出口：`Direct` → 带源路由；`Search` → 切 tab + 预填 + 提示 + 日志 | `ArtistRouteContractTest`（源码扫描：所有调用点必须带源） |
+| `MainActivity.pendingSearchQuery` + `SearchScreen(externalQuery)` | 「跳搜索」兜底的**唯一**投递口（一次性待办，消费即清） | 真机复测（见 `verification/`） |
+| `playlist/PlaylistCacheCodec.ArtistDto.mid` | 歌单详情缓存是**扁平 DTO**，`ArtistItem` 的新字段不会自动跟过来 | `PlaylistCacheCodecTest`（新增 2 例：往返保真 + 老条目读成 null） |
+
+### 本版的关键取舍（有意为之，不是遗漏）
+
+| 取舍 | 理由 |
+|---|---|
+| **「转到专辑」的同类 bug 本版不修** | 它需要 QQ 的 `albumMID`，而 `AlbumItem` 不带；为此再加一次跨表迁移 + 5 张持久化结构的回归，会把一次 hotfix 的面扩大到半个数据层。如实列进未修清单 |
+| **不给 `ArtistItem` 加 `source` 字段** | `ArtistItem` 是**曲目内部**的艺人，它的源恒等于 `SongItem.musicSource`。再加一个 `source` 就有两份真相，而两份真相必然漂移（v2.1.5 与 v2.6.0 各踩过一次同形状的坑）。跨源艺人身份用已有的 `ArtistKey` |
+| **保留 `NavRoutes.artist(artistId: Long)` 老路由** | 删它会让剪贴板/推荐卡/搜索 tab 三个"按构造就是网易云"的入口被迫改形状，而它们与本次 P0 无关。改为**要求显式写 `MusicSource.NETEASE`** + 源码扫描守卫 |
+| **不删 `QqCatalogMapper.artistsOf`（零调用方）** | 它与 `QqSongMapper` 是同一件事的两条链路。本版让两条链路**逐值一致**并加对称单测，而不是删掉一条 —— 删它会把回归面扩大到歌单解析 |
+| **`crossSourceJump` 目前恒返回 null** | 探针结论：这条路径没有可用的跨源结论（`MatchCacheStore` 的键是 `(source, id)`，而 QQ 数字 `singerID` 不是任何一个源的有效键）。保留它是为了**下一处**跨源跳转，且它有单测覆盖两种放行/四种拒绝 |
+| **不加性能基准** | 本版改的是纯逻辑判定与一次跳转分支，没有逐帧路径。按铁律 22，**不声称**任何性能结论 |
+| **不改中文文案「转到歌手」** | 任务书叫它「查看艺人」，但仓库 8 个语言文件里都不存在这四个字。改文案要让 8 个文件一起动，与本 P0 无关；如实记录为任务书用词偏差 |
+
+### 与任务书的六处前提偏差（**下一个读任务书的人先看这里**）
+
+| 任务书原文 | 实测 | 处置 |
+|---|---|---|
+| §2.3 假设走了 v2.4.0 跨源匹配、置信度不足 | **完全没走匹配**。路径上零次 `CrossSourceMatcher` / `MatchCacheStore` 调用 | 修复不走"提高阈值"，而是"把 QQ 侧本来就有的 `singerMID` 带出来"；置信度闸门按铁律 27 先立好 |
+| §3.3 假设存在 fallback 跳到某个默认艺人 | **不存在**。fallback 是"补一次**网易云** `song/detail`"，对 QQ 的 bit62 合成 id 必然查空 ⇒ 静默放弃 | 真因是「补全打错了源」，处置见铁律 28 |
+| §2.3 假设匹配缓存被污染 | **没污染**，缓存里存的恰恰是**正确**的 `6452 ↔ 0025NhlN2yWrP4 / EXACT` | 不加缓存版本号、不加失效逻辑（那会是无的放矢的改动） |
+| §1/§2 称菜单项为「查看艺人」 | 实际文案是 **「转到歌手」**（`Strings.actionGoToArtist`） | 按实际文案取证；不改文案 |
+| §1 隐含「只有二级菜单」 | **播放页竖屏托盘的作者名是第二个独立入口**，同一错法（`PlayerCard.onArtistClick: (Long) -> Unit`） | 两个入口一起改，且收敛到**同一个出口** `navigateToArtist` |
+| §2.1「抓 logcat 看路由参数」 | **修复前这条路径在 release 包上零日志**（无菜单日志、无路由日志、无 HTTP 日志） | 本版补 `TAG_ARTIST_NAV`；探针以截图 + 语义树取证，见 `probe-logcat.md` |
+
+### 用户报告「手机没反应 / 平板跳错」的真相（A/B 对照的产物）
+
+用户第一判断是平台差异。**同机交叉**把它证伪了 —— 同一台 PCL110、同一账号、同一页面、
+同一组坐标，只改"当前歌曲这个 `SongItem` 是怎么来的"：
+
+| 当前歌来源 | `artists[0]` | 结果 |
+|---|---|---|
+| force-stop 后冷启动恢复（`PlaybackStateManager`） | 只有 `name`，`id == null` | **没反应** |
+| 搜索结果里点一下那一行 | `id = 4558` | **跳到马洪波** |
+
+两轮之间只差一次点击。**分界不是机型，是数据形状。**
+（这正是铁律 6「平台假设必须 A/B 对照」存在的意义：不做这一步，
+修复方向会跑去找 ColorOS / HarmonyOS 的差异，而真因在 `MainActivity.kt:920`
+那行 `ArtistItem(name = artist)` 里。）
