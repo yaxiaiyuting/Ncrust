@@ -52,6 +52,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -82,7 +83,9 @@ import io.github.takahashirinta.kanesumi.core.theme.MetroText
 import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import android.widget.Toast
 import androidx.compose.foundation.border
@@ -110,6 +113,14 @@ fun PlayerCard(
     onTogglePlayMode: () -> Unit = {},
     onPlayNothing: () -> Unit = {},
     onSongInfoClick: () -> Unit = {},
+    /**
+     * v2.5.4 · E：竖屏托盘第二行「作者」那一段的点击（进艺人页）。
+     *
+     * 默认空实现是**有意的降级**：调用方没接线时点作者等于什么都没发生，
+     * 而不是掉进「转到歌手/转到专辑」菜单 —— 后者是 [onSongInfoClick] 的语义，
+     * 混用会让同一个手势在不同调用点做两件事。
+     */
+    onArtistClick: (Long) -> Unit = {},
     onClearQueue: () -> Unit = {},
     onSavePlaylist: () -> Unit = {},
     // P1：大屏幕模式（横屏桌面播放器布局）开关 + 入口/出口回调。
@@ -219,9 +230,26 @@ fun PlayerCard(
     // v1.8.0 · T3：可视化条的开关与高度。
     // 高度 = 窗口高 × 11%，夹在 32~56dp：PCL110 横屏（363dp 高）得 40dp、
     // S6（480dp 高）得 53dp —— 矮屏少占、高屏多给，封面区用 weight(1f) 自动让位。
+    // v2.5.4 · D：算式搬进 PlayerLayout.visualizerHeightDp（可单测），这里只读结果。
     val visualizerEnabled = VisualizerSetting.state.value
-    val visualizerHeightDp =
-        (LocalConfiguration.current.screenHeightDp.dp * 0.11f).coerceIn(32.dp, 56.dp)
+    // v2.5.4 · D：**平板**（smallestScreenWidthDp >= 600，与方向无关）。
+    // 与 isWidePlayer 不是同一个谓词：手机横屏的 screenWidthDp 也 >= 600，
+    // 但它不该在宽屏两栏里长出可视化条（那会改掉 v1.8.0 以来手机横屏的形态）。
+    val isLargeScreen =
+        LocalConfiguration.current.smallestScreenWidthDp >= PlayerLayout.LARGE_SCREEN_BREAKPOINT_DP
+    val orientationLandscape =
+        LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+    // 挂载判据**只有一个落点**（PlayerLayout.visualizerSlot），A/B 矩阵写在那里的 KDoc。
+    val visualizerSlot = PlayerLayout.visualizerSlot(
+        enabled = visualizerEnabled,
+        bigScreenActive = bigScreenActive,
+        isWidePlayer = isWidePlayer,
+        isLargeScreen = isLargeScreen,
+        orientationLandscape = orientationLandscape,
+    )
+    val visualizerHeightDp = with(density) {
+        PlayerLayout.visualizerHeightDp(LocalConfiguration.current.screenHeightDp.toFloat()).dp
+    }
 
     // 迷你条与顶栏按钮的触觉反馈
     val haptic = LocalHapticFeedback.current
@@ -947,22 +975,15 @@ fun PlayerCard(
                                 // 封面区是 weight(1f)，自己吸收这段高度 —— 任何一级都
                                 // 不会溢出屏幕（这正是"按可用高度动态计算"的落点）。
                                 //
-                                // 关掉开关时**整块不挂载**（不是 alpha=0 —— 见 AGENTS.md
-                                // 第 1/4 条：alpha 不退出命中测试，且帧循环会白跑）。
-                                if (visualizerEnabled) {
-                                    AudioVisualizerBars(
-                                        // 只在帧循环里读，不在这里订阅 isBuffering：
-                                        // 在 PlayerCard 组合期订阅缓冲状态会让整棵子树随
-                                        // 缓冲抖动重组（既有注释 warn 过同一件事）。
-                                        activeProvider = {
-                                            isPlaying && !playerViewModel.isBuffering.value
-                                        },
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(horizontal = 16.dp)
-                                            .height(visualizerHeightDp),
+                                // v2.5.4 · D：挂载判据收敛进 PlayerLayout.visualizerSlot，
+                                // 大屏分支与下面的宽屏两栏分支**共用同一份实现**（一个挂载
+                                // 落点函数 + 一个 slot composable），避免两处各写一份 if。
+                                if (visualizerSlot) {
+                                    AudioVisualizerSlot(
+                                        heightDp = visualizerHeightDp,
+                                        isPlaying = isPlaying,
+                                        isBuffering = playerViewModel.isBuffering,
                                     )
-                                    Spacer(Modifier.height(8.dp))
                                 }
                                 Spacer(Modifier.height(10.dp))
                                 Row(
@@ -1071,6 +1092,25 @@ fun PlayerCard(
                                         wideCoverSizePx = minOf(b.width, b.height)
                                     }
                             )
+                            // v2.5.4 · D：**平板横屏**的音频可视化条就挂在这里。
+                            //
+                            // 位置与横屏大屏左栏**逐像素同款**（封面下、歌名/作者上），
+                            // 用同一个 AudioVisualizerSlot，高度也走同一条算式 ——
+                            // 两处若各写一份，「某一边高度不同/某一边忘了挂」必然发生。
+                            //
+                            // 为什么是这一格：平板横屏走的是**宽屏两栏**（isWidePlayer），
+                            // 而不是 bigScreenActive（那是用户点 ⤢ 之后的横屏桌面布局）。
+                            // v1.8.0 把可视化只挂在后者里，于是平板横屏永远看不到它 ——
+                            // 而平板上连 ⤢ 入口都没有（横屏控制条变体里没有那个按钮）。
+                            // 挂载判据见 PlayerLayout.visualizerSlot 的 A/B 矩阵：
+                            // 只有「平板 + 横屏」这一格由无变有，其余五格不动。
+                            if (visualizerSlot) {
+                                AudioVisualizerSlot(
+                                    heightDp = visualizerHeightDp,
+                                    isPlaying = isPlaying,
+                                    isBuffering = playerViewModel.isBuffering,
+                                )
+                            }
                             // 歌名 / 歌手 + 控件：限宽居中，与封面成组（单栏时不再铺满整宽显得散）。
                             Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                                 Column(
@@ -1357,21 +1397,93 @@ fun PlayerCard(
                             .weight(1f)
                             .padding(horizontal = 12.dp)
                     ) {
-                        MetroText(
-                            s.name,
-                            color = LocalMetroColors.current.onBackground,
-                            style = LocalMetroTypography.current.bodyMedium,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        // v2.1.0 · F：音源角标（折叠态 mini bar，两个音源都标）。同字号
-                        // （bodySmall）+ 次要色，与列表行逐像素同款；角标定宽、歌手让位省略。
-                        ArtistLineWithSource(
-                            song = s,
-                            color = LocalMetroColors.current.onSurfaceVariant,
+                        // ===== 第一行：实时歌词（v2.5.4 · E）=====
+                        //
+                        // 数据源是 `lyrics` + `currentPosition`（2Hz）+ 已存在的纯函数
+                        // `currentLineIndex`，**不新建歌词引擎、不复用通知那条路**：
+                        //  · `PlaybackService.mediaLyricLine` 被 `lyrics_in_media_session`
+                        //    开关（默认关）挡着，而且它是个不可观察的 `@Volatile var`，
+                        //    写它还会顺手重发一次通知 —— 为了托盘把它打开等于改用户的通知行为；
+                        //  · 面板那条「按需唤醒」循环的唤醒表细到**词**边界，托盘只要行级。
+                        //
+                        // 订阅发生在 TrayLyricLine **内部**（叶子），不在这里：
+                        // 在 PlayerCard 组合期 collect 2Hz 的位置流会让整棵播放器子树
+                        // 每 500ms 重组一次（既有注释反复 warn 过同一件事）。
+                        TrayLyricLine(
+                            lyricsFlow = playerViewModel.lyrics,
+                            positionFlow = playerViewModel.currentPosition,
                             style = LocalMetroTypography.current.bodySmall,
-                            badgeStyle = LocalMetroTypography.current.bodySmall
+                            primaryColor = LocalMetroColors.current.primary,
+                            mutedColor = LocalMetroColors.current.onSurfaceVariant,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable(
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    indication = null,
+                                ) {
+                                    // 点歌词 = 展开播放器**并直接看歌词**（面板已就绪时
+                                    // 不会与 autoSwitchedForSong 那条自动切换规则打架：
+                                    // 它只在「本曲还没自动切过」时写 showLyrics，
+                                    // 而我们这里是用户的显式意图，谁先谁后都是 true）。
+                                    coroutineScope.launch {
+                                        progress.animateTo(
+                                            1f,
+                                            tween(durationMillis = 400, easing = CubicBezierEasing(0.2f, 0f, 0f, 1f))
+                                        )
+                                    }
+                                    showQueue = false
+                                    showLyrics = true
+                                }
                         )
+                        // ===== 第二行：歌名 · 作者 · 音源（v2.5.4 · E）=====
+                        //
+                        // 三个视觉层级：歌名是主视觉（bodyMedium + 主文本色）、
+                        // 作者是次要且**可点进艺人页**、音源是角标（定宽不参与省略）。
+                        // 歌名不做成独立点击区：整条托盘的点击本来就是「展开播放器」，
+                        // 给它再包一层同名行为的 clickable 只会多一个命中层
+                        // （见 AGENTS.md 触摸陷阱第 5/6 条：多出来的命中层是最难查的一类问题）。
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            MetroText(
+                                s.name,
+                                color = LocalMetroColors.current.onBackground,
+                                style = LocalMetroTypography.current.bodyMedium,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.weight(1f, fill = false)
+                            )
+                            val artist = s.artists?.firstOrNull()
+                            if (artist != null) {
+                                Spacer(Modifier.width(6.dp))
+                                MetroText(
+                                    artist.name,
+                                    color = LocalMetroColors.current.onSurfaceVariant,
+                                    style = LocalMetroTypography.current.bodySmall,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    modifier = Modifier
+                                        .weight(1f, fill = false)
+                                        .clickable(
+                                            interactionSource = remember { MutableInteractionSource() },
+                                            indication = null,
+                                        ) {
+                                            // 只在这一处让路：有艺人 id 才进艺人页
+                                            // （QQ 侧 `id` 可能缺失，那时保持整条托盘的展开行为）。
+                                            val id = artist.id
+                                            if (id != null && id > 0L) onArtistClick(id) else onSongInfoClick()
+                                        }
+                                )
+                            }
+                            // v2.1.0 · F：音源角标（折叠态 mini bar，两个音源都标）。同字号
+                            // （bodySmall）+ 次要色，与列表行逐像素同款；角标定宽、歌手让位省略。
+                            ArtistLineWithSource(
+                                song = s,
+                                color = LocalMetroColors.current.onSurfaceVariant,
+                                style = LocalMetroTypography.current.bodySmall,
+                                badgeStyle = LocalMetroTypography.current.bodySmall,
+                                // 歌名与作者已经由上面两段画过，这里只要角标那一段。
+                                showArtist = false
+                            )
+                        }
                     }
                     if (miniBarEnabled) {
                         MetroIconButton(onClick = {
@@ -1640,6 +1752,13 @@ private fun ArtistLineWithSource(
     style: TextStyle,
     badgeStyle: TextStyle,
     modifier: Modifier = Modifier,
+    /**
+     * v2.5.4 · E：是否连艺人一起画。
+     *
+     * 托盘改版后艺人由**它自己那一段**负责（因为要单独可点击进艺人页），
+     * 这里就只剩角标。默认 `true` 是为了另外 4 个调用点一行都不用改。
+     */
+    showArtist: Boolean = true,
 ) {
     val strings = LocalStrings.current
     // 走 song.musicSource（枚举）而不是原始 source 字符串：null / 未知 key 的旧数据在
@@ -1648,7 +1767,7 @@ private fun ArtistLineWithSource(
         MusicSource.NETEASE -> strings.sourceNetease
         MusicSource.QQMUSIC -> strings.sourceQqMusic
     }
-    val artistStr = song.artists?.joinToString("/") { it.name }.orEmpty()
+    val artistStr = if (showArtist) song.artists?.joinToString("/") { it.name }.orEmpty() else ""
     Row(modifier = modifier) {
         if (artistStr.isNotEmpty()) {
             MetroText(
@@ -1673,6 +1792,114 @@ private fun ArtistLineWithSource(
             modifier = Modifier.alignByBaseline()
         )
     }
+}
+
+/**
+ * v2.5.4 · E：竖屏播放托盘**第一行**（实时歌词）。
+ *
+ * ## 订阅为什么必须在这里，而不是在 PlayerCard
+ *
+ * `currentPosition` 是 **2Hz** 更新的 `StateFlow`（`PlaybackService` 的 `delay(500)`
+ * 心跳）。在 `PlayerCard` 的组合期 `collectAsState`，等于让整个播放器子树
+ * （封面 `AsyncImage` + 歌词面板 + 队列）每 500ms 重组一次 ——
+ * 这正是 `PlayerCard` 里那段注释反复 warn 的事（「让它们在最小作用域
+ * （graphicsLayer / Canvas draw / derivedStateOf / 叶子 Text）内订阅」）。
+ *
+ * 所以两个流都在**这个叶子**里订阅。
+ *
+ * ## 行级节流怎么做到的
+ *
+ * `combine(歌词, 位置)` 每 500ms 产出一个新值，但 `distinctUntilChanged()` 把它压成
+ * **只有文本真的变了才向下游发一个新值**。于是：
+ * - 一行的持续时间里（通常 2~5 秒）本组件的 recomposition 次数 = **0**；
+ * - 跨行的那一刻重组 **1 次**。
+ *
+ * 判据本身是纯函数（[TrayLyric.lineAt]），由 `TrayLyricTest` 钉住 ——
+ * 「不逐字、不逐帧」这条要求因此是可执行断言，而不是一句承诺。
+ *
+ * ## 性能与异常（铁律 4 / 17）
+ *
+ * - 时间戳数组在**歌词列表变化时**才构造一次（`map` 在上游），不在 2Hz 路径里；
+ * - 没有歌词 / 还没到第一行 ⇒ [TrayLyric.lineAt] 返回 `null` ⇒ 这里画一个**空串**。
+ *   Compose 的空文本仍然占一行高（字号决定），所以托盘高度**不会**因为歌词
+ *   就绪而跳一下 —— 这是有意保留的稳定性，不是漏了 `if`。
+ * - 本组件不碰播放链路：只读两个 StateFlow，任何异常都止步于文本渲染。
+ */
+@Composable
+private fun TrayLyricLine(
+    lyricsFlow: kotlinx.coroutines.flow.StateFlow<List<com.takahashirinta.ncrust.lyric.LrcLine>>,
+    positionFlow: kotlinx.coroutines.flow.StateFlow<Long>,
+    style: TextStyle,
+    primaryColor: Color,
+    mutedColor: Color,
+    modifier: Modifier = Modifier,
+) {
+    // `collectAsState` 是 @Composable，不能写在 `remember` 的 calculation 里
+    // （那会破坏 Compose 的槽位语义）。流本身用 remember 缓存，只有两条上游换实例时才重建。
+    val lineFlow = remember(lyricsFlow, positionFlow) {
+        lyricsFlow
+            .map { lines -> lines to TrayLyric.timestampsOf(lines) }
+            .combine(positionFlow) { (lines, timestamps), position ->
+                TrayLyric.lineAt(lines, timestamps, position)
+            }
+            .distinctUntilChanged()
+    }
+    val line by lineFlow.collectAsState(initial = null)
+    MetroText(
+        // 一个**空格**而不是空串：真机实测（S6 / Android 7.0）空串的 `MetroText`
+        // 量出来是 **0 高**，托盘会塌成一行、歌词就绪的那一刻再跳成两行。
+        // 空格保留了一行的高度又不显示任何东西 —— 这是「托盘高度稳定」的落点，
+        // 不是随手写的占位符，改回 `orEmpty()` 会让那个跳动回来。
+        text = line ?: " ",
+        // 有实时歌词时用主色（它是"正在发生的事"），没有时这行本就是空的、颜色无所谓。
+        color = if (line != null) primaryColor else mutedColor,
+        style = style,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+        modifier = modifier
+    )
+}
+
+/**
+ * v2.5.4 · D：音频可视化条的**唯一挂载落点**（横屏大屏左栏 / 平板横屏宽屏左栏共用）。
+ *
+ * 抽出来的理由与 `PlayerQualityChip` 一样：同一个功能出现两份实现，必然漂移成
+ * 「某一边高度不同 / 某一边忘了挂 / 某一边订阅了缓冲状态导致整棵子树重组」。
+ *
+ * ## 性能契约（铁律 17：UI 动效不得影响播放性能）
+ *
+ * - [isBuffering] 传的是 **StateFlow 引用**，不是值：订阅发生在
+ *   [AudioVisualizerBars] 的帧循环内部（`activeProvider` 每次只做一次
+ *   `StateFlow.value` 读），**不在 PlayerCard 的组合期**。在调用点 `collectAsState`
+ *   会让整棵播放器子树随缓冲抖动重组 —— 那正是 v1.8.0 注释里 warn 过的事。
+ * - 调用方负责「不挂载」：关掉开关 / 不在允许的形态里时整块不组合，
+ *   连帧时钟都不跑（不是 `alpha = 0` —— 见 AGENTS.md 触摸陷阱第 1/4 条）。
+ * - 本组件不挂任何 `pointerInput` / `clickable`，不新增命中面
+ *   （它画在封面区里，不会与歌词面板的字号按钮抢事件）。
+ *
+ * ## 异常隔离（铁律 4）
+ *
+ * [AudioVisualizerBars] 内部对 `WaveformStore` 只有一次数组拷贝与一次 Canvas 绘制，
+ * 音频线程侧的写入由 `TransparentWaveformSink` 自己吞掉异常 —— 可视化失败
+ * 不会冒泡到播放链路。这里不再包一层 `runCatching`（`@Composable` 里的
+ * try/catch 会破坏 Compose 的重组语义，反而制造新的失败面）。
+ */
+@Composable
+private fun AudioVisualizerSlot(
+    heightDp: Dp,
+    isPlaying: Boolean,
+    isBuffering: kotlinx.coroutines.flow.StateFlow<Boolean>,
+) {
+    AudioVisualizerBars(
+        // 只在帧循环里读，不在这里订阅 isBuffering：在 PlayerCard 组合期订阅缓冲状态
+        // 会让整棵子树随缓冲抖动重组（既有注释 warn 过同一件事）。
+        activeProvider = { isPlaying && !isBuffering.value },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .height(heightDp),
+    )
+    Spacer(Modifier.height(8.dp))
 }
 
 /**

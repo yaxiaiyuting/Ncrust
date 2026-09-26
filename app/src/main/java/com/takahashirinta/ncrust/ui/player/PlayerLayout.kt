@@ -22,6 +22,82 @@ object PlayerLayout {
     /** 宽屏（平板/折叠展开/车机）分栏断点。与全仓库其余 6 处保持一致，不要改。 */
     const val WIDE_BREAKPOINT_DP = 600
 
+    /**
+     * 「平板」断点（`smallestScreenWidthDp`）。
+     *
+     * 与 [WIDE_BREAKPOINT_DP] **不是同一个谓词**，把两者当成一回事正是 v2.5.4 · D 那个
+     * bug 的形状：`screenWidthDp >= 600` 在平板横竖两个方向都成立
+     * （WGR-W09 实测竖屏 800dp、横屏 1280dp），而手机横屏也成立（PCL110 800dp）。
+     * 要区分「平板」与「横过来的手机」，只有 `smallestScreenWidthDp` 这一条 ——
+     * 它与方向无关：手机恒 < 600（S6 = 360dp），平板恒 >= 600（WGR-W09 = 800dp）。
+     */
+    const val LARGE_SCREEN_BREAKPOINT_DP = 600
+
+    /** 可视化条高度的比例与上下夹取（沿用 v1.8.0 · T3 的取值，抽出来当唯一定义）。 */
+    const val VISUALIZER_HEIGHT_FRACTION = 0.11f
+    const val VISUALIZER_MIN_HEIGHT_DP = 32f
+    const val VISUALIZER_MAX_HEIGHT_DP = 56f
+
+    /**
+     * v2.5.4 · D：音频可视化条**该不该挂载**。
+     *
+     * ## 这个谓词修的是什么
+     *
+     * v1.8.0 · T3 把可视化只挂在 `bigScreenActive ->` 那一个布局分支里
+     * （`PlayerCard.kt` 的横屏桌面播放器布局）。而 [isBigScreenActive] 是
+     * 「**用户意图**（点了 ⤢）+ 窗口真的横过来」两个条件的与，而 `bigScreen` 默认 false。
+     * 平板横屏时 `isWidePlayer` 为真 ⇒ 走**宽屏两栏**分支，那一条里一个可视化都没挂
+     * ⇒ 用户报的「平板横屏波浪条不显示」。
+     *
+     * 更糟的是平板**没有** ⤢ 入口：那个按钮只存在于竖屏控制条变体里
+     * （`FullPlayerControls` 的 `if (landscape)` 分支里没有它），而
+     * `landscape = usesSideCover = isWidePlayer || bigScreenActive` 在平板上恒为真。
+     * 也就是说这条功能在平板上是**结构性不可达**的，不是「某个条件没满足」。
+     *
+     * ## 判据（四条与，缺一不可）
+     *
+     * | 条件 | 作用 | 不满足时的形态 |
+     * |---|---|---|
+     * | [enabled] | 用户开关（`VisualizerSetting`，默认开） | 关掉 = 整块不挂载，连帧时钟都不跑 |
+     * | [bigScreenActive] | 横屏桌面布局（原本唯一的挂载点） | 手机横屏的常规路径 |
+     * | [isLargeScreen] | `smallestScreenWidthDp >= 600` = **平板** | 手机横屏不在这里显示（与 v1.8.0 逐像素一致） |
+     * | [orientationLandscape] | 只在横屏给 | 平板竖屏保持与 v1.8.0 一致（不放可视化） |
+     *
+     * ## A/B（每一格都有谓词或真机证据）
+     *
+     * | 形态 | bigScreenActive | isWidePlayer | isLargeScreen | landscape | 挂载 |
+     * |---|---|---|---|---|---|
+     * | 手机竖屏 | false | false | false | false | ❌（v1.8.0 起就没有，**不回归**） |
+     * | 手机横屏·大屏模式 | true | true | false | true | ✅（走 [bigScreenActive]，**不回归**） |
+     * | 手机横屏·非大屏模式 | false | true | false | true | ❌（v1.8.0 起就没有，**不回归**） |
+     * | 平板竖屏 | false | true | true | false | ❌（v1.8.0 起就没有，**不回归**） |
+     * | **平板横屏** | false | true | true | true | ✅（**本版修的就是这一格**） |
+     * | 平板横屏·大屏模式 | true | true | true | true | ✅（走 [bigScreenActive]） |
+     *
+     * 即：只有「平板 + 横屏」这一格从「无」变成「有」，其余五格与 v1.8.0 逐格相同。
+     */
+    fun visualizerSlot(
+        enabled: Boolean,
+        bigScreenActive: Boolean,
+        isWidePlayer: Boolean,
+        isLargeScreen: Boolean,
+        orientationLandscape: Boolean,
+    ): Boolean = enabled && (
+        bigScreenActive || (isWidePlayer && isLargeScreen && orientationLandscape)
+        )
+
+    /**
+     * 可视化条的高度（dp）：窗口高 × [VISUALIZER_HEIGHT_FRACTION]，夹在
+     * [VISUALIZER_MIN_HEIGHT_DP]~[VISUALIZER_MAX_HEIGHT_DP] 之间。
+     *
+     * 与 v1.8.0 的算式逐字相同（`(screenHeightDp * 0.11f).coerceIn(32.dp, 56.dp)`），
+     * 抽出来只是为了让「平板横屏拿到 56dp」这件事可被单测钉住：
+     * WGR-W09 横屏 768dp × 0.11 = 84.5 ⇒ 夹到 56dp；手机横屏 363dp ⇒ 39.9dp。
+     */
+    fun visualizerHeightDp(screenHeightDp: Float): Float =
+        (screenHeightDp * VISUALIZER_HEIGHT_FRACTION)
+            .coerceIn(VISUALIZER_MIN_HEIGHT_DP, VISUALIZER_MAX_HEIGHT_DP)
+
     /** 宽屏两栏时**右栏**占比（原实现写死 0.56f，这里提出来当唯一定义）。 */
     const val WIDE_RIGHT_FRACTION = 0.56f
 
