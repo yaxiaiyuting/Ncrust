@@ -1,0 +1,41 @@
+== v2.6.1 HEAD == 产物源码 自证 ==
+生成时间: 2026-09-26 23:32:14 +0800
+
+产出本批 APK 的提交 (BUILD_COMMIT): 5e2accf13a29faa0112f66b844bbb534822c2293
+打 tag 时的 HEAD            : 982eeb63fd8101ee357acdedd1d29c1d8dbd2d76
+
+-- 自证 1: 两者之间的源码差异（应为空）--
+$ git diff --stat $BUILD_COMMIT HEAD -- app/ benchmark/ build.gradle.kts settings.gradle.kts gradle.properties
+(以上为空 ⇒ 产物源码与 HEAD 逐字节一致)
+
+-- 自证 2: 工作区干净 --
+$ git status --porcelain
+?? docs/verification/v2.6.1/verification/HEAD-vs-artifact.txt
+(以上为空 ⇒ 干净)
+
+-- 自证 3: BUILD_COMMIT 与 HEAD 之间只有 docs/ --
+docs/verification/v2.6.1/verification/DEVICE-VERIFICATION.md
+docs/verification/v2.6.1/verification/after-pcl-01-qq-artist-page.png
+docs/verification/v2.6.1/verification/after-pcl-02-search-fallback.png
+docs/verification/v2.6.1/verification/after-pcl-03-qq-artist-from-tray.png
+docs/verification/v2.6.1/verification/after-wgr-01-qq-artist-page.png
+docs/verification/v2.6.1/verification/after-wgr-01-qq-artist-tree.txt
+docs/verification/v2.6.1/verification/after-wgr-02-qq-artist-page.png
+docs/verification/v2.6.1/verification/after-wgr-02-qq-artist-tree.txt
+docs/verification/v2.6.1/verification/after-wgr-03-netease-artist-tree.txt
+docs/verification/v2.6.1/verification/after-wgr-04-search-fallback-tree.txt
+docs/verification/v2.6.1/verification/after-wgr-04-search-fallback.png
+docs/verification/v2.6.1/verification/after-wgr-05-search-fallback-snackbar.png
+docs/verification/v2.6.1/verification/after-wgr-06-album-page-artist-tree.txt
+docs/verification/v2.6.1/verification/gradle-fullbuild-final.log
+docs/verification/v2.6.1/verification/gradle-fullbuild-round2-release.log
+docs/verification/v2.6.1/verification/version-check.txt
+
+-- 自证 4: APK 与 dist 副本同一文件 --
+f331b863cab0af92616611fcf2e93da3d428ba2a3c70ecb178dfa2dc644623d1  app/build/outputs/apk/release/app-release.apk
+f331b863cab0af92616611fcf2e93da3d428ba2a3c70ecb178dfa2dc644623d1  /home/duanjb666/deepseek/ncrust-gpl/dist/Ncrust-v2.6.1-gpl-release.apk
+
+-- 自证 5: 打 tag 前用 tag 名回查版本（tag 尚未创建，此处用 HEAD 代查）--
+$ git show HEAD:app/build.gradle.kts | grep version
+        versionCode = 49
+        versionName = "2.6.1-gpl"
