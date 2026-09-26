@@ -1,58 +1,46 @@
 ==============================================================================
 1) 队列去重的落点（HEAD，全部按裸 `song.id`）
 ==============================================================================
-  app/src/main/java/com/takahashirinta/ncrust/MainActivity.kt
-     1084  [队列内按 id 找歌]  val found = playbackQueue.firstOrNull { it.id == id }
-     1190  [INFINITY 去重集]  val existingIds = playbackQueue.map { it.id }.toSet()
-     1190  [已存在 id 集]  val existingIds = playbackQueue.map { it.id }.toSet()
-     1494  [同曲短路（取反）]  if (song.id != currentId) {
-     1495  [队列去重（单曲）]  val filtered = playbackQueue.filter { it.id != song.id }.toMutableList()
-     1506  [播放前定位下标]  val idx = playbackQueue.indexOfFirst { it.id == song.id }
-     1637  [同曲短路]  if (song.id == currentId) return
-     1638  [队列去重（单曲）]  val filtered = playbackQueue.filter { it.id != song.id }
-     1641  [去重后重定位当前歌]  playbackQueue.indexOfFirst { it.id == currentId }.coerceAtLeast(0)
-     1688  [待插入列表剔除当前歌]  val toInsert = if (currentId != null) songs.filter { it.id != currentId } else songs
-     1691  [队列去重（批量）]  val filtered = playbackQueue.filter { it.id !in ids }.toMutableList()
-     1709  [INFINITY 去重集]  val existingIds = playbackQueue.map { it.id }.toSet()
-     1709  [已存在 id 集]  val existingIds = playbackQueue.map { it.id }.toSet()
-     1710  [批量追加去重]  val newSongs = songs.filter { it.id !in existingIds }
-  合计落点: 14 处，分布在 1 个文件
+  合计落点: 0 处，分布在 0 个文件（注释行已排除 —— 改造后旧写法只应出现在 KDoc 的反面教材里）
 
   纯逻辑落点（JVM 可单测的那一层）：app/.../player/QueueInsert.kt
 
   ★ 已存在但**零调用点**的身份属性：`SongItem.dedupeKey`
     `X.dedupeKey` 在生产代码里的使用: 0 处 ← 定义在、守卫在，但**一次都没接线**
-    定义处: app/.../source/SongSourceExt.kt —— `get() = trackKey`（即 `source:id`）
+    定义处: app/.../source/SongSourceExt.kt
+    v2.5.3 起它的定义是 `TrackKey.ofSong(this).tag` —— 与生产路径（`trackKeyOf()`）
+    **同一个落点**，所以它不会再与队列判重漂移；但直接读 `.dedupeKey` 的代码依然是 0 处，
+    生产路径走的是 `trackKeyOf()`。**不要把它说成「已被调用」**。
     已有的守卫: app/src/test/.../source/SongSourceExtTest.kt（断言跨源不相等）
 
 ==============================================================================
 2) `SongItem.id` 的生产者与 id 形态
 ==============================================================================
-  MainActivity.kt:887
+  MainActivity.kt:889
       id = songId
       source = PlaybackStateManager.getSourceKey(context)
-  MainActivity.kt:979
+  MainActivity.kt:981
       id = <位置参数/未命名>
       source = <无>
-  MainActivity.kt:1479
+  MainActivity.kt:1488
       id = <位置参数/未命名>
       source = <无>
-  MainActivity.kt:1752
+  MainActivity.kt:1772
       id = it.id
       source = <无>
-  MainActivity.kt:2171
+  MainActivity.kt:2191
       id = <位置参数/未命名>
       source = <无>
-  MainActivity.kt:2195
+  MainActivity.kt:2215
       id = <位置参数/未命名>
       source = <无>
-  MainActivity.kt:2249
+  MainActivity.kt:2269
       id = <位置参数/未命名>
       source = <无>
-  MainActivity.kt:2262
+  MainActivity.kt:2282
       id = s.id
       source = <无>
-  MainActivity.kt:2329
+  MainActivity.kt:2349
       id = <位置参数/未命名>
       source = <无>
   crosssource/CatalogAggregator.kt:520
@@ -79,7 +67,7 @@
   qq/QqSongMapper.kt:115
       id = syntheticId
       source = MusicSource.QQMUSIC.key
-  source/SongSourceExt.kt:65
+  source/SongSourceExt.kt:90
       id = id
       source = if (source == MusicSource.NETEASE) null else source.key
   ui/screen/SearchScreen.kt:253
@@ -153,17 +141,17 @@
 ==============================================================================
 7) TrackKey 改造的影响面
 ==============================================================================
-  MainActivity.insertNext             line 1536
-  MainActivity.appendToQueue          line 1635
-  MainActivity.insertAllNext          line 1679
-  MainActivity.appendAllToQueue       line 1703
-  MainActivity.removeFromQueue        line 1088
-  MainActivity.moveInQueue            line 1097
-  MainActivity.replaceQueueAndPlay    line 1647
-  MainActivity.playFromQueue          line 1121
-  MainActivity.generateShuffledIndices line 1023
-  MainActivity.launchInfinity         line 1187
-  MainActivity.playSongItem           line 1479
+  MainActivity.insertNext             line 1550
+  MainActivity.appendToQueue          line 1649
+  MainActivity.insertAllNext          line 1698
+  MainActivity.appendAllToQueue       line 1721
+  MainActivity.removeFromQueue        line 1095
+  MainActivity.moveInQueue            line 1104
+  MainActivity.replaceQueueAndPlay    line 1666
+  MainActivity.playFromQueue          line 1128
+  MainActivity.generateShuffledIndices line 1025
+  MainActivity.launchInfinity         line 1194
+  MainActivity.playSongItem           line 1488
 
   待播槽位（不受影响，它已经用 TrackKey）:
     PreloadSlot.mediaIdFor(source: MusicSource, songId: Long, url: String)
@@ -175,17 +163,17 @@
     PreloadSlot.transitionMatches(pendingSongId: Long, pendingUrl: String?, itemSongId: Long?, itemUrl: )
 
   随机模式（按**下标**编排，与身份 key 无关）:
-    MainActivity.kt:1025  shuffledIndices = emptyList()
-    MainActivity.kt:1030  shuffledIndices = ShuffleRound.newRound(
-    MainActivity.kt:1047  shuffledIndices = emptyList()
-    MainActivity.kt:1127  val pos = shuffledIndices.indexOf(index)
-    MainActivity.kt:1863  shuffledIndices = emptyList()
-    MainActivity.kt:2096  shuffledIndices = emptyList()
+    MainActivity.kt:1027  shuffledIndices = emptyList()
+    MainActivity.kt:1032  shuffledIndices = ShuffleRound.newRound(
+    MainActivity.kt:1049  shuffledIndices = emptyList()
+    MainActivity.kt:1134  val pos = shuffledIndices.indexOf(index)
+    MainActivity.kt:1883  shuffledIndices = emptyList()
+    MainActivity.kt:2116  shuffledIndices = emptyList()
 
 ==============================================================================
 8) 结论速览
 ==============================================================================
-  · 队列去重当前用**裸 `song.id`**，落点 14 处
+  · 队列去重当前用**裸 `song.id`**，落点 0 处
   · `SongItem.dedupeKey` 已存在（= `source:id`）但生产代码零调用
   · 双源 id 冲突发生率 = **0**，且是 bit62 标志位带来的**结构性 0**
   · 队列快照落的是整个 SongItem（带 source/mid）⇒ **无需历史数据迁移**

@@ -81,12 +81,24 @@ QUEUE_PREDICATES = [
 ]
 
 
+def is_comment_line(line):
+    """这一行是不是注释（含 KDoc 的 ` * ` 续行）。
+
+    ⚠️ 这个判定是**必须**的：改造完成后，旧的裸 id 写法会以「反面教材」的形式
+    留在 `QueueKeys.kt` 的 KDoc 里。只按 `//` 切行会把那些 `* val filtered = …`
+    当成真实落点，得出「还剩 3 处没改」的假结论 —— 本探针第一版就这么错过了。
+    """
+    t = line.strip()
+    return t.startswith("//") or t.startswith("*") or t.startswith("/*")
+
+
 def find_dedup_sites():
     hits = []
     for path in walk_kt(SRC):
         rel = os.path.relpath(path, REPO)
-        lines = read(path).splitlines()
-        for no, line in enumerate(lines, 1):
+        for no, line in enumerate(read(path).splitlines(), 1):
+            if is_comment_line(line):
+                continue
             code = line.split("//")[0]
             for pat, label in QUEUE_PREDICATES:
                 if re.search(pat, code):
@@ -236,7 +248,9 @@ def main():
         print(f"  {rel}")
         for no, label, code in sorted(by_file[rel]):
             print(f"    {no:5d}  [{label}]  {code[:88]}")
-    print(f"  合计落点: {len(hits)} 处，分布在 {len(by_file)} 个文件")
+    print(f"  合计落点: {len(hits)} 处，分布在 {len(by_file)} 个文件"
+          + ("（注释行已排除 —— 改造后旧写法只应出现在 KDoc 的反面教材里）"
+             if not hits else ""))
     print()
     print("  纯逻辑落点（JVM 可单测的那一层）：app/.../player/QueueInsert.kt")
     for name, args in find_pure_logic_dedup():
@@ -252,7 +266,10 @@ def main():
           + ("（" + "; ".join(x.split(':')[0].split('/')[-1] + ':' +
                               x.split(':')[1] for x in prod) + "）"
              if prod else " ← 定义在、守卫在，但**一次都没接线**"))
-    print("    定义处: app/.../source/SongSourceExt.kt —— `get() = trackKey`（即 `source:id`）")
+    print("    定义处: app/.../source/SongSourceExt.kt")
+    print("    v2.5.3 起它的定义是 `TrackKey.ofSong(this).tag` —— 与生产路径（`trackKeyOf()`）")
+    print("    **同一个落点**，所以它不会再与队列判重漂移；但直接读 `.dedupeKey` 的代码依然是 0 处，")
+    print("    生产路径走的是 `trackKeyOf()`。**不要把它说成「已被调用」**。")
     print("    已有的守卫: app/src/test/.../source/SongSourceExtTest.kt（断言跨源不相等）")
     print()
 

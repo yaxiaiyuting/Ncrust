@@ -56,8 +56,9 @@ python3 docs/verification/v2.5.3/probe-queue-dedup.py  | tee /tmp/b.txt
 | 消费 `Strings` 的文件 | 36 个，全在 `ui/` + `MainActivity` |
 | `UserScreen.kt` 的 key 数 | **78**（第二名 29 的 2.7 倍） |
 | 8 语言里取值逐字相同的 key | **1 条**（`uidLabel`）⇒ 按语言拆无效 |
-| 队列去重落点 | **14 处**，全是 `MainActivity` 里的内联表达式 |
-| `SongItem.dedupeKey` 生产调用点 | **0 处**（定义在、守卫在、没接线） |
+| 队列去重落点（改造前） | **14 处**，全是 `MainActivity` 里的内联表达式 |
+| 队列去重落点（**改造后，探针实测**） | **0 处**（探针排除注释行后重跑） |
+| `SongItem.dedupeKey` 生产调用点 | **0 处**（定义在、守卫在、没接线）—— v2.5.3 把它的**定义**并到与生产路径同一个落点上，但它本身仍未被直接调用 |
 | QQ id 的 bit62 标志位 | `1L shl 62 = 4611686018427387904` |
 | 网易云 songId 实测量级 | `1e6 ~ 3e9`（< `2^40`） |
 | **跨源裸 id 冲突（1000 首 A/B 抽样）** | **0**（结构性 0，见 §3） |
