@@ -1,0 +1,113 @@
+== 设备 ==
+PLC110
+36
+== 构建 release（profile 必须按 R8 之后的 dex 采样） ==
+Warning: SDK processing. This version only understands SDK XML versions up to 3 but an SDK XML file of version 4 was encountered. This can happen if you use versions of Android Studio and the command-line tools that were released at different times.
+== 安装 release ==
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1790424065.887725  199964 adb_install.cpp:153] pm command: 'package install -r -S 10059208'
+Performing Streamed Install
+Success
+== 构建并安装 benchmark ==
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1790424068.531836  200122 adb_install.cpp:153] pm command: 'package install -r -t -S 39980825'
+Performing Streamed Install
+Success
+== 关闭系统动画（采样期间；退出时还原） ==
+== 采样 ==
+
+com.takahashirinta.ncrust.benchmark.BaselineProfileGenerator:
+Error in generate(com.takahashirinta.ncrust.benchmark.BaselineProfileGenerator):
+java.lang.IllegalStateException: UiAutomationService android.accessibilityservice.IAccessibilityServiceClient$Stub$Proxy@fb47c82already registered!
+	at android.os.Parcel.createExceptionOrNull(Parcel.java:3377)
+	at android.os.Parcel.createException(Parcel.java:3353)
+	at android.os.Parcel.readException(Parcel.java:3336)
+	at android.os.Parcel.readException(Parcel.java:3278)
+	at android.app.IUiAutomationConnection$Stub$Proxy.connect(IUiAutomationConnection.java:555)
+	at android.app.UiAutomation.connectWithTimeout(UiAutomation.java:386)
+	at android.app.Instrumentation.getUiAutomation(Instrumentation.java:2592)
+	at androidx.test.uiautomator.UiDevice$Api24Impl.getUiAutomationWithRetry(UiDevice.java:1538)
+	at androidx.test.uiautomator.UiDevice.getUiAutomation(UiDevice.java:1463)
+	at androidx.test.uiautomator.QueryController.<init>(QueryController.java:95)
+	at androidx.test.uiautomator.UiDevice.<init>(UiDevice.java:113)
+	at androidx.test.uiautomator.UiDevice.getInstance(UiDevice.java:294)
+	at androidx.benchmark.macro.MacrobenchmarkScope.<init>(MacrobenchmarkScope.kt:165)
+	at androidx.benchmark.macro.BaselineProfilesKt.buildMacrobenchmarkScope(BaselineProfiles.kt:164)
+	at androidx.benchmark.macro.BaselineProfilesKt.collect(BaselineProfiles.kt:52)
+	at androidx.benchmark.macro.junit4.BaselineProfileRule.collect(BaselineProfileRule.kt:94)
+	at androidx.benchmark.macro.junit4.BaselineProfileRule.collect$default(BaselineProfileRule.kt:83)
+	at com.takahashirinta.ncrust.benchmark.BaselineProfileGenerator.generate(BaselineProfileGenerator.kt:96)
+INSTRUMENTATION_RESULT: shortMsg=Process crashed.
+INSTRUMENTATION_CODE: 0
+
+== 旅程覆盖（tag NcrustProfileGen） ==
+OK 计数（粗略）: 0
+!! 一条旅程都没有 OK —— 不要拿这份 profile 覆盖 app/src/main/baseline-prof.txt。
+!! （未登录是常见原因：旅程 5「播放开始」/6「切歌」需要收藏里有歌。）
+== 动画已还原: window=1.0 transition=1.0 animator=null
+GEN_RC=4
+=== PLC110 reboot 后再试一次（清掉可能的 UiAutomation 陈旧注册）===
+boot_completed=
+== 设备 ==
+PLC110
+36
+== 构建 release（profile 必须按 R8 之后的 dex 采样） ==
+Warning: SDK processing. This version only understands SDK XML versions up to 3 but an SDK XML file of version 4 was encountered. This can happen if you use versions of Android Studio and the command-line tools that were released at different times.
+== 安装 release ==
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1790424146.295146  200587 adb_install.cpp:153] pm command: 'package install -r -S 10059208'
+Performing Streamed Install
+adb: failed to install app/build/outputs/apk/release/app-release.apk: Error: device is still booting.
+
+GEN_RC_AFTER_REBOOT=1
+还原后: svc=com.omarea.vtools/com.omarea.vtools.AccessibilitySceneMode:li.songe.gkd/com.google.android.accessibility.selecttospeak.SelectToSpeakService en=1
+== 设备 ==
+PLC110
+36
+== 构建 release（profile 必须按 R8 之后的 dex 采样） ==
+== 安装 release ==
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1790424156.243565  200850 adb_install.cpp:153] pm command: 'package install -r -S 10059208'
+Performing Streamed Install
+adb: failed to install app/build/outputs/apk/release/app-release.apk: Error: device is still booting.
+
+GEN_RC_RETRY=1
+=== attempt 4 (device fully booted) ===
+== 设备 ==
+PLC110
+36
+== 构建 release（profile 必须按 R8 之后的 dex 采样） ==
+== 安装 release ==
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1790424186.428146  201136 adb_install.cpp:153] pm command: 'package install -r -S 10059208'
+Performing Streamed Install
+Success
+== 构建并安装 benchmark ==
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1790424189.214341  201423 adb_install.cpp:153] pm command: 'package install -r -t -S 39980817'
+Performing Streamed Install
+Success
+== 关闭系统动画（采样期间；退出时还原） ==
+== 采样 ==
+restored: svc=com.omarea.vtools/com.omarea.vtools.AccessibilitySceneMode:li.songe.gkd/com.google.android.accessibility.selecttospeak.SelectToSpeakService en=1
+=== attempt 5 (iterations=3, post-reboot) ===
+== 设备 ==
+PLC110
+36
+== 构建 release（profile 必须按 R8 之后的 dex 采样） ==
+Warning: SDK processing. This version only understands SDK XML versions up to 3 but an SDK XML file of version 4 was encountered. This can happen if you use versions of Android Studio and the command-line tools that were released at different times.
+== 安装 release ==
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1790424570.565366  202764 adb_install.cpp:153] pm command: 'package install -r -S 10059208'
+Performing Streamed Install
+Success
+== 构建并安装 benchmark ==
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1790424572.282190  202921 adb_install.cpp:153] pm command: 'package install -r -t -S 39980817'
+Performing Streamed Install
+Success
+== 关闭系统动画（采样期间；退出时还原） ==
+== 采样 ==
+
+com.takahashirinta.ncrust.benchmark.BaselineProfileGenerator:已终止                  $ADB shell am instrument -w -e class "$GENERATOR_CLASS" "${EXTRA[@]}" "$BENCH_PKG/androidx.test.runner.AndroidJUnitRunner"
+== 动画已还原: window=0 transition=0 animator=0

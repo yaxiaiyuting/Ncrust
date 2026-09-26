@@ -1,0 +1,32 @@
+### label=B0-v256-handwritten iterations=10 modes=speed-profile speed
+### device=SM-G9209 api=24
+### installed=    versionName=2.5.6-gpl
+### animations: window=0 transition=0 animator=0
+
+--- compile mode: speed-profile ---
+compile: Success
+iter=1 TotalTime=592ms WaitTime=652ms
+iter=2 TotalTime=608ms WaitTime=639ms
+iter=3 TotalTime=580ms WaitTime=637ms
+iter=4 TotalTime=575ms WaitTime=606ms
+iter=5 TotalTime=595ms WaitTime=627ms
+iter=6 TotalTime=588ms WaitTime=627ms
+iter=7 TotalTime=589ms WaitTime=629ms
+iter=8 TotalTime=577ms WaitTime=611ms
+iter=9 TotalTime=605ms WaitTime=644ms
+iter=10 TotalTime=640ms WaitTime=694ms
+
+--- compile mode: speed ---
+compile: Success
+iter=1 TotalTime=496ms WaitTime=527ms
+iter=2 TotalTime=489ms WaitTime=534ms
+iter=3 TotalTime=484ms WaitTime=513ms
+iter=4 TotalTime=483ms WaitTime=520ms
+iter=5 TotalTime=504ms WaitTime=548ms
+iter=6 TotalTime=481ms WaitTime=513ms
+iter=7 TotalTime=484ms WaitTime=524ms
+iter=8 TotalTime=490ms WaitTime=523ms
+iter=9 TotalTime=502ms WaitTime=532ms
+iter=10 TotalTime=473ms WaitTime=517ms
+
+### done label=B0-v256-handwritten

@@ -1,0 +1,8 @@
+### PRE-CHANGE STATE ###
+accelerometer_rotation=0
+user_rotation=1
+ignoreOrientationRequest=ignoreOrientationRequest false for displayId=0
+wm size=Physical size: 2560x1600 Override size: 1600x2560 
+  overrideConfig={1.0 ?mcc?mnc [zh_CN_#Hans,en_CN] ldltr sw800dp w800dp h1248dp 320dpi xlrg hdr port night finger -keyb/v/h -nav/h winConfig={ mBounds=Rect(0, 0 - 1600, 2560) mAppBounds=Rect(0, 0 - 1600, 2560) mMaxBounds=Rect(0, 0 - 1600, 2560) mWindowingMode=fullscreen mDisplayWindowingMode=fullscreen mActivityType=undefined mAlwaysOnTop=undefined mRotation=ROTATION_0 mPopOverMode=0} suim:1 extflag:8 s.410 fontWeightAdjustment=0}
+    init=2560x1600 320dpi base=1600x2560 320dpi cur=1600x2560 app=1600x2560 rng=1600x1536-2560x2496
+lock 0

@@ -1,0 +1,7 @@
+09-26 19:29:54.262 15810 15810 I NcrustBigScreen: big screen: manual enter, holding landscape (auto-rotate off)
+09-26 19:29:54.262  1639  3997 I WindowManager: screenOnEarly=true,awaketrue,currentAppOrientation=6, keyguardDrawComplete=true, windowManagerDrawComplete=true
+09-26 19:29:54.288 15810 15810 I NcrustBigScreen: immersive: status bar hidden
+09-26 19:29:56.369  1639  3997 D HwActivityTaskManagerServiceEx: getVisibleTasks add visible task to list, topActivity : ActivityRecord{835e35e u0 com.takahashirinta.ncrust/.MainActivity t4868}
+09-26 19:29:56.378  1639  3991 D HwActivityTaskManagerServiceEx: getVisibleTasks add visible task to list, topActivity : ActivityRecord{835e35e u0 com.takahashirinta.ncrust/.MainActivity t4868}
+09-26 19:29:56.381  1639  3991 W ActivityTaskManager: do not allow hiding recent tasks, task id: 4868 , package = com.takahashirinta.ncrust
+09-26 19:29:56.387  1639  3991 D HwActivityTaskManagerServiceEx: getVisibleTasks add visible task to list, topActivity : ActivityRecord{835e35e u0 com.takahashirinta.ncrust/.MainActivity t4868}

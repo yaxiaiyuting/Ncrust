@@ -1,0 +1,7 @@
+=== PLC110 设备改动留痕（生成 baseline profile 期间临时关闭无障碍服务）===
+改前 enabled_accessibility_services:
+com.omarea.vtools/com.omarea.vtools.AccessibilitySceneMode:li.songe.gkd/com.google.android.accessibility.selecttospeak.SelectToSpeakService
+改前 accessibility_enabled:
+1
+ORIG_SVC=com.omarea.vtools/com.omarea.vtools.AccessibilitySceneMode:li.songe.gkd/com.google.android.accessibility.selecttospeak.SelectToSpeakService
+ORIG_EN=1

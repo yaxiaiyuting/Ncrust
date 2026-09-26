@@ -1,0 +1,13 @@
+### pre-existing display overrides (not set by this probe) ###
+display_size_forced=null
+display_density_forced=null
+
+### A: request PRESENT (big-screen, SENSOR_LANDSCAPE) + user_rotation=0 -> display ?? ###
+ldltr sw800dp w1280dp h768dp 320dpi
+
+### B: tap EXIT big-screen (2496,1542) -> app drops request ###
+09-26 19:36:49.717 20532 20532 I NcrustBigScreen: immersive: status bar shown
+cfg: port
+grep: 写入错误: 断开的管道
+appOrientation: mOrientation=SCREEN_ORIENTATION_UNSPECIFIED
+user_rotation=0

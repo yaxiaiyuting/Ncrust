@@ -1,0 +1,45 @@
+### label=A-handwritten iterations=10 modes=speed-profile speed verify
+### device=SM-G9209 api=24
+### installed=    versionName=2.5.5-gpl
+### animations: window=0 transition=0 animator=0
+
+--- compile mode: speed-profile ---
+compile: Success
+iter=1 TotalTime=591ms WaitTime=624ms
+iter=2 TotalTime=583ms WaitTime=613ms
+iter=3 TotalTime=553ms WaitTime=584ms
+iter=4 TotalTime=606ms WaitTime=627ms
+iter=5 TotalTime=611ms WaitTime=655ms
+iter=6 TotalTime=595ms WaitTime=625ms
+iter=7 TotalTime=594ms WaitTime=651ms
+iter=8 TotalTime=602ms WaitTime=647ms
+iter=9 TotalTime=618ms WaitTime=651ms
+iter=10 TotalTime=619ms WaitTime=661ms
+
+--- compile mode: speed ---
+compile: Success
+iter=1 TotalTime=503ms WaitTime=537ms
+iter=2 TotalTime=507ms WaitTime=536ms
+iter=3 TotalTime=484ms WaitTime=529ms
+iter=4 TotalTime=476ms WaitTime=520ms
+iter=5 TotalTime=494ms WaitTime=525ms
+iter=6 TotalTime=490ms WaitTime=524ms
+iter=7 TotalTime=505ms WaitTime=537ms
+iter=8 TotalTime=497ms WaitTime=526ms
+iter=9 TotalTime=514ms WaitTime=548ms
+iter=10 TotalTime=503ms WaitTime=546ms
+
+--- compile mode: verify ---
+compile: Error: "verify" is not a valid compilation filter.
+iter=1 TotalTime=494ms WaitTime=523ms
+iter=2 TotalTime=491ms WaitTime=520ms
+iter=3 TotalTime=507ms WaitTime=537ms
+iter=4 TotalTime=487ms WaitTime=520ms
+iter=5 TotalTime=492ms WaitTime=523ms
+iter=6 TotalTime=497ms WaitTime=545ms
+iter=7 TotalTime=501ms WaitTime=544ms
+iter=8 TotalTime=484ms WaitTime=532ms
+iter=9 TotalTime=496ms WaitTime=526ms
+iter=10 TotalTime=488ms WaitTime=520ms
+
+### done label=A-handwritten

@@ -1,0 +1,10 @@
+### @ 2026-09-26T19:31:22+08:00 ###
+accelerometer_rotation=0
+user_rotation=1
+wm user-rotation=lock 1 
+ignoreOrientationRequest=ignoreOrientationRequest false for displayId=0
+  mLastOrientationSource=WindowedMagnification:0:31@130409208
+  deepestLastOrientationSource=ActivityRecord{9d6350a u0 com.takahashirinta.ncrust/.MainActivity t4869}
+  overrideConfig={1.0 ?mcc?mnc [zh_CN_#Hans,en_CN] ldltr sw800dp w1280dp h768dp 320dpi xlrg hdr land night finger -keyb/v/h -nav/h winConfig={ mBounds=Rect(0, 0 - 2560, 1600) mAppBounds=Rect(0, 0 - 2560, 1600) mMaxBounds=Rect(0, 0 - 2560, 1600) mWindowingMode=fullscreen mDisplayWindowingMode=fullscreen mActivityType=undefined mAlwaysOnTop=undefined mRotation=ROTATION_90 mPopOverMode=0} suim:1 extflag:8 s.466 fontWeightAdjustment=0}
+          mOrientation=SCREEN_ORIENTATION_UNSPECIFIED
+grep: 写入错误: 断开的管道

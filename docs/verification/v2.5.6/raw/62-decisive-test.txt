@@ -1,0 +1,24 @@
+### STEP 3: tap ⤢ (307,1526) ###
+09-26 19:35:57.595 20532 20532 I NcrustBigScreen: big screen: manual enter, holding landscape (auto-rotate off)
+09-26 19:35:57.596  1639  2517 I WindowManager: screenOnEarly=true,awaketrue,currentAppOrientation=6, keyguardDrawComplete=true, windowManagerDrawComplete=true
+09-26 19:35:57.649 20532 20532 I NcrustBigScreen: immersive: status bar hidden
+--- mOrientation after tap ---
+          mOrientation=SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+grep: 写入错误: 断开的管道
+lock 1
+
+### STEP 4: now force display to PORTRAIT while app holds its request ###
+grep: 写入错误: 断开的管道
+[t+2s] cfg: land | user_rotation=0 | appOrientation=mOrientation=SCREEN_ORIENTATION_SENSOR_LANDSCAPE | 1 bigscreen-logs
+grep: 写入错误: 断开的管道
+[t+4s] cfg: land | user_rotation=0 | appOrientation=mOrientation=SCREEN_ORIENTATION_SENSOR_LANDSCAPE | 1 bigscreen-logs
+grep: 写入错误: 断开的管道
+[t+6s] cfg: land | user_rotation=0 | appOrientation=mOrientation=SCREEN_ORIENTATION_SENSOR_LANDSCAPE | 1 bigscreen-logs
+grep: 写入错误: 断开的管道
+[t+8s] cfg: land | user_rotation=0 | appOrientation=mOrientation=SCREEN_ORIENTATION_SENSOR_LANDSCAPE | 1 bigscreen-logs
+grep: 写入错误: 断开的管道
+[t+10s] cfg: land | user_rotation=0 | appOrientation=mOrientation=SCREEN_ORIENTATION_SENSOR_LANDSCAPE | 1 bigscreen-logs
+--- key logs ---
+09-26 19:35:57.595 20532 20532 I NcrustBigScreen: big screen: manual enter, holding landscape (auto-rotate off)
+09-26 19:35:57.596  1639  2517 I WindowManager: screenOnEarly=true,awaketrue,currentAppOrientation=6, keyguardDrawComplete=true, windowManagerDrawComplete=true
+09-26 19:35:57.649 20532 20532 I NcrustBigScreen: immersive: status bar hidden

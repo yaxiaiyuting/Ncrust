@@ -1,0 +1,9 @@
+### user-rotation stability test @ 2026-09-26T19:31:31+08:00 ###
+[t+4s] wm user-rotation: lock 0 | settings user_rotation=0 | accel=0
+  cfg: ldltr sw800dp w800dp h1248dp 320dpi xlrg hdr port night finger -keyb/v/h -nav/h winConfig={ mBounds=Rect(0, 0 - 1600, 2560) mAppBounds=Rect(0, 0 - 1600, 
+[t+8s] wm user-rotation: lock 0 | settings user_rotation=0 | accel=0
+  cfg: ldltr sw800dp w800dp h1248dp 320dpi xlrg hdr port night finger -keyb/v/h -nav/h winConfig={ mBounds=Rect(0, 0 - 1600, 2560) mAppBounds=Rect(0, 0 - 1600, 
+[t+12s] wm user-rotation: lock 0 | settings user_rotation=0 | accel=0
+  cfg: ldltr sw800dp w800dp h1248dp 320dpi xlrg hdr port night finger -keyb/v/h -nav/h winConfig={ mBounds=Rect(0, 0 - 1600, 2560) mAppBounds=Rect(0, 0 - 1600, 
+[t+16s] wm user-rotation: lock 0 | settings user_rotation=0 | accel=0
+  cfg: ldltr sw800dp w800dp h1248dp 320dpi xlrg hdr port night finger -keyb/v/h -nav/h winConfig={ mBounds=Rect(0, 0 - 1600, 2560) mAppBounds=Rect(0, 0 - 1600, 

@@ -1,0 +1,50 @@
+== 设备 ==
+SM-G9209
+24
+== 构建 release（profile 必须按 R8 之后的 dex 采样） ==
+== 安装 release ==
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1790424017.417178  199328 adb_install.cpp:153] pm command: 'exec:cmd package 'install' '-r' -S 10059208'
+Performing Streamed Install
+Success
+== 构建并安装 benchmark ==
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1790424025.451542  199581 adb_install.cpp:153] pm command: 'exec:cmd package 'install' '-r' '-t' -S 39980825'
+Performing Streamed Install
+Success
+== 关闭系统动画（采样期间；退出时还原） ==
+== 采样 ==
+
+com.takahashirinta.ncrust.benchmark.BaselineProfileGenerator:
+Error in generate(com.takahashirinta.ncrust.benchmark.BaselineProfileGenerator):
+java.lang.IllegalArgumentException: Baseline Profile collection requires API 33+, or a rooted device running API 28 or higher and rooted adb session (via `adb root`).
+	at androidx.benchmark.macro.BaselineProfilesKt.buildMacrobenchmarkScope(BaselineProfiles.kt:160)
+	at androidx.benchmark.macro.BaselineProfilesKt.collect(BaselineProfiles.kt:52)
+	at androidx.benchmark.macro.junit4.BaselineProfileRule.collect(BaselineProfileRule.kt:94)
+	at androidx.benchmark.macro.junit4.BaselineProfileRule.collect$default(BaselineProfileRule.kt:83)
+	at com.takahashirinta.ncrust.benchmark.BaselineProfileGenerator.generate(BaselineProfileGenerator.kt:96)
+
+
+Time: 0.028
+There was 1 failure:
+1) generate(com.takahashirinta.ncrust.benchmark.BaselineProfileGenerator)
+java.lang.IllegalArgumentException: Baseline Profile collection requires API 33+, or a rooted device running API 28 or higher and rooted adb session (via `adb root`).
+	at androidx.benchmark.macro.BaselineProfilesKt.buildMacrobenchmarkScope(BaselineProfiles.kt:160)
+	at androidx.benchmark.macro.BaselineProfilesKt.collect(BaselineProfiles.kt:52)
+	at androidx.benchmark.macro.junit4.BaselineProfileRule.collect(BaselineProfileRule.kt:94)
+	at androidx.benchmark.macro.junit4.BaselineProfileRule.collect$default(BaselineProfileRule.kt:83)
+	at com.takahashirinta.ncrust.benchmark.BaselineProfileGenerator.generate(BaselineProfileGenerator.kt:96)
+
+FAILURES!!!
+Tests run: 1,  Failures: 1
+
+
+
+== 旅程覆盖（tag NcrustProfileGen） ==
+grep: 无效的选项 -- >
+用法：grep [选项]... 模式 [文件]...
+请尝试执行 "grep --help" 来获取更多信息。
+OK 计数（粗略）: 0
+!! 一条旅程都没有 OK —— 不要拿这份 profile 覆盖 app/src/main/baseline-prof.txt。
+!! （未登录是常见原因：旅程 5「播放开始」/6「切歌」需要收藏里有歌。）
+== 动画已还原: window=0 transition=0 animator=0

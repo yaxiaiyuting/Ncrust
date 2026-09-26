@@ -1,0 +1,9 @@
+### RESTORE user_rotation to baseline (1) @ 2026-09-26T19:37:00+08:00 ###
+accelerometer_rotation=0
+user_rotation=1
+wm size=Physical size: 2560x1600 Override size: 1600x2560 
+wm density=Physical density: 320 
+ignoreOrientationRequest=ignoreOrientationRequest false for displayId=0
+  overrideConfig={1.0 ?mcc?mnc [zh_CN_#Hans,en_CN] ldltr sw800dp w1280dp h768dp 320dpi xlrg hdr land night finger -keyb/v/h -
+  mCurrentFocus=Window{54737e7 u0 com.takahashirinta.ncrust/com.takahashirinta.ncrust.MainActivity}
+package versionName=versionName=2.5.5-gpl

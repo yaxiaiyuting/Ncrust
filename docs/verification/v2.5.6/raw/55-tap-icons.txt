@@ -1,0 +1,12 @@
+grep: 写入错误: 断开的管道
+tap x=258 -> rot=port mOrientation=SCREEN_ORIENTATION_UNSPECIFIED content-desc="暂停"
+        logs: 
+grep: 写入错误: 断开的管道
+tap x=280 -> rot=port mOrientation=SCREEN_ORIENTATION_UNSPECIFIED content-desc="暂停"
+        logs: 
+grep: 写入错误: 断开的管道
+tap x=304 -> rot=port mOrientation=SCREEN_ORIENTATION_UNSPECIFIED content-desc="播放"
+        logs: 
+grep: 写入错误: 断开的管道
+tap x=330 -> rot=port mOrientation=SCREEN_ORIENTATION_UNSPECIFIED content-desc="暂停"
+        logs: 

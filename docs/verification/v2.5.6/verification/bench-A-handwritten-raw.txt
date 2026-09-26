@@ -1,0 +1,13 @@
+== 检查被测应用 ==
+== 被测应用 ==
+    versionCode=46 minSdk=24 targetSdk=36
+    versionName=2.5.5-gpl
+== 系统动画 ==
+== 构建并安装 benchmark APK ==
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1790422379.451044  181114 adb_install.cpp:153] pm command: 'exec:cmd package 'install' '-r' '-t' -S 39980825'
+== 关闭系统动画(仅 startup; 退出时自动还原) ==
+== com.takahashirinta.ncrust.benchmark.StartupBenchmark ==
+   参数: -e ncrust.bench.iterations 8
+
+com.takahashirinta.ncrust.benchmark.StartupBenchmark:已终止                  $ADB shell am instrument -w -e class "$cls" "${extra[@]}" "$BENCH_PKG/androidx.test.runner.AndroidJUnitRunner"

@@ -1,0 +1,11 @@
+### STEP 1: force display landscape (user_rotation lock 1) ###
+  overrideConfig={1.0 ?mcc?mnc [zh_CN_#Hans,en_CN] ldltr sw800dp w1280dp h768dp 320dpi xlrg hdr land night finger -keyb/v/h -
+### STEP 2: locate + tap big-screen entry (landscape control row) ###
+'歌词' [43,1502][91,1550]
+'队列' [123,1502][171,1550]
+'加入库' [203,1502][251,1550]
+'大屏幕模式' [283,1502][331,1550]
+'上一首' [437,1498][493,1554]
+'暂停' [527,1490][599,1562]
+'下一首' [633,1498][689,1554]
+'音质偏好' [979,1508][1099,1545]
