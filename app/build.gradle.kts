@@ -230,8 +230,23 @@ android {
         //   ③ 仓库当前 build.gradle = 45。
         //   脚本输出：`MAX versionCode (所有来源) = 45 [Ncrust-v2.5.4-gpl-release.apk]` ⇒ 下一个可用 **46**。
         //   实测记录：docs/verification/v2.5.5/next-version.txt + version-check.txt
-        versionCode = 46
-        versionName = "2.5.5-gpl"
+        //
+        // v2.5.6（本版）：versionCode 出处：`tools/next-version.sh`（**带 fetch**，铁律 9）三源交叉验证 ——
+        //   ① 最近 5 个 tag 内 build.gradle 最大值 = 46（v2.5.5-gpl）；
+        //   ② `dist/*.apk` 的 aapt2 dump badging 最大值 = 46（Ncrust-v2.5.5-gpl-release/debug，
+        //      v2.5.5 已发布，所以这一版**必须**升号）；
+        //   ③ 仓库当前 build.gradle = 46。
+        //   三源一致 ⇒ 脚本输出：`MAX versionCode (所有来源) = 46 [Ncrust-v2.5.5-gpl-debug.apk]`
+        //   ⇒ 下一个可用 **47**（`--code` 亦输出 47）。
+        //   实测记录：docs/verification/v2.5.6/version-check.txt
+        //
+        //   附注（不移动已发布 tag）：`git fetch` 时报
+        //   `! [已拒绝] v2.5.5-gpl -> v2.5.5-gpl（会覆盖现有的标签）` ——
+        //   本地 v2.5.5-gpl 是**轻量 tag**，远端是**附注 tag**，两者指向的提交相同
+        //   （都是 de304d38），只是 tag 对象不同。按铁律 7「发布过的 tag 绝不移动」，
+        //   本次**不**推送/不强推任何 tag，仅记录这一差异。
+        versionCode = 47
+        versionName = "2.5.6-gpl"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
