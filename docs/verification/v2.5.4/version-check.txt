@@ -12,3 +12,12 @@
 package: name='com.takahashirinta.ncrust' versionCode='45' versionName='2.5.4-gpl' platformBuildVersionName='16' platformBuildVersionCode='36' compileSdkVersion='36' compileSdkVersionCodename='16'
 
 ## 3) git tag 指向的 build.gradle.kts（打 tag 后回填）
+
+## 3) git tag 指向的 build.gradle.kts
+```
+        versionCode = 45
+        versionName = "2.5.4-gpl"
+```
+
+## 4) 产物 sha256
+1d831d56064d4111f1c8135c20a9862d4ffd420756aa1d27c87040a1f2da2d1e  ../dist/Ncrust-v2.5.4-gpl-release.apk
