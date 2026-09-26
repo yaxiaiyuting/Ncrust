@@ -1,5 +1,55 @@
 package com.takahashirinta.ncrust.ui.i18n
 
+/**
+ * 全部 UI 文案的根容器（8 种语言各给一份实参）。
+ *
+ * ## 参数预算：为什么文案必须往嵌套组里放
+ *
+ * dex 的 `invoke-*` 指令寄存器是 8 位 ⇒ **单个方法最多 255 个参数寄存器**。
+ * 而本类是「一个 data class 装全部 UI 文案」的结构，主构造器参数一多，
+ * `zh_CN.kt` 顶层 `val zhCN = Strings(...)` 的 `<clinit>` 里那条 invoke 就会越界。
+ *
+ * ```
+ * 槽位 = this(1) + N + ceil(N/32) 个默认值 mask + DefaultConstructorMarker(1)   ≤ 255
+ * N = 245 ⇒ 1 + 245 + 8 + 1 = 255   ← v2.3.0 ～ v2.5.2 的真实状态：**一个空位都没有**
+ * N = 246 ⇒ 1 + 246 + 8 + 1 = 256   ← 溢出
+ * ```
+ *
+ * 溢出的表现是 **编译照过、真机启动即崩**（`ClassFormatError: Too many arguments in
+ * method signature` / `VerifyError: Verifier rejected class …`），
+ * v2.0.0 · HF1 与 v2.3.0 各踩过一次。
+ *
+ * ## v2.5.3：一次真正的拆分（245 → 128）
+ *
+ * 前面四版都是「腾 2 花 1」式的挪腾，余量始终在 0~1 之间 —— 每加一条文案都要先搬家。
+ * 本版按**功能面**把 120 条搬进三个组：
+ *
+ * | 组 | 条数 | 功能面 | 主要消费文件 |
+ * |---|---|---|---|
+ * | [SettingsStrings] | 64 | 设置页及其卫星对话框 | `ui/screen/UserScreen.kt` 等 |
+ * | [AboutStrings] | 25 | 关于页 | `ui/screen/AboutScreen.kt` |
+ * | [PlayerUiStrings] | 31 | 播放器界面（传输控件 / 歌词页 / 队列面板） | `ui/player/` 下的若干文件 |
+ *
+ * 净效果：`245 - 120 + 3 = 128` 个主构造参数 ⇒ `1 + 128 + 4 + 1 = 134` 个 dex 槽，
+ * **余量 121**。分组依据与调用点分布见 `docs/verification/v2.5.3/probe-strings.md`。
+ *
+ * ## API 兼容：老调用点一行都没改
+ *
+ * 搬走的每一条都在本类**类体**里留了一条同名转发属性
+ * （`val qualitySectionTitle: String get() = settings.qualitySectionTitle`）。
+ * 转发属性不进构造函数，所以既不占 dex 槽，又让 `strings.qualitySectionTitle`
+ * 这种写法继续可用 —— 与 v2.0.0 · HF1 给 [OfflineStrings] 的做法完全一致。
+ *
+ * 新代码可以直接写 `strings.settings.qualitySectionTitle`；
+ * 旧写法 `strings.qualitySectionTitle` **不会**被移除（36 个消费文件、
+ * 290 个调用点依赖它，见 `StringsMigrationTest`）。
+ *
+ * ## 长期防线
+ *
+ * `StringsConstructorBudgetTest` 会加载本类并断言主构造器参数 **< 150**，
+ * 同时对**每一个**嵌套组做同样的监控。加文案请走「往组里加字段」，
+ * 需要新组就在类体里补转发属性。**不要**直接往主构造器加参数。
+ */
 data class Strings(
     // Navigation tabs
     val tabHome: String,
@@ -14,117 +64,20 @@ data class Strings(
     val loading: String,
     val back: String,
 
-    // Auth / Account
-    val accountDialogTitle: String,
-    val nicknameLabel: (String) -> String,
-    val uidLabel: (String) -> String,
-    val logoutButton: String,
-    val notLoggedIn: String,
-    val loginHint: String,
-
-    // User screen — sections
-    val qualitySectionTitle: String,
-    val wifiQualityLabel: String,
-    val mobileQualityLabel: String,
-    val qualityOptions: List<String>,
-    /** 实际档位低于偏好档位时，播放器音质标签后的角标（Bug1-B）。 */
-    val qualityDowngradedBadge: String,
-
-    /** A3：实际文件低于请求档位，但该曲有这个档位 —— 账号/版权没给到。 */
-    val qualityNoEntitlementBadge: String,
-
-    /** A3：该曲本身就没有请求的档位。 */
-    val qualitySongLacksTierBadge: String,
-
-    // B2-C：主题色来源三选一
-    val accentSourceSectionTitle: String,
-    val accentSourcePreset: String,
-    val accentSourceCover: String,
-    val accentSourceSystem: String,
-    val accentSourceSystemHint: String,
-
-    /** B2-D：手动重新读取系统强调色。 */
-    val accentSystemRefresh: String,
+    // v2.5.3 · P0：设置页那一组（64 条）搬进 [SettingsStrings]。
+    // 理由见本类 KDoc「参数预算」一节：主构造器当时是 245 = 255 个 dex 槽用满。
+    // 调用点由类体里的转发属性原样保住 —— `strings.xxx` 一行都不用改。
+    val settings: SettingsStrings,
+    // v2.5.3 · P0：播放器界面那一组（31 条）搬进 [PlayerUiStrings]。
+    // 理由见本类 KDoc「参数预算」一节：主构造器当时是 245 = 255 个 dex 槽用满。
+    // 调用点由类体里的转发属性原样保住 —— `strings.xxx` 一行都不用改。
+    val playerUi: PlayerUiStrings,
 
     /** E：榜单区块标题。 */
     val toplistSectionTitle: String,
     // v1.4.0 · 音乐人推荐卡片（首页分节标题 + 卡片副标题）
     val artistRecoTitle: String,
     val artistRecoDesc: String,
-    /** API < 27 无系统 FLAC 解码器、且选中 FLAC 档位时的设置页提示（Bug1-C）。 */
-    val qualityFlacUnsupportedHint: String,
-    val playbackSectionTitle: String,
-    val gaplessSectionTitle: String,
-    val gaplessDescription: String,
-    val lyricsTranslationLabel: String,
-    /**
-     * v1.5.0 · B 的逐字歌词布尔开关文案。v1.5.1 · A 起设置页改成三选一
-     * （[lyricsWordAnimationLabel]），这一项只为迁移路径保留，已无 UI 入口。
-     */
-    val lyricsWordByWordLabel: String,
-    // v1.5.1 · A：逐字动画三选一（0 渐变扫过 / 1 逐字硬切 / 2 关闭逐字）。顺序必须与
-    // LyricsWordAnimationMode 的常量一一对应。
-    val lyricsWordAnimationLabel: String,
-    val lyricsWordAnimationOptions: List<String>,
-    // v1.5.1 · D：媒体面板歌词开关（默认关）。开启后 ARTIST 变成「艺人 · 当前歌词行」。
-    val lyricsInMediaSessionLabel: String,
-    val lyricsInMediaSessionHint: String,
-    // v1.5.2：逐字扫过质量三选一（0 自动 / 1 高级软边 / 2 兼容硬边）。顺序必须与
-    // LyricsSweepQuality 的常量一一对应。
-    val lyricsSweepQualityLabel: String,
-    val lyricsSweepQualityOptions: List<String>,
-    // v1.9.0：AMLL TTML 歌词源总开关（默认开）+ 与网易云歌词同时可用时是否优先用 TTML（默认开）。
-    // 两者都只在「用户开了 TTML」时才有意义；关掉后行为与 v1.8.1 完全一致（一个 TTML 请求都不发）。
-    val lyricsTtmlEnabledLabel: String,
-    val lyricsTtmlFirstLabel: String,
-    // v1.9.3：音译（罗马音 / 粤拼）显示开关，**默认关**。只影响显示——
-    // 没有音译数据的歌打开后也没有任何变化（不会多出空行）。
-    val lyricsRomanizationLabel: String,
-    val lyricsRomanizationHint: String,
-    // v2.0.0 · T2：播放时禁止熄屏（默认开）。
-    val keepScreenOnLabel: String,
-    val keepScreenOnHint: String,
-    // v2.0.0 · T4：动态字号（实验性，默认关）。
-    val dynamicFontLabel: String,
-    val dynamicFontHint: String,
-    // v1.5.1 · E：歌词字号（倍率档位文案是纯数字，与语言无关，不进 i18n）。
-    val lyricsFontScaleLabel: String,
-    /** 歌词界面 A- / A+ 的无障碍描述。 */
-    val lyricsFontSmaller: String,
-    val lyricsFontLarger: String,
-    // v1.5.0 · C2：控制栏把手（全屏播放器底部那条 40×3dp 小横条）的无障碍描述。
-    // 它此前对 TalkBack 完全不可见 —— 视力障碍用户收起控制栏后再也拿不回来。
-    val controlsHandleLabel: String,
-    /** P1：大屏幕模式入口按钮（横屏桌面播放器布局）。 */
-    val bigScreenEnter: String,
-    /** P1：大屏幕模式出口按钮。与入口是同一个按钮，横屏大屏下图标与描述切换。 */
-    val bigScreenExit: String,
-    // v1.8.0 · T4：应用内「自动旋转」。⚠️ 它只控制本应用是否跟随传感器，
-    // 与系统设置里的"自动旋转"互相独立（应用既不读也不改系统设置）。
-    /** 开启态（跟随传感器旋转；在播放器里转横屏会自动进入大屏幕模式）。 */
-    val autoRotateOn: String,
-    /** 关闭态（锁定竖屏；进出大屏幕模式只走 ⤢ 按钮）。 */
-    val autoRotateOff: String,
-    /** 设置页整行开关的标题。 */
-    val autoRotateLabel: String,
-    /** 设置页整行开关的说明。 */
-    val autoRotateDescription: String,
-    // v1.8.0 · T3：音频可视化（大屏幕模式左栏、封面下方的波形条）。
-    /** 设置页整行开关的标题。 */
-    val audioVisualizerLabel: String,
-    /** 设置页整行开关的说明。 */
-    val audioVisualizerDescription: String,
-    val themeSectionTitle: String,
-    val themeModeSectionTitle: String,
-    val themeModeSystem: String,
-    val themeModeDark: String,
-    val themeModeLight: String,
-    val themeColorNames: List<String>,
-    val languageSectionTitle: String,
-    val aboutButton: String,
-    val storageSectionTitle: String,
-    val clearCache: String,
-    val clearCacheConfirm: String,
     /**
      * v2.0.0 · HF1：离线 / 缓存相关的 19 条文案**收进一个嵌套组**，不再是 [Strings] 的构造参数。
      *
@@ -255,15 +208,6 @@ data class Strings(
     val searchAlbumsEmpty: String,
     val searchArtistsEmpty: String,
 
-    // Player controls
-    val prevButton: String,
-    val playButton: String,
-    val pauseButton: String,
-    val nextButton: String,
-    val lyricsButton: String,
-    val queueButton: String,
-    val addToLibraryButton: String,
-
     // Song / queue actions
     //
     // ★ v2.5.0 · D：原来的 `actionInsertNext` / `actionAppendToQueue` 两条**搬进了 [QueueStrings]**
@@ -274,12 +218,6 @@ data class Strings(
     val actionGoToArtist: String,
     val actionGoToAlbum: String,
 
-    // Background activity permission (battery optimization whitelist)
-    val batteryTitle: String,
-    val batteryMessage: String,
-    val batteryAllow: String,
-    val batteryLater: String,
-
     // Native QR login (tablet / large screen)
     val qrLoginTitle: String,
     val qrScanHint: String,
@@ -287,17 +225,12 @@ data class Strings(
     val qrExpiredHint: String,
     val qrLoadFailed: String,
     val qrGenericLogin: String,
-
-    // Phone-side QR scan to authorize another device (LAN cookie handoff)
-    val scanEntryTitle: String,
     val scanPrompt: String,
     val scanPermissionNeeded: String,
     val scanNoCookie: String,
     val scanSuccess: String,
     val scanFailed: String,
     val scanConnecting: String,
-
-    val clearQueue: String,
     val actionAddToPlaylist: String,
     val actionRemoveFromLibrary: String,
     val actionSaveAlbum: String,
@@ -310,49 +243,15 @@ data class Strings(
     val songCountFormat: (Int) -> String,
     /** 断点续播提示，参数是已格式化的时间点（如 "1:23"）。 */
     val resumeFromFormat: (String) -> String,
-
-    // User screen — 自定义背景（v1.2.0 · B3）
-    val bgSectionTitle: String,
-    val bgPick: String,
-    val bgChange: String,
-    val bgRemove: String,
-    val bgImportFailed: String,
     val playNowTitle: String,
     val playNowDesc: String,
     val insertNextTitle: String,
     val insertNextDesc: String,
 
-    // About
-    val aboutTitle: String,
-    val aboutAppSubtitle: String,
-    val aboutSectionProject: String,
-    val aboutVersion: String,
-    val aboutDeveloperOriginal: String,
-    val aboutDeveloperFork: String,
-    val aboutLicense: String,
-    val aboutLicenseGplWithMit: String,
-    val aboutRepositoryFork: String,
-    val aboutRepositoryOriginal: String,
-    val aboutSectionTechStack: String,
-    val aboutLangLabel: String,
-    val aboutUIFrameworkLabel: String,
-    val aboutDesignSystemLabel: String = "Design System",
-    val aboutAudioEngineLabel: String,
-    val aboutNetworkLabel: String,
-    val aboutImageLabel: String,
-    val aboutSectionTeam: String,
-    val aboutRoleDev: String,
-    val aboutRoleTester: String,
-    val aboutRoleForkMaintainer: String,
-    val aboutSectionCredits: String,
-    val aboutCreditCli: String,
-    val aboutCreditAnim: String,
-    val aboutCreditDesign: String,
-
-    // Player UI
-    val noLyrics: String,
-    val emptyQueue: String,
-    val collapsePlayer: String,
+    // v2.5.3 · P0：关于页那一组（25 条）搬进 [AboutStrings]。
+    // 理由见本类 KDoc「参数预算」一节：主构造器当时是 245 = 255 个 dex 槽用满。
+    // 调用点由类体里的转发属性原样保住 —— `strings.xxx` 一行都不用改。
+    val about: AboutStrings,
 
     // Detail page titles and content
     val artistDetailTitle: String,
@@ -373,7 +272,6 @@ data class Strings(
     val albumCoverDesc: String,
     val artistAvatarDesc: String,
     val playlistCoverDesc: String,
-    val userAvatarDesc: String,
 
     // Search
     val clearSearchButton: String,
@@ -381,21 +279,6 @@ data class Strings(
     // Song detail screen
     val songDetailTitle: String,
     val unknownAlbum: String,
-    val lyricsLabel: String,
-
-    // Player queue panel
-    val queueTitle: String,
-    val playModeButton: String,
-    val saveAsPlaylist: String,
-    val noSongPlaying: String,
-    val queueSectionPast: String,
-    val queueSectionNow: String,
-    val queueSectionUpcoming: String,
-    val queueInfinityPlaceholder: String,
-    val queueClearAll: String,
-
-    // User screen
-    val userIconDesc: String,
 
     // Search history
     val searchHistoryClear: String,
@@ -587,6 +470,136 @@ data class Strings(
     val actionInsertNext: String get() = queue.actionInsertNext
     val actionAppendToQueue: String get() = queue.actionAppendToQueue
     val actionAddToNext: String get() = queue.actionAddToNext
+
+    // ---------- 转发属性（v2.5.3 · P0）：设置页 → [SettingsStrings] ----------
+    // 与 v2.0.0 · HF1 的 [OfflineStrings] 同一套做法：搬家不改调用点。
+    val qualitySectionTitle: String get() = settings.qualitySectionTitle
+    val wifiQualityLabel: String get() = settings.wifiQualityLabel
+    val mobileQualityLabel: String get() = settings.mobileQualityLabel
+    val qualityOptions: List<String> get() = settings.qualityOptions
+    val qualityFlacUnsupportedHint: String get() = settings.qualityFlacUnsupportedHint
+    val accentSourceSectionTitle: String get() = settings.accentSourceSectionTitle
+    val accentSourcePreset: String get() = settings.accentSourcePreset
+    val accentSourceCover: String get() = settings.accentSourceCover
+    val accentSourceSystem: String get() = settings.accentSourceSystem
+    val accentSourceSystemHint: String get() = settings.accentSourceSystemHint
+    val accentSystemRefresh: String get() = settings.accentSystemRefresh
+    val playbackSectionTitle: String get() = settings.playbackSectionTitle
+    val gaplessSectionTitle: String get() = settings.gaplessSectionTitle
+    val gaplessDescription: String get() = settings.gaplessDescription
+    val lyricsTranslationLabel: String get() = settings.lyricsTranslationLabel
+    val lyricsWordByWordLabel: String get() = settings.lyricsWordByWordLabel
+    val lyricsWordAnimationLabel: String get() = settings.lyricsWordAnimationLabel
+    val lyricsWordAnimationOptions: List<String> get() = settings.lyricsWordAnimationOptions
+    val lyricsInMediaSessionLabel: String get() = settings.lyricsInMediaSessionLabel
+    val lyricsInMediaSessionHint: String get() = settings.lyricsInMediaSessionHint
+    val lyricsSweepQualityLabel: String get() = settings.lyricsSweepQualityLabel
+    val lyricsSweepQualityOptions: List<String> get() = settings.lyricsSweepQualityOptions
+    val lyricsTtmlEnabledLabel: String get() = settings.lyricsTtmlEnabledLabel
+    val lyricsTtmlFirstLabel: String get() = settings.lyricsTtmlFirstLabel
+    val lyricsRomanizationLabel: String get() = settings.lyricsRomanizationLabel
+    val lyricsRomanizationHint: String get() = settings.lyricsRomanizationHint
+    val keepScreenOnLabel: String get() = settings.keepScreenOnLabel
+    val keepScreenOnHint: String get() = settings.keepScreenOnHint
+    val dynamicFontLabel: String get() = settings.dynamicFontLabel
+    val dynamicFontHint: String get() = settings.dynamicFontHint
+    val lyricsFontScaleLabel: String get() = settings.lyricsFontScaleLabel
+    val autoRotateLabel: String get() = settings.autoRotateLabel
+    val autoRotateDescription: String get() = settings.autoRotateDescription
+    val audioVisualizerLabel: String get() = settings.audioVisualizerLabel
+    val audioVisualizerDescription: String get() = settings.audioVisualizerDescription
+    val themeSectionTitle: String get() = settings.themeSectionTitle
+    val themeModeSectionTitle: String get() = settings.themeModeSectionTitle
+    val themeModeSystem: String get() = settings.themeModeSystem
+    val themeModeDark: String get() = settings.themeModeDark
+    val themeModeLight: String get() = settings.themeModeLight
+    val themeColorNames: List<String> get() = settings.themeColorNames
+    val languageSectionTitle: String get() = settings.languageSectionTitle
+    val aboutButton: String get() = settings.aboutButton
+    val storageSectionTitle: String get() = settings.storageSectionTitle
+    val clearCache: String get() = settings.clearCache
+    val clearCacheConfirm: String get() = settings.clearCacheConfirm
+    val bgSectionTitle: String get() = settings.bgSectionTitle
+    val bgPick: String get() = settings.bgPick
+    val bgChange: String get() = settings.bgChange
+    val bgRemove: String get() = settings.bgRemove
+    val bgImportFailed: String get() = settings.bgImportFailed
+    val accountDialogTitle: String get() = settings.accountDialogTitle
+    val nicknameLabel: (String) -> String get() = settings.nicknameLabel
+    val uidLabel: (String) -> String get() = settings.uidLabel
+    val logoutButton: String get() = settings.logoutButton
+    val notLoggedIn: String get() = settings.notLoggedIn
+    val loginHint: String get() = settings.loginHint
+    val scanEntryTitle: String get() = settings.scanEntryTitle
+    val userAvatarDesc: String get() = settings.userAvatarDesc
+    val userIconDesc: String get() = settings.userIconDesc
+    val batteryTitle: String get() = settings.batteryTitle
+    val batteryMessage: String get() = settings.batteryMessage
+    val batteryAllow: String get() = settings.batteryAllow
+    val batteryLater: String get() = settings.batteryLater
+
+    // ---------- 转发属性（v2.5.3 · P0）：关于页 → [AboutStrings] ----------
+    // 与 v2.0.0 · HF1 的 [OfflineStrings] 同一套做法：搬家不改调用点。
+    val aboutTitle: String get() = about.aboutTitle
+    val aboutAppSubtitle: String get() = about.aboutAppSubtitle
+    val aboutSectionProject: String get() = about.aboutSectionProject
+    val aboutVersion: String get() = about.aboutVersion
+    val aboutDeveloperOriginal: String get() = about.aboutDeveloperOriginal
+    val aboutDeveloperFork: String get() = about.aboutDeveloperFork
+    val aboutLicense: String get() = about.aboutLicense
+    val aboutLicenseGplWithMit: String get() = about.aboutLicenseGplWithMit
+    val aboutRepositoryFork: String get() = about.aboutRepositoryFork
+    val aboutRepositoryOriginal: String get() = about.aboutRepositoryOriginal
+    val aboutSectionTechStack: String get() = about.aboutSectionTechStack
+    val aboutLangLabel: String get() = about.aboutLangLabel
+    val aboutUIFrameworkLabel: String get() = about.aboutUIFrameworkLabel
+    val aboutDesignSystemLabel: String get() = about.aboutDesignSystemLabel
+    val aboutAudioEngineLabel: String get() = about.aboutAudioEngineLabel
+    val aboutNetworkLabel: String get() = about.aboutNetworkLabel
+    val aboutImageLabel: String get() = about.aboutImageLabel
+    val aboutSectionTeam: String get() = about.aboutSectionTeam
+    val aboutRoleDev: String get() = about.aboutRoleDev
+    val aboutRoleTester: String get() = about.aboutRoleTester
+    val aboutRoleForkMaintainer: String get() = about.aboutRoleForkMaintainer
+    val aboutSectionCredits: String get() = about.aboutSectionCredits
+    val aboutCreditCli: String get() = about.aboutCreditCli
+    val aboutCreditAnim: String get() = about.aboutCreditAnim
+    val aboutCreditDesign: String get() = about.aboutCreditDesign
+
+    // ---------- 转发属性（v2.5.3 · P0）：播放器界面 → [PlayerUiStrings] ----------
+    // 与 v2.0.0 · HF1 的 [OfflineStrings] 同一套做法：搬家不改调用点。
+    val prevButton: String get() = playerUi.prevButton
+    val playButton: String get() = playerUi.playButton
+    val pauseButton: String get() = playerUi.pauseButton
+    val nextButton: String get() = playerUi.nextButton
+    val lyricsButton: String get() = playerUi.lyricsButton
+    val queueButton: String get() = playerUi.queueButton
+    val addToLibraryButton: String get() = playerUi.addToLibraryButton
+    val qualityDowngradedBadge: String get() = playerUi.qualityDowngradedBadge
+    val qualityNoEntitlementBadge: String get() = playerUi.qualityNoEntitlementBadge
+    val qualitySongLacksTierBadge: String get() = playerUi.qualitySongLacksTierBadge
+    val lyricsFontSmaller: String get() = playerUi.lyricsFontSmaller
+    val lyricsFontLarger: String get() = playerUi.lyricsFontLarger
+    val controlsHandleLabel: String get() = playerUi.controlsHandleLabel
+    val bigScreenEnter: String get() = playerUi.bigScreenEnter
+    val bigScreenExit: String get() = playerUi.bigScreenExit
+    val autoRotateOn: String get() = playerUi.autoRotateOn
+    val autoRotateOff: String get() = playerUi.autoRotateOff
+    val noLyrics: String get() = playerUi.noLyrics
+    val emptyQueue: String get() = playerUi.emptyQueue
+    val collapsePlayer: String get() = playerUi.collapsePlayer
+    val lyricsLabel: String get() = playerUi.lyricsLabel
+    val queueTitle: String get() = playerUi.queueTitle
+    val playModeButton: String get() = playerUi.playModeButton
+    val saveAsPlaylist: String get() = playerUi.saveAsPlaylist
+    val noSongPlaying: String get() = playerUi.noSongPlaying
+    val queueSectionPast: String get() = playerUi.queueSectionPast
+    val queueSectionNow: String get() = playerUi.queueSectionNow
+    val queueSectionUpcoming: String get() = playerUi.queueSectionUpcoming
+    val queueInfinityPlaceholder: String get() = playerUi.queueInfinityPlaceholder
+    val queueClearAll: String get() = playerUi.queueClearAll
+    val clearQueue: String get() = playerUi.clearQueue
+
 }
 
 /** 字节数格式化为人类可读的 B/KB/MB/GB，供 cacheSizeLabel 复用。 */
@@ -690,7 +703,8 @@ data class SourceStrings(
     // ---------- v2.1.1：播放页音源角标 + QQ 音乐手机号验证码登录 ----------
     //
     // ⚠️ 为什么这些**必须**放在本分组里，而不是加到外层 `Strings` 的构造参数上：
-    // 外层构造函数已经有 **244 个参数 = 245 个 dex 寄存器**（含 this），上限是 255。
+    // 外层构造函数当时有 **244 个参数 = 245 个 dex 寄存器**（含 this），上限是 255。
+    // （v2.5.3 拆组后外层是 128 个参数 = 134 个寄存器 —— 本组自身仍未拆分。）
     // v2.0.0 · HF1 就是因为往它上面直接加字段而崩的（见外层那段注释）。
     // 本分组只有 15 个参数，随便加；外层一个都不加 —— 于是本版对那个上限的占用是 0。
 
@@ -996,4 +1010,244 @@ data class MotionStrings(
     val pageTransitionLabel: String,
     /** 设置页开关说明：「关闭可提升低端机流畅度」。 */
     val pageTransitionDescription: String,
+)
+
+/**
+ * v2.5.3 · P0：**设置页（含其卫星对话框）**的文案组。
+ *
+ * ## 为什么又是一个嵌套组
+ *
+ * `Strings` 的主构造参数在 v2.5.2 时是 **245**，即
+ * `this(1) + 245 + ceil(245/32)=8 个默认值 mask + DefaultConstructorMarker(1) = 255` ——
+ * **正好用满 dex 单方法 255 个参数寄存器**（v2.0.0 · HF1 与 v2.3.0 各因此崩过一次：
+ * 编译照过、真机启动抛 `ClassFormatError`）。本组把 64 条从主构造器搬出来，
+ * 用 **1 个**组参数换掉 64 个 ⇒ 净腾出 **63** 个槽位。
+ *
+ * 老调用点（`strings.xxx`）由 [Strings] 类体里的转发属性保住，一条都不用改；
+ * 新代码可以直接写 `strings.settings.xxx`。
+ *
+ * 参数数量监控见 `StringsConstructorBudgetTest`。
+ */
+data class SettingsStrings(
+
+    // User screen — sections
+    val qualitySectionTitle: String,
+    val wifiQualityLabel: String,
+    val mobileQualityLabel: String,
+    val qualityOptions: List<String>,
+    /** API < 27 无系统 FLAC 解码器、且选中 FLAC 档位时的设置页提示（Bug1-C）。 */
+    val qualityFlacUnsupportedHint: String,
+
+    // B2-C：主题色来源三选一
+    val accentSourceSectionTitle: String,
+    val accentSourcePreset: String,
+    val accentSourceCover: String,
+    val accentSourceSystem: String,
+    val accentSourceSystemHint: String,
+
+    /** B2-D：手动重新读取系统强调色。 */
+    val accentSystemRefresh: String,
+    val playbackSectionTitle: String,
+    val gaplessSectionTitle: String,
+    val gaplessDescription: String,
+    val lyricsTranslationLabel: String,
+    /**
+     * v1.5.0 · B 的逐字歌词布尔开关文案。v1.5.1 · A 起设置页改成三选一
+     * （[lyricsWordAnimationLabel]），这一项只为迁移路径保留，已无 UI 入口。
+     */
+    val lyricsWordByWordLabel: String,
+    // v1.5.1 · A：逐字动画三选一（0 渐变扫过 / 1 逐字硬切 / 2 关闭逐字）。顺序必须与
+    // LyricsWordAnimationMode 的常量一一对应。
+    val lyricsWordAnimationLabel: String,
+    val lyricsWordAnimationOptions: List<String>,
+    // v1.5.1 · D：媒体面板歌词开关（默认关）。开启后 ARTIST 变成「艺人 · 当前歌词行」。
+    val lyricsInMediaSessionLabel: String,
+    val lyricsInMediaSessionHint: String,
+    // v1.5.2：逐字扫过质量三选一（0 自动 / 1 高级软边 / 2 兼容硬边）。顺序必须与
+    // LyricsSweepQuality 的常量一一对应。
+    val lyricsSweepQualityLabel: String,
+    val lyricsSweepQualityOptions: List<String>,
+    // v1.9.0：AMLL TTML 歌词源总开关（默认开）+ 与网易云歌词同时可用时是否优先用 TTML（默认开）。
+    // 两者都只在「用户开了 TTML」时才有意义；关掉后行为与 v1.8.1 完全一致（一个 TTML 请求都不发）。
+    val lyricsTtmlEnabledLabel: String,
+    val lyricsTtmlFirstLabel: String,
+    // v1.9.3：音译（罗马音 / 粤拼）显示开关，**默认关**。只影响显示——
+    // 没有音译数据的歌打开后也没有任何变化（不会多出空行）。
+    val lyricsRomanizationLabel: String,
+    val lyricsRomanizationHint: String,
+    // v2.0.0 · T2：播放时禁止熄屏（默认开）。
+    val keepScreenOnLabel: String,
+    val keepScreenOnHint: String,
+    // v2.0.0 · T4：动态字号（实验性，默认关）。
+    val dynamicFontLabel: String,
+    val dynamicFontHint: String,
+    // v1.5.1 · E：歌词字号（倍率档位文案是纯数字，与语言无关，不进 i18n）。
+    val lyricsFontScaleLabel: String,
+    /** 设置页整行开关的标题。 */
+    val autoRotateLabel: String,
+    /** 设置页整行开关的说明。 */
+    val autoRotateDescription: String,
+    // v1.8.0 · T3：音频可视化（大屏幕模式左栏、封面下方的波形条）。
+    /** 设置页整行开关的标题。 */
+    val audioVisualizerLabel: String,
+    /** 设置页整行开关的说明。 */
+    val audioVisualizerDescription: String,
+    val themeSectionTitle: String,
+    val themeModeSectionTitle: String,
+    val themeModeSystem: String,
+    val themeModeDark: String,
+    val themeModeLight: String,
+    val themeColorNames: List<String>,
+    val languageSectionTitle: String,
+    val aboutButton: String,
+    val storageSectionTitle: String,
+    val clearCache: String,
+    val clearCacheConfirm: String,
+
+    // User screen — 自定义背景（v1.2.0 · B3）
+    val bgSectionTitle: String,
+    val bgPick: String,
+    val bgChange: String,
+    val bgRemove: String,
+    val bgImportFailed: String,
+
+    // Auth / Account
+    val accountDialogTitle: String,
+    val nicknameLabel: (String) -> String,
+    val uidLabel: (String) -> String,
+    val logoutButton: String,
+    val notLoggedIn: String,
+    val loginHint: String,
+
+    // Phone-side QR scan to authorize another device (LAN cookie handoff)
+    val scanEntryTitle: String,
+    val userAvatarDesc: String,
+
+    // User screen
+    val userIconDesc: String,
+
+    // Background activity permission (battery optimization whitelist)
+    val batteryTitle: String,
+    val batteryMessage: String,
+    val batteryAllow: String,
+    val batteryLater: String
+)
+
+
+/**
+ * v2.5.3 · P0：**关于页**的文案组（项目信息 / 技术栈 / 名单 / 致谢）。
+ *
+ * ## 为什么又是一个嵌套组
+ *
+ * `Strings` 的主构造参数在 v2.5.2 时是 **245**，即
+ * `this(1) + 245 + ceil(245/32)=8 个默认值 mask + DefaultConstructorMarker(1) = 255` ——
+ * **正好用满 dex 单方法 255 个参数寄存器**（v2.0.0 · HF1 与 v2.3.0 各因此崩过一次：
+ * 编译照过、真机启动抛 `ClassFormatError`）。本组把 25 条从主构造器搬出来，
+ * 用 **1 个**组参数换掉 25 个 ⇒ 净腾出 **24** 个槽位。
+ *
+ * 老调用点（`strings.xxx`）由 [Strings] 类体里的转发属性保住，一条都不用改；
+ * 新代码可以直接写 `strings.about.xxx`。
+ *
+ * 参数数量监控见 `StringsConstructorBudgetTest`。
+ */
+data class AboutStrings(
+
+    // About
+    val aboutTitle: String,
+    val aboutAppSubtitle: String,
+    val aboutSectionProject: String,
+    val aboutVersion: String,
+    val aboutDeveloperOriginal: String,
+    val aboutDeveloperFork: String,
+    val aboutLicense: String,
+    val aboutLicenseGplWithMit: String,
+    val aboutRepositoryFork: String,
+    val aboutRepositoryOriginal: String,
+    val aboutSectionTechStack: String,
+    val aboutLangLabel: String,
+    val aboutUIFrameworkLabel: String,
+    val aboutDesignSystemLabel: String = "Design System",
+    val aboutAudioEngineLabel: String,
+    val aboutNetworkLabel: String,
+    val aboutImageLabel: String,
+    val aboutSectionTeam: String,
+    val aboutRoleDev: String,
+    val aboutRoleTester: String,
+    val aboutRoleForkMaintainer: String,
+    val aboutSectionCredits: String,
+    val aboutCreditCli: String,
+    val aboutCreditAnim: String,
+    val aboutCreditDesign: String
+)
+
+
+/**
+ * v2.5.3 · P0：**播放器界面**的文案组（传输控件 / 歌词页 / 队列面板）。
+ *
+ * ## 为什么又是一个嵌套组
+ *
+ * `Strings` 的主构造参数在 v2.5.2 时是 **245**，即
+ * `this(1) + 245 + ceil(245/32)=8 个默认值 mask + DefaultConstructorMarker(1) = 255` ——
+ * **正好用满 dex 单方法 255 个参数寄存器**（v2.0.0 · HF1 与 v2.3.0 各因此崩过一次：
+ * 编译照过、真机启动抛 `ClassFormatError`）。本组把 31 条从主构造器搬出来，
+ * 用 **1 个**组参数换掉 31 个 ⇒ 净腾出 **30** 个槽位。
+ *
+ * 老调用点（`strings.xxx`）由 [Strings] 类体里的转发属性保住，一条都不用改；
+ * 新代码可以直接写 `strings.playerUi.xxx`。
+ *
+ * 参数数量监控见 `StringsConstructorBudgetTest`。
+ */
+data class PlayerUiStrings(
+
+    // Player controls
+    val prevButton: String,
+    val playButton: String,
+    val pauseButton: String,
+    val nextButton: String,
+    val lyricsButton: String,
+    val queueButton: String,
+    val addToLibraryButton: String,
+    /** 实际档位低于偏好档位时，播放器音质标签后的角标（Bug1-B）。 */
+    val qualityDowngradedBadge: String,
+
+    /** A3：实际文件低于请求档位，但该曲有这个档位 —— 账号/版权没给到。 */
+    val qualityNoEntitlementBadge: String,
+
+    /** A3：该曲本身就没有请求的档位。 */
+    val qualitySongLacksTierBadge: String,
+    /** 歌词界面 A- / A+ 的无障碍描述。 */
+    val lyricsFontSmaller: String,
+    val lyricsFontLarger: String,
+    // v1.5.0 · C2：控制栏把手（全屏播放器底部那条 40×3dp 小横条）的无障碍描述。
+    // 它此前对 TalkBack 完全不可见 —— 视力障碍用户收起控制栏后再也拿不回来。
+    val controlsHandleLabel: String,
+    /** P1：大屏幕模式入口按钮（横屏桌面播放器布局）。 */
+    val bigScreenEnter: String,
+    /** P1：大屏幕模式出口按钮。与入口是同一个按钮，横屏大屏下图标与描述切换。 */
+    val bigScreenExit: String,
+    // v1.8.0 · T4：应用内「自动旋转」。⚠️ 它只控制本应用是否跟随传感器，
+    // 与系统设置里的"自动旋转"互相独立（应用既不读也不改系统设置）。
+    /** 开启态（跟随传感器旋转；在播放器里转横屏会自动进入大屏幕模式）。 */
+    val autoRotateOn: String,
+    /** 关闭态（锁定竖屏；进出大屏幕模式只走 ⤢ 按钮）。 */
+    val autoRotateOff: String,
+
+    // Player UI
+    val noLyrics: String,
+    val emptyQueue: String,
+    val collapsePlayer: String,
+    val lyricsLabel: String,
+
+    // Player queue panel
+    val queueTitle: String,
+    val playModeButton: String,
+    val saveAsPlaylist: String,
+    val noSongPlaying: String,
+    val queueSectionPast: String,
+    val queueSectionNow: String,
+    val queueSectionUpcoming: String,
+    val queueInfinityPlaceholder: String,
+    val queueClearAll: String,
+
+    val clearQueue: String
 )
