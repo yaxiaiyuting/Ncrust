@@ -895,6 +895,20 @@ data class PlaylistsStrings(
     val loginRequired: String,
     /** 「N 首」。 */
     val trackCount: (Int) -> String,
+    // ---- v2.6.0 · P1/P2：库页歌单 tab 的布局切换与手动折叠 ----
+    /** 布局切换：卡片式（大封面 2 列网格）。 */
+    val layoutCard: String,
+    /** 布局切换：列表式（小封面整行）。 */
+    val layoutList: String,
+    /** 区块展开后，标题右侧的「收起」动作。 */
+    val sectionCollapse: String,
+    /**
+     * 区块收起后的整体提示（参数 = 该区块里的条目数）。
+     *
+     * 收起时**显示数量**而不是只显示「已收起」：用户要能判断
+     * 「值不值得展开」，而一个不带数字的「已收起」回答不了这个问题。
+     */
+    val sectionExpandAll: (Int) -> String,
 )
 
 /**

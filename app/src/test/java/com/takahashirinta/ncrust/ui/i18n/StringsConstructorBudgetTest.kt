@@ -377,6 +377,92 @@ class StringsConstructorBudgetTest {
     }
 
     /**
+     * v2.6.0 · P1/P2：库页歌单 tab 的**两条布局标签 + 两条折叠文案**。
+     *
+     * 四条全部进 `PlaylistsStrings`（组参数 17 → 21），**外层 `Strings` 一个都没加** ——
+     * 所以上面那条「稳定在 135」的精确值断言**不需要改**，这正是分组机制要买到的东西。
+     *
+     * 「不许撞词」不是洁癖：
+     *  - `layoutCard` 与 `layoutList` 是同一排里相邻的两个按钮，写成同一个词
+     *    用户就分不出点哪个（v2.1.3 规则 10 的同一形状）；
+     *  - `sectionCollapse`（展开态的「收起」）与 `sectionExpandAll(n)`（收起态的
+     *    「展开全部 N 个」）必须在**任何 n** 下都不同，否则两种状态在界面上
+     *    长得一样 —— 用户无法判断当前是展开还是收起。
+     */
+    @Test
+    fun `v2_6_0 的布局与折叠文案在八种语言里都可用且不撞词`() {
+        val presets = listOf(zhCN, zhTW, en, jpJP, jpMY, koNK, deDE, ruRU)
+        val card = mutableMapOf<String, String>()
+        val list = mutableMapOf<String, String>()
+        presets.forEach { s ->
+            val p = s.playlists
+            assertTrue("layoutCard 为空", p.layoutCard.isNotBlank())
+            assertTrue("layoutList 为空", p.layoutList.isNotBlank())
+            assertTrue("sectionCollapse 为空", p.sectionCollapse.isNotBlank())
+            // 0 / 1 / 很大 —— 三个取值都要有内容（复数语言尤其容易在 0 上写出空串）。
+            listOf(0, 1, 7, 999).forEach { n ->
+                assertTrue("sectionExpandAll($n) 为空", p.sectionExpandAll(n).isNotBlank())
+                assertTrue(
+                    "第 $n 项：收起态的文案与展开态的「收起」撞词了：${p.sectionExpandAll(n)}",
+                    p.sectionExpandAll(n) != p.sectionCollapse,
+                )
+            }
+            assertTrue(
+                "layoutCard 与 layoutList 撞词了：${p.layoutCard}",
+                p.layoutCard != p.layoutList,
+            )
+            card[p.layoutCard] = p.layoutCard
+            list[p.layoutList] = p.layoutList
+        }
+        // 「八种语言互不相同」不能写成 `size == 8`：**繁简同形词是真实存在的**。
+        // 实测 zh-CN 与 zh-TW 的 `layoutCard` 都是「卡片式」—— 这不是漏翻译，
+        // 而是「卡片」在繁体里就是「卡片」。硬要求 8 个不同值只会逼下一个人
+        // 把一个正确的词改成错的。所以判据是：**除 zh-CN/zh-TW 这一对之外，
+        // 任何两条相同都判失败**（那才是「只改了文件名没改内容」的形状）。
+        assertLocaleDistinct(card, "layoutCard")
+        assertLocaleDistinct(list, "layoutList")
+    }
+
+    /**
+     * v2.6.0 · P1/P2：**搬运账不动**。
+     *
+     * 本版的两组新文案全部落在既有组里，外层主构造器**一个参数都没加** ——
+     * 这条用例把「135」这个数与本版的关系写成断言，而不是让它悄悄跟着变。
+     */
+    @Test
+    fun `v2_6_0 没有往 Strings 主构造器加任何参数`() {
+        assertEquals("v2.5.5 是 135；v2.6.0 的新文案进了 PlaylistsStrings，外层应当一点没动", 135, 135)
+        assertEquals(135, primaryParams(Class.forName("com.takahashirinta.ncrust.ui.i18n.Strings")))
+        // 组本身的规模被钉住（17 → 21）：再往里加文案请先看组预算 120 还剩多少。
+        assertEquals(
+            "PlaylistsStrings 的参数数变了 —— 若是有意加文案，请同步改这条断言",
+            21,
+            primaryParams(Class.forName("com.takahashirinta.ncrust.ui.i18n.PlaylistsStrings")),
+        )
+    }
+
+    /**
+     * 跨语言查重：允许 zh-CN 与 zh-TW 同形（繁简同形词），其余两两必须不同。
+     *
+     * `values` 的 key 是文案本身，value 也是 —— 上面刻意用 `map[text] = text`：
+     * 这样「哪两种语言撞了」在失败信息里是**可读的**，而 `Set<String>` 只会说
+     * 「少了一个」。
+     */
+    private fun assertLocaleDistinct(values: Map<String, String>, what: String) {
+        assertEquals("$what 出现了空文案", values.size, values.keys.count { it.isNotBlank() })
+        // 只可能在 zh-CN / zh-TW 之间合法地相同 —— 若不同，那就更没问题了。
+        val zhCard = zhCN.playlists.let { if (what == "layoutCard") it.layoutCard else it.layoutList }
+        val zhTwCard = zhTW.playlists.let { if (what == "layoutCard") it.layoutCard else it.layoutList }
+        val expected = if (zhCard == zhTwCard) 7 else 8
+        assertEquals(
+            "$what 的跨语言取值只有 ${values.size} 个不同词（期望 $expected）—— " +
+                "有两条一样说明有人只改了文件名没改内容：${values.keys}",
+            expected,
+            values.size,
+        )
+    }
+
+    /**
      * ★ v2.5.5 · G：**两源都返回时，新路径与旧的 `sourceSummary` 逐字相同。**
      *
      * 本版把统计行从「只收两个整数」的 `sourceSummary` 换成「收两段已经成文的字符串」的

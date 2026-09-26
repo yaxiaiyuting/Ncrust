@@ -373,6 +373,11 @@ val jpJP = Strings(
         entryHint = "QQ Music アカウントより",
         loginRequired = "QQ Music にログインするとプレイリストを表示できます",
         trackCount = { n -> "$n 曲" },
+        // v2.6.0 · P1/P2：库页歌单 tab 的布局切换与手动折叠。
+        layoutCard = "カード",
+        layoutList = "リスト",
+        sectionCollapse = "折りたたむ",
+        sectionExpandAll = { n -> "すべて表示（$n 件）" },
     ),
         tags = TagsStrings(
             playable = "再生可",

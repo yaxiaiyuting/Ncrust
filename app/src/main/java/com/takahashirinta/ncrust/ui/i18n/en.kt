@@ -372,6 +372,11 @@ val en = Strings(
         entryHint = "From your QQ Music account",
         loginRequired = "Sign in to QQ Music to see playlists",
         trackCount = { n -> "$n tracks" },
+        // v2.6.0 · P1/P2：库页歌单 tab 的布局切换与手动折叠。
+        layoutCard = "Card",
+        layoutList = "List",
+        sectionCollapse = "Collapse",
+        sectionExpandAll = { n -> "Show all $n" },
     ),
         tags = TagsStrings(
             playable = "Playable",

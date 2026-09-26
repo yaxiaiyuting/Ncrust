@@ -373,6 +373,11 @@ scanConnecting = "正在連接平板…",
         entryHint = "來自 QQ 音樂帳號",
         loginRequired = "登入 QQ 音樂後可查看歌單",
         trackCount = { n -> "$n 首" },
+        // v2.6.0 · P1/P2：库页歌单 tab 的布局切换与手动折叠。
+        layoutCard = "卡片式",
+        layoutList = "列表式",
+        sectionCollapse = "收合",
+        sectionExpandAll = { n -> "展開全部 $n 個" },
     ),
         tags = TagsStrings(
             playable = "可播放",

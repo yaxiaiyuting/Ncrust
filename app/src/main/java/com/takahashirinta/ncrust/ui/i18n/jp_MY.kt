@@ -372,6 +372,11 @@ val jpMY = Strings(
         entryHint = "自 QQ Music 之戶",
         loginRequired = "登 QQ Music 則可見帳",
         trackCount = { n -> "$n 曲" },
+        // v2.6.0 · P1/P2：库页歌单 tab 的布局切换与手动折叠。
+        layoutCard = "札 式",
+        layoutList = "列 式",
+        sectionCollapse = "收 縮",
+        sectionExpandAll = { n -> "盡 展 $n 項" },
     ),
         tags = TagsStrings(
             playable = "奏 可",

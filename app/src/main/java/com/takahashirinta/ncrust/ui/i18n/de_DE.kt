@@ -372,6 +372,11 @@ val deDE = Strings(
         entryHint = "Aus deinem QQ Music-Konto",
         loginRequired = "Bei QQ Music anmelden, um Playlists zu sehen",
         trackCount = { n -> "$n Titel" },
+        // v2.6.0 · P1/P2：库页歌单 tab 的布局切换与手动折叠。
+        layoutCard = "Karten",
+        layoutList = "Liste",
+        sectionCollapse = "Einklappen",
+        sectionExpandAll = { n -> "Alle $n anzeigen" },
     ),
         tags = TagsStrings(
             playable = "Abspielbar",

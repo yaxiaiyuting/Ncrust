@@ -373,6 +373,11 @@ val zhCN = Strings(
         entryHint = "来自 QQ 音乐账号",
         loginRequired = "登录 QQ 音乐后可查看歌单",
         trackCount = { n -> "$n 首" },
+        // v2.6.0 · P1/P2：库页歌单 tab 的布局切换与手动折叠。
+        layoutCard = "卡片式",
+        layoutList = "列表式",
+        sectionCollapse = "收起",
+        sectionExpandAll = { n -> "展开全部 $n 个" },
     ),
         tags = TagsStrings(
             playable = "可播放",

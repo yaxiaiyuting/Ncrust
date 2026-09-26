@@ -121,6 +121,15 @@ fun LibraryScreen(
     // 本地歌单存在的意义之一就是「网易云/QQ 都挂了也能看到自己的歌单」。
     var localPlaylists by remember { mutableStateOf(LocalPlaylistStore.readPlaylists(context)) }
     var showCreateLocal by remember { mutableStateOf(false) }
+    // v2.6.0 · P1/P2：布局模式 + 三个区块的折叠状态。两者的真源都是
+    // `ncrust_settings`（见 PlaylistLayoutSetting / LibrarySectionFoldSetting 的 KDoc）。
+    //
+    // **初值从 prefs 读、而不是写死默认值**：这一页被 MainScreen 的
+    // 页面切换反复卸载重建，写死初值会让「重启后保持」变成「每次重建都回到默认」。
+    // 读一次 prefs 是主线程 IO，但它是三个布尔 + 一个 Int（SharedPreferences 有内存缓存，
+    // 首次加载后不再触盘），与同页已有的 LocalPlaylistStore.readPlaylists 同级。
+    var playlistLayout by remember { mutableStateOf(PlaylistLayoutSetting.read(context)) }
+    var sectionFold by remember { mutableStateOf(LibrarySectionFoldSetting.read(context)) }
     // v1.3.0 · B4：收藏页的「新建歌单」入口（建空歌单），与全屏播放器的「保存队列为歌单」共用对话框。
     var showCreatePlaylist by remember { mutableStateOf(false) }
     fun loadPlaylists() {
@@ -325,8 +334,10 @@ fun LibraryScreen(
                                     onShowMenu = {
                                         onShowSongMenu(song, listOf(
                                             SongMenuAction(Icons.Default.LibraryAdd, strings.actionAddToLibrary) {
-                                                LibraryManager.saveSong(context, song)
-                                                Toast.makeText(context, strings.addedToLibrary, Toast.LENGTH_SHORT).show()
+                                                // v2.6.0 · P0：成败由返回值决定（这一页本来就在库里，多数是幂等成功）。
+                                                if (LibraryManager.saveSong(context, song).isSuccess) {
+                                                    Toast.makeText(context, strings.addedToLibrary, Toast.LENGTH_SHORT).show()
+                                                }
                                             },
                                             SongMenuAction(Icons.Default.PlaylistPlay, strings.actionInsertNext) {
                                                 onSongInsertNext(song)
@@ -362,6 +373,22 @@ fun LibraryScreen(
                         onLocalClick = { pl -> onLocalPlaylistClick(pl.key) },
                         onCreateLocal = { showCreateLocal = true },
                         onQqClick = onQqPlaylistClick,
+                        layout = playlistLayout,
+                        // 「切换后立即生效」= 先写内存状态（本帧重组）、再落盘。
+                        // 落盘用 apply()（异步），所以点击不会卡帧；而状态已经改了，
+                        // 所以**立即生效**与**持久化**两半都不依赖对方完成（铁律 24）。
+                        onLayoutChange = { next ->
+                            playlistLayout = next
+                            PlaylistLayoutSetting.write(context, next)
+                        },
+                        fold = sectionFold,
+                        // 折叠**只由这里触发**（用户的点击）。这个 lambda 之外
+                        // 没有任何一处会写 sectionFold —— 那就是「不自动折叠」的保证。
+                        onToggleSection = { section ->
+                            val next = sectionFold.toggled(section)
+                            sectionFold = next
+                            LibrarySectionFoldSetting.write(context, section, next.isCollapsed(section))
+                        },
                     )
                 }
                 2 -> {
@@ -405,6 +432,10 @@ fun LibraryScreen(
  * B4：「新建歌单」格子。与歌单格子同尺寸、同圆角（v2.5.0 · B 起封面格一律裁圆角；
  * 旧正典是「直角、无圆角」），占位色块按同一条尺寸规则取 [AppShapes.large]。
  * 内容仍然只有一个居中的 +。
+ *
+ * v2.6.0 · P1：`listMode = true` 时改成整行（48dp 占位块 + 文案），
+ * 尺寸与 [PlaylistItem] 的列表式逐值相同 —— 两个「＋」入口必须与它们所在的
+ * 那一列同形，否则列表式页面里会冒出两个方形大格子。
  */
 @Composable
 fun NewPlaylistGridItem(
@@ -413,8 +444,42 @@ fun NewPlaylistGridItem(
     // v2.3.0 · A/B：同一个「＋」格子被三处复用（新建网易云歌单 / 新建本地歌单），
     // 文案必须能改 —— 默认值保持既有调用点的行为不变。
     label: String? = null,
+    listMode: Boolean = false,
 ) {
     val strings = LocalStrings.current
+    val text = label ?: strings.playlistNew
+    if (listMode) {
+        Row(
+            modifier = modifier
+                .clickable(onClick = onClick)
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(AppShapes.small)
+                    .background(LocalMetroColors.current.surfaceVariant),
+                contentAlignment = Alignment.Center,
+            ) {
+                MetroIcon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = strings.playlistNew,
+                    tint = LocalMetroColors.current.primary,
+                    sizeDp = 24.dp,
+                )
+            }
+            Spacer(Modifier.width(12.dp))
+            MetroText(
+                text,
+                color = LocalMetroColors.current.onBackground,
+                style = LocalMetroTypography.current.bodyLarge,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
+        return
+    }
     Column(modifier = modifier.appPressScale().clickable { onClick() }) {
         Box(
             modifier = Modifier
@@ -434,7 +499,7 @@ fun NewPlaylistGridItem(
         }
         Spacer(Modifier.height(6.dp))
         MetroText(
-            label ?: strings.playlistNew,
+            text,
             color = LocalMetroColors.current.onBackground,
             style = LocalMetroTypography.current.bodyMedium,
             maxLines = 1,
@@ -445,14 +510,61 @@ fun NewPlaylistGridItem(
     }
 }
 
+/**
+ * 网易云歌单条目（v2.6.0 · P1 起两种布局）。
+ *
+ * 卡片式与 v2.5.0 逐值相同；列表式新增 —— 48dp 封面（`CoverUrls.small` 的
+ * 既有封装不变）+ 歌单名 + 「N 首」+ 右侧 ▶（列表式下 ▶ 从封面右下角
+ * 移成行尾的独立入口：48dp 的封面上放不下一个 36dp 的按钮）。
+ */
 @Composable
-fun PlaylistGridItem(
+fun PlaylistItem(
     playlist: PlaylistApi.PlaylistInfo,
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
-    onPlayAll: () -> Unit
+    onPlayAll: () -> Unit,
+    listMode: Boolean = false,
 ) {
     val strings = LocalStrings.current
+    val colors = LocalMetroColors.current
+    val typography = LocalMetroTypography.current
+    if (listMode) {
+        Row(
+            modifier = modifier
+                .clickable(onClick = onClick)
+                .padding(start = 16.dp, end = 8.dp, top = 8.dp, bottom = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(AppShapes.small)
+                    .background(colors.surfaceVariant),
+            ) {
+                AsyncImage(
+                    model = CoverUrls.small(playlist.coverImgUrl),
+                    contentDescription = strings.playlistCoverDesc,
+                    // 形状按渲染边长：48dp < 160dp ⇒ AppShapes.small。
+                    modifier = Modifier.fillMaxSize().appCoverFrame(shape = AppShapes.small),
+                    contentScale = ContentScale.Crop,
+                )
+            }
+            Spacer(Modifier.width(12.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                MetroText(
+                    playlist.name,
+                    color = colors.onSurface,
+                    style = typography.bodyLarge,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                MetroText(strings.trackCount(playlist.trackCount), color = colors.onSurfaceVariant, style = typography.bodySmall)
+            }
+            Spacer(Modifier.width(8.dp))
+            PlayAllButton(size = 32.dp, onClick = onPlayAll)
+        }
+        return
+    }
     Column(modifier = modifier.appPressScale().clickable { onClick() }) {
         Box(modifier = Modifier.fillMaxWidth().aspectRatio(1f)) {
             AsyncImage(
@@ -471,8 +583,8 @@ fun PlaylistGridItem(
             )
         }
         Spacer(Modifier.height(6.dp))
-        MetroText(playlist.name, color = LocalMetroColors.current.onBackground, style = LocalMetroTypography.current.bodyMedium, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(horizontal = 6.dp))
-        MetroText(strings.trackCount(playlist.trackCount), color = LocalMetroColors.current.onSurfaceVariant, style = LocalMetroTypography.current.bodySmall, modifier = Modifier.padding(horizontal = 6.dp))
+        MetroText(playlist.name, color = colors.onBackground, style = typography.bodyMedium, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(horizontal = 6.dp))
+        MetroText(strings.trackCount(playlist.trackCount), color = colors.onSurfaceVariant, style = typography.bodySmall, modifier = Modifier.padding(horizontal = 6.dp))
         Spacer(Modifier.height(6.dp))
     }
 }

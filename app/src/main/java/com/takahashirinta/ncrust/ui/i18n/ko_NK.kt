@@ -372,6 +372,11 @@ scanConnecting = "평판에 연결중…",
         entryHint = "QQ Music 계정에서",
         loginRequired = "QQ Music에 로그인하면 목록을 볼수 있습니다",
         trackCount = { n -> "$n 곡" },
+        // v2.6.0 · P1/P2：库页歌单 tab 的布局切换与手动折叠。
+        layoutCard = "카드식",
+        layoutList = "목록식",
+        sectionCollapse = "접기",
+        sectionExpandAll = { n -> "전체 펼치기 ${n}개" },
     ),
         tags = TagsStrings(
             playable = "재생가능",

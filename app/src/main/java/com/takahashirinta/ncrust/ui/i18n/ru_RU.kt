@@ -372,6 +372,11 @@ val ruRU = Strings(
         entryHint = "Из вашей учётной записи QQ Music",
         loginRequired = "Войдите в QQ Music, чтобы увидеть плейлисты",
         trackCount = { n -> "$n треков" },
+        // v2.6.0 · P1/P2：库页歌单 tab 的布局切换与手动折叠。
+        layoutCard = "Карточки",
+        layoutList = "Список",
+        sectionCollapse = "Свернуть",
+        sectionExpandAll = { n -> "Показать все $n" },
     ),
         tags = TagsStrings(
             playable = "Доступно",
