@@ -53,6 +53,7 @@ import com.takahashirinta.ncrust.ui.components.AlbumSearchItem
 import com.takahashirinta.ncrust.ui.components.ArtistSearchItem
 import com.takahashirinta.ncrust.ui.components.SongCard
 import com.takahashirinta.ncrust.ui.components.SongCardStyle
+import com.takahashirinta.ncrust.ui.components.SongTags
 import com.takahashirinta.ncrust.ui.components.SongMenuAction
 import com.takahashirinta.ncrust.ui.components.appCoverFrame
 import com.takahashirinta.ncrust.ui.components.listItemAppear
@@ -254,6 +255,14 @@ fun SearchScreen(
                             val song = item.toSongItem()
                             SearchHistoryItemCard(
                                 item = item,
+                                // v2.5.5 · D：单曲历史带音源角标（同名两源条目靠它区分）。
+                                // 音源走 `effectiveSource`（老条目 source==null 时靠 bit62 推断），
+                                // **不是**直接读 `item.source` 字符串 —— 那样老 QQ 条目会显示成网易云。
+                                sourceBadge = SongTags.historySourceBadge(
+                                    isSongSection = true,
+                                    source = SearchHistoryMigration.effectiveSource(item),
+                                    strings = strings,
+                                ),
                                 onClick = {
                                     // v2.5.4 · B：老 QQ 条目（v2.5.4 之前只存了裸 id，
                                     // 而 songmid 不可逆）点下去**必然取不到链**。旧行为是
@@ -725,6 +734,14 @@ private fun SearchHistoryItemCard(
     item: SearchHistoryManager.HistoryItem,
     onClick: () -> Unit,
     menuContent: @Composable ColumnScope.(onDismiss: () -> Unit) -> Unit,
+    /**
+     * v2.5.5 · D：音源角标文案；`null` = 不显示。
+     *
+     * 判据在 [SongTags.historySourceBadge]（纯函数，有单测），这里只负责画。
+     * 传 `null` 而不是空串：空串会留下一个 0 宽的 `MetroText` 节点（多一个命中层），
+     * 而「不挂载」是 AGENTS.md 触摸陷阱第 1/4 条要求的形态。
+     */
+    sourceBadge: String? = null,
 ) {
     var showMenu by remember { mutableStateOf(false) }
     Box {
@@ -765,6 +782,21 @@ private fun SearchHistoryItemCard(
                         overflow = TextOverflow.Ellipsis,
                     )
                 }
+            }
+            // v2.5.5 · D：音源角标**挂在行尾、不参与省略**。
+            //
+            // 为什么不做成副标题的一部分（`"$artist · $badge"`，列表行 `SongCard` 的写法）：
+            // 历史列表里歌手名一长，省略号会把角标整段吃掉 —— 而「区分同名历史」
+            // 正是这个角标存在的**唯一**理由，被吃掉就等于没做。
+            // 这与 v2.1.0 · F 给播放页角标的约定同源（「角标定宽、歌手让位省略」）。
+            if (sourceBadge != null) {
+                Spacer(Modifier.width(8.dp))
+                MetroText(
+                    text = sourceBadge,
+                    color = LocalMetroColors.current.onSurfaceVariant,
+                    style = LocalMetroTypography.current.bodySmall,
+                    maxLines = 1,
+                )
             }
         }
         MetroDropdownMenu(

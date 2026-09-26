@@ -21,8 +21,16 @@ import com.takahashirinta.ncrust.network.SongPrivilege
 import com.takahashirinta.ncrust.network.model.ArtistItem
 import com.takahashirinta.ncrust.search.TrackAvailability
 import com.takahashirinta.ncrust.source.MusicSource
+import com.takahashirinta.ncrust.ui.i18n.deDE
+import com.takahashirinta.ncrust.ui.i18n.en
+import com.takahashirinta.ncrust.ui.i18n.jpJP
+import com.takahashirinta.ncrust.ui.i18n.jpMY
+import com.takahashirinta.ncrust.ui.i18n.koNK
+import com.takahashirinta.ncrust.ui.i18n.ruRU
 import com.takahashirinta.ncrust.ui.i18n.zhCN
+import com.takahashirinta.ncrust.ui.i18n.zhTW
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -281,5 +289,90 @@ class SongTagsTest {
         assertEquals(1, SongTags.of(song, strings).size)
         val tags = SongTags.of(song, strings, TrackAvailability.PLAYABLE)
         assertTrue(tags.any { it.kind == SongTagKind.AVAILABILITY && it.text == strings.tagPlayable })
+    }
+
+    // ================================================================
+    // v2.5.5 · D：搜索历史的音源角标
+    // ================================================================
+
+    /**
+     * ★ 单曲分区**必须**给角标 —— 这是「区分同名历史」的唯一线索。
+     *
+     * 同名场景是真实的：同一关键词下两源会返回逐字同名的条目
+     * （《晴天》网易云 `186016` / QQ 另一套 songmid），历史列表里两行的
+     * 封面、标题、歌手可能完全一样。
+     */
+    @Test
+    fun `单曲历史条目显示音源角标`() {
+        assertEquals(
+            zhCN.sourceNetease,
+            SongTags.historySourceBadge(true, MusicSource.NETEASE, zhCN),
+        )
+        assertEquals(
+            zhCN.sourceQqMusic,
+            SongTags.historySourceBadge(true, MusicSource.QQMUSIC, zhCN),
+        )
+    }
+
+    /**
+     * ★ 专辑 / 艺人历史**不显示**角标。
+     *
+     * 它们的 `HistoryItem.source` 从来没有被写过（`addAlbum` / `addArtist` 不传它），
+     * `effectiveSource` 只能靠 bit62 反推 —— 而专辑/艺人的 id 都是网易云的普通 id，
+     * 反推恒为「网易云」。给每一条挂一个恒定标签是纯噪音。
+     */
+    @Test
+    fun `专辑与艺人历史条目不显示音源角标`() {
+        assertNull(SongTags.historySourceBadge(false, MusicSource.NETEASE, zhCN))
+        assertNull(SongTags.historySourceBadge(false, MusicSource.QQMUSIC, zhCN))
+    }
+
+    /**
+     * ★ 两个音源的文案**必须不同**，而且都不为空。
+     *
+     * 若两源给出同一串（例如都回落成「未知音源」），这个角标就完全失去意义 ——
+     * 而它恰恰是「同名历史」唯一的区分手段。
+     */
+    @Test
+    fun `两种音源的历史角标文案互不相同且非空`() {
+        val presets = listOf(zhCN, zhTW, en, jpJP, jpMY, koNK, deDE, ruRU)
+        presets.forEach { s ->
+            val netease = SongTags.historySourceBadge(true, MusicSource.NETEASE, s)
+            val qq = SongTags.historySourceBadge(true, MusicSource.QQMUSIC, s)
+            assertTrue("网易云角标为空", !netease.isNullOrBlank())
+            assertTrue("QQ 角标为空", !qq.isNullOrBlank())
+            assertNotEquals("两种音源的角标文案撞了：$netease", netease, qq)
+        }
+    }
+
+    /**
+     * ★ **老条目**（`source == null` 但 id 的 bit62 置位）必须显示 **QQ 音乐**。
+     *
+     * 这是 v2.5.4 修过的那个 bug 的 UI 侧：`SongItem.musicSource` 读的是**字符串**，
+     * 而老条目那里是 null ⇒ 会被认成网易云。角标必须走
+     * `SearchHistoryMigration.effectiveSource`（bit62 推断），不能直接读字符串。
+     *
+     * 本用例通过 `effectiveSource` 的输入口径把这条事实钉住：
+     * 用 bit62 合成 id 造一条 `source == null` 的历史条目，断言角标是 QQ。
+     */
+    @Test
+    fun `老条目 source 为空但 bit62 置位时角标是 QQ 音乐`() {
+        val legacyQqId = com.takahashirinta.ncrust.source.SourceIds.qqId(357600093L, "0039MnYb0qxYhV")
+        val item = com.takahashirinta.ncrust.library.SearchHistoryManager.HistoryItem(
+            id = legacyQqId,
+            title = "晴天",
+            coverUrl = null,
+            subtitle = "周杰伦",
+            source = null,          // ← v2.5.4 之前写入的形状
+            sourceId = null,
+            mediaId = null,
+        )
+        val effective = com.takahashirinta.ncrust.library.SearchHistoryMigration.effectiveSource(item)
+        assertEquals(
+            "老条目被认成了网易云 —— 角标必须走 effectiveSource 的 bit62 推断",
+            MusicSource.QQMUSIC,
+            effective,
+        )
+        assertEquals(zhCN.sourceQqMusic, SongTags.historySourceBadge(true, effective, zhCN))
     }
 }

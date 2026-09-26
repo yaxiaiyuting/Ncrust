@@ -142,4 +142,32 @@ object SongTags {
             strings.tagCoverOrigin(artist, name)
         }
     }
+
+    /**
+     * v2.5.5 · D：**搜索历史**条目该不该显示音源角标、显示什么。
+     *
+     * ## 为什么只有单曲分区显示
+     *
+     * 「用户能区分同名历史」这条需求只在**单曲**上成立：同一关键词下两源会返回
+     * 完全同名的条目（《晴天》在网易云是 `186016`、在 QQ 是另一套 songmid），
+     * 而历史列表里两行的封面、标题、歌手可能**逐字相同** —— 除了音源没有别的线索。
+     *
+     * 专辑与艺人的历史条目**没有这一层歧义**：它们的 `HistoryItem.source` 从来没有被写过
+     * （`addAlbum` / `addArtist` 不传它），`effectiveSource` 只能靠 bit62 反推 ——
+     * 而专辑/艺人的 id 都是网易云的普通 id，反推结果恒为「网易云」。
+     * 给每一条专辑历史都挂一个恒定的「网易云」标签是纯噪音。
+     *
+     * ## 判据抽成纯函数
+     *
+     * 与 [of] 同源的理由：「什么情况下**不**显示」是最容易在 UI 里被顺手写成
+     * 「显示一个默认值」的地方。这里把它变成一条 [SongTagsTest] 能钉住的断言 ——
+     * 尤其是「老条目（`source == null` 但 id 的 bit62 置位）必须显示 **QQ 音乐**、
+     * 不能回落成网易云」这一条，它正是 v2.5.4 修过的那个 bug 的 UI 侧。
+     *
+     * @param isSongSection 该条目属于单曲分区（`SearchHistoryManager.TYPE_SONG`）。
+     * @param source 由 `SearchHistoryMigration.effectiveSource(item)` 算出 ——
+     *   **不要**在调用点直接读 `item.source` 字符串（老条目那里是 null）。
+     */
+    fun historySourceBadge(isSongSection: Boolean, source: MusicSource, strings: Strings): String? =
+        if (isSongSection) sourceLabel(source, strings) else null
 }
