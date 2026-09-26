@@ -9,8 +9,6 @@
 package com.takahashirinta.ncrust.cache
 
 import android.content.Context
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 
 /**
  * 离线曲目索引的一条记录（v2.0.0 · T3 · 离线缓存 Phase 2）。**纯数据**，JVM 可单测。
@@ -141,7 +139,11 @@ internal class OfflineLibraryIndex(private val maxEntries: Int = MAX_ENTRIES) {
 
     fun clear() = map.clear()
 
-    fun toJson(): String = Gson().toJson(map.values.toList())
+    /**
+     * v2.5.5 · A：写路径只经 [OfflineTrackCodec] 的 DTO，每个字段显式
+     * `@SerializedName("<稳定名字>")` —— 落盘 key 不再由 R8 的字段名决定。
+     */
+    fun toJson(): String = OfflineTrackCodec.encode(map.values.toList())
 
     companion object {
         /** 与 [OfflineUrlIndex.MAX_ENTRIES] 同值：两张表覆盖同一批歌，条数上限就该一致。 */
@@ -149,12 +151,7 @@ internal class OfflineLibraryIndex(private val maxEntries: Int = MAX_ENTRIES) {
 
         fun fromJson(json: String?): OfflineLibraryIndex {
             val idx = OfflineLibraryIndex()
-            if (json.isNullOrEmpty()) return idx
-            runCatching {
-                val type = object : TypeToken<List<OfflineTrack>>() {}.type
-                val loaded: List<OfflineTrack>? = Gson().fromJson(json, type)
-                loaded?.forEach { idx.upsert(it) }
-            }
+            OfflineTrackCodec.decode(json).forEach { idx.upsert(it) }
             return idx
         }
     }

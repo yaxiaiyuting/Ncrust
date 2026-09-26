@@ -56,7 +56,6 @@ object LibraryManager {
 
     private val gson = Gson()
     private val songListType = object : TypeToken<List<SongItem>>() {}.type
-    private val albumListType = object : TypeToken<List<AlbumInfo>>() {}.type
     private val idListType = object : TypeToken<List<Long>>() {}.type
 
     @Volatile private var cachedSongs: MutableList<SongItem>? = null
@@ -107,11 +106,10 @@ object LibraryManager {
         if (current != null) return current
         return synchronized(albumsLock) {
             cachedAlbums ?: run {
-                val parsed = runCatching {
-                    val json = prefs(context).getString(KEY_ALBUMS, null)
-                    if (json.isNullOrEmpty()) emptyList<AlbumInfo>()
-                    else (gson.fromJson<List<AlbumInfo>>(json, albumListType) ?: emptyList())
-                }.getOrDefault(emptyList())
+                // v2.5.5 · A：读路径走 SavedAlbumCodec（认稳定名 / 旧单字母 / 声明顺序），
+                // 且**逐条**容错 —— 旧写法 `runCatching { gson.fromJson(...) }` 是
+                // 「一个字节坏了，用户收藏的整张专辑表消失」。
+                val parsed = SavedAlbumCodec.decode(prefs(context).getString(KEY_ALBUMS, null))
                 cachedAlbums = parsed.toMutableList()
                 parsed.toMutableList()
             }
@@ -161,7 +159,8 @@ object LibraryManager {
         runCatching {
             prefs(ctx).edit()
                 .putString(KEY_SONGS, gson.toJson(songsSnapshot))
-                .putString(KEY_ALBUMS, gson.toJson(albumsSnapshot))
+                // v2.5.5 · A：写路径走 codec（显式字段名），不再依赖 R8 后的类结构。
+                .putString(KEY_ALBUMS, SavedAlbumCodec.encode(albumsSnapshot))
                 .putString(KEY_LIKED_IDS, gson.toJson(likedIdsSnapshot))
                 .apply()
         }

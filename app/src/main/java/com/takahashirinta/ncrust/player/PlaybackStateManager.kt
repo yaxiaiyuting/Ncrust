@@ -15,6 +15,7 @@ package com.takahashirinta.ncrust.player
 import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.Gson
+import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
 import com.takahashirinta.ncrust.network.SongItem
 import kotlinx.coroutines.CoroutineScope
@@ -56,7 +57,6 @@ object PlaybackStateManager {
     // Gson 本身线程安全。
     private val gson = Gson()
     private val songListType = object : TypeToken<List<SongItem>>() {}.type
-    private val positionMapType = object : TypeToken<MutableMap<Long, PositionEntry>>() {}.type
 
     // 队列写盘 debounce：连续 addToQueue / insertNext / removeFromQueue 会累计触发。
     // 200 ms 合并一次能把连续 20 首歌的加入压成 1 次 IO，避免主线程 Gson.toJson 抖动。
@@ -140,7 +140,24 @@ object PlaybackStateManager {
     //   - 正常播完 → **清除**记录，重播必定从 0:00 开始。
     // 清除这一步很关键：若播完仍留着旧进度，重播时播放器从 0 开始而歌词面板/
     // 进度条可能停在旧位置，就会出现「歌词对不上歌」。
-    data class PositionEntry(val posMs: Long, val savedAtMs: Long)
+    /**
+     * 某首歌的续播记录。
+     *
+     * v2.5.5 · A：**字段名必须显式声明**（AGENTS.md v2.5.4 规则 1 / 本版铁律 18）。
+     * R8 曾把这两个字段混淆成 `a` / `b`（`mapping.txt` 取证见
+     * `docs/verification/v2.5.5/probe-r8-keys.md` §2 的 F2）—— 同 APK 内读写自洽所以不崩，
+     * 但字母表一变就会「位置↔时间戳对调」或「续播静默失效」。
+     *
+     * `proguard-rules.pro` 已有的全局规则
+     * `-keepclassmembers,allowobfuscation class * { @SerializedName <fields>; }`
+     * 保证注解里的字符串常量进 dex，落盘 key 从此与字段名无关。
+     *
+     * 读路径见 [PlaybackPositionCodec]（认稳定名 / 旧单字母 / 声明顺序三种形状）。
+     */
+    data class PositionEntry(
+        @SerializedName("posMs") val posMs: Long,
+        @SerializedName("savedAtMs") val savedAtMs: Long,
+    )
 
     private val positionLock = Any()
     @Volatile private var positionCache: MutableMap<Long, PositionEntry>? = null
@@ -150,12 +167,11 @@ object PlaybackStateManager {
         positionCache?.let { return it }
         return synchronized(positionLock) {
             positionCache ?: run {
-                val parsed = runCatching {
-                    val json = getPrefs(context).getString(KEY_SONG_POSITIONS, null)
-                    if (json.isNullOrEmpty()) mutableMapOf<Long, PositionEntry>()
-                    else (gson.fromJson<MutableMap<Long, PositionEntry>>(json, positionMapType)
-                        ?: mutableMapOf())
-                }.getOrDefault(mutableMapOf())
+                // v2.5.5 · A：读路径走 PlaybackPositionCodec（认稳定名 / 旧单字母 / 声明顺序），
+                // 且**逐条**容错 —— 旧写法 `runCatching { gson.fromJson(...) }` 是
+                // 「一个字节坏了，用户全部歌曲的续播记录一起消失」。
+                val parsed = PlaybackPositionCodec
+                    .decode(getPrefs(context).getString(KEY_SONG_POSITIONS, null))
                 parsed.also { positionCache = it }
             }
         }
@@ -214,8 +230,9 @@ object PlaybackStateManager {
         val map = positionCache ?: return
         val snapshot = synchronized(positionLock) { map.toMap() }
         try {
-            // 与队列一样：Gson 反射序列化放 Default，IO 只做写盘。
-            val json = withContext(Dispatchers.Default) { gson.toJson(snapshot) }
+            // 与队列一样：序列化放 Default，IO 只做写盘。
+            // v2.5.5 · A：序列化改走 codec（显式字段名），不再依赖 R8 后的类结构。
+            val json = withContext(Dispatchers.Default) { PlaybackPositionCodec.encode(snapshot) }
             withContext(Dispatchers.IO) {
                 getPrefs(context).edit().putString(KEY_SONG_POSITIONS, json).apply()
             }
