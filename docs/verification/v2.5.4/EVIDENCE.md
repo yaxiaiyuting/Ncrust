@@ -152,6 +152,30 @@ WGR-W09 在本版执行期间**处于锁屏**（`mWakefulness=Asleep` → 唤醒
 **基线状态**：本版之前**没有任何 release 基线**（`benchmark/output/` 不存在，全盘 0 个
 `benchmarkData.json`）。所以本版**建立**基线，**不做**版本间 Δ 比较。
 
+> ### ⛔ 本轮基准**没有跑完**（如实记录，不伪造数据）
+>
+> - benchmark APK 构建成功、安装成功（`:benchmark:assembleDebug` → `benchmark-debug.apk`）；
+> - `SettingsScrollBenchmark` 通过 `am instrument -w` 在 S6 上**启动成功**
+>   （输出首行 `com.takahashirinta.ncrust.benchmark.SettingsScrollBenchmark:`），
+>   但在 **6 迭代 × COLD + `CompilationMode.Full`** 的配置下，
+>   在本机 S6（Exolectric 7420 / 3GB / Android 7.0）上单条基准的耗时远超预期，
+>   运行约 2 分钟后仍未产出任何迭代数据；
+> - 同一轮里更早的一次 `run_benchmark.sh all` 在 `StartupBenchmark` 上挂了 20 分钟无输出；
+> - 随后按**用户指示「不要测试了，继续下一项」**中止，未再重跑。
+>
+> **因此：本版没有可交付的 macrobenchmark 数值。** 这一条是**缺口**，不是"已建立基线"。
+> 需要补的东西写在下表。任何"开销可忽略"的结论**只**由产物级证据支撑（R8 内联，见下），
+> **不由**帧时间支撑。
+
+### 补齐 baseline 需要什么（可执行清单）
+
+| # | 步骤 | 备注 |
+|---|---|---|
+| 1 | 把 `StartupMode.COLD` 换成 `StartupMode.WARM`，或把 `CompilationMode` 从默认 `Full` 改成 `None` | S6 上 `Full` 每次迭代都要重编译，是主要耗时来源 |
+| 2 | 或把 `iterations` 从 6 降到 3 | 先拿到一组数字 |
+| 3 | 或在 x86_64 模拟器上跑（需要把 `benchmark/build.gradle.kts` 的 `packagingOptions` 改成保留 `trace_processor_shell_x86_64`） | 快得多，但**不是**真机基线，只能做相对比较 |
+| 4 | 跑完把 `adb pull /storage/emulated/0/Android/media/com.takahashirinta.ncrust.benchmark/` 的 JSON + trace 落到 `verification/benchmark/` | 目录已建好 |
+
 **归因边界（不许含糊）**：转发属性是否带来开销，本版的证据是**产物级**的
 （120 条转发属性在 release 里 0 条残留方法体，见 `probe-forwarding-attr.md` §2），
 **不是**因果实验。因果归因需要一份「直读对照包」，本版不做（理由见 CHANGELOG 的特性 A 一节）。
