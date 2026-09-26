@@ -427,6 +427,7 @@ val jpMY = Strings(
         // v2.5.5 · G：聚合搜索的加载态（未返回时显示「搜索中…」而不是 0）。
         searchSourcePending = "搜索中…",
         searchSourceTimeout = "搜索超時",
+        searchSourceError = "搜索失敗",
         searchSourceSkipped = "未登入",
         searchSourceCount = { n -> "$n 曲" },
         searchSourceSummaryWithStatus = { a, b -> "NetEase $a · QQ Music $b" },

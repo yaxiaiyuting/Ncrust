@@ -428,6 +428,7 @@ val zhCN = Strings(
         // v2.5.5 · G：聚合搜索的加载态（未返回时显示「搜索中…」而不是 0）。
         searchSourcePending = "搜索中…",
         searchSourceTimeout = "搜索超时",
+        searchSourceError = "搜索失败",
         searchSourceSkipped = "未登录",
         searchSourceCount = { n -> "$n 首" },
         searchSourceSummaryWithStatus = { a, b -> "网易云 $a · QQ 音乐 $b" },

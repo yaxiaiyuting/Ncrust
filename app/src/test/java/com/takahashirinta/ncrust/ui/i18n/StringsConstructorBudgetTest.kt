@@ -174,16 +174,16 @@ class StringsConstructorBudgetTest {
      * 而后者会留下一条可追溯的提交记录。范围断言做不到这一点。
      */
     @Test
-    fun `v2_5_5 之后 Strings 主构造器稳定在 134`() {
+    fun `v2_5_5 之后 Strings 主构造器稳定在 135`() {
         val clazz = Class.forName("com.takahashirinta.ncrust.ui.i18n.Strings")
         assertEquals(
             "Strings 主构造器参数数变了。若是有意加文案，请把新文案放进嵌套组" +
                 "（外层一个都不要加），然后同步改这条断言并在提交信息里说明。",
-            134, primaryParams(clazz),
+            135, primaryParams(clazz),
         )
-        // 余量：134 ⇒ 1(this) + 134 + 5(mask) + 1(marker) = 141 槽，距 255 还有 114。
-        assertEquals(141, dexSlots(134, true))
-        assertTrue("余量不足 100 个槽位", 255 - dexSlots(134, true) >= 100)
+        // 余量：135 ⇒ 1(this) + 135 + 5(mask) + 1(marker) = 142 槽，距 255 还有 113。
+        assertEquals(142, dexSlots(135, true))
+        assertTrue("余量不足 100 个槽位", 255 - dexSlots(135, true) >= 100)
     }
 
     /**
@@ -210,8 +210,8 @@ class StringsConstructorBudgetTest {
      * `searchSourceSkipped` / `searchSourceCount` / `searchSourceSummaryWithStatus`。
      */
     @Test
-    fun `v2_5_5 往主构造器加了 5 条搜索加载态文案`() {
-        assertEquals("v2.5.4 是 129，v2.5.5 只该 +5", 134, 129 + 5)
+    fun `v2_5_5 往主构造器加了 6 条搜索加载态文案`() {
+        assertEquals("v2.5.4 是 129，v2.5.5 只该 +6（含错误态那一条）", 135, 129 + 6)
     }
 
     // ---------------------------------------------------------------- 组预算
@@ -361,9 +361,12 @@ class StringsConstructorBudgetTest {
     fun `v2_5_5 的搜索加载态文案在八种语言里都可用`() {
         val presets = listOf(zhCN, zhTW, en, jpJP, jpMY, koNK, deDE, ruRU)
         presets.forEach { s ->
-            val trio = listOf(s.searchSourcePending, s.searchSourceTimeout, s.searchSourceSkipped)
-            trio.forEach { assertTrue("搜索状态文案为空", it.isNotBlank()) }
-            assertEquals("同一语言里三种搜索状态的文案有重复：$trio", 3, trio.distinct().size)
+            val quad = listOf(
+                s.searchSourcePending, s.searchSourceTimeout,
+                s.searchSourceError, s.searchSourceSkipped,
+            )
+            quad.forEach { assertTrue("搜索状态文案为空", it.isNotBlank()) }
+            assertEquals("同一语言里四种搜索状态的文案有重复：$quad", 4, quad.distinct().size)
             assertTrue(s.searchSourceCount(0).isNotBlank())
             assertTrue(s.searchSourceCount(30).isNotBlank())
             assertTrue(

@@ -427,6 +427,7 @@ scanConnecting = "평판에 연결중…",
         // v2.5.5 · G：聚合搜索的加载态（未返回时显示「搜索中…」而不是 0）。
         searchSourcePending = "검색 중…",
         searchSourceTimeout = "검색 시간 초과",
+        searchSourceError = "검색 실패",
         searchSourceSkipped = "로그인 안 됨",
         searchSourceCount = { n -> "$n 곡" },
         searchSourceSummaryWithStatus = { a, b -> "NetEase $a · QQ Music $b" },

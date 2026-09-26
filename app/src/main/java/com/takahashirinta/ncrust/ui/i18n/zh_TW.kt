@@ -428,6 +428,7 @@ scanConnecting = "正在連接平板…",
         // v2.5.5 · G：聚合搜索的加载态（未返回时显示「搜索中…」而不是 0）。
         searchSourcePending = "搜尋中…",
         searchSourceTimeout = "搜尋逾時",
+        searchSourceError = "搜尋失敗",
         searchSourceSkipped = "未登入",
         searchSourceCount = { n -> "$n 首" },
         searchSourceSummaryWithStatus = { a, b -> "網易雲 $a · QQ 音樂 $b" },

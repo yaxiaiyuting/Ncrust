@@ -208,9 +208,15 @@ class SearchViewModel : ViewModel() {
                                 // `withTimeoutOrNull` 返回 null = 预算用完 ⇒ 记成 TIMEOUT
                                 // 而不是「0 首」。这两件事在界面上必须能区分。
                                 r?.let { QqOutcome(it, timedOut = false) } ?: QqOutcome(emptyList(), timedOut = true)
+                            } catch (e: kotlinx.coroutines.CancellationException) {
+                                // 取消不是失败：用户改了关键词 / 离开页面时取消这一轮，
+                                // 把它记成「失败」会让界面在下一次搜索开始前闪一条错误。
+                                throw e
                             } catch (e: Exception) {
                                 android.util.Log.w("SearchViewModel", "qq search failed", e)
-                                QqOutcome(emptyList(), timedOut = true)
+                                // ★ 区分「预算用完」与「真的失败」：两者对用户的处置相同
+                                //   （都要点重试），但把「连不上」说成「超时」是替他编原因。
+                                QqOutcome(emptyList(), timedOut = false, failed = true)
                             }
                         } else {
                             null
@@ -250,6 +256,7 @@ class SearchViewModel : ViewModel() {
                                 qqStatus = when {
                                     !qqAllowed -> SourceSearchStatus.SKIPPED
                                     qqOutcome.timedOut -> SourceSearchStatus.TIMEOUT
+                                    qqOutcome.failed -> SourceSearchStatus.ERROR
                                     else -> SourceSearchStatus.DONE
                                 },
                             )
@@ -284,6 +291,15 @@ class SearchViewModel : ViewModel() {
                     _albums.value = emptyList()
                 }
             }
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            // ★ v2.5.5 · G：**取消必须原样抛出**，不能落进下面的 `catch (e: Exception)`。
+            //
+            // `searchJob.cancel()` 在用户每敲一个字（500ms debounce 之后）都会触发一次。
+            // 旧写法把 `CancellationException` 当成普通异常：写 `_error`、并且在结果为空时
+            // 调 `clearResults()` —— 表现是「正在打字时界面闪一下错误 / 上一轮结果被清空」。
+            // 协程的取消是**控制流**不是错误，吞掉它还会破坏结构化并发
+            // （父作用域无法感知子协程已取消）。
+            throw e
         } catch (e: Exception) {
             _error.value = e.message
             // v2.1.0 · E：只有在**一条结果都没有**时才清空。聚合搜索下一侧失败很正常
@@ -320,6 +336,13 @@ class SearchViewModel : ViewModel() {
  */
 private data class QqOutcome(
     val songs: List<SongItem>,
-    /** `withTimeoutOrNull` 返回 null（用完预算）或抛异常。 */
+    /** `withTimeoutOrNull` 返回 null ⇒ 预算用完。 */
     val timedOut: Boolean,
+    /**
+     * 抛了异常 ⇒ 真的失败（网络错误 / 服务端报错）。
+     *
+     * 与 [timedOut] 分开：两者对用户的处置相同（都要点重试），
+     * 但把「连不上」显示成「超时」是替用户编原因。
+     */
+    val failed: Boolean = false,
 )

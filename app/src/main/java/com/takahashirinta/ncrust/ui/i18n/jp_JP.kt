@@ -428,6 +428,7 @@ val jpJP = Strings(
         // v2.5.5 · G：聚合搜索的加载态（未返回时显示「搜索中…」而不是 0）。
         searchSourcePending = "検索中…",
         searchSourceTimeout = "検索がタイムアウト",
+        searchSourceError = "検索に失敗",
         searchSourceSkipped = "未ログイン",
         searchSourceCount = { n -> "$n 曲" },
         searchSourceSummaryWithStatus = { a, b -> "NetEase $a · QQ Music $b" },

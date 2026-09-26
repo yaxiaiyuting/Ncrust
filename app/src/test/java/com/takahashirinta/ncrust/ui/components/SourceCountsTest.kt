@@ -160,9 +160,12 @@ class SourceCountsTest {
     fun `八种语言的三种状态文案非空且互不相同`() {
         val presets = listOf(zhCN, zhTW, en, jpJP, jpMY, koNK, deDE, ruRU)
         presets.forEach { s ->
-            val trio = listOf(s.searchSourcePending, s.searchSourceTimeout, s.searchSourceSkipped)
-            trio.forEach { assertTrue("状态文案为空", it.isNotBlank()) }
-            assertEquals("同一语言里三种状态的文案有重复：$trio", 3, trio.distinct().size)
+            val quad = listOf(
+                s.searchSourcePending, s.searchSourceTimeout,
+                s.searchSourceError, s.searchSourceSkipped,
+            )
+            quad.forEach { assertTrue("状态文案为空", it.isNotBlank()) }
+            assertEquals("同一语言里四种状态的文案有重复：$quad", 4, quad.distinct().size)
         }
     }
 
@@ -186,11 +189,28 @@ class SourceCountsTest {
     }
 
     @Test
-    fun `qqUnavailable 只在超时时为真`() {
+    fun `qqUnavailable 在超时与失败时为真`() {
         assertTrue(SourceCounts(qqStatus = SourceSearchStatus.TIMEOUT).qqUnavailable)
+        assertTrue(SourceCounts(qqStatus = SourceSearchStatus.ERROR).qqUnavailable)
         assertFalse(SourceCounts(qqStatus = SourceSearchStatus.PENDING).qqUnavailable)
         assertFalse(SourceCounts(qqStatus = SourceSearchStatus.DONE).qqUnavailable)
         assertFalse(SourceCounts(qqStatus = SourceSearchStatus.SKIPPED).qqUnavailable)
+    }
+
+    /**
+     * ★ 「超时」与「失败」是两句不同的话。
+     *
+     * 把「连不上」显示成「超时」等于替用户编了一个原因 ——
+     * 「服务端标签不可信」这条纪律在客户端对自己说的话上同样成立
+     * （探针 `probe-search-qq-latency.md` §3 遗留①）。
+     */
+    @Test
+    fun `超时与失败是两句不同的话`() {
+        val timeout = SourceCounts(qqStatus = SourceSearchStatus.TIMEOUT).qqText(strings)
+        val error = SourceCounts(qqStatus = SourceSearchStatus.ERROR).qqText(strings)
+        assertNotEquals(timeout, error)
+        assertEquals(strings.searchSourceTimeout, timeout)
+        assertEquals(strings.searchSourceError, error)
     }
 
     @Test

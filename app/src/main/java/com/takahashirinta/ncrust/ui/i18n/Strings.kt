@@ -353,8 +353,15 @@ data class Strings(
 
     /** 某一源还在检索中（**不显示 0**）。 */
     val searchSourcePending: String,
-    /** 某一源超时/失败。与「搜索中」分开：前者会自动有结果，后者需要用户动一下。 */
+    /** 某一源**超时**（预算用完）。与「搜索中」分开：前者会自动有结果，后者需要用户动一下。 */
     val searchSourceTimeout: String,
+    /**
+     * 某一源**失败**（网络错误 / 服务端报错）。
+     *
+     * 与 [searchSourceTimeout] 分开是探针给的（`probe-search-qq-latency.md` §3 遗留①）：
+     * 把「连不上」显示成「超时」等于替用户编了一个原因。
+     */
+    val searchSourceError: String,
     /** 这一轮没有发起该源的请求（未登录且不允许匿名）。同样不能显示 0。 */
     val searchSourceSkipped: String,
     /** 计数文案：`(条数) -> "30 首"`。 */

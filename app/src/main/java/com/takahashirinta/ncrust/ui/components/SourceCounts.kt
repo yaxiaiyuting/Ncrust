@@ -38,8 +38,18 @@ enum class SourceSearchStatus {
     /** 回来了。计数是权威的（0 就是真的 0）。 */
     DONE,
 
-    /** 超时 / 失败。计数不可信，界面要给一条可操作的重试提示。 */
+    /** **超时**（预算用完）。计数不可信，界面要给一条可操作的重试提示。 */
     TIMEOUT,
+
+    /**
+     * **失败**（网络错误 / 服务端报错）。
+     *
+     * 与 [TIMEOUT] 分开是探针给的（`probe-search-qq-latency.md` §3 遗留①）：
+     * 把「连不上」显示成「超时」等于替用户编了一个原因 ——
+     * 「服务端标签不可信」这条纪律在客户端对自己说的话上同样成立。
+     * 两者的**处置相同**（都要用户点重试），所以界面上只差一个词。
+     */
+    ERROR,
 
     /** 这一轮**没有发起**这个源的请求（未登录且不允许匿名）。不算失败，也不显示计数。 */
     SKIPPED,
@@ -62,9 +72,9 @@ data class SourceCounts(
     val hasPending: Boolean
         get() = neteaseStatus == SourceSearchStatus.PENDING || qqStatus == SourceSearchStatus.PENDING
 
-    /** QQ 这一轮超时/失败了 —— 界面给一条可点重试的提示，而不是一个哑掉的 0。 */
+    /** QQ 这一轮超时或失败了 —— 界面给一条可点重试的提示，而不是一个哑掉的 0。 */
     val qqUnavailable: Boolean
-        get() = qqStatus == SourceSearchStatus.TIMEOUT
+        get() = qqStatus == SourceSearchStatus.TIMEOUT || qqStatus == SourceSearchStatus.ERROR
 
     /**
      * 统计行的文案。
@@ -100,6 +110,7 @@ data class SourceCounts(
         when (status) {
             SourceSearchStatus.PENDING -> strings.searchSourcePending
             SourceSearchStatus.TIMEOUT -> strings.searchSourceTimeout
+            SourceSearchStatus.ERROR -> strings.searchSourceError
             SourceSearchStatus.SKIPPED -> strings.searchSourceSkipped
             SourceSearchStatus.DONE -> strings.searchSourceCount(count)
         }
