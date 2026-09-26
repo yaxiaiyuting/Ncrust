@@ -92,6 +92,16 @@ object QqSongMapper {
             ?: return null
         val rawId = item.optLong("id", 0L)
         val syntheticId = SourceIds.qqId(rawId, mid)
+        // v2.5.4 · C：解析期埋点（唯一落点）。
+        // 「服务端没给 songid」在这里是**唯一可判**的地方：`optLong("id", 0L)` 把
+        // 「字段缺失」与「字段是 0」压成了同一个值，两者都走散列兜底。
+        // 一次 AtomicLong 自增 + 一次毫秒时间戳，无分配、无 IO、无网络。
+        QqProbeCounters.onParsed(
+            hadSongId = rawId > 0L && rawId < SourceIds.QQ_ID_FLAG,
+            // media_mid 缺失时 QqApi 会回落 songmid 取链；这里只记事实，不改行为。
+            hadMediaMid = item.optJSONObject("file")
+                ?.optString("media_mid")?.isNotEmpty() == true,
+        )
 
         val artists = item.optJSONArray("singer")?.let { arr ->
             (0 until arr.length()).mapNotNull { i ->

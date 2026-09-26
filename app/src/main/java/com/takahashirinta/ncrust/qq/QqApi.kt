@@ -131,9 +131,18 @@ object QqApi {
      *    只有连 `media_id` 都没有（老数据、手工构造的条目）时才退回 `sourceId`。
      */
     suspend fun fetchPlayUrl(song: SongItem, level: String): SongUrlResult? {
-        val songMid = song.sourceId ?: return null
+        // v2.5.4 · C：取链期埋点（唯一落点）。全部是 AtomicLong 自增，无 IO、无网络。
+        QqProbeCounters.onResolveAttempt()
+        val songMid = song.sourceId
+        if (songMid == null) {
+            // songmid 缺失是**硬失败**：不兜底、不重试（见上面 KDoc 的第 2 条）。
+            QqProbeCounters.onResolveMissingSongMid()
+            return null
+        }
         // 没有 media_id（v2.1.0 之前落盘的队列条目）时才退回 songmid
-        val mediaMid = song.mediaId?.takeIf { it.isNotEmpty() } ?: songMid
+        val mediaIdOfSong = song.mediaId?.takeIf { it.isNotEmpty() }
+        if (mediaIdOfSong == null) QqProbeCounters.onResolveMediaMidFallback()
+        val mediaMid = mediaIdOfSong ?: songMid
 
         val types = QqQuality.attemptsFor(level)
         val info = requestVkeyBatch(songMid, mediaMid, types, requestedLevel = level) ?: return null
@@ -149,6 +158,7 @@ object QqApi {
             }
             val url = buildUrl(purl)
             val actualLevel = QqQuality.ncrustLevelOf(fileType)
+            QqProbeCounters.onResolveOk()
             Log.i(TAG, "vkey ok: requested=$level actual=$actualLevel prefix=${fileType.prefix} mid=$mediaMid")
             lastUrlFailure = null
             // 与网易云侧同一个离线缓存 key 机制：挂上它，media3 的 SimpleCache
@@ -172,6 +182,7 @@ object QqApi {
                 songMaxLevel = null,
             )
         }
+        QqProbeCounters.onResolveFail()
         Log.w(TAG, "no playable url for ${SourceIds.trackKey(MusicSource.QQMUSIC, song.id)} at level=$level")
         return null
     }

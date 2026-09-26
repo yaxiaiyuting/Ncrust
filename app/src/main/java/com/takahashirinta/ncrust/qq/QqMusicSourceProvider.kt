@@ -96,5 +96,8 @@ object QqMusicSourceProvider : MusicSourceProvider {
     fun install(context: Context) {
         QqClient.init(context)
         SourceRouter.register(this)
+        // v2.5.4 · C：把上一进程落盘的兜底统计读回来（幂等，只读一次）。
+        // 放在这里而不是 Application.onCreate：本函数已经是「进程启动时接线」的既有落点。
+        runCatching { QqProbeStore.ensureSeeded(context) }
     }
 }

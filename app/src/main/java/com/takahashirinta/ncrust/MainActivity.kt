@@ -436,6 +436,24 @@ class MainActivity : ComponentActivity() {
     }
 
     /**
+     * v2.5.4 · C：把 QQ 兜底统计落盘一次。
+     *
+     * ## 为什么是 `onStop` 而不是每个埋点点位
+     *
+     * 埋点点位在 `Dispatchers.IO`（解析/取链）与 ExoPlayer 主线程（2Hz 心跳）上，
+     * 在那里落盘等于给播放关键路径加 IO（铁律 4）。
+     * `onStop` 是「用户离开了这个界面」的时刻：进程随时可能被杀，而它**不在**播放链路上，
+     * 一次 `apply()`（异步落盘）成本可忽略。
+     *
+     * 用 `onStop` 而不是 `onDestroy`：后者在配置变化（旋转）时也会走，
+     * 而旋转在本应用里是高频动作；`onStop` 只覆盖「真的到后台了」。
+     */
+    override fun onStop() {
+        runCatching { com.takahashirinta.ncrust.qq.QqProbeStore.snapshotAndFlush(this) }
+        super.onStop()
+    }
+
+    /**
      * v1.8.0 · T1：窗口重新获得焦点时把沉浸式状态补回去。
      *
      * 部分 ROM（以及从最近任务/锁屏回来时）会重置窗口的 systemUi 标志，只靠进入大屏那一次
@@ -2123,6 +2141,10 @@ fun MainScreen(
                 // 全屏播放器点歌名: 上拉"转到歌手/转到专辑"菜单(复用长按菜单 sheet)
                 currentSong?.let { menuSong = it; menuSongActions = emptyList() }
             },
+            // v2.5.4 · E：竖屏托盘第二行「作者」那一段 → 直接进艺人页。
+            // 与 `onSongInfoClick` 的分工：那一个是「先在菜单里选转到歌手/转到专辑」，
+            // 这一个已经是明确意图，不再多一次选择。
+            onArtistClick = { artistId -> navController.navigate(NavRoutes.artist(artistId)) },
             // B2：保存当前队列为云歌单（创建 + 批量加歌两步走，写操作由 PlaylistWriteGate 串行）。
             onSavePlaylist = {
                 playlistSnapshot = playbackQueue

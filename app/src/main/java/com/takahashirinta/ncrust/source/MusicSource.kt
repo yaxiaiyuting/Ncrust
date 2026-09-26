@@ -209,6 +209,32 @@ object SourceIds {
     fun qqRawId(id: Long): Long? = if (isQqId(id)) id and (QQ_ID_FLAG - 1L) else null
 
     /**
+     * v2.5.4 · C：这个 QQ id 是不是「**服务端没给 songid** ⇒ 用 songmid 散列兜底」
+     * 造出来的。
+     *
+     * ## 为什么需要它，以及为什么它必须是纯函数
+     *
+     * 埋点要回答「兜底路径的可播率」，就必须在**播放确认**那一刻判断
+     * 「现在这首歌的 id 是兜底来的吗」。若把判断结果存成旁路标记
+     * （last-write-wins 的字段），跨源切歌/预载接续会让它指错歌 ——
+     * 这正是 v2.1.5 修掉「歌词串台」时的同一个形状。
+     *
+     * 所以判据**从 id 与 songmid 直接算出来**，不存任何状态：
+     * 兜底 id 的定义就是 `QQ_ID_FLAG or hashSourceId(songmid)`
+     * （见 [qqId]），把它重算一遍再比较即可。
+     *
+     * 误判面：只有当真实 songid 恰好等于 `hashSourceId(songmid)` 时才会误判，
+     * 概率约 2⁻⁶² —— 比 64 位整数上的随机碰撞还小，且**不会造成任何行为变化**
+     * （它只影响一个本地计数器）。
+     *
+     * @param sourceId QQ 的 songmid。缺失时返回 false（判不出来就不计）。
+     */
+    fun isSynthesizedQqId(id: Long, sourceId: String?): Boolean {
+        if (!isQqId(id) || sourceId.isNullOrEmpty()) return false
+        return qqRawId(id) == hashSourceId(sourceId)
+    }
+
+    /**
      * songmid 的确定性散列（FNV-1a 64 位），只取低 62 位以免撞上标志位。
      *
      * 不用 `String.hashCode()`：它只有 32 位，且碰撞在这里没有任何兜底手段。

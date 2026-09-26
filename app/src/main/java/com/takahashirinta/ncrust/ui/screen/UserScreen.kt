@@ -363,6 +363,22 @@ fun UserScreen(
                 phoneLoginText = strings.sourceQqPhoneTitle,
                 onLogin = onShowQqLogin,
                 onPhoneLogin = onShowQqPhoneLogin,
+                // v2.5.4 · C：第二个**仅 debug 包**的诊断入口 —— QQ 兜底统计的读出。
+                // 与上面那条同形：release 里为 null ⇒ 整行不挂载（不是 alpha=0）。
+                // 它做两件事：把快照写进 logcat（`QqProbe` tag）**并落盘**到
+                // `ncrust_qq_probe`，所以真机上既能实时看、也能事后 pull。
+                // **不上报**：这条路径不引用任何网络类型（铁律：本地统计不上报）。
+                onProbeStats = if (BuildConfig.DEBUG) {
+                    {
+                        val stats = com.takahashirinta.ncrust.qq.QqProbeStore
+                            .snapshotAndFlush(context)
+                        android.util.Log.i(
+                            "QqProbe",
+                            "qq fallback stats = " + com.google.gson.Gson().toJson(stats),
+                        )
+                        android.util.Log.i("QqProbe", "verdict: " + stats.verdict())
+                    }
+                } else null,
                 // v2.1.4：release 包里为 null ⇒ 这一行不挂载，用户看不到、也点不到。
                 onDiagnose = if (BuildConfig.DEBUG) {
                     {
@@ -1428,6 +1444,8 @@ private fun QqAccountBlock(
      * release 包里它整行不挂载（不是 `alpha=0`，见 AGENTS.md「Compose 触摸陷阱」第 1 条）。
      */
     onDiagnose: (() -> Unit)? = null,
+    /** v2.5.4 · C：debug-only 的 QQ 兜底统计读出（release 里传 null ⇒ 整行不挂载）。 */
+    onProbeStats: (() -> Unit)? = null,
 ) {
     val context = LocalContext.current
     var loggedIn by remember { mutableStateOf(QqAuthStore.isLoggedIn(context)) }
@@ -1515,6 +1533,20 @@ private fun QqAccountBlock(
             color = LocalMetroColors.current.primary,
             modifier = Modifier
                 .clickable(onClick = onDiagnose)
+                .padding(start = 16.dp, end = 16.dp, bottom = 12.dp),
+        )
+    }
+    // v2.5.4 · C：debug-only 的兜底统计读出。**不依赖登录态**（未登录也能解析搜索
+    // 结果、也会走散列兜底，样本照样有），所以判据只看 onProbeStats 是否为 null。
+    // 文案直接写死中文：这一行在 release 包里根本不存在，补 8 个 locale 是无意义的
+    // —— 与上面那条既有诊断入口同一条约定。
+    if (onProbeStats != null) {
+        MetroText(
+            text = "兜底统计（debug）：读出 QQ 无 songid 兜底计数，见 logcat 的 QqProbe 并落盘",
+            style = LocalMetroTypography.current.bodySmall,
+            color = LocalMetroColors.current.primary,
+            modifier = Modifier
+                .clickable(onClick = onProbeStats)
                 .padding(start = 16.dp, end = 16.dp, bottom = 12.dp),
         )
     }

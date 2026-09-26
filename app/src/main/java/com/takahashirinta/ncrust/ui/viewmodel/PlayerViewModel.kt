@@ -73,6 +73,7 @@ import com.takahashirinta.ncrust.player.maySkipOnUrlFailure
 import com.takahashirinta.ncrust.player.PlaybackStateManager
 import com.takahashirinta.ncrust.player.PlayReporter
 import com.takahashirinta.ncrust.player.SongUrlFetcher
+import com.takahashirinta.ncrust.qq.QqProbeCounters
 import com.takahashirinta.ncrust.player.SongUrlResult
 import com.takahashirinta.ncrust.formatDuration
 import com.takahashirinta.ncrust.ui.i18n.getSavedLanguageCode
@@ -544,6 +545,16 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
             // 5 次上限就永远数不到（实测那轮级联就是这么绕过一切防线的）。
             if (currentSongId.value != null && pos >= AutoSkipGuard.PROGRESS_CONFIRM_MS) {
                 autoSkipGuard.onProgressConfirmed()
+                // v2.5.4 · C：QQ 兜底统计的「真的播出声了」判据。
+                //
+                // 为什么挂在这里而不是「起播成功」：与上面那条熔断清零条件同源 ——
+                // 「起播成功」不等于「出声了」（v2.2.1 的级联故障就是起播即失败）。
+                //
+                // 开销：本分支**已经在每 tick 执行**，新增的只是一次 Long 比较与一次
+                // @Volatile 比较；`onPlaybackTick` 内部先用「本曲已确认」短路，
+                // 所以实际每曲只自增一次。不新增集合查找、不新增分配、不新增调度、
+                // 不碰 IO、不碰网络 —— 统计是旁路，不是功能（铁律 4）。
+                QqProbeCounters.onPlaybackTick(currentSongId.value ?: -1L, currentTrack?.sourceId)
             }
 
             // 播放行为上报: 进度达 80% 视为"听完",每首歌只上报一次。
@@ -590,6 +601,8 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         // [QualityRetryGuard] 决定 —— 单调、去重、有上限、带音频焦点节流。
         // 回调在 ExoPlayer 主线程；重试里要做「音频焦点节流」的 delay()，所以丢进 viewModelScope。
         PlaybackService.onPlaybackError = { sid, failure ->
+            // v2.5.4 · C：兜底曲目的失败计数（同样只对兜底 id 生效，内部短路去重）。
+            QqProbeCounters.onPlaybackFailure(sid, currentTrack?.sourceId)
             viewModelScope.launch { handlePlaybackError(sid, failure) }
         }
 
