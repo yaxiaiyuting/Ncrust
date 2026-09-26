@@ -1,0 +1,6 @@
+09-26 22:25:30.415 15950 16059 I LibraryManager: refreshFromCloud: likedIds=1063
+09-26 22:25:30.806 15950 16059 I LibraryManager: refreshFromCloud: albums=9
+09-26 22:27:55.159 17354 17418 I LibraryManager: refreshFromCloud: likedIds=1063
+09-26 22:27:55.566 17354 17418 I LibraryManager: refreshFromCloud: albums=9
+09-26 22:27:56.111 17354 17424 I LibraryManager: refreshFromCloud: likedIds=1063
+09-26 22:27:56.462 17354 17424 I LibraryManager: refreshFromCloud: albums=9

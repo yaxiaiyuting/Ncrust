@@ -3797,3 +3797,150 @@ media3 的 `ChannelMixingMatrix` 只实现 `N→N / 1→2 / 2→1`，**6→1 抛
 | §1/§4「搜索延迟 gap（TTFB → UI）最值得压缩」 | **推翻**：QQ 腿 P50 2923ms 里 98% 是服务端 TTFB；客户端「状态写入→上屏」P50 **41.5ms（1.4%）**，天花板约 2% | 改为解掉**首帧被网易云硬阻塞**（真机证据 30s 空屏）并补齐 4 个缺失埋点 |
 | §2.3「EMUI 未采纳 wm 旋转 override，平板 ⤢ 不工作」 | **推翻**：EMUI 采纳（受控 A/B，`ignore-orientation-request=false`）。真因是**竖屏下控制条三组重叠**、⤢ 被传输组盖住（352dp 容器重叠 65dp） | 改为修命中区（顺序布局 + 宽度预算），并按新铁律 21 做双方向真机验证 |
 | §6「PLC110 离线索引注入记录清理」隐含「需要改代码 + 加迁移」 | **部分推翻**：注入记录**恰好 1 条**（`songId 503616`），且无音频、无 URL ⇒ 功能上惰性；既有对账路径已能精确清除 | 归为**设备状态收尾**（不改产品代码），补一条真机形状的防御性单测，并改正 v2.5.5 那条会造成数据损失的建议 |
+
+## v2.6.0 新增（本 fork · QQ 入库丢失 / 歌手全部播放 / 布局切换 / 歌单折叠）
+
+> **探针**：`docs/verification/v2.6.0/PROBE-SUMMARY.md`（四份探针：QQ 入库丢失 /
+> 歌手「全部播放」/ 布局切换 / 手动折叠；**四份里有四份推翻了任务书的前提**，见该文件 §0）
+> **证据**：`docs/verification/v2.6.0/EVIDENCE.md`
+> **发布说明**：`docs/verification/v2.6.0/CHANGELOG-v2.6.0.md`
+
+### 三条新铁律（本版起是硬约束）
+
+23. **本地新增必须持久化，同步不得覆盖用户手动添加。**
+
+    「加入库」在 v2.5.6 及以前写的是**网易云红心歌单的镜像**（`ncrust_library` /
+    `saved_songs`），而 `refreshFromCloud` 用云端 `likedIds` **顺序重建整张表**。
+    后果是「用户手动加的」与「云端删掉的」在同步时**完全同形**（都是「id 不在
+    `likedIds` 里」），于是被一起丢掉 —— 而 QQ 曲目的 id 由 `SourceIds.qqId`
+    合成（`bit62` 恒置位，≥ 2⁶²），**值域与网易云 songId（< 2⁴⁰）不相交**
+    ⇒ QQ 曲目**100% 命中**这条路径，表现为「入库 → 短暂可见 → 刷新消失」。
+
+    这条纪律在 `local/`（用户自建歌单）上**从 v2.3.0 起就存在**（只加不减 +
+    tombstone，27 个用例），真正的问题是**它从未被应用到收藏库上**。
+    所以本版的形状是「把一条已有纪律补到漏掉的那个子系统」，不是发明新机制。
+
+    落地要求：
+
+    - **内存真源必须带来源**：`SavedSongEntry{trackKey, origin, addedAt, tombstoned, song}`
+      （`library/SavedSongModels.kt`）。**不许**再维护一份平行的 `List<SongItem>` 视图 ——
+      两份视图必然漂移，而这里漂移的后果是**用户的收藏被静默删掉**；
+    - **七条同步规则**（`SavedSongSync.merge` 等）逐条有单测，
+      判据是「云端只负责**追加**，删除只能由用户动作产生」；
+    - **用户明确动作必须跳过去抖落盘**（`flushNow`，不是 `scheduleFlush`）：
+      300ms 窗口内进程被杀是真实场景（加完歌立刻从最近任务划掉），
+      而去抖是为高频批量写设计的，用在单次用户动作上只买到一次可能的数据丢失；
+    - **写回磁盘时，`null`（没加载过）与空表必须分开**：旧写法
+      `cachedSongs?.toList() ?: emptyList()` 会让**任何一次没加载过收藏单曲的 flush
+      把整张表写成 `[]`**，而这条路真的可达（`subscribeAlbum` 直接 `scheduleFlush`）。
+      三个键各自独立判断，`null` ⇒ 这个键原样不动；
+    - **UI 不许说谎**：`saveSong` / `removeSong` 必须返回结果（`SavedSongOutcome` /
+      `Boolean`），提示文案只在 `isSuccess` 时出现。旧代码两个函数都返回 `Unit`，
+      8 个调用点**全部无条件**弹「已加入库」—— 用户看到的成败与真实成败完全脱钩；
+    - **跨源 id 不许发给非本源服务**（这是 v2.5.5 铁律 3 在**写操作**上的同一条）：
+      `pushLike` 的闸门判据是 `SavedSongSync.isRemoteLikeEligible`
+      （底层 = `SourceIds.isQqId`，与 `ReportGate` **共用同一个谓词**，并有一条
+      「两条链路逐值一致」的对称单测钉住）。它**没有**塞进 `ReportGate.Target` ——
+      那个枚举的契约是「每个合法 id 恰好被一个目标接受」的两个**上报**目标，
+      like 是写操作，混进去会破坏那条被单测钉住的语义。
+
+24. **跨源混播去重必须按歌曲名 + 歌手匹配；置信度不足时宁可保留两份，不可误杀。**
+
+    这条规则的**实质**早在 v2.4.0 就存在（`MatchConfidence.mergeable` ≥ MEDIUM 是
+    **唯一**合并阈值），但本仓库的**编号漂移**了一次：`crosssource/**` 的注释把它
+    写成「铁律 17」，而 17 号在 AGENTS.md 里是「UI 动效不得影响播放性能」，
+    且 23 号在此之前从未被写下来。本版把编号写实，并把两条纪律一起固化：
+
+    落地要求：
+
+    - **判据只能是 v2.4.0 那一套**（`CrossSourceMatcher.gradeTrack` +
+      `mergeable`）。**不许**另写「歌名 + 歌手字符串相等就合并」的捷径 ——
+      那套判据是 230 首真实样本标定过的（时长容差 2s、版本标记、艺人重叠），
+      而两处阈值一旦分叉，页面上「合并成一行」与「只播一遍」就不是同一件事
+      （用户看到一行却听到两遍，或反过来）；
+    - **误杀比漏合并严重一个数量级**：漏合并只是多听一遍（用户能在队列里删掉），
+      误杀是**用户想听的那一首消失了**且他不知道为什么。实测「艺人一致但时长差 > 30s」
+      的 15 条**全部是同名不同版本**（伴奏 / Live / 加长版）⇒ 那一档必须是 `LOW`；
+    - **两条正交的轴要分开记**：轴 A = 跨源同曲（`mergeable` 配对，
+      `PlayAllDedup.plan` 复用 `pairTracks`）；轴 B = 同源同号（`TrackKey` 相等，
+      统一用 `TrackKey.ofSong` 带 bit62 回落）。`replaceQueueAndPlay` **一句判重都没有**，
+      所以轴 B 不是可选项；
+    - **单测里「不许合并」的用例数必须多于「必须合并」的**（本版 21 例，
+      其中 6 例专门钉误杀：Live 版时长差、同名不同艺人、艺人为空、同源两条、
+      `LOW` 的脏 `mergedKeys`、Remix + 时长不同）；
+    - **一行带 `mergedKeys` 时只在 `confidence.mergeable` 时采信它** ——
+      低置信度的 `mergedKeys` 是脏数据，采信它会**静默删掉一首歌**（有单测）。
+
+25. **布局切换状态必须持久化，切换后立即生效。**
+
+    「切换后立即生效」这一半比持久化容易做错，而错法在 code review 里看着完全合理。
+
+    落地要求：
+
+    - **容器一个都不许换，只换 `columns`**（`GridCells.Adaptive(160.dp)` ↔
+      `GridCells.Fixed(1)`）。写成 `if (list) LazyColumn else LazyVerticalGrid` 有两个
+      后果：① 本页没有向滚容器传 `state`，两个容器各自 `rememberLazyGridState` ⇒
+      **丢滚动位置**；② 包在调用点上会连 `remember { PlaylistLoadCoordinator() }`
+      与 `qqHasLoadedOnce` 一起重置 ⇒ **真的会重发一次网络请求**，
+      正好违反「切换后数据不刷新」；
+    - **偏好存 Int 索引并过白名单**（`PlaylistLayoutSetting`，key
+      `library_playlist_layout`，`0 = CARD` / `1 = LIST`），非法值与**类型错配**
+      一律回落默认（真机上类型错配是 `ClassCastException` 崩溃，
+      而它只是一个显示偏好）。判「键不存在」与「显式写了非法值」必须是两个形状；
+    - **默认值必须写清是哪两段的现状**：本页是**三个**按源分区（本地 / 网易云 / QQ），
+      **不存在**「都零行为变化」的默认值。本版取 `CARD`（保留面积最大的两段），
+      理由与代价写在 `PlaylistLayout` 的 KDoc 里 ——
+      「默认值随便选一个」正是下一次「用户升级后界面变了」的来源；
+    - **「立即生效」与「持久化」互不依赖**：先写内存状态（本帧重组）、
+      再 `apply()` 落盘。`apply()` 是异步的，所以点击不卡帧；
+      而状态已经改了，所以立即生效不依赖落盘完成；
+    - **折叠状态必须是同一类纪律**（`LibrarySectionFoldSetting`）：状态归 prefs，
+      **不许只放 `remember`** —— 本页被 `AnimatedContent(targetState = selectedCategory)`
+      包裹，切走再切回会**卸载整棵子树**，只放 `remember` 会静默展开
+      （用户看到「我收起来的又自己打开了」）；
+    - **「不自动折叠」必须是结构性的，不能靠注释**：
+      `LibrarySectionFold` 的唯一状态迁移 API 是 `toggled(section)`，
+      并有一条**反射**单测把「白名单外的公开方法出现即失败」钉住 ——
+      将来若有人加一个 `collapseIfLarge(n)`，它会红，而 code review 很可能会放过它
+      （它在阅读时完全合理）。
+
+### 本版的单一落点与新增守卫
+
+| 文件 | 作用 | 守卫 |
+|---|---|---|
+| `library/SavedSongModels.kt` | 收藏库的领域模型 + **七条同步规则** + 跨源写闸门判据（纯逻辑） | `SavedSongSyncTest`（24 例）、`LibraryImportPersistenceTest`（8 例） |
+| `library/SavedSongCodec.kt` | `ncrust_library` / `saved_songs` 的落盘契约（稳定名 + **认 v1 裸 `SongItem` 数组** + 声明顺序兜底 + 逐条容错） | `SavedSongCodecTest`（15 例，含 **S6 真机 147 条样本**）、`PersistenceFieldNameContractTest` |
+| `library/LibraryManager.kt` | 内存真源换成 `List<SavedSongEntry>`；`flushNow`；三键独立落盘；`saveSong`/`removeSong` 返回真实结果 | 同上 + 8 个调用点的提示改成按返回值 |
+| `crosssource/PlayAllDedup.kt` | 歌手页「全部播放」的**跨源混播去重唯一落点**（两条正交轴 + 三级 tie-break） | `PlayAllDedupTest`（21 例，误杀用例数 > 合并用例数） |
+| `ui/screen/PlaylistLayoutSetting.kt` | 布局模式的**唯一**读写落点（`ncrust_settings` / `library_playlist_layout`） | `PlaylistLayoutSettingTest`（8 例，含类型错配与键名契约） |
+| `ui/screen/LibrarySectionFoldSetting.kt` | 三个区块折叠状态的唯一落点 + 不可变状态机 | `LibrarySectionFoldSettingTest`（10 例，含**反射**的「只有 toggle 一个入口」） |
+| `ui/screen/LibraryPlaylistsTab.kt` | 三段统一的两种布局 + 区块头手动折叠 + 布局切换按钮（`hdr-layout`，**不受折叠影响**） | 真机 uiautomator（`verification/ui-drive.sh`） |
+| `docs/verification/v2.6.0/verification/ui-drive.sh` | 真机 UI 驱动的**唯一**口径（按语义树文字找坐标，不写死坐标） | 脚本自身打印设备自证 |
+
+### 本版的关键取舍（有意为之，不是遗漏）
+
+| 取舍 | 理由 |
+|---|---|
+| **默认布局取 `CARD`** | 本页是**三个**源分区（探针推翻了「两个源」这个前提），**不存在**零行为变化的默认值。`CARD` 保留面积最大的两段（本地 + 网易云）的现状，只让 QQ 那一段改变形态；「用整行区分 QQ 段」原来的诉求由**区块标题**承担（标题一直都在，不是新增信息负担） |
+| **折叠单位是「区块」而不是「单张歌单」** | 用户来这一页最常见的诉求是「我现在只想看 QQ 那一段」。按单张歌单折叠等于要求用户逐个收起 100 张里的 99 张 —— 那不叫折叠，叫整理 |
+| **折叠 QQ 区块不停掉它的网络加载** | 本仓库的闸门是 **tab 级**的；按折叠态去 gate 可见容器里的加载没有先例，而展开后要等一次网络往返会违反「先渲染、绝不空白 + 加载」的既有模式 |
+| **不给布局切换加「过渡动画」** | 切换的是**容器列数与条目形状**，两者都不是可以插值的量；`animateItem` 的 placement 动画已经覆盖了条目位移。为「切换」本身加 Crossfade 只会多一层合成 |
+| **`like` 闸门不塞进 `ReportGate.Target`** | 那个枚举的契约是「每个合法 id 恰好被一个**上报**目标接受」（有对称单测）。like 是**写操作**，混进去会让那条语义失效。改成一个共享底层谓词（`SourceIds.isQqId`）+ 一条「两条链路逐值一致」的穷举断言 |
+| **`boundedLikeWrites` 计数只在内存、不落盘** | 它落在**用户主动动作**的路径上（点一次「加入库」），不像播放上报那样需要事后统计。为它新开一个 prefs 文件 + 迁移 + 单测，换来的只是「重启后还能看到历史拦截次数」—— 如实记在 KDoc 里，不假装有持久化 |
+| **不改 `replaceQueueAndPlay`** | 它有 14 处调用（含 FM 电台与「播放全部」），在那里加判重会把「歌手页去重」变成「改半个播放链路」。轴 B 放在 `PlayAllDedup` 里，调用点显式经过它 |
+| **不给歌单 tab 加性能基准** | 本仓库**没有任何歌单 tab 的滚动基准**（`grep -rn 歌单 benchmark/src` exit=1）。新增一条要设备 + 时间预算，且必须 release 包。本版因此**不声称**「性能无显著下降」（铁律 22），只说明「切换只改 `columns` 与条目的 `if`，不新增逐帧动画」 |
+| **不删 `MatchCacheStore.track()/putTrack()` 这对死代码** | 探针实测它们零调用（`grep` exit=1，正对照 `putArtist/putAlbum` 各命中）。删它属于「顺手清理」，会把本版的回归面扩大到匹配缓存；如实记录为遗留 |
+
+### 与任务书的九处前提偏差（**下一个读任务书的人先看这里**）
+
+| 任务书原文 | 实测 | 处置 |
+|---|---|---|
+| §0 铁律 23「跨源混播去重…（本版新增）」 | 仓库里**从来没有**编号 23 的铁律（`grep -rn "铁律 *2[3-9]"` → 0 命中）；其实质早已存在（v2.4.0 三条新规则第 1、2 条），且 `crosssource/**` 注释把它误写成「铁律 17」 | 本版把 22/23/24 真正写进 AGENTS.md（**注意编号从 22 续到 25**），并把编号漂移一并修正 |
+| §4.1「跨源混播去重…复用 v2.4.0 的匹配规则**或新建**」 | 主路径**已经做完了**（`CatalogAggregator.assembleSongs` 已把 `mergeable` 的对端行吸收掉）；真实增量只有「加 ▶ 入口」+「补 `TrackKey` 轴」 | P1 按「入口 + 一条正交轴」做 |
+| §5.1「两个源（网易云、QQ）统一使用同一布局」 | 这一页是**三个**按源分区（本地 / 网易云 / QQ），**本地那一段也是网格卡片** | 按三段统一做；只统一两段会留下一个半切换的页面 |
+| §2.3 隐含「布局切换有一个零行为变化的默认值」 | **不存在**（改造前本身就是混合形态） | 默认值取 `CARD`，理由与代价写进 KDoc 与 release notes |
+| §2.4 隐含 `BottomOverlayInsetDp` = 144/64dp | **168dp（窄）/ 88dp（宽）**（`TrayLayout.kt:163-165`）；144/64 是 v2.5.4 之前的字面量。AGENTS.md 的「Theming & Responsive Layout」一节仍是过期数字 | 本版未改这个值（与本版范围无关），在 `EVIDENCE.md` 里点名那条过期文档 |
+| §2.1 问「QQ 特殊 dirId 是否导致写入被忽略」 | **不是**。`dirId` 是载荷不是身份（v2.2.0 已判决），特殊歌单只影响 `isFavorite` 排序 | 该问题的答案是「否」，不进修复清单 |
+| §2.1 问「是否与 v2.2.0 只加不减 + tombstone 冲突 / tombstone 是否反向」 | **不冲突也没关系**：`local/LocalPlaylistSync` 只追加、从不删除、从不 tombstone，方向正确。丢歌的 `library/LibraryManager` **根本没有 origin/tombstone 概念** | 根因是「这条纪律从未被应用到收藏库」，不是「tombstone 反向」 |
+| §1「P0：QQ 歌曲长按入库后刷新消失」的**确切点击路径** | HEAD 的 `QqPlaylistDetailScreen.kt:257` 传 `emptyList()`，那张菜单里**没有**「加入库」（`grep -c LibraryAdd` = 0；阳性对照 `PlaylistDetailScreen` = 2） | 本版修的是**共享的存储与同步层**，路径差异不影响修复有效性；如实列入「需用户截图才能定案」的未验证项 |
+| §2.5「draft release 已创建，或阻塞原因明确」隐含「只需一次构建」 | 版本号提交必须在**产出 APK 的那个提交之前**（v2.1.3 踩过），所以 release 构建要跑两轮（一轮验证 lint/编译，一轮出正式产物） | 按既有纪律做：先全量验证，再 `build: 升级至 v2.6.0-gpl`，再出产物、再打 tag |
