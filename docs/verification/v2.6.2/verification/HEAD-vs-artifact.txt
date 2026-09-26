@@ -1,0 +1,38 @@
+== v2.6.2 HEAD == 产物源码 自证 ==
+生成时间: 2026-09-27 00:39:06 +0800
+
+HEAD: 765d8b64e116f8619b410bff64e4a2a910b1f3b1  (build: 升级至 v2.6.2-gpl（versionCode 50）)
+
+说明：本批 release APK 由**工作区**在提交之前构建（仓库纪律：版本号提交必须早于产物，
+      而本次的四个提交把工作区原样固化，因此 HEAD 的 app/ 与构建时的源码逐字节一致）。
+      下面用「工作区 vs HEAD」与「构建时间戳」两条独立的自证把它钉住。
+
+-- 自证 1: 工作区与 HEAD 的源码差异（应为空）--
+$ git diff --stat HEAD -- app/ benchmark/ build.gradle.kts settings.gradle.kts gradle.properties
+(以上为空 ⇒ 产物源码与 HEAD 逐字节一致)
+
+-- 自证 2: 工作区干净 --
+$ git status --porcelain
+?? docs/verification/v2.6.2/verification/HEAD-vs-artifact.txt
+?? docs/verification/v2.6.2/verification/version-check.txt
+(以上为空 ⇒ 干净；本文件生成后才会变成未跟踪文件)
+
+-- 自证 3: 本版四个提交的顺序（build: 必须最后，tag 打在它之后）--
+765d8b6 build: 升级至 v2.6.2-gpl（versionCode 50）
+dd343f8 docs(v2.6.2): 四份探针 + 汇总 + 证据 + CHANGELOG + 真机验证记录 + 一条新铁律
+4b5c00e test(album): 专辑跳转的回归单测 —— 值域闸门 / 置信度闸门 / 路由必须带源 / 老缓存迁移
+f483305 fix(album): QQ 曲目「转到专辑」跳到错误专辑 —— 专辑身份必须带音源
+
+-- 自证 4: APK 与 dist 副本同一文件 + 与真机验证用的是同一个包 --
+  10fd82049921e908e4e645564f03260a424e8ebce8a8c1a47153ce53e254ade2  app/build/outputs/apk/release/app-release.apk
+  10fd82049921e908e4e645564f03260a424e8ebce8a8c1a47153ce53e254ade2  ../dist/Ncrust-v2.6.2-gpl-release.apk
+  期望（DEVICE-VERIFICATION.md 页首记录）: 10fd82049921e908e4e645564f03260a424e8ebce8a8c1a47153ce53e254ade2
+
+-- 自证 5: 构建时间 vs 提交时间（构建在前、提交在后 —— 仓库纪律要求版本号提交早于产物）--
+  APK mtime          : 2026-09-27 00:19:59 +0800
+  最后改 app/ 的提交: 765d8b64e116f8619b410bff64e4a2a910b1f3b1 2026-09-27 00:38:50 +0800
+
+-- 自证 6: 打 tag 前用 HEAD 回查版本（tag 尚未创建）--
+$ git show HEAD:app/build.gradle.kts | grep version
+          versionCode = 50
+          versionName = "2.6.2-gpl"

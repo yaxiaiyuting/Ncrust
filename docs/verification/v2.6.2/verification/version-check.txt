@@ -1,0 +1,28 @@
+== v2.6.2 三源 versionCode 交叉校验 ==
+校验时间: 2026-09-27 00:38:59 +0800
+
+-- 1) build.gradle.kts (工作区) --
+  284:        versionCode = 50
+  285:        versionName = "2.6.2-gpl"
+
+-- 2) HEAD 提交里的 build.gradle.kts --
+  284:        versionCode = 50
+  285:        versionName = "2.6.2-gpl"
+HEAD = 765d8b64e116f8619b410bff64e4a2a910b1f3b1
+
+-- 3) APK badging（dist 与 build 输出各测一次）--
+Ncrust-v2.6.2-gpl-release.apk                        versionCode='50' versionName='2.6.2-gpl'
+Ncrust-v2.6.2-gpl-debug.apk                          versionCode='50' versionName='2.6.2-gpl'
+app-release.apk                                      versionCode='50' versionName='2.6.2-gpl'
+
+-- 4) 已安装到真机的版本 --
+3B15CD00GB700000   versionName=2.6.2-gpl
+WVQ6R22124000968   versionName=2.6.2-gpl
+0715f763f54c023a   versionName=2.6.2-gpl
+
+-- 5) 已发布 tag 里的 versionCode（不移动任何 tag）--
+v2.6.1-gpl     49
+v2.6.0-gpl     48
+v2.5.6-gpl     47
+
+结论: tag / APK badging / build.gradle 三源一致 = 50（tag v2.6.2-gpl 待打）
