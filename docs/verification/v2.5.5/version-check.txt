@@ -1,0 +1,83 @@
+# v2.5.5 · versionCode 三源交叉校验（铁律 8）
+
+> 生成时间：2026-09-26（本 session）
+> 命令：`bash tools/next-version.sh`（**带 fetch**，铁律 9）—— 完整输出见同目录 `next-version.txt`
+
+## 定号时的三源（`tools/next-version.sh` 的报告）
+
+| # | 来源 | 值 | 证据 |
+|---|---|---|---|
+| ① | 最近 5 个 tag 指向的 `app/build.gradle.kts` | **45** | `v2.5.4-gpl` |
+| ② | `dist/*.apk` 的 `aapt2 dump badging`（共 75 个包） | **45** | `Ncrust-v2.5.4-gpl-release.apk` —— 唯一可信的「这个号已经发布出去了」事实来源 |
+| ③ | 仓库当前 `app/build.gradle.kts` | **45** | `versionCode = 45` / `versionName = "2.5.4-gpl"` |
+
+脚本结论：
+
+```
+MAX versionCode (所有来源) = 45   [Ncrust-v2.5.4-gpl-release.apk]
+下一个可用 versionCode     = 46
+```
+
+⇒ 本版取 **versionCode = 46 / versionName = "2.5.5-gpl"**。
+
+## 打 tag 后的自证（tag 侧的第三源）
+
+tag 必须打在「产出这批 APK 的那个提交」上。打 tag 前先自证一次：
+
+```
+$ git log --oneline -1
+7905a59 fix(player): 乱序模式轮首的「上一首」静默无效 —— 回绕到轮末（真机受控复测 1/5 → 5/5）
+
+$ git status --short
+（空）
+
+$ grep -n "versionCode\|versionName" app/build.gradle.kts | head -2
+233:        versionCode = 46
+234:        versionName = "2.5.5-gpl"
+```
+
+产物自证（**HEAD 就在 APK 里**）：
+
+```
+$ unzip -p app/build/outputs/apk/release/app-release.apk \
+      META-INF/version-control-info.textproto
+repositories {
+  system: GIT
+  local_root_path: "$PROJECT_DIR"
+  revision: "7905a5958606e116a8aebf922bab42cb6d9dc71a"
+}
+
+$ git rev-parse HEAD
+7905a5958606e116a8aebf922bab42cb6d9dc71a        ← 逐字相同
+```
+
+```
+$ aapt2 dump badging dist/Ncrust-v2.5.5-gpl-release.apk | head -1
+package: name='com.takahashirinta.ncrust' versionCode='46' versionName='2.5.5-gpl' …
+
+$ aapt2 dump badging dist/Ncrust-v2.5.5-gpl-debug.apk | head -1
+package: name='com.takahashirinta.ncrust' versionCode='46' versionName='2.5.5-gpl' …
+```
+
+## 三源一致性结论
+
+| 源 | versionCode |
+|---|---|
+| **tag** `v2.5.5-gpl` 指向的 `app/build.gradle.kts` | **46** |
+| **APK badging**（`dist/Ncrust-v2.5.5-gpl-release.apk` / `-debug.apk`） | **46** |
+| **build.gradle.kts**（HEAD 工作区） | **46** |
+
+**三者一致 = 46。**
+
+## 产物 sha256
+
+```
+000d04ff05a8814abfe6c5e93b984dd57721f72b18810ee5fe0625e7b1e3e39b  Ncrust-v2.5.5-gpl-release.apk
+79bab4117aa7ccf026753f626a5364ec6e1c00cd8350ae1964c18c54866114b4  Ncrust-v2.5.5-gpl-debug.apk
+```
+
+> ⚠️ 与 v2.5.3 记录过的同一条事实：**APK 不可逐字节复现**。
+> 本版实测过一次（同一个 HEAD 两次构建之间只差一次提交 ⇒ sha 不同），
+> 差异来自 `META-INF/version-control-info.textproto` 里的 git revision ——
+> 那正是上面用来做「HEAD == 产物源码」自证的那一项。
+> 因此**产物自证靠 VCS 戳，不靠 sha 相等**。
