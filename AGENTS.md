@@ -3518,3 +3518,129 @@ media3 的 `ChannelMixingMatrix` 只实现 `N→N / 1→2 / 2→1`，**6→1 抛
 | **托盘不做逐字、不做跑马灯** | 逐字要接 `drawWithContent` 帧路径、跑马灯会持续排帧，两者都与铁律 17 冲突，而收益是一行 56dp 小字 |
 | **托盘不加方向闸门** | 它在两种方向下都是 56dp 两行；加一个方向谓词只会多一格需要 A/B 的状态 |
 | **老 QQ 历史条目不猜 songmid** | `QqApi.kt:126-131` 对同类兜底已有先例判决：猜测性兜底会把一次干净的失败换成一次诡异的播放错误 |
+
+## v2.5.5 新增（本 fork · R8 字段名系统性修复 / 跨源上报闸门 / 托盘上一首与三层布局 / 搜索加载态）
+
+> **探针**：`docs/verification/v2.5.5/PROBE-SUMMARY.md`
+> （六份探针：R8 单字母 key 全仓扫描 / PlayReporter 跨源泄露 / 托盘上一首回归 /
+> 托盘三层布局 / macrobenchmark 换设备 / **QQ 搜索延迟**；
+> 探针**推翻了任务书的三处前提**，见该文件 §0）
+> **证据**：`docs/verification/v2.5.5/EVIDENCE.md`
+> **发布说明**：`docs/verification/v2.5.5/CHANGELOG-v2.5.5.md`
+
+### 三条新规则（本版起是硬约束）
+
+1. **任何持久化到磁盘的结构，字段名必须显式声明，不得依赖 R8 后的类结构。**
+   这条在 v2.5.4 已经写过一次（规则 1），本版把它**升级为独立铁律并加上机器守卫**，
+   因为那一版之后**又找到了三个实例**，其中两个是此前所有文档都没提过的：
+
+   | # | 落点 | R8 实际映射 | 后果 | 发现版本 |
+   |---|---|---|---|---|
+   | 1 | `local.LocalPlaylistDto` 等 | 单字母 | 本地歌单静默消失 | v2.3.0 |
+   | 2 | `playlist.**`（泛型签名丢失） | `LinkedTreeMap` | release 崩溃 | v2.2.0 |
+   | 3 | `crosssource.EnvelopeDto` 等 | 单字母 | 匹配缓存静默失效 | v2.4.0 |
+   | 4 | `library.SearchHistoryCodec$EntryDto` | `a`~`e` | 搜索历史静默消失 | v2.5.4 |
+   | 5 | `cache.OfflineTrack` | `a`~`i` | 离线曲目清单静默消失 | **v2.5.5** |
+   | 6 | `player.PlaybackStateManager$PositionEntry` | `a`,`b` | 续播「位置↔时间戳对调」或静默失效 | **v2.5.5** |
+   | 7 | `library.AlbumInfo` | `a`~`e` | `albumId` 读成 0 ⇒ `LazyColumn` 重复 key 抛异常 | **v2.5.5** |
+
+   共同形状：**同一 APK 内读写自洽 ⇒ 不崩**，只在下一次混淆映射变化时静默丢数据。
+   「靠 code review 发现」是无效的 —— 第 6、7 个就藏在最显眼的地方。
+
+   落地要求：
+
+   - **写路径只经 DTO，每个字段显式 `@SerializedName("<稳定名字>")`**。
+     `proguard-rules.pro` 的 `-keepclassmembers,allowobfuscation class * { @SerializedName <fields>; }`
+     保证注解里的字符串常量进 dex；
+   - **读路径必须同时认至少三种形状**：稳定名字 → 已知旧单字母（**按字母逐个查，
+     绝不按位置**）→ 未知 key 时按声明顺序兜底。
+     「按位置查」在 `ncrust_offline/tracks` 上必然错位：真机形状是 `{"a","b","e","f","g","i"}`，
+     `h`（`approxBytes`）值为 null、整条 key 被 Gson 省掉；
+   - **坏数据逐条丢弃，不许整段丢光**。`runCatching { gson.fromJson(...) }.getOrDefault(emptyList())`
+     这种写法是「一个字节坏了，用户整份数据消失」；
+   - **不许用「加一条 `-keep class …<pkg>.**`」当首选手段**（v2.5.4 规则 1 第二条，本版再次确认）。
+     对 `cache.**` 有额外一条硬理由：加 keep 只影响**将来**写出来的形状，对已经落盘的
+     `a`~`i` 一点用都没有 —— 迁移逻辑无论如何都要写，而 keep 会改掉全局混淆映射、
+     把静默丢失换到别的类上。`PersistenceFieldNameContractTest` 有一条**反向**断言钉住这一点；
+   - **守卫必须是「注册表 + 源码扫描」两条**（`PersistenceFieldNameContractTest`）：
+     ① 逐个反射已知 DTO，断言每个字段都有 `@SerializedName`、值不是单字母、且与各 codec 的
+     `stableKeys()` 一致；② 扫遍 `app/src/main/java`，任何 `@SerializedName("<单字母>")` 直接失败。
+     **加新落盘 DTO 必须同时加进 `PERSISTED_DTOS`** —— 表外的东西这条防线看不见；
+   - 源码扫描那条必须配一条**反证用例**（断言「确实扫到了注解，且数量不少于注册表字段总数」）。
+     一条「什么都没扫到也算通过」的用例是假防线。
+
+2. **播放控制按钮（上一首 / 播放暂停 / 下一首）是核心功能，缺失属 P0 回归。**
+   本版的任务书假定「v2.5.4 把托盘的上一首按钮删了或挤没了」，探针**推翻了这个前提**：
+   `git log -S "SkipPrevious" -- PlayerCard.kt` **零命中** —— 那个按钮从来没有在托盘里存在过
+   （v2.5.3 的托盘也只有播放/暂停与下一首）。所以这不是回归，是**补一个从未实现的核心功能**。
+
+   这类缺陷的形状是「**源码 review 看不出来**」：一个 `Row` 里少一个 `MetroIconButton`，
+   读 diff 时与「有意只放两个」完全一样。所以：
+
+   - 控制按钮的**清单与顺序必须是一个具名常量**（本版是 `TrayLayout.controls`），
+     单测断言它**逐个存在、顺序固定**（`TrayLayoutTest` 有三条用例分别钉住
+     上一首存在、播放暂停与下一首存在、以及三者的顺序）；
+   - 新增/改动任何播放控制面板时，先问「三个按钮都在吗」。
+     只读代码不算数 —— 要有断言；
+   - 图标按钮**必须给 `contentDescription`**（旧代码两个按钮都传 `null`，
+     对 TalkBack 用户等于不存在）。无障碍标签与按钮清单一起进单测。
+
+3. **跨源 id 不得上报给非本源服务。**
+   本版在真机上复现了这条泄漏（PLC110 / Android 16 / v2.5.4 vc45）：
+   从 `ncrust_playback_state` 恢复出一首 QQ 曲目（`song:qqmusic:4611686018784987997`）→
+   自然播完 → `D/PlayReporter: weblog resp: 200` —— **一个 QQ 合成 id 被 POST 给了网易云的 webLog**。
+
+   根因是**结构性的**，不是漏了一个判断：`SourceIds.qqId` 用 `1L shl 62` 造 id，
+   所以合成 id 是**正数**，而旧卫语句里有一条是 `songId > 0` —— 它在数学上不可能拦住 QQ id。
+
+   落地要求：
+
+   - **判据只能是 bit62**（`SourceIds.isQqId`）。**不许用 id 区间启发式** ——
+     QQ 裸 songid 与网易云 id 同样是 9~10 位十进制，区间完全重叠；
+     也不许用散列反推（`qqId` 的兜底散列不可逆）；
+   - **闸门挂在唯一的网络出口上**，不是在各个调用点各判一次（调用点会变多，
+     而出口只有一个）。本版是 `PlayReporter.reportPlay` 的最外层，
+     在 cookie 判断**之前** return、不起线程；
+   - **两个方向都要定义**（`ReportGate.Target.NETEASE_WEBLOG` / `Target.QQ`），
+     即使当前只有一边有调用方 —— 一条只写在文档里的规则拦不住下一个加 QQ 上报的人。
+     单测要有一条**双向对称**断言：每个合法 id **恰好被一个目标接受**；
+   - 被拦下的次数按 v2.5.4 规则 3 的模板处理（`ReportGateStore` / `ncrust_report_gate`）：
+     **单开一个 prefs 文件**（两份样本可以独立为零，混在一起将来清一份会连带清掉另一份）、
+     只落私有目录、绝不上报、埋点点位只做一次 `AtomicLong` 自增、
+     落盘只在 `Activity.onStop` 与 debug 诊断入口两处。
+
+### 本版的单一落点与新增守卫
+
+| 文件 | 作用 | 守卫 |
+|---|---|---|
+| `ui/player/TrayLayout.kt` | 托盘高度 / 封面尺寸 / 三行结构 / **控制按钮清单**的**唯一**定义处（四个消费者） | `TrayLayoutTest`（16 例，含上一首存在性与「底部预留与托盘高度同增同减」） |
+| `cache/OfflineTrackCodec.kt` | 离线曲目索引的落盘契约（稳定 `@SerializedName` + 三形状读 + 逐条容错） | `OfflineTrackCodecTest`（17 例，含真机 `a b e f g i` 缺 `h` 的样本） |
+| `player/PlaybackPositionCodec.kt` | 续播进度的落盘契约 | `PlaybackPositionCodecTest`（11 例） |
+| `library/SavedAlbumCodec.kt` | 收藏专辑的落盘契约 | `SavedAlbumCodecTest`（11 例，含「`albumId` 非法必须丢弃」——LazyColumn 重复 key 会崩） |
+| `contract/PersistenceFieldNameContractTest.kt` | **持久化字段名的防复发机制**（DTO 注册表 + keep 白名单 + 源码扫描 + 反证） | 自身即守卫 |
+| `player/ReportGate.kt` / `ReportGateStore.kt` | 跨源上报闸门（**唯一判据落点** + 双向定义 + 本地拦截计数） | `ReportGateTest`（16 例） |
+| `ui/components/SourceCounts.kt` | 聚合搜索的逐源状态与统计行（`PENDING` ≠ `DONE + 0`） | `SourceCountsTest`（14 例） |
+| `PlayerLayout.bigScreenEntrySlot` | 平板 ⤢ 入口的挂载判据（KDoc 带六格 A/B 表） | `PlayerLayoutVisualizerTest` 新增 5 例 |
+| `ui/components/SongTags.historySourceBadge` | 搜索历史音源角标的判据 | `SongTagsTest` 新增 4 例 |
+| `benchmark/…/BenchArgs.kt` | 迭代数 / 编译模式的运行时参数（默认值 = 原行为） | 取值打进 logcat（tag `NcrustBench`） |
+
+### 本版的关键取舍（有意为之，不是遗漏）
+
+| 取舍 | 理由 |
+|---|---|
+| **托盘 56 → 80dp，封面反而固定 56dp** | 三层文本的排版盒合计 56dp（真机逐行像素剖面实测），56dp 的托盘上下各剩 0dp。封面若跟着涨到 80dp，窄屏（360dp）文本列会从 136dp 掉到 112dp，而封面并不需要那 24dp |
+| **不加第四个控制按钮** | 三个 48dp 触摸区已占 144dp；再加一个文本列只剩 88dp，「歌名/作者/音源」三层必然塌成两行 |
+| **托盘不做跑马灯** | 托盘在播放全程常驻，跑马灯会持续排帧 —— 与铁律 17 直接冲突，收益是一行 12sp 的小字 |
+| **音源角标不做点击** | 三个候选动作全部否决：「切到另一源播同一首」需要跨源身份（v2.3.0 已判决接口里没有）；「看信息」与既有 `onSongInfoClick` 语义重叠；「切默认音源」是设置页的职责 |
+| **间距不走 `AppShapes` / `AppMotion`** | 那两个文件分别是**圆角** token 与**动效** token，都不装间距，而本仓库没有 spacing token 文件。为一个消费者新建全局 spacing 体系只会得到一份没人用的常量表（v2.5.2 规则 2 的反向用法） |
+| **搜索的 QQ 超时后不自动重试** | 自动重试会在用户已经往下翻的时候突然往列表里插结果。改成一条可点的手动重试，把时机交给用户 |
+| **`sourceSummary(Int, Int)` 保留不动** | 它是「只收整数」的旧入口，本版新增的 `searchSourceSummaryWithStatus(String, String)` 能表达「未知」。两条路径在「两源都返回」时必须逐字相同（8 语言 × 4 组数字的单测钉住），但旧入口一条都不删 |
+| **`PlayerCard.kt` 的 H2 探针（上一首消失）结论写进报告而不是"修好"** | 那不是一个可修的 bug，是一个不成立的前提。如实记录比编一个根因重要 |
+
+### 与任务书的三处前提偏差（**下一个读任务书的人先看这里**）
+
+| 任务书原文 | 实测 | 处置 |
+|---|---|---|
+| §2.3/§5.4「v2.5.4 把托盘上一首按钮删了/挤没了，要求回归修复」 | `git log -S "SkipPrevious" -- PlayerCard.kt` **零命中**；v2.5.3 的托盘也只有两个按钮 | 改按「补一个从未实现的核心功能」做，并按铁律 19 加存在性断言 |
+| §5.2「三层垂直间距统一走 AppShapes / AppMotion 规范」 | 那两个文件是圆角 / 动效 token，**都不含间距**；全仓库没有 spacing token 文件 | 间距写进 `TrayLayout.LINE_GAP_DP`（与高度同处唯一落点），并在 KDoc 里给出对照表 |
+| §6.1「macrobenchmark 换设备补齐」隐含「v2.5.4 是设备不满足」 | 不是。S6 的 perfetto 能力、`am instrument` 路径都正常；主因是**时间预算 + 参数只能改源码 + 无进度输出**，外加 `EVIDENCE.md` 把 `CompilationMode.DEFAULT` 记成了 `Full`（字节码实测纠正） | 修脚本与参数化（`BenchArgs` + 动画还原 + release 硬断言），并在 PCL110 上实跑 |
