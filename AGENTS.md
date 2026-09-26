@@ -3644,3 +3644,156 @@ media3 的 `ChannelMixingMatrix` 只实现 `N→N / 1→2 / 2→1`，**6→1 抛
 | §2.3/§5.4「v2.5.4 把托盘上一首按钮删了/挤没了，要求回归修复」 | `git log -S "SkipPrevious" -- PlayerCard.kt` **零命中**；v2.5.3 的托盘也只有两个按钮 | 改按「补一个从未实现的核心功能」做，并按铁律 19 加存在性断言 |
 | §5.2「三层垂直间距统一走 AppShapes / AppMotion 规范」 | 那两个文件是圆角 / 动效 token，**都不含间距**；全仓库没有 spacing token 文件 | 间距写进 `TrayLayout.LINE_GAP_DP`（与高度同处唯一落点），并在 KDoc 里给出对照表 |
 | §6.1「macrobenchmark 换设备补齐」隐含「v2.5.4 是设备不满足」 | 不是。S6 的 perfetto 能力、`am instrument` 路径都正常；主因是**时间预算 + 参数只能改源码 + 无进度输出**，外加 `EVIDENCE.md` 把 `CompilationMode.DEFAULT` 记成了 `Full`（字节码实测纠正） | 修脚本与参数化（`BenchArgs` + 动画还原 + release 硬断言），并在 PCL110 上实跑 |
+
+## v2.5.6 新增（本 fork · baseline profile 生成管线 / 搜索首帧解阻塞 / 平板控制条命中区 / 离线索引收尾）
+
+> **探针**：`docs/verification/v2.5.6/PROBE-SUMMARY.md`（四份探针：baseline profile 现状 /
+> 搜索延迟 gap / 平板 ⤢ EMUI / PLC110 离线索引；**四份里有三份推翻了任务书的前提**）
+> **证据**：`docs/verification/v2.5.6/EVIDENCE.md`
+> **发布说明**：`docs/verification/v2.5.6/CHANGELOG-v2.5.6.md`
+
+### 三条新铁律（本版起是硬约束）
+
+20. **baseline profile 是启动性能的基础设施，不是可选优化。**
+
+    这条不是在讲「加一个依赖」—— v2.5.6 的探针证明**依赖早在 v1.2.1（`f9d45f4`）就加过了**，
+    真正缺的是**内容与管线**：`app/src/main/baseline-prof.txt` 是 91 行**手写的 class-only 清单**，
+    没有一条方法级 hot 标记，也没有任何采样器。而 class-only 条目只能让 ART 提前加载/校验类，
+    拿不到 AOT 编译的主要收益（那份文件自己的注释写着「覆盖 60~70% 收益」）。
+
+    落地要求：
+
+    - **必须有采样器**：`benchmark/…/BaselineProfileGenerator.kt`（`BaselineProfileRule`），
+      覆盖 7 条旅程：冷启动到首页 / 进入搜索 / 进入库 / 进入播放器 / 播放开始 / 切歌 / 列表滚动。
+      「我手写了一份」不算——手写清单**不会随代码演进更新**，而 profile 过期在构建日志里
+      **完全安静**（AGP/R8 把解析不到的条目直接丢掉，不报错）；
+    - **必须能一条命令重生成**：`benchmark/generate_baseline_profile.sh`（构建 → 安装 → 采样 → 覆盖 →
+      打印新旧行数与旅程覆盖）。生成的东西不许靠「记得手动跑一下」；
+    - **CI 只能是「自托管 runner + `workflow_dispatch`/定期」，不能写成 push 即跑**
+      （`.github/workflows/baseline-profile.yml`）。托管 runner 没有设备、没有嵌套虚拟化，
+      跑不了这件事；写成 `on: push` 的实际后果是「每个 PR 都红 → 有人为了让它绿把 `runs-on`
+      换成托管镜像 → 任务**假绿**，而『profile 已随代码更新』这句话是假的」；
+    - **采样必须在 release 包上做**（铁律 16）：profile 要按 R8 之后的 dex 采样，
+      debug 包的 dex 与发布产物不同，采出来的条目对不上；
+    - **旅程 SKIP 必须如实记录**：采样器把每条旅程的 `OK` / `SKIP(原因)` 打进 logcat
+      （tag `NcrustProfileGen`）。未登录时旅程 5/6 必然 SKIP ——
+      把 SKIP 写成 OK 会让「profile 覆盖了播放链路」变成一句空话。
+      生成脚本在一条都没 OK 时**拒绝覆盖**目标文件（有界失败，铁律 5）。
+
+21. **平台特定行为（如 EMUI 的旋转策略）必须在目标平台真机验证，不能只在模拟器上测。**
+
+    这条是 v2.5.6 用一次**完整推翻任务书前提**换来的。
+    任务书说「EMUI 未采纳 wm 旋转 override」，要求做兼容。真机实测（WGR-W09 / EMUI 14.2.0）：
+    `wm get-ignore-orientation-request = false`，应用持 `SENSOR_LANDSCAPE` 时把 `user_rotation`
+    强制成 0，显示**保持横屏 ≥10s**；撤掉请求后同一 `user_rotation=0` 下**立刻回竖屏**。
+    **EMUI 完全采纳旋转请求。** 真正的缺陷是**布局命中区重叠**：
+    `FullPlayerControls` 的横向控制条当时是 `Box(fillMaxWidth)` + 三个各自
+    `align(CenterStart/Center/CenterEnd)` 的 `Row` —— 三组互相独立定位，
+    竖屏容器 352dp 下左组（8~168dp）与传输组（103~247dp）重叠 65dp，
+    而 Compose 里**后声明的赢命中测试** ⇒ 点 ⤢（128~168dp）实际触发的是「播放/暂停」。
+    横屏容器 563dp 不重叠，所以**这个缺陷只在竖屏出现**。
+
+    落地要求：
+
+    - 凡是「某个平台不采纳某个系统 API」的判断，**必须给出该平台上的受控 A/B**
+      （改前/改后逐项回读），不能靠「在别的平台上是这样」外推；
+    - 「只在模拟器/单一方向上测过」不算验证过。上例里**两个方向都要测**：
+      横屏通过、竖屏失败 —— 只测横屏会得到「功能正常」的错误结论；
+    - **平台差异结论必须能被 `adb` 命令复现**（`wm get-ignore-orientation-request`、
+      `dumpsys window displays | grep mOrientation`、`dumpsys activity activities`…），
+      写进证据文件；
+    - 若最终确认是**应用内**缺陷（如本例），**不要**顺手去改平台相关 API ——
+      本版一行 `WindowManager` 旋转 override 都没加（全仓 `WindowManager` 仍只有
+      `FLAG_KEEP_SCREEN_ON`）；
+    - 布局层面的通用修法：**能用顺序布局（`Row` 依次摆放）就不要用「多个独立对齐的兄弟节点」**。
+      顺序布局的子节点**结构上不可能重叠**，而「算准一个阈值别让它叠」会随按钮增减、
+      字号、语言（8 个语言包文案长度不同）漂移。命中区的验收要用 uiautomator
+      断言「节点存在 **且** bounds 不相交」，不能只看截图里图标画出来了
+      （本例的图标**画得好好的**，只是点不到）。
+
+22. **性能优化必须有量化数据支撑，无数据不声称优化。**
+
+    本版把「量化」具体化成三条可执行的形态，缺一条就不许写「优化了」：
+
+    - **必须能说清时间花在哪一段**。v2.5.6 的搜索探针给旧埋点判了死刑：
+      全仓 `EventListener`/TTFB 检索 **0 命中**，搜索链路上只有「请求前 / 全部结束后」
+      两个时间戳 ⇒ 那条 `elapsed=…ms` 日志**只能回答「一共多久」，回答不了「花在哪」**。
+      本版因此补了两层：`network/HttpTimingListener.kt`（OkHttp `EventListener`，
+      给出**真 TTFB** / 响应体传输 / 整通）与 `search/SearchLatencyTrace.kt`
+      （分段打点，`ttfr` = dispatch → **第一次上屏**）；
+    - **分段耗时结论必须来自 release 包**（铁律 16 的延伸）。既有的搜索日志
+      （`QqApi` / `QqClient`）是 `BuildConfig.DEBUG` 门控的 ⇒ release 里**一条都不存在**，
+      于是性能结论只能来自 debug 包 —— 那正是铁律 16 禁止的。新增的两处埋点
+      **无条件打**（不套 `BuildConfig.DEBUG`）；
+    - **「优化前后」必须是同一口径、可复现的一对数字**，且要说明**变量隔离方式**。
+      本版 baseline profile 的 A/B 口径写死在
+      `docs/verification/v2.5.6/verification/coldstart-ab.sh`：同一台设备、
+      同一份 release 源码、只换 APK 里的 `assets/dexopt/baseline.prof`，
+      用 `cmd package compile -m speed-profile -f` 固定编译档，
+      再 `am start -W` 取 `TotalTime`；
+    - **测不出来就写「未测得」**。本版如实记录了「API 25~30 无设备 ⇒ 对 24~30 整段是外推」
+      与「CI workflow 未在真实自托管 runner 上执行过」——**未测得 ≠ 没做**，
+      但把未测得写成测得就是伪造（铁律 11）。
+
+    **配套条款（方法学，v2.5.6 的一号教训）：任何「计数为 0 / 无命中」的结论，
+    必须同时留 stderr 与退出码。**
+
+    v2.5.5 的遗留清单里有一条「本仓库根本没有依赖 `androidx.profileinstaller`」，
+    连带推出「API 24~30 的设备永远不会安装 baseline profile」。v2.5.6 探针证明**两条都是假的**：
+    依赖自 v1.2.1 就在，S6（API 24）上 `am broadcast …INSTALL_PROFILE` 返回
+    `D ProfileInstaller: RESULT_INSTALL_SUCCESS`，`DROP_SHADER_CACHE` 广播返回 `result=14`。
+
+    根因是那条取证命令本身**失败了**，而失败伪装成了阴性结果：
+
+    ```bash
+    $ aapt2 dump xmltree app-release.apk AndroidManifest.xml
+    missing required flag --file                  # ← stderr，被管道吞掉
+    dump xmltree [options] --file arg files...
+    $ … | grep -ci profile
+    0                                             # ← 空 stdout 的计数，被读成「没有」
+    ```
+
+    新版 `aapt2` 要求显式 `--file`，写错时它**不产出任何 XML**，只在 stderr 打一行用法。
+    于是「命令没跑起来」与「清单里确实没有」在证据上**完全同形**。
+    本项目已经栽过同形状的第二次（v2.5.5 把 `CompilationMode.DEFAULT` 记成 `Full`，
+    也是「证据来自一条没人复核的命令/记忆」）。所以：
+
+    - 用计数当结论时，把 `2>&1`、退出码、以及**命中样本的前几行**一起留档；
+    - 优先写「命中 N 处，例如 …」而不是「命中 0 处 ⇒ 不存在」；
+    - 结论为「不存在 / 没发生」时，**换一条独立的路径交叉验证**
+      （本例的第二条路径是设备上的广播返回值 14 —— 它与 `aapt2` 完全无关）。
+
+### 本版的单一落点与新增守卫
+
+| 文件 | 作用 | 守卫 |
+|---|---|---|
+| `benchmark/…/BaselineProfileGenerator.kt` | baseline profile 的**唯一**采样器（7 条旅程 + 逐条 OK/SKIP 日志） | 旅程覆盖日志（tag `NcrustProfileGen`）；`.github/workflows/baseline-profile.yml` 的 artifact |
+| `benchmark/generate_baseline_profile.sh` | 一条命令重生成 profile（并拒绝用无效结果覆盖） | 行数下限 + 「一条都没 OK 就退出 4」 |
+| `docs/verification/v2.5.6/verification/coldstart-ab.sh` | 冷启动 A/B 的**唯一**口径（编译档 + 迭代数 + 设备自证） | 脚本自身打印设备/版本/动画原值 |
+| `search/SearchLatencyTrace.kt` | 搜索分段打点的**唯一**定义处（纯逻辑 + 注入时钟） | `SearchLatencyTraceTest`（6 例，含「重复打点保留第一次」） |
+| `network/HttpTimingListener.kt` | 真 TTFB / 响应体传输的**唯一**观测点（OkHttp `EventListener`） | 只读观测，不改请求行为 |
+| `PlayerLayout.qualityChipFits` / `sideButtonCount` | 横向控制条的宽度预算（谁让位） | `ControlsBarBudgetTest`（6 例，含真机 352dp / 563dp 两格） |
+| `PlayerLayout.controlsBar` 的顺序布局 | 三段互不重叠的**结构性**保证 | 真机 uiautomator 断言「⤢ 节点存在且 bounds 不相交」 |
+| `cache/OfflineLibraryTest` 的真机形状用例 | 对账判据**只能是「缓存里有没有」**，不是「urls 里有没有」 | 该用例本身（6 条真实缺 urls 的条目必须存活） |
+
+### 本版的关键取舍（有意为之，不是遗漏）
+
+| 取舍 | 理由 |
+|---|---|
+| **不加 `:baselineprofile` 新模块** | 官方模板只是「再开一个 `com.android.test` 模块」；本仓库已有的 `:benchmark` 模块结构完全等价（`targetProjectPath = ":app"`、`self-instrumenting = true`、`benchmark-macro-junit4` 齐备）⇒ 把采样器加进去改动面最小，采样与被测应用还共用同一套安装流程 |
+| **搜索不加 `callTimeout` 到共用 client** | `api` 是共用实例（专辑详情 / 歌词 / 歌曲详情全走它）。给共用实例加 `callTimeout` 会把「修搜索」变成「改半个网络层的失败面」。新增 `searchApi`（只多一个 20s `callTimeout`）—— 只有「用户正盯着转圈等」的那条路径拿到熔断 |
+| **不做「流式映射」「占位渲染」** | 探针实测：状态写入 → QQ 计数上屏的**渲染段 P50 = 41.5ms，占总量 1.4%**（`screenrecord --bugreport` 帧内毫秒时间戳直读）。在这个量级上做占位屏是拿真复杂度换噪声。真正值得做的是**解掉首帧对网易云的硬阻塞**（真机抓到 `elapsed=30006ms netease=0 qq=30`） |
+| **不换 QQ 搜索主通道（musicu）** | 探针测得 legacy TTFB 2905ms vs musicu 378ms（**7.7 倍**），但换主通道的回归面是**结果顺序**，且代码注释记载 musicu 历史上被限流（code 2001）。本版只在报告里给出机会与取证要求，**不在没有 n≥30 稳定性 + 逐字段比对的情况下动它** |
+| **平板 ⤢ 不加「左栏 ≥ 478dp」这种魔数门控** | 那种阈值是**症状级**修法：换个字号/语言/按钮数就再次重叠。本版改成顺序 `Row`（结构性不可重叠）+ 可单测的宽度预算（让位的是音质片，不是 ⤢ 也不是传输三键） |
+| **离线索引不加 `offline_index_version`、不加启动期对账** | 探针证明注入记录是**一条无音频、无 URL 的惰性记录**，既有对账路径（打开「离线缓存管理」）已能精确清除；而 `OfflineTrackCodec` 明写「版本号不落盘」，再加一个版本 key 与既有契约冲突。加启动期对账则把「索引静默缩水」从用户主动动作扩大到每次冷启 |
+| **PLC110 上不用「清除缓存」清那条记录** | v2.5.5 的处置建议「走清空离线缓存即可」在**当下**会删掉用户真实的 2.3 GB / 50 首离线数据。本版改用「打开离线缓存管理即对账」，并把那条有害建议在文档里改正 |
+| **给 `fullplayer` 的音质片让位而不是给传输三键让位** | 铁律 19：播放控制按钮是核心功能，缺失属 P0 回归。音质片在竖屏控制条（另一条分支）里仍在，不构成功能缺失 |
+
+### 与任务书的四处前提偏差（**下一个读任务书的人先看这里**）
+
+| 任务书原文 | 实测 | 处置 |
+|---|---|---|
+| §2.1「确认仓库当前无 `androidx.profileinstaller` 依赖」 | **有**，自 v1.2.1（`f9d45f4`）起；v2.5.3/2.5.4/2.5.5 三个 tag 里 `grep -c` 均为 1；APK 清单命中 7 处；API 24 真机 `RESULT_INSTALL_SUCCESS` | **推翻**。P0 从「加依赖」改为「补采样管线 + 用真机采样替换手写清单 + 量化效果」 |
+| §1/§4「搜索延迟 gap（TTFB → UI）最值得压缩」 | **推翻**：QQ 腿 P50 2923ms 里 98% 是服务端 TTFB；客户端「状态写入→上屏」P50 **41.5ms（1.4%）**，天花板约 2% | 改为解掉**首帧被网易云硬阻塞**（真机证据 30s 空屏）并补齐 4 个缺失埋点 |
+| §2.3「EMUI 未采纳 wm 旋转 override，平板 ⤢ 不工作」 | **推翻**：EMUI 采纳（受控 A/B，`ignore-orientation-request=false`）。真因是**竖屏下控制条三组重叠**、⤢ 被传输组盖住（352dp 容器重叠 65dp） | 改为修命中区（顺序布局 + 宽度预算），并按新铁律 21 做双方向真机验证 |
+| §6「PLC110 离线索引注入记录清理」隐含「需要改代码 + 加迁移」 | **部分推翻**：注入记录**恰好 1 条**（`songId 503616`），且无音频、无 URL ⇒ 功能上惰性；既有对账路径已能精确清除 | 归为**设备状态收尾**（不改产品代码），补一条真机形状的防御性单测，并改正 v2.5.5 那条会造成数据损失的建议 |
