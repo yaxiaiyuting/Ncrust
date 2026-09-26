@@ -40,8 +40,13 @@ sealed interface ArtistNav {
      *   且恒等于歌曲自己的音源（见 [ArtistNavigator.resolve] 的不变量）。
      * @property id 该音源内的**字符串**身份：网易云是十进制 id，QQ 音乐是 `singerMID`。
      *   恒满足 [ArtistNavigator.idDomainMatches]。
+     * @property name 艺人名的快照，**只作展示与召回**（艺人页拿它当搜索关键词去拉对端热门曲）。
+     *   **绝不参与身份判定** —— 名字可以空、可以错、可以重名，而 [id] 不行。
+     *   之所以要把它带在决策里：QQ 的 `singerMID` 没有"按 mid 取名字"的接口，
+     *   这个名字只有调用方手上那首歌才有；不带走，艺人页就只能显示「未知艺人」
+     *   并且**静默地**召不回任何对端数据。
      */
-    data class Direct(val source: MusicSource, val id: String) : ArtistNav
+    data class Direct(val source: MusicSource, val id: String, val name: String = "") : ArtistNav
 
     /**
      * 进搜索页并预填 [keyword]。
@@ -170,7 +175,9 @@ object ArtistNavigator {
     ): ArtistNav.Direct? {
         if (!crossSourceJumpAllowed(confidence)) return null
         if (!idDomainMatches(targetSource, targetId)) return null
-        return ArtistNav.Direct(targetSource, targetId!!.trim())
+        // 跨源跳转**不带名字**：那个名字来自另一个源，用它当搜索关键词会把
+        // 目标源的召回带偏（而名字本来就不该参与身份判定）。
+        return ArtistNav.Direct(targetSource, targetId!!.trim(), "")
     }
 
     /**
@@ -190,7 +197,7 @@ object ArtistNavigator {
             MusicSource.QQMUSIC -> artist?.mid
         }
         if (idDomainMatches(source, sameSourceId)) {
-            return ArtistNav.Direct(source, sameSourceId!!.trim())
+            return ArtistNav.Direct(source, sameSourceId!!.trim(), keyword.orEmpty())
         }
 
         // 走到这里说明**本源内**没有可用身份。两条降级路都不许猜：

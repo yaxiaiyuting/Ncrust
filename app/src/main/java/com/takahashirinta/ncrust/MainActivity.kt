@@ -1875,7 +1875,7 @@ fun MainScreen(
         when (val nav = ArtistNavigator.resolve(song)) {
             is ArtistNav.Direct -> {
                 if (progress.value > 0.01f) collapseCard()
-                navController.navigate(NavRoutes.artist(nav.source, nav.id))
+                navController.navigate(NavRoutes.artist(nav))
             }
 
             is ArtistNav.Search -> {

@@ -72,7 +72,7 @@ object NavRoutes {
      * 注册顺序上两套路由互不冲突：`album/{albumId}` 只吃一段路径，
      * `album/{source}/{albumId}` 吃两段，导航库的深链正则无法互相匹配。
      */
-    const val ARTIST_SRC = "artist/{source}/{artistId}"
+    const val ARTIST_SRC = "artist/{source}/{artistId}/{artistName}"
     const val ALBUM_SRC = "album/{source}/{albumId}"
     const val SONG_SRC = "song/{source}/{songId}"
 
@@ -82,8 +82,31 @@ object NavRoutes {
         "playlist/$id/${URLEncoder.encode(name, StandardCharsets.UTF_8.toString())}/${URLEncoder.encode(coverUrl, StandardCharsets.UTF_8.toString())}"
     fun song(songId: Long) = "song/$songId"
 
-    /** v2.4.0 · E：带音源的艺人路由（QQ 的 id 是 `singerMID`）。 */
-    fun artist(source: MusicSource, id: String) = "artist/${source.key}/$id"
+    /**
+     * v2.4.0 · E：带音源的艺人路由（QQ 的 id 是 `singerMID`）。
+     *
+     * v2.6.1 · P0：**多了一段 `artistName`**。
+     *
+     * 为什么必须带上名字（这不是"顺手多传一个显示字段"）：
+     * 艺人页拿锚点名字当**搜索关键词**去拉对端热门曲、并对端召回
+     * （`CatalogAggregator.loadArtist`）。名字为空时搜索接口返回空列表 ——
+     * 页面不会报错，只会**静默地什么都召不回**，标题也退化成「未知艺人」。
+     *
+     * 而 QQ 的 `singerMID` **没有**「按 mid 取艺人名」的既有接口
+     * （mid 只出现在专辑/曲目列表里），所以这个名字在 QQ 侧**只能**由调用方带过来
+     * —— 用户点的那首歌里明明就有 `artists[0].name`。
+     * 本版之前 QQ 艺人页不可达，所以这个空白从未暴露；现在可达了，
+     * 一个标题为「未知艺人」的页面会被读成"还是坏的"。
+     *
+     * 与 [PLAYLIST]、[QQ_PLAYLIST_DETAIL] 同一条纪律：路由里没有的信息，
+     * 页面就只能靠猜；而这里能拿到，所以带过来。
+     */
+    fun artist(source: MusicSource, id: String, name: String = "") =
+        "artist/${source.key}/$id/" + URLEncoder.encode(name, StandardCharsets.UTF_8.toString())
+
+    /** v2.6.1：直接吃一个身份决策对象，避免调用方把三个字段拆开再拼错。 */
+    fun artist(target: com.takahashirinta.ncrust.source.ArtistNav.Direct) =
+        artist(target.source, target.id, target.name)
 
     /** v2.4.0 · E：带音源的专辑路由。 */
     fun album(source: MusicSource, id: String) = "album/${source.key}/$id"
@@ -156,9 +179,7 @@ fun MainNavGraph(
                 albumId = albumId.toString(),
                 onBack = { navController.popBackStack() },
                 onSongClick = onSongClick,
-                onArtistClick = { source, artistId ->
-                    navController.navigate(NavRoutes.artist(source, artistId))
-                },
+                onArtistClick = { target -> navController.navigate(NavRoutes.artist(target)) },
                 onReplaceAndPlay = onReplaceAndPlay,
                 onInsertNext = onInsertNext,
                 onSongInsertNext = onSongInsertNext,
@@ -181,9 +202,7 @@ fun MainNavGraph(
                 albumId = albumId,
                 onBack = { navController.popBackStack() },
                 onSongClick = onSongClick,
-                onArtistClick = { source, artistId ->
-                    navController.navigate(NavRoutes.artist(source, artistId))
-                },
+                onArtistClick = { target -> navController.navigate(NavRoutes.artist(target)) },
                 onReplaceAndPlay = onReplaceAndPlay,
                 onInsertNext = onInsertNext,
                 onSongInsertNext = onSongInsertNext,
@@ -216,14 +235,22 @@ fun MainNavGraph(
             route = NavRoutes.ARTIST_SRC,
             arguments = listOf(
                 navArgument("source") { type = NavType.StringType },
-                navArgument("artistId") { type = NavType.StringType }
+                navArgument("artistId") { type = NavType.StringType },
+                // v2.6.1：名字是可选的（空串 = 调用方也不知道），但**段必须在**
+                // —— 路径参数没有"可省略"这回事，少一段就整条路由匹配不上。
+                navArgument("artistName") { type = NavType.StringType; defaultValue = "" }
             )
         ) { backStackEntry ->
             val sourceKey = backStackEntry.arguments?.getString("source") ?: return@composable
             val artistId = backStackEntry.arguments?.getString("artistId") ?: return@composable
+            val artistName = URLDecoder.decode(
+                backStackEntry.arguments?.getString("artistName") ?: "",
+                StandardCharsets.UTF_8.toString()
+            )
             ArtistDetailScreen(
                 sourceKey = sourceKey,
                 artistId = artistId,
+                initialName = artistName,
                 onBack = { navController.popBackStack() },
                 onSongClick = onSongClick,
                 onAlbumClick = { source, id -> navController.navigate(NavRoutes.album(source, id)) },

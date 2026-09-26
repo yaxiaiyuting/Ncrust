@@ -36,6 +36,7 @@ import com.takahashirinta.ncrust.library.LibraryManager
 import com.takahashirinta.ncrust.network.RetrofitClient
 import com.takahashirinta.ncrust.network.SongItem
 import com.takahashirinta.ncrust.qq.QqCatalogApi
+import com.takahashirinta.ncrust.source.ArtistNav
 import com.takahashirinta.ncrust.source.MusicSource
 import com.takahashirinta.ncrust.source.musicSource
 import com.takahashirinta.ncrust.source.trackKey
@@ -79,7 +80,12 @@ fun AlbumDetailScreen(
     albumId: String,
     onBack: () -> Unit,
     onSongClick: (SongItem) -> Unit,
-    onArtistClick: (MusicSource, String) -> Unit = { _, _ -> },
+    /**
+     * v2.6.1 · P0：点副标题（艺人）。**交出一个完整的身份决策对象**（`source + id + name`），
+     * 而不是拆开的两个字段 —— 名字是 QQ 侧唯一能拿到艺人名的来源（`singerMID`
+     * 没有"按 mid 取名字"的接口），拆开传必然有人漏传。
+     */
+    onArtistClick: (ArtistNav.Direct) -> Unit = {},
     onReplaceAndPlay: (List<SongItem>) -> Unit = {},
     onInsertNext: (List<SongItem>) -> Unit = {},
     onSongInsertNext: (SongItem) -> Unit = {},
@@ -174,9 +180,18 @@ fun AlbumDetailScreen(
         if (source != MusicSource.NETEASE) {
             null
         } else {
-            albumMeta?.artist?.id?.toString()
+            val id = albumMeta?.artist?.id?.toString()
                 ?: loaded?.songs?.firstOrNull { it.song.musicSource == MusicSource.NETEASE }
                     ?.song?.artists?.firstOrNull()?.id?.toString()
+            // 名字取同一处来源（有 id 的那一条），取不到就给空串 —— 名字只影响
+            // 标题与对端召回，**不影响身份**，所以这里不为了凑一个名字去别处捞。
+            id?.let {
+                ArtistNav.Direct(
+                    MusicSource.NETEASE,
+                    it,
+                    albumMeta?.artist?.name.orEmpty(),
+                )
+            }
         }
     }
 
@@ -211,7 +226,7 @@ fun AlbumDetailScreen(
                 title = displayName,
                 subtitle = subtitle,
                 // 点击作曲者 → 跳歌手页, 无按动反馈。拿不到可校验的艺人身份时**不可点**。
-                onSubtitleClick = artistTarget?.let { id -> { onArtistClick(MusicSource.NETEASE, id) } },
+                onSubtitleClick = artistTarget?.let { target -> { onArtistClick(target) } },
                 infoLines = buildList {
                     albumMeta?.publishTime?.let { time ->
                         val date = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())

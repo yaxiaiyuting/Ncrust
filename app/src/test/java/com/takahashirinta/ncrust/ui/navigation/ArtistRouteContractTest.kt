@@ -16,6 +16,8 @@ import com.takahashirinta.ncrust.source.ArtistNav
 import com.takahashirinta.ncrust.source.ArtistNavigator
 import com.takahashirinta.ncrust.source.MusicSource
 import java.io.File
+import java.net.URLDecoder
+import java.nio.charset.StandardCharsets
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
@@ -47,13 +49,41 @@ class ArtistRouteContractTest {
     @Test
     fun `带音源的艺人路由形状固定`() {
         assertEquals(
-            "artist/qqmusic/0025NhlN2yWrP4",
-            NavRoutes.artist(MusicSource.QQMUSIC, "0025NhlN2yWrP4"),
+            "artist/qqmusic/0025NhlN2yWrP4/%E5%91%A8%E6%9D%B0%E4%BC%A6",
+            NavRoutes.artist(MusicSource.QQMUSIC, "0025NhlN2yWrP4", "周杰伦"),
         )
-        assertEquals("artist/netease/6452", NavRoutes.artist(MusicSource.NETEASE, "6452"))
+        // 不传名字时第四段是空串（仍然**必须存在**：路径参数没有"可省略"这回事）
+        assertEquals("artist/qqmusic/0025NhlN2yWrP4/", NavRoutes.artist(MusicSource.QQMUSIC, "0025NhlN2yWrP4"))
+        assertEquals("artist/netease/6452/", NavRoutes.artist(MusicSource.NETEASE, "6452"))
         // 路由模板本身也钉住：改成一段就没法带音源了。
-        assertEquals("artist/{source}/{artistId}", NavRoutes.ARTIST_SRC)
+        assertEquals("artist/{source}/{artistId}/{artistName}", NavRoutes.ARTIST_SRC)
         assertEquals("artist/{artistId}", NavRoutes.ARTIST)
+    }
+
+    /**
+     * v2.6.1：名字必须能从路由里**原样还原**，且**不影响身份**。
+     *
+     * 名字带中文，不编码就会让整条路由在导航库里被切错段；
+     * 而名字即使被改坏，`(source, id)` 也必须一个字节都不变 ——
+     * 名字是载荷，不是身份（与 `TrackKey` 的 `sourceId`/`mediaId` 同一条纪律）。
+     */
+    @Test
+    fun `艺人名 URL 编码往返保真且不影响身份`() {
+        for (name in listOf("周杰伦", "G.E.M.邓紫棋", "A/B 测试", "100%", "")) {
+            val route = NavRoutes.artist(MusicSource.QQMUSIC, "0025NhlN2yWrP4", name)
+            val parsed = parseArtistSrc(route)
+            assertNotNull("名字=$name 的路由解析失败：$route", parsed)
+            assertEquals("名字必须原样还原：$name", name, parsed!!.third)
+            assertEquals(MusicSource.QQMUSIC, parsed.first)
+            assertEquals("0025NhlN2yWrP4", parsed.second)
+        }
+    }
+
+    /** 路由只吃 `ArtistNav.Direct` 的 (source, id, name) 三元组，不吃别的形状。 */
+    @Test
+    fun `Direct 可以直接编码进路由`() {
+        val direct = ArtistNav.Direct(MusicSource.QQMUSIC, "0025NhlN2yWrP4", "周杰伦")
+        assertEquals(NavRoutes.artist(MusicSource.QQMUSIC, "0025NhlN2yWrP4", "周杰伦"), NavRoutes.artist(direct))
     }
 
     @Test
@@ -89,11 +119,12 @@ class ArtistRouteContractTest {
         for (s in songs) {
             when (val nav = ArtistNavigator.resolve(s)) {
                 is ArtistNav.Direct -> {
-                    val route = NavRoutes.artist(nav.source, nav.id)
+                    val route = NavRoutes.artist(nav)
                     val parsed = parseArtistSrc(route)
                     assertNotNull("带音源路由必须能被解析回来：$route", parsed)
                     assertEquals("路由里的 source 必须与决策一致", nav.source, parsed!!.first)
                     assertEquals("路由里的 id 必须与决策一致", nav.id, parsed.second)
+                    assertEquals("路由里的名字必须与决策一致", nav.name, parsed.third)
                     assertTrue(
                         "路由里的 id 必须满足该音源的值域：$route",
                         ArtistNavigator.idDomainMatches(nav.source, parsed.second),
@@ -129,16 +160,11 @@ class ArtistRouteContractTest {
                 if (trimmed.startsWith("*") || trimmed.startsWith("/*") || trimmed.isEmpty()) {
                     return@forEachIndexed
                 }
-                // 找 `NavRoutes.artist(`，再看它后面第一个实参是不是一个 MusicSource。
                 val idx = line.indexOf("NavRoutes.artist(")
                 if (idx < 0) return@forEachIndexed
                 val args = line.substring(idx + "NavRoutes.artist(".length)
-                val firstArg = args.substringBefore(',').trim()
-                val carriesSource = firstArg.startsWith("MusicSource.") ||
-                    firstArg.endsWith(".source") ||
-                    firstArg.contains("musicSource") ||
-                    firstArg == "source"
-                if (!carriesSource) {
+                val firstArg = args.substringBefore(',').trim().removeSuffix(")")
+                if (!carriesArtistSource(firstArg)) {
                     offenders += "${f.path}:${i + 1}: ${line.trim()}"
                 }
             }
@@ -146,12 +172,48 @@ class ArtistRouteContractTest {
         assertTrue(
             "这些调用点用了不带音源的老重载 `NavRoutes.artist(artistId: Long)` —— " +
                 "它在 composable 里把 source 写死成 NETEASE，QQ 曲目会被送到同号的网易云艺人页" +
-                "（真机实测：周杰伦 4558 → 马洪波）。改用 `NavRoutes.artist(source, id)`；" +
-                "身份判定走 `ArtistNavigator`，按构造就是网易云的入口（剪贴板链接、推荐卡、" +
-                "搜索艺人 tab）也要**显式**写 `MusicSource.NETEASE`。" +
+                "（真机实测：周杰伦 4558 → 马洪波）。正确写法有两种：\n" +
+                "  ① `NavRoutes.artist(MusicSource.NETEASE, id.toString(), name)`（按构造就是某源的入口）；\n" +
+                "  ② `NavRoutes.artist(someArtistNavDirect)`（身份判定走 ArtistNavigator）。\n" +
                 "违规行：\n" + offenders.joinToString("\n"),
             offenders.isEmpty(),
         )
+    }
+
+    /**
+     * 判据本身也要能被测 —— 否则正则写松一点，这条守卫就变成永远绿的装饰。
+     *
+     * 这条用例把**正例与反例**都喂进同一个谓词：将来有人为了"让它过"而放宽判据，
+     * 反例那一半会立刻红。
+     */
+    @Test
+    fun `带源判据认得出正例也认得出反例`() {
+        // 反例：这些都是"裸 id"，必须被拦。
+        val bad = listOf(
+            "artistId",
+            "id",
+            "albumArtistId",
+            "artist.id",
+            "artist.id.toString()",
+            "4558L",
+            "song.artists?.firstOrNull()?.id ?: 0L",
+        )
+        for (a in bad) {
+            assertFalse("这个表达式是裸 id，必须被判为违规：$a", carriesArtistSource(a))
+        }
+        // 正例：显式音源，或一个 ArtistNav.Direct 决策对象。
+        val good = listOf(
+            "MusicSource.NETEASE, artistId.toString()",
+            "MusicSource.NETEASE, id.toString()",
+            "target",
+            "nav",
+            "someArtistNavDirect",
+            "ref",
+            "source, id",
+        )
+        for (a in good) {
+            assertTrue("这个表达式带了音源/身份对象，不该被判为违规：$a", carriesArtistSource(a))
+        }
     }
 
     @Test
@@ -169,12 +231,18 @@ class ArtistRouteContractTest {
 
     // ------------------------------------------------------------------ 工具
 
-    /** `artist/{source}/{artistId}` → `(MusicSource, id)`；形状不对返回 null。 */
-    private fun parseArtistSrc(route: String): Pair<MusicSource, String>? {
+    /**
+     * `artist/{source}/{artistId}/{artistName}` → `(MusicSource, id, name)`；形状不对返回 null。
+     *
+     * `split('/')` 会丢掉末尾的空段（`"a/b/"` → `["a","b"]`），所以先按**段数**判断，
+     * 空名字那一档单独补回来 —— 否则"名字为空"会被误判成"路由形状不对"。
+     */
+    private fun parseArtistSrc(route: String): Triple<MusicSource, String, String>? {
         val parts = route.split('/')
-        if (parts.size != 3 || parts[0] != "artist") return null
+        if (parts.size < 3 || parts[0] != "artist") return null
         val source = MusicSource.values().firstOrNull { it.key == parts[1] } ?: return null
-        return source to parts[2]
+        val name = parts.getOrNull(3).orEmpty()
+        return Triple(source, parts[2], URLDecoder.decode(name, StandardCharsets.UTF_8.toString()))
     }
 
     /** 极简的导航模板匹配：只支持 `{name}` 占位（本仓库的路由形状够用）。 */
@@ -193,6 +261,38 @@ class ArtistRouteContractTest {
         duration = null,
         source = if (source == MusicSource.NETEASE) null else source.key,
     )
+
+    /**
+     * 第一个实参"带了音源身份"吗。
+     *
+     * 判据分两类，**不是**风格检查：
+     *  ① 显式点名音源（`MusicSource.X` / `*.source` / `musicSource`）——
+     *     本仓库连"按构造就是网易云"的三个入口都要求写出来，因为
+     *     「按构造正确」正是那个 P0 里唯一没被写下来的东西；
+     *  ② 交出一个 `ArtistNav.Direct`（`NavRoutes.artist(direct)` 重载）——
+     *     身份的合法性已经由 `ArtistNavigator` 保证过了。
+     *
+     * 只要第一个实参**像裸 id**（`artistId` / `id` / `*.id` / 数字字面量 / 表达式
+     * 直接以 `.id` 或 `toString()` 结尾），就判违规。
+     */
+    private fun carriesArtistSource(firstArg: String): Boolean {
+        val a = firstArg.trim()
+        if (a.isEmpty()) return false
+        if (a.startsWith("MusicSource.")) return true
+        if (a.contains("musicSource")) return true
+        if (Regex("""(^|[^A-Za-z0-9_])source([^A-Za-z0-9_]|$)""").containsMatchIn(a)) return true
+        if (a.endsWith(".source")) return true
+        // 裸 id 的形状：数字字面量 / 一切以 id 结尾的标识符或成员访问 / toString() 收尾的表达式。
+        if (Regex("""^\d+[Ll]?$""").matches(a)) return false
+        // camelCase 的 `…Id` / 裸 `id`。**不**用"以 id 结尾"（那会把 `valid` 也误判成裸 id）。
+        if (Regex("""^(id|[a-z][A-Za-z0-9_]*Id)$""").matches(a)) return false
+        if (a.endsWith(".id")) return false
+        if (a.endsWith("toString()")) return false
+        if (a.contains(".id ") || a.contains("?.id")) return false
+        // 其余形状视为「已经是一个身份对象」（ArtistNav.Direct）。名字里带 artist/direct/ref/target/nav
+        // 都算；这条比正则宽松，所以上面那条反例用例是它的护栏。
+        return true
+    }
 
     /** 与 PersistenceFieldNameContractTest 同一套路径兜底（IDE / 命令行 / 模块目录三种 cwd）。 */
     private fun kotlinSources(): List<File> {

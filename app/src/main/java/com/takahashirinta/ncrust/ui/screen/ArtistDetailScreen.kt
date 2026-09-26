@@ -72,6 +72,16 @@ import android.widget.Toast
 fun ArtistDetailScreen(
     sourceKey: String,
     artistId: String,
+    /**
+     * v2.6.1 · P0：路由带过来的艺人名（空串 = 调用方也不知道）。
+     *
+     * 它同时解决两件事，两件在 QQ 侧都只能靠它：
+     *  ① 页面标题（否则退化成「未知艺人」）；
+     *  ② 对端召回的**搜索关键词**（`CatalogAggregator.loadArtist`）——
+     *     空关键词不会报错，只会静默地什么都搜不到。
+     * 名字**只用于展示与召回**，绝不参与身份判定（身份是 `(source, artistId)`）。
+     */
+    initialName: String = "",
     onBack: () -> Unit,
     onSongClick: (SongItem) -> Unit,
     onAlbumClick: (MusicSource, String) -> Unit,
@@ -97,8 +107,13 @@ fun ArtistDetailScreen(
     // 网易云一侧先读 [ContentCache]（上一次进本页写回的），QQ 一侧没有可读的名字来源，
     // 从空串起步（页面标题随后由聚合结果补，见 displayName）。**不编名字、也不写死「网易云」**。
     // 缓存也没命中时，真正的名字在 [LaunchedEffect] 里现取一次（见那里的注释）。
-    val cachedName = remember(source, artistId) {
-        if (source == MusicSource.NETEASE) {
+    val cachedName = remember(source, artistId, initialName) {
+        val fromRoute = initialName.trim()
+        if (fromRoute.isNotEmpty()) {
+            // 路由带来的名字优先：它是**用户点的那首歌**上的名字，
+            // 比缓存新、也比网易云那条"按 id 现取"的路径少一次往返。
+            fromRoute
+        } else if (source == MusicSource.NETEASE) {
             ContentCache.getArtistAlbums(artistId.toLongOrNull() ?: -1L)?.artist?.name.orEmpty()
         } else {
             ""

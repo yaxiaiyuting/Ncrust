@@ -69,13 +69,13 @@ class ArtistNavigatorTest {
     @Test
     fun `QQ 曲目带 singerMID 时直接进 QQ 艺人页`() {
         val nav = ArtistNavigator.resolve(song(MusicSource.QQMUSIC, qqArtistFull))
-        assertEquals(ArtistNav.Direct(MusicSource.QQMUSIC, "0025NhlN2yWrP4"), nav)
+        assertEquals(ArtistNav.Direct(MusicSource.QQMUSIC, "0025NhlN2yWrP4", "周杰伦"), nav)
     }
 
     @Test
     fun `网易云曲目带十进制 id 时直接进网易云艺人页`() {
         val nav = ArtistNavigator.resolve(song(MusicSource.NETEASE, neArtist))
-        assertEquals(ArtistNav.Direct(MusicSource.NETEASE, "6452"), nav)
+        assertEquals(ArtistNav.Direct(MusicSource.NETEASE, "6452", "周杰伦"), nav)
     }
 
     // ------------------------------------ 2. P0 本体：绝不把数字 QQ id 当身份
@@ -247,9 +247,37 @@ class ArtistNavigatorTest {
             ArtistNavigator.crossSourceJump(null, MusicSource.NETEASE, "6452"),
         )
         assertEquals(
-            ArtistNav.Direct(MusicSource.QQMUSIC, "0025NhlN2yWrP4"),
+            // 跨源跳转**不带名字**：那个名字属于另一个源，拿它当搜索关键词会把召回带偏。
+            ArtistNav.Direct(MusicSource.QQMUSIC, "0025NhlN2yWrP4", ""),
             ArtistNavigator.crossSourceJump(MatchConfidence.EXACT, MusicSource.QQMUSIC, "0025NhlN2yWrP4"),
         )
+    }
+
+    // -------------------------------------------------- 6.5 名字只做展示/召回
+
+    @Test
+    fun `Direct 带出艺人名但名字不参与身份判定`() {
+        // 名字是**载荷**不是身份：同一身份换个名字，Direct 的 (source,id) 不变。
+        val named = ArtistNavigator.resolve(song(MusicSource.QQMUSIC, qqArtistFull))
+        val renamed = ArtistNavigator.resolve(
+            song(MusicSource.QQMUSIC, qqArtistFull.copy(name = "Jay Chou")),
+        )
+        assertEquals("周杰伦", (named as ArtistNav.Direct).name)
+        assertEquals("Jay Chou", (renamed as ArtistNav.Direct).name)
+        assertEquals("身份必须相同", named.source to named.id, renamed.source to renamed.id)
+
+        // 名字为空也要能跳 —— 身份齐全就够了（标题退化成「未知艺人」是显示问题，
+        // 不是「跳错人」；两者严重度差一个量级）。
+        val blank = ArtistNavigator.resolve(
+            song(MusicSource.QQMUSIC, qqArtistFull.copy(name = "   ")),
+        )
+        assertEquals(ArtistNav.Direct(MusicSource.QQMUSIC, "0025NhlN2yWrP4", ""), blank)
+    }
+
+    @Test
+    fun `名字不影响值域闸门——空名字不会把合法身份降级成搜索`() {
+        val nav = ArtistNavigator.resolve(song(MusicSource.QQMUSIC, ArtistItem(id = 4558L, name = "", mid = "0025NhlN2yWrP4")))
+        assertTrue("身份合法就必须直跳，名字空不是理由", nav is ArtistNav.Direct)
     }
 
     // -------------------------------------------------- 7. 溯源信息

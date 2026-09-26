@@ -133,7 +133,7 @@ class QqArtistMidMappingTest {
     fun `映射出来的 QQ 曲目会被决策成 QQ 艺人页而不是网易云的同号艺人`() {
         val song = QqSongMapper.fromSongObject(searchItem)!!
         val nav = ArtistNavigator.resolve(song)
-        assertEquals(ArtistNav.Direct(MusicSource.QQMUSIC, "0025NhlN2yWrP4"), nav)
+        assertEquals(ArtistNav.Direct(MusicSource.QQMUSIC, "0025NhlN2yWrP4", "周杰伦"), nav)
         assertTrue(
             "决策出的 id 必须是 singerMID（base62），不是数字 singerID(4558)",
             ArtistNavigator.idDomainMatches(MusicSource.QQMUSIC, (nav as ArtistNav.Direct).id),
