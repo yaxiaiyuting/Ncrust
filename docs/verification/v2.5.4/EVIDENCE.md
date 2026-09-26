@@ -300,4 +300,16 @@ com.takahashirinta.ncrust.cache.OfflineTrack -> F4.h:      ← 与本版无关�
 | `CHANGELOG-v2.5.4.md` | 面向用户的发布说明 + 取舍 + 遗留风险 |
 | `EVIDENCE.md` | 本文件 |
 | `next-version.txt` / `version-check.txt` | versionCode 三源交叉证据 |
-| `verification/` | 截图、benchmark 原始数据、真机 XML 导出 |
+| `verification/` | 截图、lint 摘要、真机 XML 导出、benchmark 目录（**本轮为空**，见 §4） |
+| `v2.5.4-release-body.md` | draft release 的正文 |
+
+### 发布物
+
+| 项 | 值 |
+|---|---|
+| tag | `v2.5.4-gpl`（annotated tag object `d498e758bd7d3f7f9a4f0936eb87291e4192d302` → commit `cc30c753a6792fc97e24bce328e2570e3c128aac`） |
+| tag 自证 | `git show v2.5.4-gpl:app/build.gradle.kts` → `versionCode = 45` / `versionName = "2.5.4-gpl"` |
+| 远端 tag | `refs/tags/v2.5.4-gpl` = `d498e758…`（与本地逐字节相同）；**本版全程只创建过这一个 tag 对象，没有移动过任何已发布的 tag** |
+| APK | `Ncrust-v2.5.4-gpl-release.apk`，`sha256 = 1d831d56064d4111f1c8135c20a9862d4ffd420756aa1d27c87040a1f2da2d1e` |
+| release | draft，`https://github.com/yaxiaiyuting/Ncrust/releases/tag/untagged-a190cbd0136d74fc1524`（发布后 URL 会变成 `…/releases/tag/v2.5.4-gpl`） |
+| 推送 | `master` → `cc30c75` + 后续两个 docs 提交（`git push origin master`） |
