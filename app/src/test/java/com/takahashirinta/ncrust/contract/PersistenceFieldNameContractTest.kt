@@ -72,6 +72,12 @@ class PersistenceFieldNameContractTest {
         "com.takahashirinta.ncrust.player.PlaybackPositionCodec\$PositionDto",
         // v2.5.5 · A：收藏专辑（`ncrust_library` / `saved_albums`）
         "com.takahashirinta.ncrust.library.SavedAlbumCodec\$AlbumDto",
+        // v2.6.0 · P0：收藏库曲目（`ncrust_library` / `saved_songs`）。
+        // 注意 v2.6.0 之前这里落的是**裸 `SongItem` 数组**（没有 origin / tombstone），
+        // 所以 `SavedSongCodec` 除了这层信封之外**还必须认那种老形状** ——
+        // 见它的 KDoc 与 `SavedSongCodecTest` 里的 S6 真机样本（147 条 / 只有
+        // `al ar dt id name` 五个 key）。注册表只能覆盖信封，覆盖不了那条老形状。
+        "com.takahashirinta.ncrust.library.SavedSongCodec\$SavedSongDto",
         // v2.5.4 · C：QQ 兜底统计（`ncrust_qq_probe` / `stats`）
         "com.takahashirinta.ncrust.qq.QqFallbackCounters",
         // v2.5.5 · B：跨源上报闸门计数（`ncrust_report_gate` / `stats`）
@@ -159,6 +165,12 @@ class PersistenceFieldNameContractTest {
         assertSameKeys(
             "com.takahashirinta.ncrust.library.SavedAlbumCodec\$AlbumDto",
             com.takahashirinta.ncrust.library.SavedAlbumCodec.stableKeys(),
+        )
+        // v2.6.0 · P0：收藏库曲目信封。三处（DTO 注解 / codec 的 STABLE_KEYS /
+        // 注册表）各写一份必然分叉 —— 这条把它们钉在一起。
+        assertSameKeys(
+            "com.takahashirinta.ncrust.library.SavedSongCodec\$SavedSongDto",
+            com.takahashirinta.ncrust.library.SavedSongCodec.stableKeys(),
         )
     }
 

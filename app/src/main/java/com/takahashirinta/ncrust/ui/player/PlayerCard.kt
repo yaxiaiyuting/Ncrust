@@ -738,12 +738,16 @@ fun PlayerCard(
                             val cur = song
                             if (cur != null) {
                                 // 已在库 → 移出; 不在库 → 收藏。本地即时生效, 云端异步同步。
+                                // v2.6.0 · P0：两个动作都按**真实结果**提示，不再无条件弹成功
+                                // （旧代码里 removeSong/saveSong 都返回 Unit，提示与事实脱钩）。
                                 if (LibraryManager.isSongSaved(context, cur.id)) {
-                                    LibraryManager.removeSong(context, cur.id)
-                                    Toast.makeText(context, strings.removedFromLibrary, Toast.LENGTH_SHORT).show()
+                                    if (LibraryManager.removeSong(context, cur.id)) {
+                                        Toast.makeText(context, strings.removedFromLibrary, Toast.LENGTH_SHORT).show()
+                                    }
                                 } else {
-                                    LibraryManager.saveSong(context, cur)
-                                    Toast.makeText(context, strings.addedToLibrary, Toast.LENGTH_SHORT).show()
+                                    if (LibraryManager.saveSong(context, cur).isSuccess) {
+                                        Toast.makeText(context, strings.addedToLibrary, Toast.LENGTH_SHORT).show()
+                                    }
                                 }
                                 libraryTick++
                             }

@@ -310,8 +310,10 @@ fun AlbumDetailScreen(
                             onShowMenu = {
                                 onShowSongMenu(row.song, listOf(
                                     SongMenuAction(Icons.Default.LibraryAdd, strings.actionAddToLibrary) {
-                                        LibraryManager.saveSong(context, row.song)
-                                        Toast.makeText(context, strings.addedToLibrary, Toast.LENGTH_SHORT).show()
+                                        // v2.6.0 · P0：成败由返回值决定，不再无条件弹成功。
+                                        if (LibraryManager.saveSong(context, row.song).isSuccess) {
+                                            Toast.makeText(context, strings.addedToLibrary, Toast.LENGTH_SHORT).show()
+                                        }
                                     },
                                     SongMenuAction(Icons.Default.PlaylistPlay, strings.actionInsertNext) {
                                         onSongInsertNext(row.song)

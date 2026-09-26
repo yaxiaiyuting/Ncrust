@@ -23,6 +23,7 @@ import com.takahashirinta.ncrust.crosssource.ArtistKey
 import com.takahashirinta.ncrust.crosssource.ArtistPage
 import com.takahashirinta.ncrust.crosssource.CatalogAggregator
 import com.takahashirinta.ncrust.crosssource.MatchConfidence
+import com.takahashirinta.ncrust.crosssource.PlayAllDedup
 import com.takahashirinta.ncrust.crosssource.SourceFilter
 import com.takahashirinta.ncrust.library.LibraryManager
 import com.takahashirinta.ncrust.network.CoverUrls
@@ -33,6 +34,7 @@ import com.takahashirinta.ncrust.source.MusicSource
 import com.takahashirinta.ncrust.source.musicSource
 import com.takahashirinta.ncrust.ui.components.DetailScaffold
 import com.takahashirinta.ncrust.ui.components.SongCard
+import com.takahashirinta.ncrust.ui.components.PlayAllButton
 import com.takahashirinta.ncrust.ui.components.SongCardStyle
 import com.takahashirinta.ncrust.ui.components.SongMenuAction
 import com.takahashirinta.ncrust.ui.components.SongTags
@@ -75,7 +77,15 @@ fun ArtistDetailScreen(
     onAlbumClick: (MusicSource, String) -> Unit,
     onSongInsertNext: (SongItem) -> Unit = {},
     onSongAppendToQueue: (SongItem) -> Unit = {},
-    onShowSongMenu: (SongItem, List<SongMenuAction>) -> Unit = { _, _ -> }
+    onShowSongMenu: (SongItem, List<SongMenuAction>) -> Unit = { _, _ -> },
+    /**
+     * v2.6.0 · P1：「全部播放」——**替换**当前队列并从第一首起播。
+     *
+     * 语义与库页红心歌单的 ▶ 一致（`replaceQueueAndPlay`），**不是**追加：
+     * 用户在歌手页点「全部播放」的意思是「现在开始听这位歌手的歌」，
+     * 追加会把当前队列里剩下的几十首夹在中间。
+     */
+    onPlayAllSongs: (List<SongItem>) -> Unit = {},
 ) {
     val strings = LocalStrings.current
     val context = LocalContext.current
@@ -160,6 +170,14 @@ fun ArtistDetailScreen(
     // 上移到 Composable 作用域用 remember 缓存：避免 items 块内反复分组破坏稳定性。
     val albumRows = remember(albums) { albums.chunked(2) }
     val preferredSource = loaded?.preferredSource
+    // v2.6.0 · P1：跨源混播去重的**唯一落点**（`PlayAllDedup`）。在这里算一次并缓存：
+    // 判据是纯函数，但列表可能有几百行，放进 `items` 里逐行重算没必要。
+    //
+    // 输入是**当前口径过滤后**的 `songs` —— 用户切到「只看 QQ」再点全部播放时，
+    // 播的就该是 QQ 那一段，而不是偷偷播全部（任务书 4.1「顺序：按当前排序」）。
+    val playAllPlan = remember(songs, preferredSource) {
+        PlayAllDedup.plan(songs, preferredSource)
+    }
     val availabilityNote = loaded?.availabilityNote.orEmpty()
 
     DetailScaffold(
@@ -277,6 +295,28 @@ fun ArtistDetailScreen(
                                 }
                             }
                         }
+                        // v2.6.0 · P1：全部播放入口。放在**歌曲 tab 内**（不是页面 header）——
+                        // header 是两个 tab 共用的，放那里会让「专辑」tab 上也出现一个
+                        // 播放歌曲的按钮。行内还有一个规模提示，用户点之前知道会播多少首。
+                        item(key = "play-all") {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp, vertical = 6.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                MetroText(
+                                    strings.artistSongCount(playAllPlan.songs.size),
+                                    color = LocalMetroColors.current.onSurfaceVariant,
+                                    style = LocalMetroTypography.current.bodySmall,
+                                )
+                                Spacer(Modifier.weight(1f))
+                                // 空列表时**不挂载**按钮（任务书 4.1「置灰或隐藏」）：
+                                // 这一格在 `songs.isEmpty()` 分支里根本不会执行，
+                                // 所以真实的空态由上面的 `noHotSongs` 承担 —— 见那里的注释。
+                                PlayAllButton(onClick = { onPlayAllSongs(playAllPlan.songs) })
+                            }
+                        }
                         items(songs, key = { it.key.tag }) { row ->
                             Column {
                                 SongCard(
@@ -288,8 +328,10 @@ fun ArtistDetailScreen(
                                     onShowMenu = {
                                         onShowSongMenu(row.song, listOf(
                                             SongMenuAction(Icons.Default.LibraryAdd, strings.actionAddToLibrary) {
-                                                LibraryManager.saveSong(context, row.song)
-                                                Toast.makeText(context, strings.addedToLibrary, Toast.LENGTH_SHORT).show()
+                                                // v2.6.0 · P0：成败由返回值决定，不再无条件弹成功。
+                                                if (LibraryManager.saveSong(context, row.song).isSuccess) {
+                                                    Toast.makeText(context, strings.addedToLibrary, Toast.LENGTH_SHORT).show()
+                                                }
                                             },
                                             SongMenuAction(Icons.Default.PlaylistPlay, strings.actionInsertNext) {
                                                 onSongInsertNext(row.song)

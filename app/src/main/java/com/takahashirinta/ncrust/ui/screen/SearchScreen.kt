@@ -311,8 +311,10 @@ fun SearchScreen(
                                             textColor = LocalMetroColors.current.onBackground,
                                             onClick = {
                                                 onDismiss()
-                                                LibraryManager.saveSong(context, song)
-                                                Toast.makeText(context, strings.addedToLibrary, Toast.LENGTH_SHORT).show()
+                                                // v2.6.0 · P0：成败由 saveSong 的返回值决定，不再无条件弹成功。
+                                                if (LibraryManager.saveSong(context, song).isSuccess) {
+                                                    Toast.makeText(context, strings.addedToLibrary, Toast.LENGTH_SHORT).show()
+                                                }
                                             },
                                         )
                                     }
@@ -501,8 +503,10 @@ fun SearchScreen(
                                             onShowSongMenu(item, listOf(
                                                 SongMenuAction(Icons.Default.LibraryAdd, strings.actionAddToLibrary) {
                                                     SearchHistoryManager.addSong(context, item)
-                                                    LibraryManager.saveSong(context, item)
-                                                    Toast.makeText(context, strings.addedToLibrary, Toast.LENGTH_SHORT).show()
+                                                    // v2.6.0 · P0：同上，成败由返回值决定。
+                                                    if (LibraryManager.saveSong(context, item).isSuccess) {
+                                                        Toast.makeText(context, strings.addedToLibrary, Toast.LENGTH_SHORT).show()
+                                                    }
                                                 },
                                                 SongMenuAction(Icons.Default.PlaylistPlay, strings.actionInsertNext) {
                                                     SearchHistoryManager.addSong(context, item)
