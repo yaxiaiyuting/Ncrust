@@ -37,13 +37,20 @@ object RetrofitClient {
         OkHttpClient.Builder()
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
+            // v2.5.6 · P1：被动计时（真 TTFB / 响应体读完）。见 HttpTimingListener 的 KDoc ——
+            // 它是纯观测，不改变请求行为；不加这一行，「TTFB 花在哪」在 release 包里无从取证。
+            .eventListenerFactory(HttpTimingListener.factory)
             .build()
     }
 
-    val api: NcmApi by lazy {
+    /**
+     * `api` 的基座（v2.5.6 从 [api] 里提出来，只是为了让下面那段「撤销注释」有个落脚点；
+     * 行为与 v2.5.5 逐字节相同）。
+     */
+    private val restClient: OkHttpClient by lazy {
         // BASIC 日志只在 debug 装：release 每次请求省一次 chain.proceed 拦截 + logcat 序列化。
         // 低端机上 CPU 敏感，能省则省。
-        val client = OkHttpClient.Builder().apply {
+        OkHttpClient.Builder().apply {
             if (BuildConfig.DEBUG) {
                 addInterceptor(HttpLoggingInterceptor().apply {
                     level = HttpLoggingInterceptor.Level.BASIC
@@ -52,15 +59,62 @@ object RetrofitClient {
             addInterceptor(CookieInterceptor())
             connectTimeout(30, TimeUnit.SECONDS)
             readTimeout(30, TimeUnit.SECONDS)
+            eventListenerFactory(HttpTimingListener.factory)
         }.build()
-
-        Retrofit.Builder()
-            .baseUrl("$BASE_URL/")
-            .client(client)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(NcmApi::class.java)
     }
+
+    private fun retrofitFor(client: OkHttpClient): NcmApi = Retrofit.Builder()
+        .baseUrl("$BASE_URL/")
+        .client(client)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+        .create(NcmApi::class.java)
+
+    val api: NcmApi by lazy { retrofitFor(restClient) }
+
+    /**
+     * v2.5.6 · P1（**已撤销**）：这里曾经有一个只给搜索用的 "searchApi"，
+     * 唯一区别是加了 `callTimeout(20, SECONDS)`。它在真机上**造成了回归，已删除**。
+     *
+     * ## 为什么撤销（真机证据，PLC110 / API 36 / v2.5.6 vc47）
+     *
+     * 加上它之后，网易云搜索**从「慢」变成「永远 0 首」**：
+     *
+     * ```
+     * NcrustHttpTiming: path=/api/cloudsearch/pc ttfb=-1ms body=-1ms \
+     *                   total=20002ms failed=InterruptedIOException
+     * SearchViewModel:  Caused by: java.io.IOException: Canceled
+     * SearchViewModel:  aggregate query='love' netease=0 qq=30 qqTimedOut=false elapsed=20012ms
+     * NcrustSearchLatency: dispatch->netease_done=20009ms dispatch->qq_done=3493ms
+     * ```
+     *
+     * `ttfb=-1` ⇒ **请求头一个字节都没发出去**，却在 20002ms（正好是 `callTimeout`）被杀。
+     * 同一份 logcat 里，其它走**没有** `callTimeout` 的请求长这样：
+     *
+     * ```
+     * path=/eapi/v2/discovery/recommend/songs ttfb=240ms body=59ms total=30566ms
+     * path=/eapi/w/nuser/account/get          ttfb=151ms body=1ms  total=30355ms
+     * ```
+     *
+     * 即在这台设备的当前网络下，**每通请求都要 ~30 秒才把请求头送出去**（连接建立/排队，
+     * 与 `ttfb` 无关 —— `ttfb` 只有 179~240ms），然后传输只要几毫秒。
+     *
+     * ⇒ **20s 的 `callTimeout` 卡在这条 30s 的必经路径下面**，
+     * 于是它拦掉的不是「挂死的请求」，而是**本来会成功的请求**。
+     *
+     * ## 教训（已写进 `AGENTS.md` 新铁律 22 的配套条款）
+     *
+     * `callTimeout` 覆盖**整通**请求（含连接建立与排队），而 `connectTimeout`/`readTimeout`
+     * 是**分阶段空闲**超时。在一个「连接建立就要 30s」的环境里，把一个更短的
+     * `callTimeout` 加上去，等于把一条能用的路径改成必然失败 ——
+     * **加超时前必须先量一次「这个环境里正常请求要多久」，`ttfb` 快不代表整通快。**
+     *
+     * 而且本版**根本不需要**这个熔断：用户可见的收益（首帧不再等网易云）
+     * 完全来自 `SearchViewModel` 的「先到先发布」，与超时无关。
+     *
+     * 保留本注释而不是默默删掉：下一个想「顺手加个超时」的人应该先看到这段。
+     */
+
 
     fun eapiPost(
         path: String,

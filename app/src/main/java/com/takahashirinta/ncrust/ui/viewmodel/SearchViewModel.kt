@@ -8,6 +8,7 @@ import com.takahashirinta.ncrust.qq.QqAccountAvailability
 import com.takahashirinta.ncrust.qq.QqAuthStore
 import com.takahashirinta.ncrust.qq.QqClient
 import com.takahashirinta.ncrust.search.RankedSong
+import com.takahashirinta.ncrust.search.SearchLatencyTrace
 import com.takahashirinta.ncrust.search.SearchRanking
 import com.takahashirinta.ncrust.search.TrackAccess
 import com.takahashirinta.ncrust.search.TrackAvailability
@@ -23,6 +24,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.selects.select
 import kotlinx.coroutines.withTimeoutOrNull
 
 class SearchViewModel : ViewModel() {
@@ -180,6 +182,11 @@ class SearchViewModel : ViewModel() {
                     val keyword = _query.value
                     val startedAt = System.currentTimeMillis()
                     val qqAllowed = QqClient.isLoggedIn() || QqAccountAvailability.allowAnonymousSearch
+                    // v2.5.6 · P1：本轮分段耗时。`dispatch` 打在两个 `async` 真正启动之前 ——
+                    // 它必须包含「请求已经发出去了但首字节还没回来」那一段，
+                    // 否则 TTFB 会被算漏（探针 §5 指出这正是旧埋点最缺的一格）。
+                    val trace = SearchLatencyTrace(keyword)
+                    trace.mark(SearchLatencyTrace.MARK_DISPATCH)
 
                     coroutineScope {
                         // 网易云：结果与异常一起回传，不用共享可变变量跨协程写。
@@ -187,6 +194,10 @@ class SearchViewModel : ViewModel() {
                         // 绝不能为了拿异常而再调一次 `search(...)`（那会把一次搜索变成两次）。
                         val neteaseDeferred = async {
                             val outcome = runCatching {
+                                // ⚠️ v2.5.6 曾在这里改用过 `searchApi`（多一个 20s `callTimeout`），
+                                // 真机上**造成回归**：该网络下每通请求要 ~30s 才送出请求头，
+                                // 20s 的 callTimeout 于是拦掉了本来会成功的搜索 ⇒ 网易云恒 0 首。
+                                // 已撤销，回到共用的 `api`。根因与证据见 `RetrofitClient` 里那段撤销注释。
                                 RetrofitClient.api.search(keyword = keyword, type = 1).result?.songs
                             }
                             val failure = outcome.exceptionOrNull()
@@ -222,58 +233,139 @@ class SearchViewModel : ViewModel() {
                             null
                         }
 
-                        // ① 主源到手即发布 —— 转圈到此结束，后面的 QQ 只是锦上添花。
+                        // ① **先到先发布**（v2.5.6 · P1）—— 本版对搜索延迟唯一有效的客户端改动。
                         //
-                        // v2.1.4：发布前先按「用户有哪些平台的会员」排一次。此时 QQ 还没到，
-                        // 但网易云自己的会员专享已经可以先排上去；等 QQ 到手会再排一次。
+                        // ## 旧实现的缺陷（真机证据，不是推理）
+                        //
+                        // 旧代码第一行是 `val (netease, _) = neteaseDeferred.await()`：
+                        // 网易云那条腿**无论多慢**都是发布前的唯一闸门 —— QQ 先回来也白搭，
+                        // 因为 `publish()` 在 await 之后。探针在 PLC110 上抓到的形状是
+                        // `elapsed=30006ms netease=0 qq=30 qqTimedOut=false`：
+                        // QQ 的 30 条在 ≤5 秒就已经到手，界面却空了 30 秒。
+                        // 根因是网易云那条 OkHttp 只有 read/connect 超时、**没有 callTimeout**。
+                        // （v2.5.6 一度给它加过 20s `callTimeout`，但真机证明它会拦掉本来会成功的
+                        //  请求 —— 已撤销，见 `RetrofitClient` 里那段撤销注释。）
+                        //
+                        // ## 现在的语义
+                        //
+                        // 谁先回来谁先上屏（转圈随之结束），另一条回来后再合并发布一次。
+                        // **「网易云先到」这条主路径的行为与 v2.5.5 逐字相同** ——
+                        // 探针实测 6/6 样本都是网易云先到，所以这是一个「只影响异常路径」的改动。
+                        //
+                        // ## 为什么用 `select` 而不是「先 await QQ 带超时、再 await 网易云」
+                        //
+                        // 那种写法会给 QQ 引入一个**额外的**前置等待，把网易云先到的常见情形变慢。
+                        // `select` 是「谁先完成用谁」，对两条腿都不加延迟。
+                        var netease: List<SongItem>? = null
+                        var neteaseError: Throwable? = null
+                        var qqOutcome: QqOutcome? = null
+
+                        if (qqDeferred != null) {
+                            kotlinx.coroutines.selects.select {
+                                neteaseDeferred.onAwait { (songs, failure) ->
+                                    netease = songs
+                                    neteaseError = failure
+                                    trace.mark(SearchLatencyTrace.MARK_NETEASE_DONE)
+                                }
+                                qqDeferred.onAwait { outcome ->
+                                    qqOutcome = outcome
+                                    trace.mark(SearchLatencyTrace.MARK_QQ_DONE)
+                                }
+                            }
+                        } else {
+                            val (songs, failure) = neteaseDeferred.await()
+                            netease = songs
+                            neteaseError = failure
+                            trace.mark(SearchLatencyTrace.MARK_NETEASE_DONE)
+                        }
+
+                        // v2.1.4：发布前先按「用户有哪些平台的会员」排一次。此时另一条腿可能还没到，
+                        // 但已到的那一侧的会员专享可以先排上去；等齐了会再排一次。
                         // 排序是纯函数且幂等，排两次不会抖。
-                        val (netease, neteaseError) = neteaseDeferred.await()
-                        publish(netease, emptyList())
-                        _albums.value = emptyList()
-                        _artists.value = emptyList()
-                        _sourceCounts.value = SourceCounts(
-                            neteaseCount = netease.size,
-                            neteaseStatus = SourceSearchStatus.DONE,
-                            qqCount = 0,
-                            qqStatus = if (qqAllowed) SourceSearchStatus.PENDING else SourceSearchStatus.SKIPPED,
-                        )
-                        _isLoading.value = false
+                        //
+                        // ⚠️ 旧实现这一处**没有** `_query.value == keyword` 守卫，本版补上：
+                        // 用户已经改了关键词时，这一屏结果下一秒就会被新一轮覆盖，
+                        // 写进去只会闪一下过期数据。补守卫**不会**留下空白 ——
+                        // 新的一轮搜索自己会发布。
+                        if (_query.value == keyword) {
+                            publish(netease.orEmpty(), qqOutcome?.songs.orEmpty())
+                            _albums.value = emptyList()
+                            _artists.value = emptyList()
+                            _sourceCounts.value = SourceCounts(
+                                neteaseCount = netease?.size ?: 0,
+                                // 还没回来的那一侧写 PENDING，**不是** DONE + 0 ——
+                                // 「搜索中…」与「0 首」在界面上必须是两句话（v2.5.5 · G 的既有契约）。
+                                neteaseStatus = if (netease != null) {
+                                    SourceSearchStatus.DONE
+                                } else {
+                                    SourceSearchStatus.PENDING
+                                },
+                                qqCount = qqOutcome?.songs?.size ?: 0,
+                                qqStatus = qqStatusOf(qqOutcome, qqAllowed),
+                            )
+                            // 转圈到此结束 —— 屏幕上已经有东西了。
+                            _isLoading.value = false
+                            trace.mark(SearchLatencyTrace.MARK_FIRST_PUBLISH)
+                        }
 
-                        // ② 等补充源（预算已经在上面卡死，这里不会无限等）。
-                        val qqOutcome = qqDeferred?.await() ?: QqOutcome(emptyList(), timedOut = false)
-                        val qq = qqOutcome.songs
+                        // ② 等另一条腿（预算已经卡死，这里不会无限等）。
+                        val neteaseArrivedSecond = netease == null
+                        if (neteaseArrivedSecond) {
+                            val (songs, failure) = neteaseDeferred.await()
+                            netease = songs
+                            neteaseError = failure
+                            trace.mark(SearchLatencyTrace.MARK_NETEASE_DONE)
+                        }
+                        if (qqDeferred != null && qqOutcome == null) {
+                            qqOutcome = qqDeferred.await()
+                            trace.mark(SearchLatencyTrace.MARK_QQ_DONE)
+                        }
 
-                        // 只在「查询没变」时追加：用户已经改了关键词的话，这批结果已经过期，
-                        // 写回去就是「搜 A 显示 B」。
-                        if (qq.isNotEmpty() && _query.value == keyword) {
-                            publish(netease, qq)
+                        val neteaseList = netease.orEmpty()
+                        val qq = qqOutcome?.songs.orEmpty()
+
+                        // ③ 合并发布**只在内容真的会变时**做。
+                        //
+                        // 第一次发布时缺的那一侧现在到了，但它是**空**的 ⇒ 合并结果与
+                        // 已发布的那一份逐字节相同，重发只会给 StateFlow 塞一个内容相同的新
+                        // list 实例，白白触发一次列表重组（铁律 17）。
+                        // v2.5.5 原来的守卫是 `qq.isNotEmpty()`（只覆盖「QQ 后到」），
+                        // 本版把它推广到两侧 —— 「网易云后到且为空」同样不需要重发。
+                        val shouldRepublish = if (neteaseArrivedSecond) {
+                            neteaseList.isNotEmpty()
+                        } else {
+                            qq.isNotEmpty()
+                        }
+                        if (shouldRepublish && _query.value == keyword) {
+                            publish(neteaseList, qq)
+                            trace.mark(SearchLatencyTrace.MARK_MERGED_PUBLISH)
                         }
                         if (_query.value == keyword) {
                             _sourceCounts.value = SourceCounts(
-                                neteaseCount = netease.size,
+                                neteaseCount = neteaseList.size,
                                 neteaseStatus = SourceSearchStatus.DONE,
                                 qqCount = qq.size,
-                                qqStatus = when {
-                                    !qqAllowed -> SourceSearchStatus.SKIPPED
-                                    qqOutcome.timedOut -> SourceSearchStatus.TIMEOUT
-                                    qqOutcome.failed -> SourceSearchStatus.ERROR
-                                    else -> SourceSearchStatus.DONE
-                                },
+                                qqStatus = qqStatusOf(qqOutcome, qqAllowed),
                             )
                         }
-                        // ③ 两个源都没结果，且主源确实报过错 ⇒ 让界面能显示错误/重试，
+                        // ④ 两个源都没结果，且主源确实报过错 ⇒ 让界面能显示错误/重试，
                         // 而不是一块什么都没有的空白。
-                        if (netease.isEmpty() && qq.isEmpty() && neteaseError != null) {
+                        if (neteaseList.isEmpty() && qq.isEmpty() && neteaseError != null) {
                             _error.value = neteaseError?.message
                         }
                         val (nVip, qVip) = vipFlagsProvider()
+                        trace.mark(SearchLatencyTrace.MARK_DONE)
                         android.util.Log.i(
                             "SearchViewModel",
-                            "aggregate query='$keyword' netease=${netease.size} qq=${qq.size} " +
-                                "qqTimedOut=${qqOutcome.timedOut} qqAllowed=$qqAllowed " +
+                            "aggregate query='$keyword' netease=${neteaseList.size} qq=${qq.size} " +
+                                "qqTimedOut=${qqOutcome?.timedOut} qqAllowed=$qqAllowed " +
                                 "vip(netease=$nVip qq=$qVip) " +
                                 "elapsed=${System.currentTimeMillis() - startedAt}ms",
                         )
+                        // v2.5.6 · P1：分段耗时。**这一行在 release 包里必须存在** ——
+                        // 「TTFB 到 UI 更新之间花在哪」是铁律 20/新规则 3 要求有数据支撑的结论，
+                        // 而 debug 包的数字不得作基线（铁律 16）。
+                        android.util.Log.i(SearchLatencyTrace.TAG, trace.summary())
                     }
                 }
                 10 -> {
@@ -315,6 +407,25 @@ class SearchViewModel : ViewModel() {
     fun clearQuery() {
         _query.value = ""
         clearResults()
+    }
+
+    /**
+     * v2.5.6 · P1：QQ 那一侧的状态映射，**唯一**定义处。
+     *
+     * 本版把「先到先发布」拆成了两次发布（先到的 + 合并的），于是同一段 `when`
+     * 会在两处被需要。抽成一个函数而不是抄两遍：
+     * 抄两遍的版本在 v2.5.5 已经有先例 —— 那正是「PENDING 被写成 DONE + 0」的温床。
+     *
+     * `outcome == null` 的语义是「**还没回来**」，必须映射成 [SourceSearchStatus.PENDING]
+     * 而不是 `DONE + 0`：界面上「搜索中…」与「0 首」是两句话，
+     * 后者是对用户的**假话**（v2.5.5 · G 修复的那个缺陷）。
+     */
+    private fun qqStatusOf(outcome: QqOutcome?, allowed: Boolean): SourceSearchStatus = when {
+        !allowed -> SourceSearchStatus.SKIPPED
+        outcome == null -> SourceSearchStatus.PENDING
+        outcome.timedOut -> SourceSearchStatus.TIMEOUT
+        outcome.failed -> SourceSearchStatus.ERROR
+        else -> SourceSearchStatus.DONE
     }
 
     private fun clearResults() {
