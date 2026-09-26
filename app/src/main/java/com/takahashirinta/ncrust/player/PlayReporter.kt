@@ -44,6 +44,23 @@ object PlayReporter {
         strategy: String? = null,
         isWifi: Boolean = false,
     ) {
+        // ===== v2.5.5 · B：跨音源闸门（**这里是唯一的上报出口**）=====
+        //
+        // 闸门放在最外层，而不是在 PlayerViewModel 的两个调用点各判一次：
+        //  · 调用点会变多（自然播完 / 80% 阈值 / 将来可能的 seek 上报），
+        //    而「出口」只有一个 —— 判据必须挂在**不会漏**的那一层；
+        //  · 判据本身是纯函数（ReportGate.mayReport），可单测；
+        //    调用点重复写一遍就等于多一份会漂移的口径。
+        //
+        // 被拦下的次数只做一次内存自增（不碰 IO、不碰网络），
+        // 落盘在 MainActivity.onStop 与诊断入口（铁律 4：非核心组件不得破坏核心播放链路）。
+        val gateReason = ReportGate.blockReason(ReportGate.Target.NETEASE_WEBLOG, songId)
+        if (gateReason != null) {
+            ReportGateStats.counter.onBlocked(ReportGate.Target.NETEASE_WEBLOG, songId)
+            Log.i(TAG, "weblog blocked: songId=$songId reason=$gateReason")
+            return
+        }
+
         val cookie = RetrofitClient.getCookie() ?: return
         if (!cookie.contains("MUSIC_U") || songId <= 0) return
 
@@ -68,6 +85,7 @@ object PlayReporter {
         // 尽力而为,失败不影响播放。
         thread(name = "ncrust-weblog") {
             try {
+                ReportGateStats.counter.onReported()
                 val resp = RetrofitClient.postWeblog(url, logs)
                 Log.d(TAG, "weblog resp: ${resp.code} duration=${playedMs}/${durationMs}")
                 resp.close()

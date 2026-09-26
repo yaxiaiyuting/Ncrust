@@ -99,5 +99,9 @@ object QqMusicSourceProvider : MusicSourceProvider {
         // v2.5.4 · C：把上一进程落盘的兜底统计读回来（幂等，只读一次）。
         // 放在这里而不是 Application.onCreate：本函数已经是「进程启动时接线」的既有落点。
         runCatching { QqProbeStore.ensureSeeded(context) }
+        // v2.5.5 · B：跨源上报闸门的拦截计数同样要读回来 —— 否则每次冷启动
+        // 都会从 0 开始重新计，`onStop` 落盘的那份会被「加到一个空计数器上」的
+        // 语义悄悄变成「只统计本次进程」（两条统计的纪律一致，见 ReportGateStore）。
+        runCatching { com.takahashirinta.ncrust.player.ReportGateStore.ensureSeeded(context) }
     }
 }

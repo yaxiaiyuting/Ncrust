@@ -377,6 +377,19 @@ fun UserScreen(
                             "qq fallback stats = " + com.google.gson.Gson().toJson(stats),
                         )
                         android.util.Log.i("QqProbe", "verdict: " + stats.verdict())
+                        // v2.5.5 · B：同一个诊断入口顺带把**跨源上报闸门**的计数读出并落盘
+                        // （`ncrust_report_gate`）。两条统计的落盘时机与纪律完全一致：
+                        // 只在用户主动点开这个入口（release 里整行不挂载）与 Activity.onStop。
+                        // 它读的是「拦了几次 QQ id → 网易云 webLog」，同样**不上报**。
+                        runCatching {
+                            val gate = com.takahashirinta.ncrust.player.ReportGateStore
+                                .snapshotAndFlush(context)
+                            android.util.Log.i(
+                                "ReportGate",
+                                "cross-source report gate = " + com.google.gson.Gson().toJson(gate),
+                            )
+                            android.util.Log.i("ReportGate", "verdict: " + gate.verdict())
+                        }
                     }
                 } else null,
                 // v2.1.4：release 包里为 null ⇒ 这一行不挂载，用户看不到、也点不到。

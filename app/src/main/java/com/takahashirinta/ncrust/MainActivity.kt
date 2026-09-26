@@ -451,6 +451,10 @@ class MainActivity : ComponentActivity() {
      */
     override fun onStop() {
         runCatching { com.takahashirinta.ncrust.qq.QqProbeStore.snapshotAndFlush(this) }
+        // v2.5.5 · B：跨源上报闸门的拦截计数（本地私有目录，绝不上报）。
+        // 与 QQ 兜底统计同一时机、同一条纪律：埋点点位只做内存自增，落盘只在
+        // 「用户离开界面」与「诊断入口」两处，两处都不在播放关键路径上。
+        runCatching { com.takahashirinta.ncrust.player.ReportGateStore.snapshotAndFlush(this) }
         super.onStop()
     }
 
