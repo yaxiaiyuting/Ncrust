@@ -1,0 +1,160 @@
+# v2.5.6 · P0：baseline profile 的**再生成**任务。
+#
+# ## 为什么是 `workflow_dispatch` + 自托管 runner，而不是「push 即跑」
+#
+# Baseline profile 只能靠**真机采样**（或带 KVM 的模拟器）生成：
+# `BaselineProfileRule` 要拿到 `UiAutomation`、要能改被测应用的编译态、
+# 要反复冷启动它。GitHub 的**托管** runner 是虚拟机，没有设备、也没有嵌套虚拟化，
+# 跑不了这件事。
+#
+# 所以正确的形态是「自托管 runner（一台常连的 arm64 设备）+ 手动/定期触发」。
+# 把它写成 `on: push` 会有两个真实后果：
+#   ① 每个 PR 都红（没有 runner 时任务排队到天荒地老然后失败）；
+#   ② 有人为了让它绿而把 `runs-on` 换成托管镜像 —— 那时它**假绿**：
+#      任务成功、profile 没变，而「profile 已随代码更新」这句话是假的。
+#
+# ## 触发方式
+#
+# - 手动：Actions → Baseline Profile → Run workflow
+# - 定期：每月 1 日 03:00 UTC（代码演进会慢慢让 profile 过期，
+#   `AGENTS.md` 的铁律 20 要求它是基础设施而不是一次性动作）
+#
+# ## 它做什么
+#
+#   1. 检出（**包含 Kanesumi 组合构建**所需的两个仓库）
+#   2. 装 JDK 17 + Android SDK
+#   3. 跑 `benchmark/generate_baseline_profile.sh`（构建 → 安装 → 采样 → 覆盖
+#      `app/src/main/baseline-prof.txt`）
+#   4. 把新 profile 与「旅程覆盖日志」作为 artifact 上传
+#   5. 开一个 PR 把新 profile 提出来 —— **不直接推 master**：
+#      profile 是性能基础设施，变更必须经过一次人工 review，
+#      否则「冷启动变慢了」会以一次看不见的自动提交的形式混进历史
+#
+# ## 为什么开 PR 而不是直接 commit
+#
+# 与「发布流程：HEAD == 产物源码」（铁律 7）同一逻辑：
+# 生成 profile 的那次采样所对应的**源码**必须留在历史里。
+# 一次自动推送会绕过 review，而 profile 的变化是不可读的（几千行 HSPL 条目），
+# 唯一能审的就是「哪个 commit、哪台设备、覆盖了几条旅程」这三个字段。
+name: Baseline Profile
+
+on:
+  workflow_dispatch:
+    inputs:
+      iterations:
+        description: '采样轮数（留空 = 生成器默认 15）'
+        required: false
+        default: ''
+  schedule:
+    # 每月 1 日 03:00 UTC。
+    - cron: '0 3 1 * *'
+
+# 需要写权限才能开 PR。
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  generate:
+    # ⚠️ 必须是**自托管**且带一台连着 adb 的设备。
+    # 若你的 runner 标签不同，改这一行 —— 但**不要**改成托管镜像（见文件头注释）。
+    runs-on: [self-hosted, android-device]
+    timeout-minutes: 90
+    steps:
+      - name: 检出 Ncrust
+        uses: actions/checkout@v4
+        with:
+          path: Ncrust
+
+      # settings.gradle.kts 里有 includeBuild("../Kanesumi-sec-a")，
+      # 缺它连 configure 阶段都过不去。
+      - name: 检出 Kanesumi（组合构建依赖）
+        uses: actions/checkout@v4
+        with:
+          repository: yaxiaiyuting/Kanesumi-sec-a
+          path: Kanesumi-sec-a
+          continue-on-error: false
+
+      - name: 安装 JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: 写 keystore.properties（release 签名）
+        # release 包必须有签名才能安装。CI 里从 secret 还原，
+        # 与本地 `keystore.properties` + `ncrust-release.jks` 同一套。
+        working-directory: Ncrust
+        run: |
+          if [ -n "${{ secrets.NCRUST_KEYSTORE_B64 }}" ]; then
+            echo "${{ secrets.NCRUST_KEYSTORE_B64 }}" | base64 -d > ncrust-release.jks
+            cat > keystore.properties <<EOF
+          storeFile=ncrust-release.jks
+          storePassword=${{ secrets.NCRUST_STORE_PASSWORD }}
+          keyAlias=${{ secrets.NCRUST_KEY_ALIAS }}
+          keyPassword=${{ secrets.NCRUST_KEY_PASSWORD }}
+          EOF
+          else
+            echo "::warning::没有 NCRUST_KEYSTORE_B64 secret —— release 包将未签名，安装会失败。"
+          fi
+
+      - name: 设备自检
+        run: |
+          adb devices -l
+          adb shell getprop ro.build.version.sdk
+          # 采样要有设备；没有就直接失败，别让后面报一个看不懂的错。
+          test "$(adb devices | grep -c 'device$')" -ge 1
+
+      - name: 采样并写回 baseline-prof.txt
+        working-directory: Ncrust
+        env:
+          ITERATIONS: ${{ github.event.inputs.iterations }}
+        run: |
+          if [ -n "$ITERATIONS" ]; then
+            bash benchmark/generate_baseline_profile.sh --iterations "$ITERATIONS"
+          else
+            bash benchmark/generate_baseline_profile.sh
+          fi
+
+      - name: 采集覆盖证据
+        if: always()
+        working-directory: Ncrust
+        run: |
+          mkdir -p baseline-profile-evidence
+          adb logcat -d | grep -E 'NcrustProfileGen|ProfileInstaller' \
+            > baseline-profile-evidence/journey-coverage.txt || true
+          adb shell getprop > baseline-profile-evidence/device-props.txt || true
+          wc -l app/src/main/baseline-prof.txt > baseline-profile-evidence/profile-size.txt || true
+          cp app/src/main/baseline-prof.txt baseline-profile-evidence/ || true
+
+      - name: 上传证据
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: baseline-profile-evidence
+          path: Ncrust/baseline-profile-evidence/
+          if-no-files-found: warn
+
+      - name: 开 PR（不直接推 master）
+        uses: peter-evans/create-pull-request@v6
+        with:
+          path: Ncrust
+          branch: chore/baseline-profile-refresh
+          delete-branch: true
+          title: 'perf(baseline-profile): 用真机采样重新生成 baseline profile'
+          commit-message: |
+            perf(baseline-profile): 用真机采样重新生成 baseline profile
+
+            由 .github/workflows/baseline-profile.yml 自动生成。
+            覆盖情况见该次 run 的 `baseline-profile-evidence` artifact
+            （tag NcrustProfileGen 的 OK/SKIP 行）——**合并前必须看它**：
+            旅程 5/6 大面积 SKIP 通常意味着采样设备没有登录态，
+            那样的 profile 会缺少播放链路的条目。
+          body: |
+            自动生成的 baseline profile 刷新（`app/src/main/baseline-prof.txt`）。
+
+            **合并前请核对 artifact `baseline-profile-evidence/journey-coverage.txt`**：
+            - 7 条旅程应当都是 `OK`；
+            - 若有 `SKIP`，确认原因可接受（未登录 ⇒ 旅程 5「播放开始」/6「切歌」会 SKIP）。
+
+            合并后用 `docs/verification/v2.5.6/verification/coldstart-ab.sh` 复测冷启动。
