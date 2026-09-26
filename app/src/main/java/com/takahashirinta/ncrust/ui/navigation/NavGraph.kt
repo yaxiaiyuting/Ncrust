@@ -203,6 +203,9 @@ fun MainNavGraph(
                 onBack = { navController.popBackStack() },
                 onSongClick = onSongClick,
                 onAlbumClick = { source, id -> navController.navigate(NavRoutes.album(source, id)) },
+                // v2.6.0 · P1：歌手页「全部播放」。两段路由都透传 —— 漏一段就是
+                // 「从聚合歌手页点得动、从老路由进来点不动」这种只在特定入口复现的缺陷。
+                onPlayAllSongs = onReplaceAndPlay,
                 onSongInsertNext = onSongInsertNext,
                 onSongAppendToQueue = onSongAppendToQueue,
                 onShowSongMenu = onShowSongMenu
@@ -224,6 +227,9 @@ fun MainNavGraph(
                 onBack = { navController.popBackStack() },
                 onSongClick = onSongClick,
                 onAlbumClick = { source, id -> navController.navigate(NavRoutes.album(source, id)) },
+                // v2.6.0 · P1：歌手页「全部播放」。两段路由都透传 —— 漏一段就是
+                // 「从聚合歌手页点得动、从老路由进来点不动」这种只在特定入口复现的缺陷。
+                onPlayAllSongs = onReplaceAndPlay,
                 onSongInsertNext = onSongInsertNext,
                 onSongAppendToQueue = onSongAppendToQueue,
                 onShowSongMenu = onShowSongMenu
