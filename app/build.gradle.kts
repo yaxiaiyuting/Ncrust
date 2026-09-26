@@ -206,8 +206,16 @@ android {
         //   ③ 仓库当前 build.gradle = 42。
         //   脚本输出：`MAX versionCode (所有来源) = 42 [Ncrust-v2.5.1-gpl-debug.apk]` ⇒ 下一个可用 **43**。
         //   实测记录：docs/verification/v2.5.2/verification/version-check.txt
-        versionCode = 43
-        versionName = "2.5.2-gpl"
+        //
+        // v2.5.3（本版）：versionCode 出处：`tools/next-version.sh`（**带 fetch**）三源交叉验证 ——
+        //   ① 最近 5 个 tag 内 build.gradle 最大值 = 43（v2.5.2-gpl）；
+        //   ② `dist/*.apk` 的 aapt2 dump badging 最大值 = 43（Ncrust-v2.5.2-gpl-debug / -release，
+        //      v2.5.2 已于 2026-09-25 正式发布，所以这一版**必须**升号）；
+        //   ③ 仓库当前 build.gradle = 43。
+        //   脚本输出：`MAX versionCode (所有来源) = 43 [Ncrust-v2.5.2-gpl-debug.apk]` ⇒ 下一个可用 **44**。
+        //   实测记录：docs/verification/v2.5.3/version-check.txt + next-version.txt
+        versionCode = 44
+        versionName = "2.5.3-gpl"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
