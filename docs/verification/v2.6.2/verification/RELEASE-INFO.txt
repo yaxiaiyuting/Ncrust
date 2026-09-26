@@ -28,3 +28,15 @@
   HEAD      : 18a86214ffd8ffcaed6a7c6c9e5f081a8fa21b5c
   diff v2.6.2-gpl..HEAD -- app/ :
     （空 ⇒ tag 指向的 app/ 源码与产物源码一致）
+
+-- 发布状态变更（事后回填，2026-09-27 00:49 +0800 观测）--
+  draft 创建于 : 2026-09-26T16:39:25Z（= 2026-09-27 00:39 +0800）
+  **用户已于 : 2026-09-26T16:48:38Z（= 2026-09-27 00:48 +0800）手动发布**
+  当前 isDraft : false
+  当前 url     : https://github.com/yaxiaiyuting/Ncrust/releases/tag/v2.6.2-gpl
+  附件         : Ncrust-v2.6.2-gpl-release.apk（sha256 10fd8204…，与真机验证的是同一份）
+
+  ⚠️ 由此产生一条硬约束：**tag `v2.6.2-gpl` 现在是「已发布的 tag」，此后绝不移动、绝不重打。**
+     它的对象 id = e7c153f72e42d6d30bc0ba4d706f00b96dd03bdc，指向提交
+     744ff0e3d895c4d1e1ca576bc979705d0387b698。
+     后续如需修正，只能另起版本号（铁律 5/7）。
