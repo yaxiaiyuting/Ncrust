@@ -95,6 +95,17 @@ fun FullPlayerControls(
      */
     onToggleBigScreen: () -> Unit = {},
     /**
+     * v2.5.5 · E：**平板**上要不要在横向控件条里补一个大屏幕模式入口（⤢）。
+     *
+     * 默认 `false` ⇒ 手机横屏与既有调用点一行都不用改；判据在
+     * [PlayerLayout.bigScreenEntrySlot]（纯函数 + A/B 矩阵，有单测）。
+     *
+     * 为什么挂在**左组末尾**（歌词 / 队列 / 收藏 之后）而不是 `trailing` 槽位：
+     * `trailing` 在 `showQuality = true` 时被音质选择器占着，而横向控件条上
+     * `showQuality` 恒为真（大屏模式才把它搬走）；挂在 `trailing` 会与音质入口抢同一个位置。
+     */
+    showBigScreenEntry: Boolean = false,
+    /**
      * v1.8.0 · T4：应用内「自动旋转」开关的当前值。
      *
      * 图标语义只有两种状态（跟随传感器 / 锁定方向），所以这里传布尔而不是三态 ——
@@ -227,6 +238,28 @@ fun FullPlayerControls(
                             tint = if (isInLibrary) LocalMetroColors.current.primary else LocalMetroColors.current.onBackground,
                             sizeDp = 24.dp
                         )
+                    }
+                    // v2.5.5 · E：平板上的大屏幕模式入口。判据见 PlayerLayout.bigScreenEntrySlot
+                    // （只有「平板 + 不在大屏」两格挂载；手机横屏逐格不变）。
+                    // 40dp 与同一行另外三个按钮一致；图标语义与竖屏那一处逐字相同
+                    // （进入 ⤢ / 退出 ⤡，退出态在 `trailing`，不会同时出现两个）。
+                    if (showBigScreenEntry) {
+                        Box(
+                            modifier = Modifier
+                                .size(40.dp)
+                                .clickable {
+                                    tick()
+                                    onToggleBigScreen()
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            MetroIcon(
+                                imageVector = Icons.Default.OpenInFull,
+                                contentDescription = strings.bigScreenEnter,
+                                tint = LocalMetroColors.current.onBackground,
+                                sizeDp = 24.dp
+                            )
+                        }
                     }
                 }
                 Row(

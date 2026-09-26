@@ -87,6 +87,40 @@ object PlayerLayout {
         )
 
     /**
+     * v2.5.5 · E：**平板**上「大屏幕模式」入口（⤢）该不该挂载。
+     *
+     * ## 它修的是什么
+     *
+     * v2.5.4 的探针顺手发现「平板上根本没有 ⤢ 入口」（它只存在于竖屏控制条变体里，
+     * 而 `landscape = usesSideCover = isWidePlayer || bigScreenActive` 在平板上恒为真），
+     * 但**没有**在同一个提交里改 —— 两件事的回归面会互相污染。本版单独做这一件。
+     *
+     * 平板的 `screenWidthDp` 恒 >= 600（WGR-W09 实测竖屏 800dp），所以它走的是
+     * **宽屏横向控件条**；那一条里从来没有 ⤢。于是平板用户没有任何路径进入大屏模式。
+     *
+     * ## 判据（与 [visualizerSlot] 一样，只有一处分栏谓词）
+     *
+     * | 形态 | isLargeScreen | bigScreenActive | 挂载 | 说明 |
+     * |---|---|---|---|---|
+     * | 手机竖屏 | false | false | ❌ | 竖屏控制条里**本来就有** ⤢，不要挂第二个 |
+     * | 手机横屏·非大屏 | false | false | ❌ | v1.8.0 起就没有，**不回归** |
+     * | 手机横屏·大屏中 | false | true | ❌ | 出口在 `trailing` 槽位，不在这里 |
+     * | **平板竖屏** | true | false | ✅ | **本版新增** |
+     * | **平板横屏** | true | false | ✅ | **本版新增** |
+     * | 平板·大屏中 | true | true | ❌ | 出口在 `trailing` 槽位 |
+     *
+     * 即：只有「平板 + 不在大屏」这两格由无变有，其余四格逐格不变。
+     *
+     * ## 为什么用 `!bigScreenActive` 而不是 `!requested`
+     *
+     * `bigScreenActive` = 「用户点了 ⤢」**且**「窗口真的横过来了」。
+     * 用用户意图（`requested`）会让按钮在旋转的那一帧消失又出现；
+     * 用生效态则保证「按钮在 = 还能进」，与 `trailing` 的出口不重叠。
+     */
+    fun bigScreenEntrySlot(isLargeScreen: Boolean, bigScreenActive: Boolean): Boolean =
+        isLargeScreen && !bigScreenActive
+
+    /**
      * 可视化条的高度（dp）：窗口高 × [VISUALIZER_HEIGHT_FRACTION]，夹在
      * [VISUALIZER_MIN_HEIGHT_DP]~[VISUALIZER_MAX_HEIGHT_DP] 之间。
      *

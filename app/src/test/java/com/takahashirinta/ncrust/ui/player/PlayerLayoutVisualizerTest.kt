@@ -170,4 +170,81 @@ class PlayerLayoutVisualizerTest {
         assertEquals(600, PlayerLayout.WIDE_BREAKPOINT_DP)
         assertEquals(600, PlayerLayout.LARGE_SCREEN_BREAKPOINT_DP)
     }
+
+    // ================================================================
+    // v2.5.5 · E：平板的大屏幕模式入口（⤢）
+    // ================================================================
+
+    /**
+     * ★ **平板 + 不在大屏** 的两格由无变有（本版新增）。
+     *
+     * v2.5.4 的探针发现平板上根本没有 ⤢ 入口（它只存在于竖屏控制条变体里，
+     * 而平板 `screenWidthDp` 恒 >= 600 ⇒ 走宽屏横向控件条），但没有在同一个提交里改。
+     */
+    @Test
+    fun `平板在两个方向上都有大屏模式入口`() {
+        assertTrue(PlayerLayout.bigScreenEntrySlot(isLargeScreen = true, bigScreenActive = false))
+    }
+
+    /**
+     * ★ **手机横屏一格都不变**（v2.5.4 规则 4：挂载条件必须在全部目标形态上 A/B）。
+     *
+     * 手机横屏的 `screenWidthDp` 也 >= 600，但它**不是** `isLargeScreen`
+     * （`smallestScreenWidthDp` = 360）。拿宽屏谓词当「平板」就会在这里多出一个按钮。
+     */
+    @Test
+    fun `手机横屏不新增大屏模式入口`() {
+        assertFalse(PlayerLayout.bigScreenEntrySlot(isLargeScreen = false, bigScreenActive = false))
+    }
+
+    /** 已经在横屏大屏里时不出入口 —— 出口在控制条的 `trailing` 槽位，两者不能同时出现。 */
+    @Test
+    fun `大屏模式生效时不挂载入口`() {
+        assertFalse(PlayerLayout.bigScreenEntrySlot(isLargeScreen = true, bigScreenActive = true))
+        assertFalse(PlayerLayout.bigScreenEntrySlot(isLargeScreen = false, bigScreenActive = true))
+    }
+
+    /** 手机竖屏的 ⤢ 在**另一条**（竖屏）控件里，这里不重复挂第二个。 */
+    @Test
+    fun `手机竖屏由竖屏控件条承载 这里不挂`() {
+        assertFalse(PlayerLayout.bigScreenEntrySlot(isLargeScreen = false, bigScreenActive = false))
+    }
+
+    /**
+     * 四格矩阵逐格钉住（与 KDoc 里的 A/B 表逐行对应）。
+     *
+     * 表里只有第一行由「无」变「有」；其余三行与 v2.5.4 逐格相同。
+     */
+    @Test
+    fun `大屏入口的四格矩阵`() {
+        val table = listOf(
+            // isLargeScreen, bigScreenActive, expected
+            Triple(true, false, true),    // 平板·不在大屏  ← 本版新增
+            Triple(false, false, false),  // 手机（两种方向）·不在大屏
+            Triple(true, true, false),    // 平板·大屏中（出口在 trailing）
+            Triple(false, true, false),   // 手机·大屏中（出口在 trailing）
+        )
+        table.forEach { (large, big, expected) ->
+            assertEquals(
+                "isLargeScreen=$large bigScreenActive=$big 的挂载判定不符",
+                expected,
+                PlayerLayout.bigScreenEntrySlot(large, big),
+            )
+        }
+    }
+
+    /**
+     * 判据**只依赖两个谓词**：等于「平板 且 不在大屏」。
+     *
+     * 这一条防的是有人把 `isLargeScreen` 换成 `screenWidthDp >= 600`
+     * （那会让手机横屏也长出按钮），与 `visualizerSlot` 的那条误替换用例同源。
+     */
+    @Test
+    fun `大屏入口的判据是平板且不在大屏`() {
+        for (large in listOf(true, false)) {
+            for (big in listOf(true, false)) {
+                assertEquals(large && !big, PlayerLayout.bigScreenEntrySlot(large, big))
+            }
+        }
+    }
 }

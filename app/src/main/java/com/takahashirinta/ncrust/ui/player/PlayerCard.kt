@@ -769,6 +769,13 @@ fun PlayerCard(
                         // 第 4 个在横向三段式布局里会顶到居中的传输组（实测与"上一首"重叠）。
                         bigScreen = bigScreenActive,
                         onToggleBigScreen = onToggleBigScreen,
+                        // v2.5.5 · E：平板的横向控件条里补一个 ⤢ 入口。
+                        // 判据是纯函数（PlayerLayout.bigScreenEntrySlot），A/B 矩阵写在它的 KDoc 上：
+                        // 只有「平板 + 不在大屏」两格挂载，手机横屏一格都不变。
+                        showBigScreenEntry = PlayerLayout.bigScreenEntrySlot(
+                            isLargeScreen = isLargeScreen,
+                            bigScreenActive = bigScreenActive,
+                        ),
                         // v1.8.0 · T4：竖屏控制栏里的自动旋转图标。
                         autoRotate = autoRotate,
                         onToggleAutoRotate = onToggleAutoRotate,
