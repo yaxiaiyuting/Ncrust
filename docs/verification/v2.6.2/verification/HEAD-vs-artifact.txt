@@ -36,3 +36,19 @@ f483305 fix(album): QQ 曲目「转到专辑」跳到错误专辑 —— 专辑�
 $ git show HEAD:app/build.gradle.kts | grep version
           versionCode = 50
           versionName = "2.6.2-gpl"
+
+-- 自证 7: 在**最终 HEAD** 上重跑任务书要求的完整流水线 --
+$ ./gradlew clean testDebugUnitTest lint assembleDebug assembleRelease
+  BUILD SUCCESSFUL in 5m 16s   （日志：gradle-clean-fullbuild-final.log）
+  单测 111 suites / 1525 用例 / 0 失败 / 0 错误 / 0 跳过
+  lint 0 errors / 0 Fatal / 8 warnings
+
+-- 自证 8（如实记录）: 这次重建出来的 APK **与已发布的那个不是同一份字节** --
+  已发布（draft 附件 + 真机验证用的那个）: 10fd82049921e908e4e645564f03260a424e8ebce8a8c1a47153ce53e254ade2
+  本次 clean 重建                          : 718d7ae0dd536fc88d53f186a2f7671774aab2a2338e8d3ccf502a488f8fcb5e
+  两者 versionCode / versionName / 包名完全一致，源码也一致（自证 1）。
+  ⇒ **本项目的 release 构建不是逐字节可复现的**（APK 里带构建时间戳、R8 的类/资源排序也不保证稳定）。
+    所以本文件里的「HEAD == 产物源码」指的是**源码一致**，不是「二进制一致」——
+    这也是本仓库历来的口径（v2.6.1 的自证同样只比源码，不比字节）。
+  ⇒ **dist/ 下的 APK 没有被这次重建覆盖**：它是真机验证过、也已作为 draft 附件上传的那一份。
+    （`sha256sum dist/Ncrust-v2.6.2-gpl-release.apk` 仍是 10fd8204…）

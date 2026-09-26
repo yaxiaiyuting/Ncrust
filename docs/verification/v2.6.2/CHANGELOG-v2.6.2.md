@@ -169,7 +169,7 @@ fun navigateToAlbum(song: SongItem) {
 
 | 项 | 结果 |
 |---|---|
-| `./gradlew clean testDebugUnitTest lint assembleDebug assembleRelease` | **BUILD SUCCESSFUL**（4 分 15 秒，日志 `verification/gradle-fullbuild-round1.log`） |
+| `./gradlew clean testDebugUnitTest lint assembleDebug assembleRelease` | **BUILD SUCCESSFUL**（5 分 16 秒，在**最终 HEAD** 上重跑，日志 `verification/gradle-clean-fullbuild-final.log`） |
 | 单测 | **111 个suite / 1525 个用例 / 0 失败 / 0 错误 / 0 跳过** |
 | 本版新增用例 | `AlbumNavigatorTest` 24、`SavedAlbumMidMigrationTest` 14、`QqAlbumMidMappingTest` 11、`SourceIdDomainTest` 10 = **59** |
 | 受影响的既有用例 | `SavedAlbumCodecTest` 11（形状断言按新字段更新 + 新增两条「可空字段不许写出 key」）、`PersistenceFieldNameContractTest` 10（注册表 +`AlbumItem`）、`ArtistNavigatorTest` 17（**未改一行**，作为搬迁的回归网） |
