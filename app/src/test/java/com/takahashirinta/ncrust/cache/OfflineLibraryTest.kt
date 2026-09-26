@@ -145,6 +145,80 @@ class OfflineLibraryIndexTest {
         assertEquals(listOf(1L, 3L), idx.songIds().sorted())
     }
 
+    /**
+     * v2.5.6 · P2：**真机形状**的对账用例 —— PLC110 上那条注入记录（songId `503616`）。
+     *
+     * ## 为什么单开一条（而不是复用上面那条三首歌的小用例）
+     *
+     * 上面那条只证明「不在 keep 集合里就会被丢」。真机上真正会犯的错是**判据选错**：
+     * PLC110 实测 50 条索引里，有 **6 条真实条目没有 `urls` 条目**
+     * （`1854421609 / 1380176 / 1983686033 / 22259257 / 381962 / 1970006`）——
+     * 因为写 URL 的路径（`PlaybackService` 的 `playUrl`）并不覆盖所有起播路径。
+     * 于是「没有 urls 条目 ⇒ 是脏数据 ⇒ 删掉」这条看似合理的启发式会**误删 6 首真实离线歌**。
+     *
+     * 唯一正确的判据是**音频缓存里还有没有片段**（`OfflineAudioCache.reconcileLibrary`
+     * 正是这么算的：`keepSongIds = keys(app).mapNotNull { OfflineKeys.songIdOf(it) }`）。
+     * 注入的那条 `503616` 是**双孤儿** —— 没有 `urls`、也没有缓存片段 ——
+     * 所以它被丢掉的**唯一**理由是「缓存里没有」，而不是「urls 里没有」。
+     *
+     * 本用例把这两个集合显式分开，任何「改用 urls 判据」的改动都会在这里变红。
+     */
+    @Test
+    fun `retainSongIds 只认缓存判据——缺 urls 的真实条目不许被误伤（真机 v256 形状）`() {
+        val idx = OfflineLibraryIndex()
+
+        // 注入记录：PLC110 上 2026-09-26 14:10:31 写入，字段取自真机快照。
+        val injectedId = 503_616L
+        idx.upsert(
+            OfflineTrack(
+                songId = injectedId,
+                name = "EM10_C_Long_Premix#070705",
+                artist = "鷺巣詩郎",
+                durationMs = 137_160L,
+                level = "jymaster",
+                cacheKey = OfflineKeys.key(injectedId, "jymaster"),
+                completedAt = 1_790_403_031_347L,
+            )
+        )
+
+        // 6 条真实但**没有 urls 条目**的歌（真机实测）—— 它们全都必须在。
+        val realWithoutUrls = listOf(
+            1_854_421_609L, 1_380_176L, 1_983_686_033L, 22_259_257L, 381_962L, 1_970_006L
+        )
+        realWithoutUrls.forEach { idx.upsert(track(it, at = 1_700_000_000_000L)) }
+
+        // 另外若干条有缓存、也有 urls 的普通真实条目。
+        val ordinary = listOf(561_105_553L, 1_854_421_610L, 247_936L, 5_257_138L)
+        ordinary.forEach { idx.upsert(track(it, at = 1_700_000_000_000L)) }
+
+        val allReal = (realWithoutUrls + ordinary).toSet()
+        assertEquals(1 + allReal.size, idx.size())
+
+        // keep 集合 = 「音频缓存里还有片段的 songId」，**不含** 503616。
+        val dropped = idx.retainSongIds(allReal)
+
+        assertEquals("只许丢掉那一条注入记录", 1, dropped)
+        assertNull(idx.get(injectedId))
+        allReal.forEach { id ->
+            assertNotNull("真实条目 $id 被误删了", idx.get(id))
+        }
+        assertEquals(allReal, idx.songIds())
+    }
+
+    @Test
+    fun `retainSongIds 的边界——keep 为空时清空，keep 全覆盖时一条不动`() {
+        val idx = OfflineLibraryIndex()
+        idx.upsert(track(1L)); idx.upsert(track(2L))
+
+        assertEquals(0, idx.retainSongIds(setOf(1L, 2L)))
+        assertEquals(2, idx.size())
+
+        // 空 keep = 「缓存里一条都没有」⇒ 全丢（这是 clear() 之外的另一条合法路径，
+        // 也是 `OfflineAudioCache.clear()` 之后可能出现的一致状态）。
+        assertEquals(2, idx.retainSongIds(emptySet()))
+        assertEquals(0, idx.size())
+    }
+
     @Test
     fun `totalBytes 只累加 approxBytes，缺失按 0`() {
         val idx = OfflineLibraryIndex()
