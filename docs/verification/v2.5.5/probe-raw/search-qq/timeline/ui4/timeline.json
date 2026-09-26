@@ -1,0 +1,58 @@
+{
+  "device": "3B15CD00GB700000",
+  "tag": "ui4",
+  "tap": [
+    570,
+    705
+  ],
+  "t_tap_after_minus_before_ms": 101,
+  "frames": [
+    {
+      "idx": 0,
+      "file": "frame_000.png",
+      "t_before": 0.101,
+      "t_after": 0.961,
+      "bytes": 311730
+    },
+    {
+      "idx": 1,
+      "file": "frame_001.png",
+      "t_before": 0.961,
+      "t_after": 2.028,
+      "bytes": 784003
+    },
+    {
+      "idx": 2,
+      "file": "frame_002.png",
+      "t_before": 2.029,
+      "t_after": 2.65,
+      "bytes": 1066094
+    },
+    {
+      "idx": 3,
+      "file": "frame_003.png",
+      "t_before": 2.65,
+      "t_after": 3.198,
+      "bytes": 1073154
+    },
+    {
+      "idx": 4,
+      "file": "frame_004.png",
+      "t_before": 3.198,
+      "t_after": 4.235,
+      "bytes": 1073154
+    },
+    {
+      "idx": 5,
+      "file": "frame_005.png",
+      "t_before": 4.235,
+      "t_after": 5.29,
+      "bytes": 1073154
+    }
+  ],
+  "aggregate_lines": [
+    "09-26 18:53:50.126 13256 13256 I SearchViewModel: aggregate query='晴天' netease=30 qq=30 vip(netease=true qq=true) elapsed=4054ms"
+  ],
+  "qq_lines": [],
+  "captured_at": "2026-09-26T18:53:51+0800"
+}

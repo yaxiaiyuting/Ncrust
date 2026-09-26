@@ -90,6 +90,7 @@ import com.takahashirinta.ncrust.player.PlayOrigin
 import com.takahashirinta.ncrust.player.PlaybackStateManager
 import com.takahashirinta.ncrust.player.QueueKeys
 import com.takahashirinta.ncrust.player.ShuffleRound
+import com.takahashirinta.ncrust.player.ShuffleNav
 import com.takahashirinta.ncrust.power.BackgroundActivity
 import com.takahashirinta.ncrust.ui.components.BackgroundActivityDialog
 import io.github.takahashirinta.kanesumi.structure.bottomnav.MetroBottomNav
@@ -1321,9 +1322,21 @@ fun MainScreen(
         when (playMode) {
             QueueModes.SINGLE -> playerViewModel.seekTo(0)
             QueueModes.SHUFFLE -> {
-                if (shuffledPosition > 0) {
-                    shuffledPosition--
-                    playFromQueue(shuffledIndices[shuffledPosition])
+                // ★ v2.5.5 · C：**轮首要回绕到轮末**。
+                //
+                // 旧写法是 `if (shuffledPosition > 0) { … }` —— **没有 else**：
+                // 游标在轮首时整个分支什么都不做，按钮点了没有任何反馈。
+                // 真机受控复测（PLC110，5 次）成功率 **1/5**，而同一按钮在非乱序下每次都成功；
+                // 查落盘状态确认当时 `play_mode = 2`。这不影响「上一首按钮存在」这条 P0，
+                // 但它让那个按钮在乱序模式下**静默无效**，与铁律 19 的意图冲突
+                // （对用户来说「时灵时不灵」与「缺失」是同一件事）。
+                //
+                // 落点规则与 CYCLE/LINE 的上一首、以及 playNext 的队尾回绕对称，
+                // 判定抽在 ShuffleNav.previousPosition（纯函数 + 单测）。
+                val target = ShuffleNav.previousPosition(shuffledPosition, shuffledIndices.size)
+                if (target != null) {
+                    shuffledPosition = target
+                    playFromQueue(shuffledIndices[target])
                 }
             }
             else -> playFromQueue(

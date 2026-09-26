@@ -1,0 +1,23 @@
+# device=3B15CD00GB700000 rounds=3  2026-09-26T18:43:32+08:00
+--- cold #1  tap@host 18:43:44.567 ---
+--- cold #2  tap@host 18:44:05.661 ---
+--- cold #3  tap@host 18:44:26.723 ---
+--- warm #1  tap@host 18:44:37.484 ---
+09-26 18:44:37.540 10759 10759 W SearchViewModel: netease search failed
+09-26 18:44:37.542 10759 10759 W QqMusicSource: search failed
+09-26 18:44:37.542 10759 10759 W QqMusicSource: C5.e0: u0 was cancelled; job=u0{Cancelling}@c48b486
+09-26 18:44:37.542 10759 10759 W SearchViewModel: qq search failed
+09-26 18:44:37.543 10759 10759 I SearchViewModel: aggregate query='晴天' netease=0 qq=0 vip(netease=true qq=true) elapsed=10269ms
+--- warm #2  tap@host 18:44:48.254 ---
+09-26 18:44:48.308 10759 10759 W SearchViewModel: netease search failed
+09-26 18:44:48.309 10759 10759 W QqMusicSource: search failed
+09-26 18:44:48.309 10759 10759 W QqMusicSource: C5.e0: u0 was cancelled; job=u0{Cancelling}@5611bd9
+09-26 18:44:48.309 10759 10759 W SearchViewModel: qq search failed
+09-26 18:44:48.309 10759 10759 I SearchViewModel: aggregate query='晴天' netease=0 qq=0 vip(netease=true qq=true) elapsed=10265ms
+--- warm #3  tap@host 18:44:59.020 ---
+09-26 18:44:59.081 10759 10759 W SearchViewModel: netease search failed
+09-26 18:44:59.083 10759 10759 W QqMusicSource: search failed
+09-26 18:44:59.083 10759 10759 W QqMusicSource: C5.e0: u0 was cancelled; job=u0{Cancelling}@56f9fc9
+09-26 18:44:59.083 10759 10759 W SearchViewModel: qq search failed
+09-26 18:44:59.083 10759 10759 I SearchViewModel: aggregate query='晴天' netease=0 qq=0 vip(netease=true qq=true) elapsed=10274ms
+# done 2026-09-26T18:45:08+08:00

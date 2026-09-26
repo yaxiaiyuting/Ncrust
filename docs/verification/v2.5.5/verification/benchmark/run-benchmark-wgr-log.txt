@@ -1,0 +1,246 @@
+== 检查被测应用 ==
+== 被测应用 ==
+    versionCode=46 minSdk=24 targetSdk=36
+    versionName=2.5.5-gpl
+== 系统动画 ==
+== 构建并安装 benchmark APK ==
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1790421428.377025  172586 adb_install.cpp:153] pm command: 'package install -r -t -S 39965363'
+== 关闭系统动画(仅 startup; 退出时自动还原) ==
+== com.takahashirinta.ncrust.benchmark.StartupBenchmark ==
+   参数: -e ncrust.bench.iterations 3 -e ncrust.bench.compilation ignore
+
+com.takahashirinta.ncrust.benchmark.StartupBenchmark:
+Error in coldStart(com.takahashirinta.ncrust.benchmark.StartupBenchmark):
+java.lang.IllegalStateException: The DROP_SHADER_CACHE broadcast was not received. This most likely means that the `androidx.profileinstaller` library used by the target apk is old. Please use `1.3.0-alpha02` or newer. For more information refer to the release notes at https://developer.android.com/jetpack/androidx/releases/profileinstaller. If you are already using 'androidx.profileinstaller' library and still seeing error, verify: 1) androidx.profileinstaller.ProfileInstallReceiver appears unobfuscated in your APK's AndroidManifest and dex, and 2) the following command executes successfully (should print 14}): adb shell am broadcast -a androidx.profileinstaller.action.BENCHMARK_OPERATION -e EXTRA_BENCHMARK_OPERATION DROP_SHADER_CACHE com.takahashirinta.ncrust/androidx.profileinstaller.ProfileInstallReceiver
+	at androidx.benchmark.macro.MacrobenchmarkScope.dropShaderCache(MacrobenchmarkScope.kt:405)
+	at androidx.benchmark.macro.MacrobenchmarkKt.macrobenchmarkWithStartupMode$lambda$18(Macrobenchmark.kt:419)
+	at androidx.benchmark.macro.MacrobenchmarkKt.$r8$lambda$nYOYe9qoa3qEKOmAUA_HsQ_0qsY(Unknown Source:0)
+	at androidx.benchmark.macro.MacrobenchmarkKt$$ExternalSyntheticLambda3.invoke(D8$$SyntheticClass:0)
+	at androidx.benchmark.macro.MacrobenchmarkPhaseKt.runPhase(MacrobenchmarkPhase.kt:99)
+	at androidx.benchmark.macro.MacrobenchmarkKt.macrobenchmark$lambda$6(Macrobenchmark.kt:271)
+	at androidx.benchmark.macro.MacrobenchmarkKt.$r8$lambda$xwXnT_b4vi-hCaLpXAO_soLs9-w(Unknown Source:0)
+	at androidx.benchmark.macro.MacrobenchmarkKt$$ExternalSyntheticLambda1.invoke(D8$$SyntheticClass:0)
+	at androidx.benchmark.macro.TraceProcessorExtensionsKt.runServer(TraceProcessorExtensions.kt:163)
+	at androidx.benchmark.macro.TraceProcessorExtensionsKt.runServer$default(TraceProcessorExtensions.kt:158)
+	at androidx.benchmark.macro.MacrobenchmarkKt.macrobenchmark(Macrobenchmark.kt:263)
+	at androidx.benchmark.macro.MacrobenchmarkKt.macrobenchmarkWithStartupMode(Macrobenchmark.kt:400)
+	at androidx.benchmark.macro.junit4.MacrobenchmarkRule.measureRepeated(MacrobenchmarkRule.kt:87)
+	at androidx.benchmark.macro.junit4.MacrobenchmarkRule.measureRepeated$default(MacrobenchmarkRule.kt:77)
+	at com.takahashirinta.ncrust.benchmark.StartupBenchmark.coldStart(StartupBenchmark.kt:28)
+
+
+Time: 0.77
+There was 1 failure:
+1) coldStart(com.takahashirinta.ncrust.benchmark.StartupBenchmark)
+java.lang.IllegalStateException: The DROP_SHADER_CACHE broadcast was not received. This most likely means that the `androidx.profileinstaller` library used by the target apk is old. Please use `1.3.0-alpha02` or newer. For more information refer to the release notes at https://developer.android.com/jetpack/androidx/releases/profileinstaller. If you are already using 'androidx.profileinstaller' library and still seeing error, verify: 1) androidx.profileinstaller.ProfileInstallReceiver appears unobfuscated in your APK's AndroidManifest and dex, and 2) the following command executes successfully (should print 14}): adb shell am broadcast -a androidx.profileinstaller.action.BENCHMARK_OPERATION -e EXTRA_BENCHMARK_OPERATION DROP_SHADER_CACHE com.takahashirinta.ncrust/androidx.profileinstaller.ProfileInstallReceiver
+	at androidx.benchmark.macro.MacrobenchmarkScope.dropShaderCache(MacrobenchmarkScope.kt:405)
+	at androidx.benchmark.macro.MacrobenchmarkKt.macrobenchmarkWithStartupMode$lambda$18(Macrobenchmark.kt:419)
+	at androidx.benchmark.macro.MacrobenchmarkKt.$r8$lambda$nYOYe9qoa3qEKOmAUA_HsQ_0qsY(Unknown Source:0)
+	at androidx.benchmark.macro.MacrobenchmarkKt$$ExternalSyntheticLambda3.invoke(D8$$SyntheticClass:0)
+	at androidx.benchmark.macro.MacrobenchmarkPhaseKt.runPhase(MacrobenchmarkPhase.kt:99)
+	at androidx.benchmark.macro.MacrobenchmarkKt.macrobenchmark$lambda$6(Macrobenchmark.kt:271)
+	at androidx.benchmark.macro.MacrobenchmarkKt.$r8$lambda$xwXnT_b4vi-hCaLpXAO_soLs9-w(Unknown Source:0)
+	at androidx.benchmark.macro.MacrobenchmarkKt$$ExternalSyntheticLambda1.invoke(D8$$SyntheticClass:0)
+	at androidx.benchmark.macro.TraceProcessorExtensionsKt.runServer(TraceProcessorExtensions.kt:163)
+	at androidx.benchmark.macro.TraceProcessorExtensionsKt.runServer$default(TraceProcessorExtensions.kt:158)
+	at androidx.benchmark.macro.MacrobenchmarkKt.macrobenchmark(Macrobenchmark.kt:263)
+	at androidx.benchmark.macro.MacrobenchmarkKt.macrobenchmarkWithStartupMode(Macrobenchmark.kt:400)
+	at androidx.benchmark.macro.junit4.MacrobenchmarkRule.measureRepeated(MacrobenchmarkRule.kt:87)
+	at androidx.benchmark.macro.junit4.MacrobenchmarkRule.measureRepeated$default(MacrobenchmarkRule.kt:77)
+	at com.takahashirinta.ncrust.benchmark.StartupBenchmark.coldStart(StartupBenchmark.kt:28)
+
+FAILURES!!!
+Tests run: 1,  Failures: 1
+
+
+
+== 完成。perfetto trace 与结果 JSON 在设备: ==
+  /storage/emulated/0/Android/media/com.takahashirinta.ncrust.benchmark/
+把需要的 trace pull 回: adb pull /storage/emulated/0/Android/media/com.takahashirinta.ncrust.benchmark/ benchmark/output/
+== 动画已还原: window=1.0 transition=1.0 animator=null (原值 1.0/1.0/null)
+=== startup done ===
+== 检查被测应用 ==
+== 被测应用 ==
+    versionCode=46 minSdk=24 targetSdk=36
+    versionName=2.5.5-gpl
+== 系统动画 ==
+== 构建并安装 benchmark APK ==
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1790421432.642518  172917 adb_install.cpp:153] pm command: 'package install -r -t -S 39965363'
+== com.takahashirinta.ncrust.benchmark.SettingsScrollBenchmark ==
+   参数: -e ncrust.bench.iterations 3 -e ncrust.bench.compilation ignore
+
+com.takahashirinta.ncrust.benchmark.SettingsScrollBenchmark:
+Error in settingsScroll(com.takahashirinta.ncrust.benchmark.SettingsScrollBenchmark):
+java.lang.IllegalStateException: The DROP_SHADER_CACHE broadcast was not received. This most likely means that the `androidx.profileinstaller` library used by the target apk is old. Please use `1.3.0-alpha02` or newer. For more information refer to the release notes at https://developer.android.com/jetpack/androidx/releases/profileinstaller. If you are already using 'androidx.profileinstaller' library and still seeing error, verify: 1) androidx.profileinstaller.ProfileInstallReceiver appears unobfuscated in your APK's AndroidManifest and dex, and 2) the following command executes successfully (should print 14}): adb shell am broadcast -a androidx.profileinstaller.action.BENCHMARK_OPERATION -e EXTRA_BENCHMARK_OPERATION DROP_SHADER_CACHE com.takahashirinta.ncrust/androidx.profileinstaller.ProfileInstallReceiver
+	at androidx.benchmark.macro.MacrobenchmarkScope.dropShaderCache(MacrobenchmarkScope.kt:405)
+	at androidx.benchmark.macro.MacrobenchmarkKt.macrobenchmarkWithStartupMode$lambda$18(Macrobenchmark.kt:419)
+	at androidx.benchmark.macro.MacrobenchmarkKt.$r8$lambda$nYOYe9qoa3qEKOmAUA_HsQ_0qsY(Unknown Source:0)
+	at androidx.benchmark.macro.MacrobenchmarkKt$$ExternalSyntheticLambda3.invoke(D8$$SyntheticClass:0)
+	at androidx.benchmark.macro.MacrobenchmarkPhaseKt.runPhase(MacrobenchmarkPhase.kt:99)
+	at androidx.benchmark.macro.MacrobenchmarkKt.macrobenchmark$lambda$6(Macrobenchmark.kt:271)
+	at androidx.benchmark.macro.MacrobenchmarkKt.$r8$lambda$xwXnT_b4vi-hCaLpXAO_soLs9-w(Unknown Source:0)
+	at androidx.benchmark.macro.MacrobenchmarkKt$$ExternalSyntheticLambda1.invoke(D8$$SyntheticClass:0)
+	at androidx.benchmark.macro.TraceProcessorExtensionsKt.runServer(TraceProcessorExtensions.kt:163)
+	at androidx.benchmark.macro.TraceProcessorExtensionsKt.runServer$default(TraceProcessorExtensions.kt:158)
+	at androidx.benchmark.macro.MacrobenchmarkKt.macrobenchmark(Macrobenchmark.kt:263)
+	at androidx.benchmark.macro.MacrobenchmarkKt.macrobenchmarkWithStartupMode(Macrobenchmark.kt:400)
+	at androidx.benchmark.macro.junit4.MacrobenchmarkRule.measureRepeated(MacrobenchmarkRule.kt:87)
+	at androidx.benchmark.macro.junit4.MacrobenchmarkRule.measureRepeated$default(MacrobenchmarkRule.kt:77)
+	at com.takahashirinta.ncrust.benchmark.SettingsScrollBenchmark.settingsScroll(SettingsScrollBenchmark.kt:59)
+
+
+Time: 0.621
+There was 1 failure:
+1) settingsScroll(com.takahashirinta.ncrust.benchmark.SettingsScrollBenchmark)
+java.lang.IllegalStateException: The DROP_SHADER_CACHE broadcast was not received. This most likely means that the `androidx.profileinstaller` library used by the target apk is old. Please use `1.3.0-alpha02` or newer. For more information refer to the release notes at https://developer.android.com/jetpack/androidx/releases/profileinstaller. If you are already using 'androidx.profileinstaller' library and still seeing error, verify: 1) androidx.profileinstaller.ProfileInstallReceiver appears unobfuscated in your APK's AndroidManifest and dex, and 2) the following command executes successfully (should print 14}): adb shell am broadcast -a androidx.profileinstaller.action.BENCHMARK_OPERATION -e EXTRA_BENCHMARK_OPERATION DROP_SHADER_CACHE com.takahashirinta.ncrust/androidx.profileinstaller.ProfileInstallReceiver
+	at androidx.benchmark.macro.MacrobenchmarkScope.dropShaderCache(MacrobenchmarkScope.kt:405)
+	at androidx.benchmark.macro.MacrobenchmarkKt.macrobenchmarkWithStartupMode$lambda$18(Macrobenchmark.kt:419)
+	at androidx.benchmark.macro.MacrobenchmarkKt.$r8$lambda$nYOYe9qoa3qEKOmAUA_HsQ_0qsY(Unknown Source:0)
+	at androidx.benchmark.macro.MacrobenchmarkKt$$ExternalSyntheticLambda3.invoke(D8$$SyntheticClass:0)
+	at androidx.benchmark.macro.MacrobenchmarkPhaseKt.runPhase(MacrobenchmarkPhase.kt:99)
+	at androidx.benchmark.macro.MacrobenchmarkKt.macrobenchmark$lambda$6(Macrobenchmark.kt:271)
+	at androidx.benchmark.macro.MacrobenchmarkKt.$r8$lambda$xwXnT_b4vi-hCaLpXAO_soLs9-w(Unknown Source:0)
+	at androidx.benchmark.macro.MacrobenchmarkKt$$ExternalSyntheticLambda1.invoke(D8$$SyntheticClass:0)
+	at androidx.benchmark.macro.TraceProcessorExtensionsKt.runServer(TraceProcessorExtensions.kt:163)
+	at androidx.benchmark.macro.TraceProcessorExtensionsKt.runServer$default(TraceProcessorExtensions.kt:158)
+	at androidx.benchmark.macro.MacrobenchmarkKt.macrobenchmark(Macrobenchmark.kt:263)
+	at androidx.benchmark.macro.MacrobenchmarkKt.macrobenchmarkWithStartupMode(Macrobenchmark.kt:400)
+	at androidx.benchmark.macro.junit4.MacrobenchmarkRule.measureRepeated(MacrobenchmarkRule.kt:87)
+	at androidx.benchmark.macro.junit4.MacrobenchmarkRule.measureRepeated$default(MacrobenchmarkRule.kt:77)
+	at com.takahashirinta.ncrust.benchmark.SettingsScrollBenchmark.settingsScroll(SettingsScrollBenchmark.kt:59)
+
+FAILURES!!!
+Tests run: 1,  Failures: 1
+
+
+
+== 完成。perfetto trace 与结果 JSON 在设备: ==
+  /storage/emulated/0/Android/media/com.takahashirinta.ncrust.benchmark/
+把需要的 trace pull 回: adb pull /storage/emulated/0/Android/media/com.takahashirinta.ncrust.benchmark/ benchmark/output/
+== 动画已还原: window=1.0 transition=1.0 animator=null (原值 1.0/1.0/null)
+=== settings done ===
+== 检查被测应用 ==
+== 被测应用 ==
+    versionCode=46 minSdk=24 targetSdk=36
+    versionName=2.5.5-gpl
+== 系统动画 ==
+== 构建并安装 benchmark APK ==
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1790421436.726465  173224 adb_install.cpp:153] pm command: 'package install -r -t -S 39965363'
+== com.takahashirinta.ncrust.benchmark.HomeScrollBenchmark ==
+   参数: -e ncrust.bench.iterations 3 -e ncrust.bench.compilation ignore
+
+com.takahashirinta.ncrust.benchmark.HomeScrollBenchmark:
+Error in homeScroll(com.takahashirinta.ncrust.benchmark.HomeScrollBenchmark):
+java.lang.IllegalStateException: The DROP_SHADER_CACHE broadcast was not received. This most likely means that the `androidx.profileinstaller` library used by the target apk is old. Please use `1.3.0-alpha02` or newer. For more information refer to the release notes at https://developer.android.com/jetpack/androidx/releases/profileinstaller. If you are already using 'androidx.profileinstaller' library and still seeing error, verify: 1) androidx.profileinstaller.ProfileInstallReceiver appears unobfuscated in your APK's AndroidManifest and dex, and 2) the following command executes successfully (should print 14}): adb shell am broadcast -a androidx.profileinstaller.action.BENCHMARK_OPERATION -e EXTRA_BENCHMARK_OPERATION DROP_SHADER_CACHE com.takahashirinta.ncrust/androidx.profileinstaller.ProfileInstallReceiver
+	at androidx.benchmark.macro.MacrobenchmarkScope.dropShaderCache(MacrobenchmarkScope.kt:405)
+	at androidx.benchmark.macro.MacrobenchmarkKt.macrobenchmarkWithStartupMode$lambda$18(Macrobenchmark.kt:419)
+	at androidx.benchmark.macro.MacrobenchmarkKt.$r8$lambda$nYOYe9qoa3qEKOmAUA_HsQ_0qsY(Unknown Source:0)
+	at androidx.benchmark.macro.MacrobenchmarkKt$$ExternalSyntheticLambda3.invoke(D8$$SyntheticClass:0)
+	at androidx.benchmark.macro.MacrobenchmarkPhaseKt.runPhase(MacrobenchmarkPhase.kt:99)
+	at androidx.benchmark.macro.MacrobenchmarkKt.macrobenchmark$lambda$6(Macrobenchmark.kt:271)
+	at androidx.benchmark.macro.MacrobenchmarkKt.$r8$lambda$xwXnT_b4vi-hCaLpXAO_soLs9-w(Unknown Source:0)
+	at androidx.benchmark.macro.MacrobenchmarkKt$$ExternalSyntheticLambda1.invoke(D8$$SyntheticClass:0)
+	at androidx.benchmark.macro.TraceProcessorExtensionsKt.runServer(TraceProcessorExtensions.kt:163)
+	at androidx.benchmark.macro.TraceProcessorExtensionsKt.runServer$default(TraceProcessorExtensions.kt:158)
+	at androidx.benchmark.macro.MacrobenchmarkKt.macrobenchmark(Macrobenchmark.kt:263)
+	at androidx.benchmark.macro.MacrobenchmarkKt.macrobenchmarkWithStartupMode(Macrobenchmark.kt:400)
+	at androidx.benchmark.macro.junit4.MacrobenchmarkRule.measureRepeated(MacrobenchmarkRule.kt:87)
+	at androidx.benchmark.macro.junit4.MacrobenchmarkRule.measureRepeated$default(MacrobenchmarkRule.kt:77)
+	at com.takahashirinta.ncrust.benchmark.HomeScrollBenchmark.homeScroll(HomeScrollBenchmark.kt:33)
+
+
+Time: 0.62
+There was 1 failure:
+1) homeScroll(com.takahashirinta.ncrust.benchmark.HomeScrollBenchmark)
+java.lang.IllegalStateException: The DROP_SHADER_CACHE broadcast was not received. This most likely means that the `androidx.profileinstaller` library used by the target apk is old. Please use `1.3.0-alpha02` or newer. For more information refer to the release notes at https://developer.android.com/jetpack/androidx/releases/profileinstaller. If you are already using 'androidx.profileinstaller' library and still seeing error, verify: 1) androidx.profileinstaller.ProfileInstallReceiver appears unobfuscated in your APK's AndroidManifest and dex, and 2) the following command executes successfully (should print 14}): adb shell am broadcast -a androidx.profileinstaller.action.BENCHMARK_OPERATION -e EXTRA_BENCHMARK_OPERATION DROP_SHADER_CACHE com.takahashirinta.ncrust/androidx.profileinstaller.ProfileInstallReceiver
+	at androidx.benchmark.macro.MacrobenchmarkScope.dropShaderCache(MacrobenchmarkScope.kt:405)
+	at androidx.benchmark.macro.MacrobenchmarkKt.macrobenchmarkWithStartupMode$lambda$18(Macrobenchmark.kt:419)
+	at androidx.benchmark.macro.MacrobenchmarkKt.$r8$lambda$nYOYe9qoa3qEKOmAUA_HsQ_0qsY(Unknown Source:0)
+	at androidx.benchmark.macro.MacrobenchmarkKt$$ExternalSyntheticLambda3.invoke(D8$$SyntheticClass:0)
+	at androidx.benchmark.macro.MacrobenchmarkPhaseKt.runPhase(MacrobenchmarkPhase.kt:99)
+	at androidx.benchmark.macro.MacrobenchmarkKt.macrobenchmark$lambda$6(Macrobenchmark.kt:271)
+	at androidx.benchmark.macro.MacrobenchmarkKt.$r8$lambda$xwXnT_b4vi-hCaLpXAO_soLs9-w(Unknown Source:0)
+	at androidx.benchmark.macro.MacrobenchmarkKt$$ExternalSyntheticLambda1.invoke(D8$$SyntheticClass:0)
+	at androidx.benchmark.macro.TraceProcessorExtensionsKt.runServer(TraceProcessorExtensions.kt:163)
+	at androidx.benchmark.macro.TraceProcessorExtensionsKt.runServer$default(TraceProcessorExtensions.kt:158)
+	at androidx.benchmark.macro.MacrobenchmarkKt.macrobenchmark(Macrobenchmark.kt:263)
+	at androidx.benchmark.macro.MacrobenchmarkKt.macrobenchmarkWithStartupMode(Macrobenchmark.kt:400)
+	at androidx.benchmark.macro.junit4.MacrobenchmarkRule.measureRepeated(MacrobenchmarkRule.kt:87)
+	at androidx.benchmark.macro.junit4.MacrobenchmarkRule.measureRepeated$default(MacrobenchmarkRule.kt:77)
+	at com.takahashirinta.ncrust.benchmark.HomeScrollBenchmark.homeScroll(HomeScrollBenchmark.kt:33)
+
+FAILURES!!!
+Tests run: 1,  Failures: 1
+
+
+
+== 完成。perfetto trace 与结果 JSON 在设备: ==
+  /storage/emulated/0/Android/media/com.takahashirinta.ncrust.benchmark/
+把需要的 trace pull 回: adb pull /storage/emulated/0/Android/media/com.takahashirinta.ncrust.benchmark/ benchmark/output/
+== 动画已还原: window=1.0 transition=1.0 animator=null (原值 1.0/1.0/null)
+=== scroll done ===
+== 检查被测应用 ==
+== 被测应用 ==
+    versionCode=46 minSdk=24 targetSdk=36
+    versionName=2.5.5-gpl
+== 系统动画 ==
+== 构建并安装 benchmark APK ==
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1790421440.773146  173557 adb_install.cpp:153] pm command: 'package install -r -t -S 39965363'
+== com.takahashirinta.ncrust.benchmark.ExpandPlayerBenchmark ==
+   参数: -e ncrust.bench.iterations 3 -e ncrust.bench.compilation ignore
+
+com.takahashirinta.ncrust.benchmark.ExpandPlayerBenchmark:INSTRUMENTATION_STATUS: additionalTestOutputFile_ExpandPlayerBenchmark_expandCollapse_iter000_2026-09-26-11-17-34.perfetto-trace=/storage/emulated/0/Android/media/com.takahashirinta.ncrust.benchmark/ExpandPlayerBenchmark_expandCollapse_iter000_2026-09-26-11-17-34.perfetto-trace
+INSTRUMENTATION_STATUS_CODE: 2
+INSTRUMENTATION_STATUS: additionalTestOutputFile_ExpandPlayerBenchmark_expandCollapse_iter001_2026-09-26-11-17-41.perfetto-trace=/storage/emulated/0/Android/media/com.takahashirinta.ncrust.benchmark/ExpandPlayerBenchmark_expandCollapse_iter001_2026-09-26-11-17-41.perfetto-trace
+INSTRUMENTATION_STATUS_CODE: 2
+INSTRUMENTATION_STATUS: additionalTestOutputFile_ExpandPlayerBenchmark_expandCollapse_iter002_2026-09-26-11-17-48.perfetto-trace=/storage/emulated/0/Android/media/com.takahashirinta.ncrust.benchmark/ExpandPlayerBenchmark_expandCollapse_iter002_2026-09-26-11-17-48.perfetto-trace
+INSTRUMENTATION_STATUS_CODE: 2
+INSTRUMENTATION_STATUS: android.studio.display.benchmark=ExpandPlayerBenchmark_expandCollapse
+  frameCount           [min 136.0](file://ExpandPlayerBenchmark_expandCollapse_iter001_2026-09-26-11-17-41.perfetto-trace),   [median 137.0](file://ExpandPlayerBenchmark_expandCollapse_iter001_2026-09-26-11-17-41.perfetto-trace),   [max 139.0](file://ExpandPlayerBenchmark_expandCollapse_iter002_2026-09-26-11-17-48.perfetto-trace)
+  frameDurationCpuMs   P50    4.7,   P90    8.7,   P95    9.9,   P99   12.3
+  frameOverrunMs       P50  -10.6,   P90   -6.9,   P95   -5.6,   P99   -3.3
+    Traces: Iteration [0](file://ExpandPlayerBenchmark_expandCollapse_iter000_2026-09-26-11-17-34.perfetto-trace) [1](file://ExpandPlayerBenchmark_expandCollapse_iter001_2026-09-26-11-17-41.perfetto-trace) [2](file://ExpandPlayerBenchmark_expandCollapse_iter002_2026-09-26-11-17-48.perfetto-trace)
+
+INSTRUMENTATION_STATUS: android.studio.v2display.benchmark=ExpandPlayerBenchmark_expandCollapse
+  frameCount           [min 136.0](file://ExpandPlayerBenchmark_expandCollapse_iter001_2026-09-26-11-17-41.perfetto-trace),   [median 137.0](file://ExpandPlayerBenchmark_expandCollapse_iter001_2026-09-26-11-17-41.perfetto-trace),   [max 139.0](file://ExpandPlayerBenchmark_expandCollapse_iter002_2026-09-26-11-17-48.perfetto-trace)
+  frameDurationCpuMs   P50    4.7,   P90    8.7,   P95    9.9,   P99   12.3
+  frameOverrunMs       P50  -10.6,   P90   -6.9,   P95   -5.6,   P99   -3.3
+    Traces: Iteration [0](file://ExpandPlayerBenchmark_expandCollapse_iter000_2026-09-26-11-17-34.perfetto-trace) [1](file://ExpandPlayerBenchmark_expandCollapse_iter001_2026-09-26-11-17-41.perfetto-trace) [2](file://ExpandPlayerBenchmark_expandCollapse_iter002_2026-09-26-11-17-48.perfetto-trace)
+
+INSTRUMENTATION_STATUS: android.studio.v2display.benchmark.outputDirPath=/storage/emulated/0/Android/media/com.takahashirinta.ncrust.benchmark
+INSTRUMENTATION_STATUS: android.studio.v3display.benchmark=ExpandPlayerBenchmark_expandCollapse
+  frameCount           [min 136.0](file://ExpandPlayerBenchmark_expandCollapse_iter001_2026-09-26-11-17-41.perfetto-trace),   [median 137.0](file://ExpandPlayerBenchmark_expandCollapse_iter001_2026-09-26-11-17-41.perfetto-trace),   [max 139.0](file://ExpandPlayerBenchmark_expandCollapse_iter002_2026-09-26-11-17-48.perfetto-trace)
+  frameDurationCpuMs   P50    4.7,   P90    8.7,   P95    9.9,   P99   12.3
+  frameOverrunMs       P50  -10.6,   P90   -6.9,   P95   -5.6,   P99   -3.3
+    Traces: Iteration [0](file://ExpandPlayerBenchmark_expandCollapse_iter000_2026-09-26-11-17-34.perfetto-trace) [1](file://ExpandPlayerBenchmark_expandCollapse_iter001_2026-09-26-11-17-41.perfetto-trace) [2](file://ExpandPlayerBenchmark_expandCollapse_iter002_2026-09-26-11-17-48.perfetto-trace)
+
+INSTRUMENTATION_STATUS: android.studio.v3display.benchmark.outputDirPath=/storage/emulated/0/Android/media/com.takahashirinta.ncrust.benchmark
+INSTRUMENTATION_STATUS: frame_count_median=137.0
+INSTRUMENTATION_STATUS: frame_count_min=136.0
+INSTRUMENTATION_STATUS: frame_count_stddev=1.5275252316519465
+INSTRUMENTATION_STATUS: frame_duration_cpu_millis_p50=4.732031
+INSTRUMENTATION_STATUS: frame_duration_cpu_millis_p90=8.7082809
+INSTRUMENTATION_STATUS: frame_duration_cpu_millis_p95=9.92408815
+INSTRUMENTATION_STATUS: frame_duration_cpu_millis_p99=12.297625
+INSTRUMENTATION_STATUS: frame_overrun_millis_p50=-10.638119499999998
+INSTRUMENTATION_STATUS: frame_overrun_millis_p90=-6.870312499999999
+INSTRUMENTATION_STATUS: frame_overrun_millis_p95=-5.64204455
+INSTRUMENTATION_STATUS: frame_overrun_millis_p99=-3.293741940000001
+INSTRUMENTATION_STATUS_CODE: 2
+.
+
+Time: 27.779
+
+OK (1 test)
+
+
+
+== 完成。perfetto trace 与结果 JSON 在设备: ==
+  /storage/emulated/0/Android/media/com.takahashirinta.ncrust.benchmark/
+把需要的 trace pull 回: adb pull /storage/emulated/0/Android/media/com.takahashirinta.ncrust.benchmark/ benchmark/output/
+== 动画已还原: window=1.0 transition=1.0 animator=null (原值 1.0/1.0/null)
+=== expand done ===

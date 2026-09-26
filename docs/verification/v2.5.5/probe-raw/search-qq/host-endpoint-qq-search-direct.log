@@ -1,0 +1,23 @@
+keyword=晴天 limit=30 n=30 cookie=False
+legacy URL: https://c.y.qq.com/soso/fcgi-bin/client_search_cp?p=1&n=30&w=%E6%99%B4%E5%A4%A9&format=json&cr=1&new_json=1
+
+== A) legacy GET, fresh connection ==
+  runs=30 ok=30 empty_results=0
+  total  P50=1857ms P95=3128ms min=1020 max=3198 mean=2021
+  TTFB   P50=1722ms P95=2989ms
+  TLS    P50=213ms P95=229ms   DNS P50=6ms
+
+== B) legacy GET ×10 同一连接 ==
+  runs=10 ok=10 empty_results=0
+  total  P50=1969ms P95=2600ms min=1243 max=2611 mean=1919
+  TTFB   P50=1821ms P95=2466ms
+  TLS    P50=0ms P95=118ms   DNS P50=0ms
+  per-transfer total(ms): ['2587', '1243', '2126', '2611', '1813', '2424', '1283', '1400', '1446', '2257']
+
+== C) musicu.fcg POST (兜底通道) ==
+  runs=15 ok=15 empty_results=0
+  total  P50=376ms P95=910ms min=351 max=970 mean=511
+  TTFB   P50=376ms P95=627ms
+  TLS    P50=252ms P95=313ms   DNS P50=1ms
+
+raw -> probe-raw/search-qq/host-endpoint-qq-search-direct.json

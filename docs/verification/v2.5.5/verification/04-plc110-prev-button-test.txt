@@ -1,0 +1,7 @@
+== 上一首按钮 5 次受控复测（每次最多等 8s 看标题是否变化） ==
+  [1] FAIL Hedgehog's Dilemma · 鷺巣詩郎  ->  (8s 内未变化)
+  [2] FAIL Hedgehog's Dilemma · 鷺巣詩郎  ->  (8s 内未变化)
+  [3] FAIL Hedgehog's Dilemma · 鷺巣詩郎  ->  (8s 内未变化)
+  [4] OK   Hedgehog's Dilemma · 鷺巣詩郎  ->  無限抱擁 · 高橋洋子 (2s)
+  [5] FAIL 無限抱擁 · 高橋洋子  ->  (8s 内未变化)
+== 结果: 1/5 成功, 4/5 未观察到变化 ==

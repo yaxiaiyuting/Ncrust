@@ -1,0 +1,1448 @@
+--------- beginning of main
+09-26 18:53:45.013  3298  6393 W OPLUS_LOG_LOAD: ==LOGS PROG INFO, prog(com.android.launcher) ==
+09-26 18:53:45.013  3298  6393 D JsBridgeTimer: com.alarmclock.quick setIntervalCallback id:360
+09-26 18:53:45.014  3298  6393 D JsConsole: clock_quick_card5: updateClock() ->566.875-322.5-270
+09-26 18:53:45.020  3298  3298 W ViewUtils: childView no Component
+09-26 18:53:45.020  3298  3298 D LayoutHelper: d@0x3fa635e scheduleMeasureLayout   8
+--------- beginning of system
+09-26 18:53:45.020  1742  5856 D CompatChangeReporter: Compat change id reported: 161145287; UID 10423; state: ENABLED
+09-26 18:53:45.021  3410  3410 I SystemUi--Notification: SimpleQsClock-->textWidth:214.0, mPaddingEnd 21, dynamicWidth 277, systemFontScale 1.0
+09-26 18:53:45.029  3298  3298 W ViewUtils: childView no Component
+09-26 18:53:45.029  3298  3298 W LayoutHelper: d@0x3fa635e do measure layout inner
+09-26 18:53:45.030  3298  3298 D CardView: 0x3fa635e onMeasure: w(1094, EXACTLY), h(514, EXACTLY)
+09-26 18:53:45.031  1222  3311 E TetherController: property_get sys.radio.data.modem_share_flag return 0, 1!
+09-26 18:53:45.035  1742  3032 I OplusHansManager : unfreeze uid: 10423 com.tencent.mm pids: [25071, 25903, 6349, 10247] reason: Alarm scene: LcdOn
+09-26 18:53:45.036  1742 28658 D MediaFocusControlExtImpl: onUidFrozenChanged success + uid = 10423, frozen = false
+09-26 18:53:45.036  1742  3779 I OplusHansManager : uid=10423, pkg=com.tencent.mm F exit(), F stay=117, reason=Alarm, FrozenActionKeepProxy=false
+09-26 18:53:45.036  1742  3792 D BroadcastQueue: setDeferPolicy processName: {com.tencent.mm:push, com.tencent.mm} uid: 10423 policy: 1 defer: false
+09-26 18:53:45.037  1742  3792 I OplusHansManager : up_BC uid=10423 pkg=com.tencent.mm
+09-26 18:53:45.037  1742  3792 I OplusCameraManagerGlobal: reportAppFreeze E
+09-26 18:53:45.037  1742  3792 I OplusBinderProxy: un_pb 10423->6349 rst:true , Desc:IPhoneStateListener/10
+09-26 18:53:45.037  1742  3792 I OplusBinderProxy: un_pb 10423->6349 rst:true , Desc:IContentObserver/-1
+09-26 18:53:45.037  1742  3792 I OplusBinderProxy: un_pb 10423->6349 rst:true , Desc:IContentObserver/-1
+09-26 18:53:45.037  1742  3792 I OplusBinderProxy: un_pb 10423->6349 rst:true , Desc:IContentObserver/-1
+09-26 18:53:45.037  1742  3792 I OplusBinderProxy: un_pb 10423->6349 rst:true , Desc:IContentObserver/-1
+09-26 18:53:45.037  1742  3792 I OplusBinderProxy: un_pb 10423->6349 rst:true , Desc:IDisplayManagerCallback/1
+09-26 18:53:45.037  1742  3792 I OplusBinderProxy: un_pb 10423->25071 rst:true , Desc:IPhoneStateListener/10
+09-26 18:53:45.038  1742  3792 I OplusBinderProxy: un_pb 10423->6349 rst:true , Desc:IPhoneStateListener/10
+09-26 18:53:45.038  1742  3792 I OplusBinderProxy: un_pb 10423->25903 rst:true , Desc:IPhoneStateListener/10
+09-26 18:53:45.038  1742  3792 I OplusBinderProxy: proxyBinder uid: 10423 pkg: com.tencent.mm proxy: false calling: OFreezer
+09-26 18:53:45.039  1742  2897 D ActivityManager: sync unfroze 17570 com.tencent.soter.soterserver for 3
+09-26 18:53:45.039  1742  3025 D ActivityManager: reportOneUidFrozenStateChanged uid 10292 frozen = false
+09-26 18:53:45.039  1742  2897 W ProcessStats: Tracking association SourceState{8b5c8ed com.tencent.mm/10423 Service #54269} whose proc state 8 is better than process ProcessState{38bb167 com.tencent.soter.soterserver/10292 pkg=com.tencent.soter.soterserver} proc state 15 (43 skipped)
+09-26 18:53:45.039  1742  3792 I OplusHansManager : up_BtScan: uid 10423 isUnProxy true
+09-26 18:53:45.041  1742  3032 V AlarmManager: sending alarm Alarm{fde53b1 type 3 origWhen 69338956 whenElapsed 69338956 android} uid 1000 whenElapsed 69338956 windowLength 562712 maxWhenElapsed 69901668 repeatInterval 0 action null component null tag *job.delay* flags 0x0 procName system_server
+09-26 18:53:45.042  1742  3032 V AlarmManager: sending alarm Alarm{b0fc096 type 3 origWhen 69128613 whenElapsed 69128613 com.oplus.obrain} uid 1000 whenElapsed 69128613 windowLength 225000 maxWhenElapsed 69353613 repeatInterval 300000 action MIDAS FIVE MINUTE CLOCK ACTION component null flags 0x8 procName com.oplus.midas
+09-26 18:53:45.043  1742  2229 I OStatsManager_OplusBatteryStatsManager: updateStateTime: PkgName = com.tencent.mm, uid = 10423, state to bg, mForegroundCnt = 0, isFg = false
+09-26 18:53:45.043  1742  3032 V AlarmManager: sending alarm Alarm{eebaab3 type 3 origWhen 69128613 whenElapsed 69128613 com.oplus.obrain} uid 1000 whenElapsed 69128613 windowLength 450000 maxWhenElapsed 69578613 repeatInterval 600000 action MIDAS TEN MINUTE CLOCK ACTION component null flags 0x8 procName com.oplus.midas
+09-26 18:53:45.046  5249  5310 I midasd  : OplusObrainService::notifyEventInt eventId:49 iParam:0
+09-26 18:53:45.047  9074 12998 I OplusObrain: OplusObrainClientInvoke.nativeGetTelephonyInfo
+09-26 18:53:45.048  9074 12998 I OplusObrain: OplusObrainClientInvoke.nativeGetTrafficTypeInfoForNetworkType networkType 0
+09-26 18:53:45.048  1742  3897 D KernelStatsHelper: getKernelStats start!
+09-26 18:53:45.048  1742  3229 D OplusNetlinkSocket: handleNetlinkRecvKernelMessage:nlmsghdr:StructNlMsgHdr{ nlmsg_len{3004}, nlmsg_type{57()}, nlmsg_flags{0()}, nlmsg_seq{0}, nlmsg_pid{114166941} }
+09-26 18:53:45.048  1742  3229 D KernelStatsHelper: get magic :[-1, -1, -1, 77, 65, 71, 73, 67]
+09-26 18:53:45.048  1742  3229 D KernelStatsHelper: magic matched count:249 data_len:12948
+09-26 18:53:45.048  1742  3229 D OplusNetlinkSocket: handleNetlinkRecvKernelMessage:nlmsghdr:StructNlMsgHdr{ nlmsg_len{2988}, nlmsg_type{57()}, nlmsg_flags{0()}, nlmsg_seq{0}, nlmsg_pid{114166941} }
+09-26 18:53:45.048  1742  3229 D OplusNetlinkSocket: handleNetlinkRecvKernelMessage:nlmsghdr:StructNlMsgHdr{ nlmsg_len{2988}, nlmsg_type{57()}, nlmsg_flags{0()}, nlmsg_seq{0}, nlmsg_pid{114166941} }
+09-26 18:53:45.048  1742  3229 D OplusNetlinkSocket: handleNetlinkRecvKernelMessage:nlmsghdr:StructNlMsgHdr{ nlmsg_len{2988}, nlmsg_type{57()}, nlmsg_flags{0()}, nlmsg_seq{0}, nlmsg_pid{114166941} }
+09-26 18:53:45.048  1742  3229 D OplusNetlinkSocket: handleNetlinkRecvKernelMessage:nlmsghdr:StructNlMsgHdr{ nlmsg_len{1116}, nlmsg_type{57()}, nlmsg_flags{0()}, nlmsg_seq{0}, nlmsg_pid{114166941} }
+09-26 18:53:45.048  1742  3229 D KernelStatsHelper: data over! check: true
+09-26 18:53:45.052  9074 12998 I OplusObrain: OplusObrainClientInvoke.nativeGetTrafficTypeInfoForNetworkType networkType 1
+09-26 18:53:45.053  1317  1317 E android.hardware.power.stats-impl.oplus: HandleFactory::read open charger_input_current_now(/proc/charger/input_current_now) failed! fd: -1 errno: 2
+09-26 18:53:45.053  1317  1317 W android.hardware.power.stats-impl.oplus: PruneException: Unknown binder exception (2) pruned into EX_TRANSACTION_FAILED
+09-26 18:53:45.053  5249 12795 W midasd  : handleFactory read failed.
+09-26 18:53:45.055  5249 12790 E midasd  : getTotalFlipsFromSf mCurFrameCount: 1716385
+09-26 18:53:45.055  5249 12790 I midasd  : DisplayAgent updateDisplayDevInfo getRenderFps mFps:120 mRenderFps:0 mWidth:1272 mHeight:2800
+09-26 18:53:45.055  1742  3032 V AlarmManager: sending alarm Alarm{e3a8b21 type 3 origWhen 69232661 whenElapsed 69232661 com.oplus.powermonitor} uid 1000 whenElapsed 69232661 windowLength 2699999 maxWhenElapsed 71932660 repeatInterval 0 action oplus.intent.action.ACTION_PWST_PERIODIC_UPDATE component ComponentInfo{com.oplus.powermonitor/com.oplus.powermonitor.standbymonitor.PowerConnectionReceiver} flags 0x8 procName com.oplus.powermonitor
+09-26 18:53:45.056  1742  3032 V AlarmManager: sending alarm Alarm{3b1c234 type 3 origWhen 69240066 whenElapsed 69240066 com.oplus.metis} uid 10116 whenElapsed 69240066 windowLength 225000 maxWhenElapsed 69465066 repeatInterval 0 action com.oplus.action.TIMER_ALARM_TASK component null flags 0x8 procName com.oplus.metis
+09-26 18:53:45.057  1742  3032 V AlarmManager: sending alarm Alarm{9c2cda0 type 3 origWhen 69260186 whenElapsed 69260186 com.oplus.metis} uid 10116 whenElapsed 69260186 windowLength 225000 maxWhenElapsed 69485186 repeatInterval 300000 action oplus.intent.action.SORT_ALARM_ACTION component null flags 0x8 procName com.oplus.metis
+09-26 18:53:45.057  1742  3032 V AlarmManager: sending alarm Alarm{21723cc type 3 origWhen 69309976 whenElapsed 69314977 com.tencent.mm} uid 10423 whenElapsed 69314977 windowLength 225000 maxWhenElapsed 69539977 repeatInterval 300000 action com.tencent.mm.TrafficStatsReceiver component null flags 0x8 procName com.tencent.mm:push
+09-26 18:53:45.058  5249  5310 I midasd  : OplusObrainService::notifyEventInt eventId:8 iParam:0
+09-26 18:53:45.060 24950 24950 I PowerConnectionReceiver: onReceive oplus.intent.action.ACTION_PWST_PERIODIC_UPDATE
+09-26 18:53:45.060 24950 24950 D PowerConnectionReceiver: congfigVersion:0
+09-26 18:53:45.060 24950 24950 W ContextImpl: Calling a method in the system process without a qualified user: android.app.ContextImpl.startService:2032 android.content.ContextWrapper.startService:865 android.content.ContextWrapper.startService:865 com.oplus.powermonitor.standbymonitor.PowerConnectionReceiver.k:10 com.oplus.powermonitor.standbymonitor.PowerConnectionReceiver.onReceive:273 
+09-26 18:53:45.061  1742  3032 V AlarmManager: sending alarm Alarm{6f839f7 type 3 origWhen 69325765 whenElapsed 69325765 com.oplus.nhs} uid 1001 whenElapsed 69325765 windowLength 225000 maxWhenElapsed 69550765 repeatInterval 300000 action oplus.intent.action.INTERNAL_LOOP_UPDATE_ACTIVITYINFO_ALARM component ComponentInfo{com.oplus.nhs/com.oplus.nhs.pwr.ModemAci.ModemAciAlarmReceiver} flags 0x8 procName com.oplus.nhs
+09-26 18:53:45.062  5249 12926 I midasd  : store modes duration to database:43166207,14344432,1644447,2667847,333454,4751167,719994,0
+09-26 18:53:45.062  5249 12826 I midasd  : updateAndInferenceRadData disable
+09-26 18:53:45.062  5249 12801 W midasd  : getUfsPower:209: initUfsNode nodeValue is empty. ret: -1
+09-26 18:53:45.062  5249 12801 W midasd  : deliverUfsMsg:158 getUfsPower failed. ret: -1
+09-26 18:53:45.063  9074 12998 I OplusObrain: OplusObrainClientInvoke.nativeGetTrafficTypeInfoForNetworkType networkType 1
+09-26 18:53:45.062 27541 27637 I metis_v2_WeatherWakeUp: notifyChange ...
+09-26 18:53:45.063  5249 12800 E midasd  : MidasNativeBinder::registBinder horae failed!
+09-26 18:53:45.063  5249 12800 I midasd  : Thermal: connect Horae service failed
+09-26 18:53:45.064 27541 27700 D HLog-UpMgr: [metis]CheckWhetherUploadBody Mgr:com.oplus.sdp.cf.c@9df8a3c
+09-26 18:53:45.064 27541 27700 D HLog-MultiConfigManage: [metis]checkAllPushTask
+09-26 18:53:45.064 27541 27700 D HLog-MultiConfigManage: [metis]checkAllPushTask existPushInfo : 
+09-26 18:53:45.065  5249 12790 E midasd  : getTotalFlipsFromSf mCurFrameCount: 1716385
+09-26 18:53:45.066  1317  1317 E android.hardware.power.stats-impl.oplus: HandleFactory::read open charger_input_current_now(/proc/charger/input_current_now) failed! fd: -1 errno: 2
+09-26 18:53:45.066  1317  1317 W android.hardware.power.stats-impl.oplus: PruneException: Unknown binder exception (2) pruned into EX_TRANSACTION_FAILED
+09-26 18:53:45.066  5249 12795 W midasd  : handleFactory read failed.
+09-26 18:53:45.066  5249 12790 I midasd  : DisplayAgent updateDisplayDevInfo getRenderFps mFps:120 mRenderFps:0 mWidth:1272 mHeight:2800
+09-26 18:53:45.066  9074 12998 I OplusObrain: OplusObrainClientInvoke.nativeGetTelephonyInfo
+09-26 18:53:45.066 27541 27701 E FileStrategy: java.io.IOException: Read-only file system
+09-26 18:53:45.066  9074 12998 I OplusObrain: OplusObrainClientInvoke.nativeGetTrafficTypeInfoForNetworkType networkType 0
+09-26 18:53:45.067 27541 27637 I metis_v2_TravelingAdapter: timerTask.
+09-26 18:53:45.067 27541 27637 D DataCon-MdpConnector: runSubProcess sleepTime:23.5, wakeTime:7.0, isFirstMdp:false, isSleepTime:false, isPowerConnected:true, isBetween0And6AM:false, isMdpTempLimitExceed:false
+09-26 18:53:45.067 27541 27637 D DataCon-MdpConnector: recordSecond: 9954
+09-26 18:53:45.068  1742  3032 V AlarmManager: sending alarm Alarm{874ded0 type 3 origWhen 69335275 whenElapsed 69335275 com.oplus.deepthinker} uid 10150 whenElapsed 69335275 windowLength 225000 maxWhenElapsed 69560275 repeatInterval 300000 action com.oplus.deepthinker.action.INTENT_DECISION_PREDICT component null flags 0x0 procName com.oplus.deepthinker
+09-26 18:53:45.068 27541 27637 I metis_v2_ClipBoardCollector: no clipboard data for 5min, re-registerClipListener
+09-26 18:53:45.068 24950 24950 D PowerStatsService: onStartCommand
+09-26 18:53:45.068 24950 24950 D PowerStatsService: deal command 6(c_perc_ud)
+09-26 18:53:45.068 24950 24950 D PowerStatsService: onStartCommand end
+09-26 18:53:45.068 24950 24950 D PolicyManager: isAllowToWorkSinceBoot:true
+09-26 18:53:45.071  3825  3825 I ModemAci: [Main] loop update aci alarm is triggered!
+09-26 18:53:45.073  3825  4199 E ModemAciRpmAidlUtils: getService exception caught java.lang.NoSuchMethodException: P0.a$a.asInterface [interface android.os.IBinder]
+09-26 18:53:45.073  3825  4199 I HidlServiceManagement: Trying to get transport of vendor.oplus.hardware.rpmh@2.0::IRpmh/default without hwservicemanager
+09-26 18:53:45.073  3825  4199 W System.err: java.lang.reflect.InvocationTargetException
+09-26 18:53:45.073  3825  4199 W System.err: 	at java.lang.reflect.Method.invoke(Native Method)
+09-26 18:53:45.073  3825  4199 W System.err: 	at com.oplus.nhs.pwr.helper.h.h(Unknown Source:20)
+09-26 18:53:45.073  3825  4199 W System.err: 	at com.oplus.nhs.pwr.helper.h.i(Unknown Source:0)
+09-26 18:53:45.073  3825  4199 W System.err: 	at com.oplus.nhs.pwr.info.RpmInfo.t(Unknown Source:17)
+09-26 18:53:45.073  3825  4199 W System.err: 	at com.oplus.nhs.pwr.info.b.l(Unknown Source:24)
+09-26 18:53:45.073  3825  4199 W System.err: 	at com.oplus.nhs.pwr.info.b.u(Unknown Source:0)
+09-26 18:53:45.073  3825  4199 W System.err: 	at Y.D.h0(Unknown Source:2)
+09-26 18:53:45.073  3825  4199 W System.err: 	at Y.D.u(Unknown Source:0)
+09-26 18:53:45.073  3825  4199 W System.err: 	at Y.y.run(Unknown Source:2)
+09-26 18:53:45.073  3825  4199 W System.err: 	at android.os.Handler.handleCallback(Handler.java:1001)
+09-26 18:53:45.073  3825  4199 W System.err: 	at android.os.Handler.dispatchMessage(Handler.java:109)
+09-26 18:53:45.073  3825  4199 W System.err: 	at android.os.Looper.loopOnce(Looper.java:306)
+09-26 18:53:45.073  3825  4199 W System.err: 	at android.os.Looper.loop(Looper.java:416)
+09-26 18:53:45.073  3825  4199 W System.err: 	at android.os.HandlerThread.run(HandlerThread.java:85)
+09-26 18:53:45.073  3825  4199 W System.err: Caused by: java.util.NoSuchElementException
+09-26 18:53:45.073  3825  4199 W System.err: 	at android.os.HwBinder.getService(Native Method)
+09-26 18:53:45.073  3825  4199 W System.err: 	at android.os.HwBinder.getService(HwBinder.java:93)
+09-26 18:53:45.073  3825  4199 W System.err: 	at vendor.oplus.hardware.rpmh.V2_0.IRpmh.getService(IRpmh.java:74)
+09-26 18:53:45.073  3825  4199 W System.err: 	at vendor.oplus.hardware.rpmh.V2_0.IRpmh.getService(IRpmh.java:84)
+09-26 18:53:45.073  3825  4199 W System.err: 	... 14 more
+09-26 18:53:45.073  3825  4199 E ModemAci: [RpmInfo] failed to request due to invalid state list!
+09-26 18:53:45.074 27541 27637 I metis_v2_ClipBoardCollector: addClipListener 
+09-26 18:53:45.074  4064 21187 D LoggingInterceptor: CallerPackage:com.oplus.metis ,componentName:android.content.ClipboardManager ,actionName:removePrimaryClipChangedListener
+09-26 18:53:45.080 27541 27715 W metis_v2_OifaceBindUtils: bindTask
+09-26 18:53:45.081 27541 27637 I metis_v2_KnowledgeManager: fire, needDelay:false isProcessStart: false
+09-26 18:53:45.081 27541 27637 I metis_v2_KnowledgeManager: fire: smart_connection_dao_Merged
+09-26 18:53:45.081  4064 15096 D LoggingInterceptor: CallerPackage:com.oplus.metis ,componentName:android.content.ClipboardManager ,actionName:addPrimaryClipChangedListener
+09-26 18:53:45.082  1283  1716 I OriginChannel: now system_time:69353694	pwm_rgb: system_time:69353428, lux:43, time_delta:8, pwm_turbo:1, bri:947, r:1994, g:1199, b:789, c:3464, algo:2, end:14638, ts:69353304969975	pwm_rgb: system_time:69353429, lux:43, time_delta:8, pwm_turbo:1, bri:947, r:2006, g:1199, b:807, c:3488, algo:2, end:14638, ts:69353313302975	pwm_rgb: system_time:69353429, lux:43, time_delta:8, pwm_turbo:1, bri:947, r:1982, g:1193, b:795, c:3470, algo:2, end:14638, ts:69353321635975	pwm_rgb: system_time:69353429, lux:43, time_delta:8, pwm_turbo:1, bri:947, r:1994, g:1199, b:801, c:3482, algo:2, end:14638, ts:69353329968975	pwm_rgb: system_time:69353429, lux:43, time_delta:8, pwm_turbo:1, bri:947, r:1988, g:1199, b:795, c:3476, algo:2, end:80174, ts:69353338301975	
+09-26 18:53:45.083  5256  5284 E oiface  : directSetTask: get cpuset path failed
+09-26 18:53:45.084 27541 15097 I ContextAware_DailyStatisticsRecorder: Increase context change count: smart_connection_dao_Merged, value: 1
+09-26 18:53:45.088  3728 14406 D PhoneInterfaceManager: QueryTelephonyChecker-getDataNetworkTypeForSubscriber: packageName = com.oplus.nhs, isGrant = true
+09-26 18:53:45.089 27541 27637 I ContextAware_TimerTaskLocationAdapter: startTimerTask.
+09-26 18:53:45.090 27541 27637 I ContextAware_SortAlarmReceiver: onReceive
+09-26 18:53:45.090 27541 27637 I ContextAware_SortAlgorithmManager.SendMsg: BATTERY OPTIMIZE, do nothing for sortForAlarm, just return!
+09-26 18:53:45.092  3825  4199 E HoraeHelper: horae is not open
+09-26 18:53:45.093  3825  4199 I ModemAci: [CommonInfo] [LO, DA]:{ stamp=69353686 duration=255 screenOnT=23454 wifiConnectT=47102 power=64 dataNetworkType=20 signalStrength=-100 batteryCapacity=3490 thermal[]=-1.0 softAp=false charge=false simCount=2 defaultPhone=0 networkType=WIFI sim1Type=ct sim2Type=cu}
+09-26 18:53:45.093  3825  4199 D ModemAci: [ModemActivityInfo] request!
+09-26 18:53:45.093  3807  4351 E AMC     : [P-lowpower_vowifi/0] execute failed in triggers[0]:[bcc:0][apsleept:null, deepsleep:false, mpsleept:null]
+09-26 18:53:45.094  3825  4199 E NhsAppRILAidl/0: obtainRequest result: { when=-8h59m20s67ms what=2000 target=c0.c }, mSerial : 615
+09-26 18:53:45.094  3807  4351 E AMC     : [P-lowpower_vowifi/1] execute failed in triggers[0]:[bcc:0][apsleept:null, deepsleep:false, mpsleept:null]
+09-26 18:53:45.094  3903  3903 D RadioMessenger: handleMessage Request msgid 2215
+09-26 18:53:45.095  3903  3903 D MessengerResponseHandler: handleMessage Response msgid 206
+09-26 18:53:45.095  3903  3903 E ServiceMessengerHelper: handleSendErrorResponse error 2
+09-26 18:53:45.095  3825  4199 E NhsAppRILAidl/0: addRequest serial: 615
+09-26 18:53:45.095  3825  4199 E NhsAppRILAidl/1: obtainRequest result: { when=-8h59m20s69ms what=2000 arg1=1 target=c0.c }, mSerial : 616
+09-26 18:53:45.095  3903  3903 D RadioMessenger: handleMessage Request msgid 2215
+09-26 18:53:45.096  3903  3903 D MessengerResponseHandler: handleMessage Response msgid 206
+09-26 18:53:45.096  3903  3903 E ServiceMessengerHelper: handleSendErrorResponse error 2
+09-26 18:53:45.096  3825  4199 E NhsAppRILAidl/1: addRequest serial: 616
+09-26 18:53:45.099  3903  3903 D RadioMessenger: handleMessage Request msgid 2220
+09-26 18:53:45.100  3903  3903 D RadioMessenger: handleSetSyncWithAp: -1, syncFlag: 1
+09-26 18:53:45.100  3903  3903 D RadioProxyJ[0]: [3394]> setSyncWithAp syncFlag:1
+09-26 18:53:45.102  7433 15016 I StatisticsTrack: uploadStatisticsData:{dbs_event={topic_name=com.oplus.linkerOplus_HeySynergy_ApplicationRelay_00, topic_tag=1, event_name=createPublisher, event_result=success}{topic_name=com.oplus.linkerOplus_HeySynergy_ApplicationRelay_00, topic_tag=2, event_name=createPublisher, event_result=success}{topic_name=com.oplus.linkerOplus_HeySynergy_ApplicationRelay_00, topic_tag=0, event_name=createSubscriber, event_result=success}{topic_name=com.oplus.linkerOplus_HeySynergy_ApplicationRelay_00, topic_tag=1, event_name=createSubscriber, event_result=success}{topic_name=com.oplus.linkerOplus_HeySynergy_ApplicationRelay_00, topic_tag=0, event_name=createPublisher, event_result=success}{topic_name=com.oplus.linkerOplus_HeySynergy_PCConnect_Relay, topic_tag=0, event_name=createPublisher, event_result=success}{topic_name=com.oplus.linkerOplus_HeySynergy_ApplicationRelay_00, topic_tag=2, event_name=createSubscriber, event_result=success}{topic_name=com.oplus.linkerOplus_HeySynergy_PadConnect_CastMaterial, topic_tag=0, event_name=createPublisher, event_result=success}{topic_name=com.oplus.linkerOplus_HeySynergy_PCConnect_Relay, topic_tag=0, event_name=createSubscriber, event_result=success}{topic_name=com.oplus.linkerOplus_HeySynergy_PadConnect_CastMaterial, topic_tag=0, event_name=createSubscriber, event_result=success}{topic_name=com.oplus.linkerOplus_HeySynergy_PadConnect_CheckAbility, topic_tag=0, event_name=createPublisher, event_result=success}{topic_name=com.oplus.linkerOplus_HeySynergy_PadConnect_CheckAbility, topic_tag=0, event_name=createSubscriber, event_result=success}{topic_name=com.oplus.linkerOplus_MacConnect, topic_tag=0, event_name=createPublisher, event_result=success}}
+09-26 18:53:45.102  7433 15016 I StatisticsTrack: eventId: daily_dbs_event, {dbs_event={topic_name=com.oplus.linkerOplus_HeySynergy_ApplicationRelay_00, topic_tag=1, event_name=createPublisher, event_result=success}{topic_name=com.oplus.linkerOplus_HeySynergy_ApplicationRelay_00, topic_tag=2, event_name=createPublisher, event_result=success}{topic_name=com.oplus.linkerOplus_HeySynergy_ApplicationRelay_00, topic_tag=0, event_name=createSubscriber, event_result=success}{topic_name=com.oplus.linkerOplus_HeySynergy_ApplicationRelay_00, topic_tag=1, event_name=createSubscriber, event_result=success}{topic_name=com.oplus.linkerOplus_HeySynergy_ApplicationRelay_00, topic_tag=0, event_name=createPublisher, event_result=success}{topic_name=com.oplus.linkerOplus_HeySynergy_PCConnect_Relay, topic_tag=0, event_name=createPublisher, event_result=success}{topic_name=com.oplus.linkerOplus_HeySynergy_ApplicationRelay_00, topic_tag=2, event_name=createSubscriber, event_result=success}{topic_name=com.oplus.linkerOplus_HeySynergy_PadConnect_CastMaterial, topic_tag=0, event_name=createPublisher, event_result=success}{topic_name=com.oplus.linkerOplus_HeySynergy_PCConnect_Relay, topic_tag=0, event_name=createSubscriber, event_result=success}{topic_name=com.oplus.linkerOplus_HeySynergy_PadConnect_CastMaterial, topic_tag=0, event_name=createSubscriber, event_result=success}{topic_name=com.oplus.linkerOplus_HeySynergy_PadConnect_CheckAbility, topic_tag=0, event_name=createPublisher, event_result=success}{topic_name=com.oplus.linkerOplus_HeySynergy_PadConnect_CheckAbility, topic_tag=0, event_name=createSubscriber, event_result=success}{topic_name=com.oplus.linkerOplus_MacConnect, topic_tag=0, event_name=createPublisher, event_result=success}}
+09-26 18:53:45.102  1627  6907 D RadioService: setSyncWithAp with instance 0
+09-26 18:53:45.102  1627  6907 D VendorService: VendorService::setSyncWithAp
+09-26 18:53:45.102  1627  6907 D MtkVsComponent: setSyncWithAp with instance 0
+09-26 18:53:45.102  1627  6907 D MipcProxy: MipcProxy::setSyncWithAp for instance 0
+09-26 18:53:45.103 27541 27637 I metis_v2_ManualRuleEngine: doManualFire, ruleName = M_AGENT_26
+09-26 18:53:45.104 27541 27637 I metis_v2_ManualRuleEngine: manualFire rule:ManualRule{s=null, i=[1.4180073E7, M_AGENT_26, 536878941, 1.0, 0.0, {"random":0,"taskId":"M_AGENT_69132bd5989f9734eb7d14fb"}], c=C{_1=[call, 2025-10-20, 2026-12-31, [00:00:00, 23:30:00], 10.0], _2=null, _3=[[==, User, inJiKeFence, 4220432876], [!=, User, inHomeFence, true], [!=, User, inOfficeFence, true], [>=, manual_app_version_com.eg.android.AlipayGphone, hasValue, 2610]]}}
+09-26 18:53:45.104 27541 27637 I metis_v2_ManualRuleEngine: localDateStart = 2025-10-20, localDateEnd = 2026-12-31, currentDate = 2026-09-26
+09-26 18:53:45.104 27541 27637 I metis_v2_ManualRuleEngine: getQueryTime, ruleName = M_AGENT_26
+09-26 18:53:45.104 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, ltStart=00:00, ltEnd=23:30
+09-26 18:53:45.104 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, findTime = 1790464274202,endMilli = 1798731000000, hasTimer = true
+09-26 18:53:45.104 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, dtStart = 00:00 dtEnd = 23:30
+09-26 18:53:45.105 27541 27637 I metis_v2_ManualRuleEngine: getEqualType, pList = []
+09-26 18:53:45.105 27541 27637 I metis_v2_ManualRuleEngine: intentParam = {"random":0,"taskId":"M_AGENT_69132bd5989f9734eb7d14fb"}
+09-26 18:53:45.105 27541 27637 W metis_v2_ManualRuleEngine: publishIntent, already exited, exitedTime = 1790374085154
+09-26 18:53:45.105 27541 27637 I metis_v2_ManualRuleEngine: doManualFire, ruleName = M_AGENT_27
+09-26 18:53:45.105 27541 27637 I metis_v2_ManualRuleEngine: manualFire rule:ManualRule{s=null, i=[1.4180073E7, M_AGENT_27, 536878941, 1.0, 0.0, {"random":0,"taskId":"M_AGENT_69132c7eb5da920fed99a649"}], c=C{_1=[call, 2025-10-20, 2026-12-31, [00:00:00, 23:30:00], 10.0], _2=null, _3=[[==, User, inJiKeFence, 3940759371], [!=, User, inHomeFence, true], [!=, User, inOfficeFence, true], [>=, manual_app_version_com.eg.android.AlipayGphone, hasValue, 2610]]}}
+09-26 18:53:45.105 27541 27637 I metis_v2_ManualRuleEngine: localDateStart = 2025-10-20, localDateEnd = 2026-12-31, currentDate = 2026-09-26
+09-26 18:53:45.105 27541 27637 I metis_v2_ManualRuleEngine: getQueryTime, ruleName = M_AGENT_27
+09-26 18:53:45.105 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, ltStart=00:00, ltEnd=23:30
+09-26 18:53:45.105 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, findTime = 1790464273884,endMilli = 1798731000000, hasTimer = true
+09-26 18:53:45.105 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, dtStart = 00:00 dtEnd = 23:30
+09-26 18:53:45.105 27541 27637 I metis_v2_ManualRuleEngine: getEqualType, pList = []
+09-26 18:53:45.106 27541 27637 I metis_v2_ManualRuleEngine: intentParam = {"random":0,"taskId":"M_AGENT_69132c7eb5da920fed99a649"}
+09-26 18:53:45.106 27541 27637 W metis_v2_ManualRuleEngine: publishIntent, already exited, exitedTime = 1790374085204
+09-26 18:53:45.106 27541 27637 I metis_v2_ManualRuleEngine: doManualFire, ruleName = M_AGENT_28
+09-26 18:53:45.106 27541 27637 I metis_v2_ManualRuleEngine: manualFire rule:ManualRule{s=null, i=[1.4180073E7, M_AGENT_28, 536878941, 1.0, 0.0, {"random":0,"taskId":"M_AGENT_69132cc5b5da920fed99a64c"}], c=C{_1=[call, 2025-10-20, 2026-12-31, [00:00:00, 23:30:00], 10.0], _2=null, _3=[[==, User, inJiKeFence, 1805793932], [!=, User, inHomeFence, true], [!=, User, inOfficeFence, true], [>=, manual_app_version_com.eg.android.AlipayGphone, hasValue, 2610]]}}
+09-26 18:53:45.106 27541 27637 I metis_v2_ManualRuleEngine: localDateStart = 2025-10-20, localDateEnd = 2026-12-31, currentDate = 2026-09-26
+09-26 18:53:45.106 27541 27637 I metis_v2_ManualRuleEngine: getQueryTime, ruleName = M_AGENT_28
+09-26 18:53:45.106 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, ltStart=00:00, ltEnd=23:30
+09-26 18:53:45.106 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, findTime = 1790464274213,endMilli = 1798731000000, hasTimer = true
+09-26 18:53:45.106 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, dtStart = 00:00 dtEnd = 23:30
+09-26 18:53:45.106 27541 27637 I metis_v2_ManualRuleEngine: getEqualType, pList = []
+09-26 18:53:45.106 27541 27637 I metis_v2_ManualRuleEngine: intentParam = {"random":0,"taskId":"M_AGENT_69132cc5b5da920fed99a64c"}
+09-26 18:53:45.106 27541 27637 W metis_v2_ManualRuleEngine: publishIntent, already exited, exitedTime = 1790374085223
+09-26 18:53:45.106 27541 27637 I metis_v2_ManualRuleEngine: doManualFire, ruleName = M_AGENT_29
+09-26 18:53:45.106 27541 27637 I metis_v2_ManualRuleEngine: manualFire rule:ManualRule{s=null, i=[1.4180073E7, M_AGENT_29, 536878941, 1.0, 0.0, {"random":0,"taskId":"M_AGENT_69132d1cb5da920fed99a64e"}], c=C{_1=[call, 2025-10-20, 2026-12-31, [00:00:00, 23:30:00], 10.0], _2=null, _3=[[==, User, inJiKeFence, 3811979118], [!=, User, inHomeFence, true], [!=, User, inOfficeFence, true], [>=, manual_app_version_com.eg.android.AlipayGphone, hasValue, 2610]]}}
+09-26 18:53:45.106 27541 27637 I metis_v2_ManualRuleEngine: localDateStart = 2025-10-20, localDateEnd = 2026-12-31, currentDate = 2026-09-26
+09-26 18:53:45.106 27541 27637 I metis_v2_ManualRuleEngine: getQueryTime, ruleName = M_AGENT_29
+09-26 18:53:45.106 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, ltStart=00:00, ltEnd=23:30
+09-26 18:53:45.106 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, findTime = 1790464274221,endMilli = 1798731000000, hasTimer = true
+09-26 18:53:45.106 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, dtStart = 00:00 dtEnd = 23:30
+09-26 18:53:45.106 27541 27637 I metis_v2_ManualRuleEngine: getEqualType, pList = []
+09-26 18:53:45.107 27541 27637 I metis_v2_ManualRuleEngine: intentParam = {"random":0,"taskId":"M_AGENT_69132d1cb5da920fed99a64e"}
+09-26 18:53:45.107 27541 27637 W metis_v2_ManualRuleEngine: publishIntent, already exited, exitedTime = 1790374085265
+09-26 18:53:45.107 27541 27637 I metis_v2_ManualRuleEngine: doManualFire, ruleName = M_OP_PROD_1012_R_2112
+09-26 18:53:45.107 27541 27637 I metis_v2_ManualRuleEngine: manualFire rule:ManualRule{s=[], i=[1.222101E7, M_OP_PROD_1012, 536879288, 1.0, 0.0, null], c=C{_1=null, _2=[call, [2026-06-30T09:00:00Z, 2026-06-30T23:00:00Z, 2026-07-31T09:00:00Z, 2026-07-31T23:00:00Z, 2026-08-31T09:00:00Z, 2026-08-31T23:00:00Z, 2026-09-30T09:00:00Z, 2026-09-30T23:00:00Z, 2026-10-31T09:00:00Z, 2026-10-31T23:00:00Z, 2026-11-30T09:00:00Z, 2026-11-30T23:00:00Z, 2026-12-31T09:00:00Z, 2026-12-31T23:00:00Z, 2027-01-31T09:00:00Z, 2027-01-31T23:00:00Z, 2027-02-28T09:00:00Z, 2027-02-28T23:00:00Z, 2027-03-31T09:00:00Z, 2027-03-31T23:00:00Z, 2027-04-30T09:00:00Z, 2027-04-30T23:00:00Z, 2027-05-31T09:00:00Z, 2027-05-31T23:00:00Z, 2027-06-30T09:00:00Z, 2027-06-30T23:00:00Z], 506.0], _3=null}}
+09-26 18:53:45.107 27541 27637 I metis_v2_ManualRuleEngine: getQueryTime, ruleName = M_OP_PROD_1012_R_2112
+09-26 18:53:45.107 27541 27637 W metis_v2_ManualRuleEngine: getFindTimes, no times
+09-26 18:53:45.107 27541 27637 I metis_v2_ManualRuleEngine: saveIntent, ruleName = M_OP_PROD_1012_R_2112, intent = null,type = 2
+09-26 18:53:45.111  7433 14556 I StatisticsTrack: eventId: lan_discovery_event, {lan_mac_query_count=0, lan_mac_announce_count=0}
+09-26 18:53:45.111 27541 27637 I metis_v2_ManualRuleEngine: oneTimeTriggered, dtStart = 2026-06-30T09:00 dtEnd = 2026-06-30T23:00
+09-26 18:53:45.111 27541 27637 I metis_v2_ManualRuleEngine: oneTimeTriggered, dtStart = 2026-07-31T09:00 dtEnd = 2026-07-31T23:00
+09-26 18:53:45.111 27541 27637 I metis_v2_ManualRuleEngine: oneTimeTriggered, dtStart = 2026-08-31T09:00 dtEnd = 2026-08-31T23:00
+09-26 18:53:45.111 27541 27637 I metis_v2_ManualRuleEngine: oneTimeTriggered, dtStart = 2026-09-30T09:00 dtEnd = 2026-09-30T23:00
+09-26 18:53:45.111 27541 27637 I metis_v2_ManualRuleEngine: oneTimeTriggered, dtStart = 2026-10-31T09:00 dtEnd = 2026-10-31T23:00
+09-26 18:53:45.111 27541 27637 I metis_v2_ManualRuleEngine: oneTimeTriggered, dtStart = 2026-11-30T09:00 dtEnd = 2026-11-30T23:00
+09-26 18:53:45.111 27541 27637 I metis_v2_ManualRuleEngine: oneTimeTriggered, dtStart = 2026-12-31T09:00 dtEnd = 2026-12-31T23:00
+09-26 18:53:45.111 27541 27637 I metis_v2_ManualRuleEngine: oneTimeTriggered, dtStart = 2027-01-31T09:00 dtEnd = 2027-01-31T23:00
+09-26 18:53:45.111 27541 27637 I metis_v2_ManualRuleEngine: oneTimeTriggered, dtStart = 2027-02-28T09:00 dtEnd = 2027-02-28T23:00
+09-26 18:53:45.111 27541 27637 I metis_v2_ManualRuleEngine: oneTimeTriggered, dtStart = 2027-03-31T09:00 dtEnd = 2027-03-31T23:00
+09-26 18:53:45.111 27541 27637 I metis_v2_ManualRuleEngine: oneTimeTriggered, dtStart = 2027-04-30T09:00 dtEnd = 2027-04-30T23:00
+09-26 18:53:45.111 27541 27637 I metis_v2_ManualRuleEngine: oneTimeTriggered, dtStart = 2027-05-31T09:00 dtEnd = 2027-05-31T23:00
+09-26 18:53:45.111 27541 27637 I metis_v2_ManualRuleEngine: oneTimeTriggered, dtStart = 2027-06-30T09:00 dtEnd = 2027-06-30T23:00
+09-26 18:53:45.111 27541 27637 I metis_v2_ManualRuleEngine: intentParam = null
+09-26 18:53:45.111 27541 27637 W metis_v2_ManualRuleEngine: publishIntent, already exited, exitedTime = 1790374085279
+09-26 18:53:45.111 27541 27637 I metis_v2_ManualRuleEngine: doManualFire, ruleName = M_AGENT_50
+09-26 18:53:45.111 27541 27637 I metis_v2_ManualRuleEngine: manualFire rule:ManualRule{s=null, i=[1.4180073E7, M_AGENT_50, 536878941, 1.0, 0.0, {"random":0,"taskId":"M_AGENT_6a1d2cfb0ff3e8340cc225b8"}], c=C{_1=[call, 2025-10-20, 2026-12-31, [00:00:00, 23:30:00], 10.0], _2=null, _3=[[==, User, inJiKeFence, 2030986222], [!=, User, inHomeFence, true], [!=, User, inOfficeFence, true], [>=, manual_app_version_com.eg.android.AlipayGphone, hasValue, 2610]]}}
+09-26 18:53:45.111 27541 27637 I metis_v2_ManualRuleEngine: localDateStart = 2025-10-20, localDateEnd = 2026-12-31, currentDate = 2026-09-26
+09-26 18:53:45.111 27541 27637 I metis_v2_ManualRuleEngine: getQueryTime, ruleName = M_AGENT_50
+09-26 18:53:45.111 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, ltStart=00:00, ltEnd=23:30
+09-26 18:53:45.111 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, findTime = 1790451977312,endMilli = 1798731000000, hasTimer = true
+09-26 18:53:45.112 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, dtStart = 00:00 dtEnd = 23:30
+09-26 18:53:45.112  1627  1653 D MipcProxy: handleMessage msg is 4001, instance 0
+09-26 18:53:45.112  1627  1653 D RadioProxy: setSyncWithAp : response cb for instance 0
+09-26 18:53:45.112  1627  1627 D RadioServiceResponse: RadioServiceResponse::setSyncWithApResponse
+09-26 18:53:45.113  3903 10942 D SubsysRadioResponse: setSyncWithApResponse info.error = 0
+09-26 18:53:45.113  3903  3903 D MessengerResponseHandler: handleMessage Response msgid 210
+09-26 18:53:45.114  3903 10942 D RadioProxyJ[0]: [3394]< setSyncWithApResponse 
+09-26 18:53:45.114  7433 14556 I SettingImpl: isSenselessConnectionToggleChecked switchValue: 1, state is true
+09-26 18:53:45.116 27541 27637 I metis_v2_ManualRuleEngine: getEqualType, pList = []
+09-26 18:53:45.116 27541 27637 I metis_v2_ManualRuleEngine: intentParam = {"random":0,"taskId":"M_AGENT_6a1d2cfb0ff3e8340cc225b8"}
+09-26 18:53:45.116 27541 27637 W metis_v2_ManualRuleEngine: publishIntent, already exited, exitedTime = 1790374085299
+09-26 18:53:45.116 27541 27637 I metis_v2_ManualRuleEngine: doManualFire, ruleName = M_OP_PROD_1011_R_2054
+09-26 18:53:45.116 27541 27637 I metis_v2_ManualRuleEngine: manualFire rule:ManualRule{s=[], i=[1.2221009E7, M_OP_PROD_1011, 536879264, 1.0, 0.0, null], c=C{_1=null, _2=[call, [2026-06-16T09:00:00Z, 2026-06-16T23:00:00Z, 2026-07-16T09:00:00Z, 2026-07-16T23:00:00Z, 2026-08-16T09:00:00Z, 2026-08-16T23:00:00Z, 2026-09-16T09:00:00Z, 2026-09-16T23:00:00Z, 2026-10-16T09:00:00Z, 2026-10-16T23:00:00Z, 2026-11-16T09:00:00Z, 2026-11-16T23:00:00Z, 2026-12-16T09:00:00Z, 2026-12-16T23:00:00Z, 2027-01-16T09:00:00Z, 2027-01-16T23:00:00Z, 2027-02-16T09:00:00Z, 2027-02-16T23:00:00Z, 2027-03-16T09:00:00Z, 2027-03-16T23:00:00Z, 2027-04-16T09:00:00Z, 2027-04-16T23:00:00Z, 2027-05-16T09:00:00Z, 2027-05-16T23:00:00Z, 2027-06-16T09:00:00Z, 2027-06-16T23:00:00Z], 506.0], _3=null}}
+09-26 18:53:45.116 27541 27637 I metis_v2_ManualRuleEngine: getQueryTime, ruleName = M_OP_PROD_1011_R_2054
+09-26 18:53:45.116 27541 27637 W metis_v2_ManualRuleEngine: getFindTimes, no times
+09-26 18:53:45.116 27541 27637 I metis_v2_ManualRuleEngine: saveIntent, ruleName = M_OP_PROD_1011_R_2054, intent = null,type = 2
+09-26 18:53:45.118  7433 14556 I SettingImpl: isSenselessConnectionToggleChecked switchValue: 1, state is true
+09-26 18:53:45.118  7433 14556 I StatisticsTrack: eventId: daily_senseless_switch_event, {senseless_switch=1}
+09-26 18:53:45.119  7433 14556 I StatisticsTrack: eventId: daily_setting_inner_discovery_switch, {setting_switch=1}
+09-26 18:53:45.119  7433 14556 I StatisticsTrack: eventId: scan_times_event, {low_power_scan_nums=5, screen_off_ultra_low_power_scan_times=0, low_latency_scan_times=0, ultra_low_power_scan_nums=0, screen_off_low_power_scan_times=0, calling_package_name=com.heytap.accessory, low_latency_scan_nums=0, balance_scan_times=8365283, low_power_scan_times=10706734, ultra_low_power_scan_times=0, screen_off_low_power_scan_nums=0, screen_off_ultra_low_power_scan_nums=0, balance_scan_nums=24}
+09-26 18:53:45.119  7433 14556 I StatisticsTrack: eventId: scan_times_event, {low_power_scan_nums=91, screen_off_ultra_low_power_scan_times=0, low_latency_scan_times=0, ultra_low_power_scan_nums=0, screen_off_low_power_scan_times=0, calling_package_name=PantaConnect, low_latency_scan_nums=0, balance_scan_times=40411325, low_power_scan_times=181568984, ultra_low_power_scan_times=0, screen_off_low_power_scan_nums=0, screen_off_ultra_low_power_scan_nums=0, balance_scan_nums=229}
+09-26 18:53:45.119  7433 14556 I StatisticsTrack: SP data:
+09-26 18:53:45.119  7433 14556 I StatisticsTrack: eventId: daily_dbr_send_event_count, {dbr_send_failed_reason=, daily_dbr_send_bcmsg_count=0, daily_dbr_send_msg_count=0}
+09-26 18:53:45.119  7433 14556 I StatisticsTrack: eventId: daily_dbr_receive_event_count, {daily_dbr_received_data_msg_count=0, daily_dbr_received_system_msg_count=0, daily_dbr_received_bc_msg_count=0}
+09-26 18:53:45.119  7433  9017 I DRS_SDK_COMMON_ClientDataCacheManager: Data write successful: id=746, eventGroup=20210001, eventId=lan_discovery_event, eventTimeLocal=1790420025112, calibratedEventTime=1790420025328, serverTimeOffsetMs=216, size=1173
+09-26 18:53:45.120 27541 27637 I metis_v2_ManualRuleEngine: oneTimeTriggered, dtStart = 2026-06-16T09:00 dtEnd = 2026-06-16T23:00
+09-26 18:53:45.120 27541 27637 I metis_v2_ManualRuleEngine: oneTimeTriggered, dtStart = 2026-07-16T09:00 dtEnd = 2026-07-16T23:00
+09-26 18:53:45.120 27541 27637 I metis_v2_ManualRuleEngine: oneTimeTriggered, dtStart = 2026-08-16T09:00 dtEnd = 2026-08-16T23:00
+09-26 18:53:45.120 27541 27637 I metis_v2_ManualRuleEngine: oneTimeTriggered, dtStart = 2026-09-16T09:00 dtEnd = 2026-09-16T23:00
+09-26 18:53:45.120 27541 27637 I metis_v2_ManualRuleEngine: oneTimeTriggered, dtStart = 2026-10-16T09:00 dtEnd = 2026-10-16T23:00
+09-26 18:53:45.120  7433 14556 I StatisticsTrack: eventId: oaf_nfc_near_connect_switch_state, {deviceType=8, nfcNearConnectSwitchState=0}
+09-26 18:53:45.120 27541 27637 I metis_v2_ManualRuleEngine: oneTimeTriggered, dtStart = 2026-11-16T09:00 dtEnd = 2026-11-16T23:00
+09-26 18:53:45.120 27541 27637 I metis_v2_ManualRuleEngine: oneTimeTriggered, dtStart = 2026-12-16T09:00 dtEnd = 2026-12-16T23:00
+09-26 18:53:45.120 27541 27637 I metis_v2_ManualRuleEngine: oneTimeTriggered, dtStart = 2027-01-16T09:00 dtEnd = 2027-01-16T23:00
+09-26 18:53:45.120 27541 27637 I metis_v2_ManualRuleEngine: oneTimeTriggered, dtStart = 2027-02-16T09:00 dtEnd = 2027-02-16T23:00
+09-26 18:53:45.120 27541 27637 I metis_v2_ManualRuleEngine: oneTimeTriggered, dtStart = 2027-03-16T09:00 dtEnd = 2027-03-16T23:00
+09-26 18:53:45.120  7433 14556 I StatisticsTrack: eventId: oaf_nfc_near_allow_screen_shot, {nfcNearAllowScreenShot=0}
+09-26 18:53:45.120 27541 27637 I metis_v2_ManualRuleEngine: oneTimeTriggered, dtStart = 2027-04-16T09:00 dtEnd = 2027-04-16T23:00
+09-26 18:53:45.120 27541 27637 I metis_v2_ManualRuleEngine: oneTimeTriggered, dtStart = 2027-05-16T09:00 dtEnd = 2027-05-16T23:00
+09-26 18:53:45.120 27541 27637 I metis_v2_ManualRuleEngine: oneTimeTriggered, dtStart = 2027-06-16T09:00 dtEnd = 2027-06-16T23:00
+09-26 18:53:45.121 27541 27637 I metis_v2_ManualRuleEngine: intentParam = null
+09-26 18:53:45.121 27541 27637 W metis_v2_ManualRuleEngine: publishIntent, already exited, exitedTime = 1790374085312
+09-26 18:53:45.121 27541 27637 I metis_v2_ManualRuleEngine: doManualFire, ruleName = M_AGENT_55
+09-26 18:53:45.121 27541 27637 I metis_v2_ManualRuleEngine: manualFire rule:ManualRule{s=null, i=[1.4180073E7, M_AGENT_55, 536878941, 1.0, 0.0, {"random":0,"taskId":"M_AGENT_6a1d317f0ff3e8340cc225bf"}], c=C{_1=[call, 2025-10-20, 2026-12-31, [00:00:00, 23:30:00], 10.0], _2=null, _3=[[==, User, inJiKeFence, 2266871164], [!=, User, inHomeFence, true], [!=, User, inOfficeFence, true], [>=, manual_app_version_com.eg.android.AlipayGphone, hasValue, 2610]]}}
+09-26 18:53:45.121 27541 27637 I metis_v2_ManualRuleEngine: localDateStart = 2025-10-20, localDateEnd = 2026-12-31, currentDate = 2026-09-26
+09-26 18:53:45.121 27541 27637 I metis_v2_ManualRuleEngine: getQueryTime, ruleName = M_AGENT_55
+09-26 18:53:45.121 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, ltStart=00:00, ltEnd=23:30
+09-26 18:53:45.121 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, findTime = 1790451977347,endMilli = 1798731000000, hasTimer = true
+09-26 18:53:45.121  7433 14556 I StatisticsTrack: SP data:
+09-26 18:53:45.121 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, dtStart = 00:00 dtEnd = 23:30
+09-26 18:53:45.123 27541 27637 I metis_v2_ManualRuleEngine: getEqualType, pList = []
+09-26 18:53:45.123 27541 27637 I metis_v2_ManualRuleEngine: intentParam = {"random":0,"taskId":"M_AGENT_6a1d317f0ff3e8340cc225bf"}
+09-26 18:53:45.123 27541 27637 W metis_v2_ManualRuleEngine: publishIntent, already exited, exitedTime = 1790374085336
+09-26 18:53:45.123 27541 27637 I metis_v2_ManualRuleEngine: doManualFire, ruleName = M_AGENT_40
+09-26 18:53:45.123 27541 27637 I metis_v2_ManualRuleEngine: manualFire rule:ManualRule{s=null, i=[1.4180073E7, M_AGENT_40, 536878941, 1.0, 0.0, {"random":0,"taskId":"M_AGENT_69f220b06875ef77d2572722"}], c=C{_1=[call, 2025-10-20, 2026-12-31, [00:00:00, 23:30:00], 10.0], _2=null, _3=[[==, User, inJiKeFence, 3793887690], [!=, User, inHomeFence, true], [!=, User, inOfficeFence, true], [>=, manual_app_version_com.eg.android.AlipayGphone, hasValue, 2610]]}}
+09-26 18:53:45.123 27541 27637 I metis_v2_ManualRuleEngine: localDateStart = 2025-10-20, localDateEnd = 2026-12-31, currentDate = 2026-09-26
+09-26 18:53:45.123  1742  3284 E HoraeHelper: horae is not open
+09-26 18:53:45.123 27541 27637 I metis_v2_ManualRuleEngine: getQueryTime, ruleName = M_AGENT_40
+09-26 18:53:45.123 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, ltStart=00:00, ltEnd=23:30
+09-26 18:53:45.123  1742  3284 E HoraeHelper: horae is not open
+09-26 18:53:45.123 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, findTime = 1790451977391,endMilli = 1798731000000, hasTimer = true
+09-26 18:53:45.123  1742  3284 E HoraeHelper: horae is not open
+09-26 18:53:45.123 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, dtStart = 00:00 dtEnd = 23:30
+09-26 18:53:45.123  1742  3284 E HoraeHelper: horae is not open
+09-26 18:53:45.123  1742  3284 E HoraeHelper: horae is not open
+09-26 18:53:45.123  1742  3284 E HoraeHelper: horae is not open
+09-26 18:53:45.123  1742  3284 E HoraeHelper: horae is not open
+09-26 18:53:45.123  1742  3284 E HoraeHelper: horae is not open
+09-26 18:53:45.123  1742  3284 E HoraeHelper: horae is not open
+09-26 18:53:45.123  1742  3284 E HoraeHelper: horae is not open
+09-26 18:53:45.123 27541 27637 I metis_v2_ManualRuleEngine: getEqualType, pList = []
+09-26 18:53:45.124 27541 27637 I metis_v2_ManualRuleEngine: intentParam = {"random":0,"taskId":"M_AGENT_69f220b06875ef77d2572722"}
+09-26 18:53:45.124 27541 27637 W metis_v2_ManualRuleEngine: publishIntent, already exited, exitedTime = 1790374085353
+09-26 18:53:45.124 27541 27637 I metis_v2_ManualRuleEngine: doManualFire, ruleName = M_AGENT_51
+09-26 18:53:45.124 27541 27637 I metis_v2_ManualRuleEngine: manualFire rule:ManualRule{s=null, i=[1.4180073E7, M_AGENT_51, 536878941, 1.0, 0.0, {"random":0,"taskId":"M_AGENT_6a1d2db7986a74387142af8a"}], c=C{_1=[call, 2025-10-20, 2026-12-31, [00:00:00, 23:30:00], 10.0], _2=null, _3=[[==, User, inJiKeFence, 2691753641], [!=, User, inHomeFence, true], [!=, User, inOfficeFence, true], [>=, manual_app_version_com.eg.android.AlipayGphone, hasValue, 2610]]}}
+09-26 18:53:45.124 27541 27637 I metis_v2_ManualRuleEngine: localDateStart = 2025-10-20, localDateEnd = 2026-12-31, currentDate = 2026-09-26
+09-26 18:53:45.124 27541 27637 I metis_v2_ManualRuleEngine: getQueryTime, ruleName = M_AGENT_51
+09-26 18:53:45.124 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, ltStart=00:00, ltEnd=23:30
+09-26 18:53:45.124 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, findTime = 1790451977365,endMilli = 1798731000000, hasTimer = true
+09-26 18:53:45.124 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, dtStart = 00:00 dtEnd = 23:30
+09-26 18:53:45.124 27541 27637 I metis_v2_ManualRuleEngine: getEqualType, pList = []
+09-26 18:53:45.124 27541 27637 I metis_v2_ManualRuleEngine: intentParam = {"random":0,"taskId":"M_AGENT_6a1d2db7986a74387142af8a"}
+09-26 18:53:45.124  7433 14556 I StatisticsTrack: key = plugin_pull_times value = 
+09-26 18:53:45.124 27541 27637 W metis_v2_ManualRuleEngine: publishIntent, already exited, exitedTime = 1790374085398
+09-26 18:53:45.124 27541 27637 I metis_v2_ManualRuleEngine: doManualFire, ruleName = M_OP_PROD_995_R_1968
+09-26 18:53:45.124 27541 27637 I metis_v2_ManualRuleEngine: manualFire rule:ManualRule{s=[], i=[1.4150008E7, M_OP_PROD_995, 536879061, 1.0, 0.0, null], c=C{_1=null, _2=[call, [2026-05-28T20:00:00Z, 2026-05-28T22:00:00Z, 2026-05-30T20:00:00Z, 2026-05-30T22:00:00Z, 2026-06-28T20:00:00Z, 2026-06-28T22:00:00Z, 2026-06-30T20:00:00Z, 2026-06-30T22:00:00Z, 2026-07-28T20:00:00Z, 2026-07-28T22:00:00Z, 2026-07-30T20:00:00Z, 2026-07-30T22:00:00Z, 2026-08-28T20:00:00Z, 2026-08-28T22:00:00Z, 2026-08-30T20:00:00Z, 2026-08-30T22:00:00Z, 2026-09-28T20:00:00Z, 2026-09-28T22:00:00Z, 2026-09-30T20:00:00Z, 2026-09-30T22:00:00Z, 2026-10-28T20:00:00Z, 2026-10-28T22:00:00Z, 2026-10-30T20:00:00Z, 2026-10-30T22:00:00Z], 60.0], _3=null}}
+09-26 18:53:45.124 27541 27637 I metis_v2_ManualRuleEngine: getQueryTime, ruleName = M_OP_PROD_995_R_1968
+09-26 18:53:45.124 27541 27637 W metis_v2_ManualRuleEngine: getFindTimes, no times
+09-26 18:53:45.124 27541 27637 I metis_v2_ManualRuleEngine: saveIntent, ruleName = M_OP_PROD_995_R_1968, intent = null,type = 2
+09-26 18:53:45.124  7433  9017 I DRS_SDK_COMMON_ClientDataCacheManager: Data write successful: id=747, eventGroup=20210001, eventId=scan_times_event, eventTimeLocal=1790420025121, calibratedEventTime=1790420025337, serverTimeOffsetMs=216, size=1602
+09-26 18:53:45.126  3825  4087 E NhsAppRILAidl/0: findAndRemoveRequestFromList serial: 615
+09-26 18:53:45.127  3825  4087 E NhsAppRILAidl/0: processResponse serial: 615
+09-26 18:53:45.127  7433  9017 I DRS_SDK_COMMON_ClientDataCacheManager: Data write successful: id=748, eventGroup=20210001, eventId=scan_times_event, eventTimeLocal=1790420025125, calibratedEventTime=1790420025341, serverTimeOffsetMs=216, size=1598
+09-26 18:53:45.128 27541 27637 I metis_v2_ManualRuleEngine: oneTimeTriggered, dtStart = 2026-05-28T20:00 dtEnd = 2026-05-28T22:00
+09-26 18:53:45.128  3825  4184 E NhsUtils: ### DEBUG ### getChipsetType: platform=mt6991
+09-26 18:53:45.129  3825  4184 E NhsUtils: ### DEBUG ### Detected MTK platform
+09-26 18:53:45.129  3825  4184 E NhsUtils: ### DEBUG ### getChipsetType: platform=mt6991
+09-26 18:53:45.129  3825  4184 E NhsUtils: ### DEBUG ### Detected MTK platform
+09-26 18:53:45.129  3825  4087 E NhsAppRILAidl/1: onEventIndication: 2
+09-26 18:53:45.129  3825  4184 E NhsUtils: ### DEBUG ### getChipsetType: platform=mt6991
+09-26 18:53:45.129 27541 27637 I metis_v2_ManualRuleEngine: oneTimeTriggered, dtStart = 2026-05-30T20:00 dtEnd = 2026-05-30T22:00
+09-26 18:53:45.129  3825  4184 E NhsUtils: ### DEBUG ### Detected MTK platform
+09-26 18:53:45.129  3825  4087 E NhsAppRILAidl/0: onEventIndication: 2
+09-26 18:53:45.130  7433  9017 I DRS_SDK_COMMON_ClientDataCacheManager: Data write successful: id=749, eventGroup=20210001, eventId=oaf_nfc_near_connect_switch_state, eventTimeLocal=1790420025128, calibratedEventTime=1790420025344, serverTimeOffsetMs=216, size=1195
+09-26 18:53:45.130  3825  4184 E NhsUtils: ### DEBUG ### getChipsetType: platform=mt6991
+09-26 18:53:45.130  3825  4184 E NhsUtils: ### DEBUG ### Detected MTK platform
+09-26 18:53:45.130  3825  4191 E NhsAppRILAidl/1: findAndRemoveRequestFromList serial: 616
+09-26 18:53:45.130  3825  4191 E NhsAppRILAidl/1: processResponse serial: 616
+09-26 18:53:45.130 27541 27637 I metis_v2_ManualRuleEngine: oneTimeTriggered, dtStart = 2026-06-28T20:00 dtEnd = 2026-06-28T22:00
+09-26 18:53:45.130 27541 27637 I metis_v2_ManualRuleEngine: oneTimeTriggered, dtStart = 2026-06-30T20:00 dtEnd = 2026-06-30T22:00
+09-26 18:53:45.130 27541 27637 I metis_v2_ManualRuleEngine: oneTimeTriggered, dtStart = 2026-07-28T20:00 dtEnd = 2026-07-28T22:00
+09-26 18:53:45.130 27541 27637 I metis_v2_ManualRuleEngine: oneTimeTriggered, dtStart = 2026-07-30T20:00 dtEnd = 2026-07-30T22:00
+09-26 18:53:45.131 27541 27637 I metis_v2_ManualRuleEngine: oneTimeTriggered, dtStart = 2026-08-28T20:00 dtEnd = 2026-08-28T22:00
+09-26 18:53:45.131 27541 27637 I metis_v2_ManualRuleEngine: oneTimeTriggered, dtStart = 2026-08-30T20:00 dtEnd = 2026-08-30T22:00
+09-26 18:53:45.131 27541 27637 I metis_v2_ManualRuleEngine: oneTimeTriggered, dtStart = 2026-09-28T20:00 dtEnd = 2026-09-28T22:00
+09-26 18:53:45.131 27541 27637 I metis_v2_ManualRuleEngine: oneTimeTriggered, dtStart = 2026-09-30T20:00 dtEnd = 2026-09-30T22:00
+09-26 18:53:45.131 27541 27637 I metis_v2_ManualRuleEngine: oneTimeTriggered, dtStart = 2026-10-28T20:00 dtEnd = 2026-10-28T22:00
+09-26 18:53:45.131 27541 27637 I metis_v2_ManualRuleEngine: oneTimeTriggered, dtStart = 2026-10-30T20:00 dtEnd = 2026-10-30T22:00
+09-26 18:53:45.131 27541 27637 I metis_v2_ManualRuleEngine: intentParam = null
+09-26 18:53:45.131 27541 27637 W metis_v2_ManualRuleEngine: publishIntent, already exited, exitedTime = 1790374085417
+09-26 18:53:45.131 27541 27637 I metis_v2_ManualRuleEngine: doManualFire, ruleName = M_AGENT_52
+09-26 18:53:45.131 27541 27637 I metis_v2_ManualRuleEngine: manualFire rule:ManualRule{s=null, i=[1.4180073E7, M_AGENT_52, 536878941, 1.0, 0.0, {"random":0,"taskId":"M_AGENT_6a1d2ed0986a74387142af8f"}], c=C{_1=[call, 2025-10-20, 2026-12-31, [00:00:00, 23:30:00], 10.0], _2=null, _3=[[==, User, inJiKeFence, 3080648345], [!=, User, inHomeFence, true], [!=, User, inOfficeFence, true], [>=, manual_app_version_com.eg.android.AlipayGphone, hasValue, 2610]]}}
+09-26 18:53:45.131 27541 27637 I metis_v2_ManualRuleEngine: localDateStart = 2025-10-20, localDateEnd = 2026-12-31, currentDate = 2026-09-26
+09-26 18:53:45.131 27541 27637 I metis_v2_ManualRuleEngine: getQueryTime, ruleName = M_AGENT_52
+09-26 18:53:45.131 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, ltStart=00:00, ltEnd=23:30
+09-26 18:53:45.131 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, findTime = 1790451977441,endMilli = 1798731000000, hasTimer = true
+09-26 18:53:45.131 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, dtStart = 00:00 dtEnd = 23:30
+09-26 18:53:45.131 27541 27637 I metis_v2_ManualRuleEngine: getEqualType, pList = []
+09-26 18:53:45.131 27541 27637 I metis_v2_ManualRuleEngine: intentParam = {"random":0,"taskId":"M_AGENT_6a1d2ed0986a74387142af8f"}
+09-26 18:53:45.131 27541 27637 W metis_v2_ManualRuleEngine: publishIntent, already exited, exitedTime = 1790374085445
+09-26 18:53:45.131 27541 27637 I metis_v2_ManualRuleEngine: doManualFire, ruleName = M_AGENT_30
+09-26 18:53:45.131 27541 27637 I metis_v2_ManualRuleEngine: manualFire rule:ManualRule{s=null, i=[1.4180073E7, M_AGENT_30, 536878941, 1.0, 0.0, {"random":0,"taskId":"M_AGENT_69132d58989f9734eb7d1500"}], c=C{_1=[call, 2025-10-20, 2026-12-31, [00:00:00, 23:30:00], 10.0], _2=null, _3=[[==, User, inJiKeFence, 4042969267], [!=, User, inHomeFence, true], [!=, User, inOfficeFence, true], [>=, manual_app_version_com.eg.android.AlipayGphone, hasValue, 2610]]}}
+09-26 18:53:45.131 27541 27637 I metis_v2_ManualRuleEngine: localDateStart = 2025-10-20, localDateEnd = 2026-12-31, currentDate = 2026-09-26
+09-26 18:53:45.131 27541 27637 I metis_v2_ManualRuleEngine: getQueryTime, ruleName = M_AGENT_30
+09-26 18:53:45.131 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, ltStart=00:00, ltEnd=23:30
+09-26 18:53:45.131 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, findTime = 1790464274706,endMilli = 1798731000000, hasTimer = true
+09-26 18:53:45.131  3825  4184 E NhsUtils: ### DEBUG ### getChipsetType: platform=mt6991
+09-26 18:53:45.131  3825  4184 E NhsUtils: ### DEBUG ### Detected MTK platform
+09-26 18:53:45.131  3825  4184 E NhsUtils: ### DEBUG ### getChipsetType: platform=mt6991
+09-26 18:53:45.131  3825  4184 E NhsUtils: ### DEBUG ### Detected MTK platform
+09-26 18:53:45.131 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, dtStart = 00:00 dtEnd = 23:30
+09-26 18:53:45.132 27541 27637 I metis_v2_ManualRuleEngine: getEqualType, pList = []
+09-26 18:53:45.132 27541 27637 I metis_v2_ManualRuleEngine: intentParam = {"random":0,"taskId":"M_AGENT_69132d58989f9734eb7d1500"}
+09-26 18:53:45.132 27541 27637 W metis_v2_ManualRuleEngine: publishIntent, already exited, exitedTime = 1790374085491
+09-26 18:53:45.132 27541 27637 I metis_v2_ManualRuleEngine: doManualFire, ruleName = M_AGENT_41
+09-26 18:53:45.132 27541 27637 I metis_v2_ManualRuleEngine: manualFire rule:ManualRule{s=null, i=[1.4180073E7, M_AGENT_41, 536878941, 1.0, 0.0, {"random":0,"taskId":"M_AGENT_69f2213cd9cd7b61c92808ce"}], c=C{_1=[call, 2025-10-20, 2026-12-31, [00:00:00, 23:30:00], 10.0], _2=null, _3=[[==, User, inJiKeFence, 3955780908], [!=, User, inHomeFence, true], [!=, User, inOfficeFence, true], [>=, manual_app_version_com.eg.android.AlipayGphone, hasValue, 2610]]}}
+09-26 18:53:45.132 27541 27637 I metis_v2_ManualRuleEngine: localDateStart = 2025-10-20, localDateEnd = 2026-12-31, currentDate = 2026-09-26
+09-26 18:53:45.132 27541 27637 I metis_v2_ManualRuleEngine: getQueryTime, ruleName = M_AGENT_41
+09-26 18:53:45.132 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, ltStart=00:00, ltEnd=23:30
+09-26 18:53:45.132 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, findTime = 1790451977460,endMilli = 1798731000000, hasTimer = true
+09-26 18:53:45.132 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, dtStart = 00:00 dtEnd = 23:30
+09-26 18:53:45.132 27541 27637 I metis_v2_ManualRuleEngine: getEqualType, pList = []
+09-26 18:53:45.132 27541 27637 I metis_v2_ManualRuleEngine: intentParam = {"random":0,"taskId":"M_AGENT_69f2213cd9cd7b61c92808ce"}
+09-26 18:53:45.132 27541 27637 W metis_v2_ManualRuleEngine: publishIntent, already exited, exitedTime = 1790374085524
+09-26 18:53:45.132 27541 27637 I metis_v2_ManualRuleEngine: doManualFire, ruleName = M_AGENT_42
+09-26 18:53:45.132 27541 27637 I metis_v2_ManualRuleEngine: manualFire rule:ManualRule{s=null, i=[1.4180073E7, M_AGENT_42, 536878941, 1.0, 0.0, {"random":0,"taskId":"M_AGENT_69f221ded9cd7b61c92808d1"}], c=C{_1=[call, 2025-10-20, 2026-12-31, [00:00:00, 23:30:00], 10.0], _2=null, _3=[[==, User, inJiKeFence, 2495239444], [!=, User, inHomeFence, true], [!=, User, inOfficeFence, true], [>=, manual_app_version_com.eg.android.AlipayGphone, hasValue, 2610]]}}
+09-26 18:53:45.132 27541 27637 I metis_v2_ManualRuleEngine: localDateStart = 2025-10-20, localDateEnd = 2026-12-31, currentDate = 2026-09-26
+09-26 18:53:45.132 27541 27637 I metis_v2_ManualRuleEngine: getQueryTime, ruleName = M_AGENT_42
+09-26 18:53:45.132 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, ltStart=00:00, ltEnd=23:30
+09-26 18:53:45.132 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, findTime = 1790460850693,endMilli = 1798731000000, hasTimer = true
+09-26 18:53:45.132 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, dtStart = 00:00 dtEnd = 23:30
+09-26 18:53:45.133  7433  9017 I DRS_SDK_COMMON_ClientDataCacheManager: Data write successful: id=750, eventGroup=20210001, eventId=oaf_nfc_near_allow_screen_shot, eventTimeLocal=1790420025130, calibratedEventTime=1790420025346, serverTimeOffsetMs=216, size=1165
+09-26 18:53:45.133 27541 27637 I metis_v2_ManualRuleEngine: getEqualType, pList = []
+09-26 18:53:45.133 27541 27637 I metis_v2_ManualRuleEngine: intentParam = {"random":0,"taskId":"M_AGENT_69f221ded9cd7b61c92808d1"}
+09-26 18:53:45.133 27541 27637 W metis_v2_ManualRuleEngine: publishIntent, already exited, exitedTime = 1790374085561
+09-26 18:53:45.133 27541 27637 I metis_v2_ManualRuleEngine: doManualFire, ruleName = M_AGENT_53
+09-26 18:53:45.133 27541 27637 I metis_v2_ManualRuleEngine: manualFire rule:ManualRule{s=null, i=[1.4180073E7, M_AGENT_53, 536878941, 1.0, 0.0, {"random":0,"taskId":"M_AGENT_6a1d2fbf0ff3e8340cc225bb"}], c=C{_1=[call, 2025-10-20, 2026-12-31, [00:00:00, 23:30:00], 10.0], _2=null, _3=[[==, User, inJiKeFence, 1926029917], [!=, User, inHomeFence, true], [!=, User, inOfficeFence, true], [>=, manual_app_version_com.eg.android.AlipayGphone, hasValue, 2610]]}}
+09-26 18:53:45.133 27541 27637 I metis_v2_ManualRuleEngine: localDateStart = 2025-10-20, localDateEnd = 2026-12-31, currentDate = 2026-09-26
+09-26 18:53:45.133 27541 27637 I metis_v2_ManualRuleEngine: getQueryTime, ruleName = M_AGENT_53
+09-26 18:53:45.133 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, ltStart=00:00, ltEnd=23:30
+09-26 18:53:45.133 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, findTime = 1790451977476,endMilli = 1798731000000, hasTimer = true
+09-26 18:53:45.133 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, dtStart = 00:00 dtEnd = 23:30
+09-26 18:53:45.133 27541 27637 I metis_v2_ManualRuleEngine: getEqualType, pList = []
+09-26 18:53:45.134 27541 27637 I metis_v2_ManualRuleEngine: intentParam = {"random":0,"taskId":"M_AGENT_6a1d2fbf0ff3e8340cc225bb"}
+09-26 18:53:45.134 27541 27637 W metis_v2_ManualRuleEngine: publishIntent, already exited, exitedTime = 1790374085586
+09-26 18:53:45.134 27541 27637 I metis_v2_ManualRuleEngine: doManualFire, ruleName = M_AGENT_31
+09-26 18:53:45.134 27541 27637 I metis_v2_ManualRuleEngine: manualFire rule:ManualRule{s=null, i=[1.4180073E7, M_AGENT_31, 536878941, 1.0, 0.0, {"random":0,"taskId":"M_AGENT_69132d9fb5da920fed99a653"}], c=C{_1=[call, 2025-10-20, 2026-12-31, [00:00:00, 23:30:00], 10.0], _2=null, _3=[[==, User, inJiKeFence, 3245587307], [!=, User, inHomeFence, true], [!=, User, inOfficeFence, true], [>=, manual_app_version_com.eg.android.AlipayGphone, hasValue, 2610]]}}
+09-26 18:53:45.134 27541 27637 I metis_v2_ManualRuleEngine: localDateStart = 2025-10-20, localDateEnd = 2026-12-31, currentDate = 2026-09-26
+09-26 18:53:45.134 27541 27637 I metis_v2_ManualRuleEngine: getQueryTime, ruleName = M_AGENT_31
+09-26 18:53:45.134 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, ltStart=00:00, ltEnd=23:30
+09-26 18:53:45.134 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, findTime = 1790464274722,endMilli = 1798731000000, hasTimer = true
+09-26 18:53:45.134 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, dtStart = 00:00 dtEnd = 23:30
+09-26 18:53:45.134 27541 27637 I metis_v2_ManualRuleEngine: getEqualType, pList = []
+09-26 18:53:45.134 27541 27637 I metis_v2_ManualRuleEngine: intentParam = {"random":0,"taskId":"M_AGENT_69132d9fb5da920fed99a653"}
+09-26 18:53:45.135 27541 27637 W metis_v2_ManualRuleEngine: publishIntent, already exited, exitedTime = 1790374085695
+09-26 18:53:45.135 27541 27637 I metis_v2_ManualRuleEngine: doManualFire, ruleName = M_AGENT_54
+09-26 18:53:45.135 27541 27637 I metis_v2_ManualRuleEngine: manualFire rule:ManualRule{s=null, i=[1.4180073E7, M_AGENT_54, 536878941, 1.0, 0.0, {"random":0,"taskId":"M_AGENT_6a1d3085986a74387142af97"}], c=C{_1=[call, 2025-10-20, 2026-12-31, [00:00:00, 23:30:00], 10.0], _2=null, _3=[[==, User, inJiKeFence, 176569227], [!=, User, inHomeFence, true], [!=, User, inOfficeFence, true], [>=, manual_app_version_com.eg.android.AlipayGphone, hasValue, 2610]]}}
+09-26 18:53:45.135 27541 27637 I metis_v2_ManualRuleEngine: localDateStart = 2025-10-20, localDateEnd = 2026-12-31, currentDate = 2026-09-26
+09-26 18:53:45.135 27541 27637 I metis_v2_ManualRuleEngine: getQueryTime, ruleName = M_AGENT_54
+09-26 18:53:45.135 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, ltStart=00:00, ltEnd=23:30
+09-26 18:53:45.135 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, findTime = 1790460850703,endMilli = 1798731000000, hasTimer = true
+09-26 18:53:45.135 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, dtStart = 00:00 dtEnd = 23:30
+09-26 18:53:45.136 27541 27637 I metis_v2_ManualRuleEngine: getEqualType, pList = []
+09-26 18:53:45.136 27541 27637 I metis_v2_ManualRuleEngine: intentParam = {"random":0,"taskId":"M_AGENT_6a1d3085986a74387142af97"}
+09-26 18:53:45.136 27541 27637 W metis_v2_ManualRuleEngine: publishIntent, already exited, exitedTime = 1790374085740
+09-26 18:53:45.136 27541 27637 I metis_v2_ManualRuleEngine: doManualFire, ruleName = M_AGENT_32
+09-26 18:53:45.137 27541 27637 I metis_v2_ManualRuleEngine: manualFire rule:ManualRule{s=null, i=[1.4180073E7, M_AGENT_32, 536878941, 1.0, 0.0, {"random":0,"taskId":"M_AGENT_69132dde989f9734eb7d1503"}], c=C{_1=[call, 2025-10-20, 2026-12-31, [00:00:00, 23:30:00], 10.0], _2=null, _3=[[==, User, inJiKeFence, 733977066], [!=, User, inHomeFence, true], [!=, User, inOfficeFence, true], [>=, manual_app_version_com.eg.android.AlipayGphone, hasValue, 2610]]}}
+09-26 18:53:45.137 27541 27637 I metis_v2_ManualRuleEngine: localDateStart = 2025-10-20, localDateEnd = 2026-12-31, currentDate = 2026-09-26
+09-26 18:53:45.137 27541 27637 I metis_v2_ManualRuleEngine: getQueryTime, ruleName = M_AGENT_32
+09-26 18:53:45.137 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, ltStart=00:00, ltEnd=23:30
+09-26 18:53:45.137 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, findTime = 1790464274736,endMilli = 1798731000000, hasTimer = true
+09-26 18:53:45.137 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, dtStart = 00:00 dtEnd = 23:30
+09-26 18:53:45.137 27541 27637 I metis_v2_ManualRuleEngine: getEqualType, pList = []
+09-26 18:53:45.138 27541 27637 I metis_v2_ManualRuleEngine: intentParam = {"random":0,"taskId":"M_AGENT_69132dde989f9734eb7d1503"}
+09-26 18:53:45.138 27541 27637 W metis_v2_ManualRuleEngine: publishIntent, already exited, exitedTime = 1790374085780
+09-26 18:53:45.138 27541 27637 I metis_v2_ManualRuleEngine: doManualFire, ruleName = M_AGENT_43
+09-26 18:53:45.138 27541 27637 I metis_v2_ManualRuleEngine: manualFire rule:ManualRule{s=null, i=[1.4180073E7, M_AGENT_43, 536878941, 1.0, 0.0, {"random":0,"taskId":"M_AGENT_69f223b56875ef77d257272c"}], c=C{_1=[call, 2025-10-20, 2026-12-31, [00:00:00, 23:30:00], 10.0], _2=null, _3=[[==, User, inJiKeFence, 3776409588], [!=, User, inHomeFence, true], [!=, User, inOfficeFence, true], [>=, manual_app_version_com.eg.android.AlipayGphone, hasValue, 2610]]}}
+09-26 18:53:45.138 27541 27637 I metis_v2_ManualRuleEngine: localDateStart = 2025-10-20, localDateEnd = 2026-12-31, currentDate = 2026-09-26
+09-26 18:53:45.138 27541 27637 I metis_v2_ManualRuleEngine: getQueryTime, ruleName = M_AGENT_43
+09-26 18:53:45.138 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, ltStart=00:00, ltEnd=23:30
+09-26 18:53:45.138 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, findTime = 1790460850709,endMilli = 1798731000000, hasTimer = true
+09-26 18:53:45.138 27541 27637 I metis_v2_ManualRuleEngine: everyDayTriggered, dtStart = 00:00 dtEnd = 23:30
+09-26 18:53:45.140 27541 27637 I metis_v2_ManualRuleEngine: getEqualType, pList = []
+09-26 18:53:45.140 27541 27637 I metis_v2_ManualRuleEngine: intentParam = {"random":0,"taskId":"M_AGENT_69f223b56875ef77d257272c"}
+09-26 18:53:45.140 27541 27637 W metis_v2_ManualRuleEngine: publishIntent, already exited, exitedTime = 1790374085816
+09-26 18:53:45.183  1283  1714 W AString : ctor got NULL, using empty string instead
+09-26 18:53:45.183  1283  1714 I SensorSavedChannel: [-558,-3448,2974]==>gyro_bias.json
+09-26 18:53:45.198  1278  1292 D CwbService: normal mode or switch to doze from power off/doze suspend mode, mPowerMode = 2
+09-26 18:53:45.198  1338  1338 D SensorFeature: name=ssc_screenshot_info ,index = 22
+09-26 18:53:45.198  1338  1338 D SensorFeature: write 37 bytes:69353802577969,69353810911302,14640,0
+09-26 18:53:45.243  3825  4199 I ModemAci: [ModemActivityInfo] [LO, DA]:{ stamp=69353855 duration=255 sleepTMs=229643 idleTMs=0 rxTMs=61 5gRxTMs=1949 txTMs=[0, 0, 0, 0, 0, 0, 0, 0] 5gTxTMs=[0, 0, 0, 0, 0, 0, 0, 0] rrc10sC[]=[0, 0] rrc20sC[]=[0, 0] rrcMore20sC[]=[0, 0] rrcC[]=[0, 0] rrcT[]=[0, 0] saRrc10sC[]=[0, 0] saRrc20sC[]=[0, 0] saRrcMore20sC[]=[0, 0] saRrcC[]=[0, 0] saRrcT[]=[0, 0] endcActT[]=[0, 0] wifiRrcT[]=[0, 0] csChgC[]=[0, 0] psChgC[]=[0, 0] iRatC[]=[0, 0] cellUpdC[]=[1, 0] handOverC[]=[0, 0] nwSrchC[]=[0, 0] nwSrchT[]=[0, 0] psRegT[]=[255, 255] csRegT[]=[255, 255] psNoRegT[]=[0, 0] csNoRegT[]=[0, 0] sigGrid0T[]=[0, 0] voWifiRegT[]=[0, 0] voLteRegT[]=[0, 0] voNrRegT[]=[256, 255] saRachC[]=[0, 0] pdnConnC[]=[0, 0] reSelectC[]=[1, 0] reDirectC[]=[0, 0] iRatHandOverC[]=[0, 0] iRatReSelectC[]=[0, 0] iRatReDirectC[]=[0, 0] plmnSearchTMs[]=[0, 0] lteBgSearchTMs[]=[0, 0] saBgSearchTMs[]=[0, 0] lteCdrxCfgT[]=[0, 0] lteCdrxActT[]=[0, 0] saCdrxCfgT[]=[0, 0] saCdrxActT[]=[0, 0] lteCaT[]=[0, 0] saCaT[]=[0, 0] dsdaT[]=[2, 0] maxCcCfgT[]=[0, 0] maxMimoCfgT[]=[0, 0] releasePreferCfgT[]=[0, 0] wusCfgT[]=[0, 0] skipUlTxCfgT[]=[0, 0] sigGrid1T[]=[0, 0] sigGrid2T[]=[0, 0] sigGrid3T[]=[6, 0] sigGrid4T[]=[248, 256] sa1TxT[]=[256, 256] sa2TxT[]=[0, 0] sa1RxTMs[]=[0, 0] sa2RxTMs[]=[0, 0] sa4RxTMs[]=[0, 0] saRlcTputUlC[]=[0, 0] saMacTputUlC[]=[0, 0] saMacPaTputUlC[]=[0, 0] rrcCauseC={emergency=0, highpriaccess=0, mtaccess=0, mosignaling=0, modata=0, mocall=0, voltecall=0} saRrcCauseC={emergency=0, highpriaccess=0, mtaccess=0, mosignaling=0, modata=0, movoicecall=0, movideocall=0, mosms=0, mpspriaccess=0, mcspriaccess=0} sim1SaBwpT={100=0, 60=0, 40=0, 30=0, 25=0, 20=0, 15=0, 10=0, 5=0, xx=0} sim2SaBwpT={100=0, 60=0, 40=0, 30=0, 25=0, 20=0, 15=0, 10=0, 5=0, xx=0} sim1LteLayersTMs={dl1=0, dl2=0, dl3=0, dl4=0} sim2LteLayersTMs={dl1=0, dl2=0, dl3=0, dl4=0} sim1SaLayersTMs={ul1=0, ul2=0, ul3=0, ul4=0, dl1=0, dl2=0, dl3=0, dl4=0} sim2SaLayersTMs={ul1=0, ul2=0, ul3=0, ul4=0, dl1=0, dl2=0, dl3=0, dl4=0} sim1TauC={lu=0, rau=0, gu=0, ltetau=0} sim2TauC={lu=0, rau=0, gu=0, ltetau=0} sim1CcT={lte1=0, lte2=0, lte3=0, sa1=0, sa2=0, sa3=0} sim2CcT={lte1=0, lte2=0, lte3=0, sa1=0, sa2=0, sa3=0}}
+09-26 18:53:45.246  3807  4351 E AMC     : [P-mpss_reset/0] execute failed in triggers[0]:[sleept:229][sleept:1201]
+09-26 18:53:45.246  3807  4351 E AMC     : [P-mpss_reset/1] execute failed in triggers[0]:[sleept:229][sleept:1201]
+09-26 18:53:45.246  3807  4351 E AMC     : [P-idle_bglte/0] execute failed in triggers[0]:[sleept:229][sleept:264, deepsleep:false]
+09-26 18:53:45.246  3807  4351 E AMC     : [P-idle_bglte/1] execute failed in triggers[0]:[sleept:229][sleept:264, deepsleep:false]
+09-26 18:53:45.246  3807  4351 E AMC     : [P-mtk_oos_qrxlv/0] execute failed in triggers[0]:[sleept:229][sleept:504, deepsleep:false]
+09-26 18:53:45.246  5249  5310 I midasd  : OplusObrainService::notifyEventString eventId:11 strParam:{"5gRxTimeMs":1949,"5gTxTimeMs":[0,0,0,0,0,0,0,0],"idleTimeMs":0,"lteRrcC":[0,0],"lteRrcT":[0,0],"nrRrcC":[0,0],"nrRrcT":[0,0],"rxTimeMs":61,"sleepTimeMs":229643,"timestamp":1790420025243,"txTimeMs":[0,0,0,0,0,0,0,0]}
+09-26 18:53:45.247  3807  4351 E AMC     : [P-mtk_oos_qrxlv/1] execute failed in triggers[0]:[sleept:229][sleept:504, deepsleep:false]
+09-26 18:53:45.247  3807  4351 E AMC     : [P-pidnetdisable_recovery] execute failed in triggers[0]:[sleept:229][sleept:1201, pidnetdisable:false]
+09-26 18:53:45.247  3807  4351 I AMC     : [P-standby_powersaving/0] execute single in triggers[0]:[sleept:229][sleept:727] successfully!
+09-26 18:53:45.248  9074 12998 I OplusObrain: OplusObrainClientInvoke.nativeGetTelephonyInfo
+09-26 18:53:45.249  9074 12998 I OplusObrain: OplusObrainClientInvoke.nativeGetTrafficTypeInfoForNetworkType networkType 0
+09-26 18:53:45.249  3807  4351 E AMC     : [P-standby_powersaving/0] execute failed check triggers[0]:[sleept:229][deepsleep:false, screen:true]
+09-26 18:53:45.249  3807  4351 I AMC     : [P-standby_powersaving/1] execute single in triggers[0]:[sleept:229][sleept:727] successfully!
+09-26 18:53:45.251  3807  4351 E AMC     : [P-standby_powersaving/1] execute failed check triggers[0]:[sleept:229][deepsleep:false, screen:true]
+09-26 18:53:45.251  3807  4351 E AMC     : [P-standby_5gbackoff/0] execute failed in triggers[0]:[sleept:229][inactive:false, sleept:727]
+09-26 18:53:45.251  3807  4351 E AMC     : [P-standby_5gbackoff/1] execute failed in triggers[0]:[sleept:229][inactive:false, sleept:727]
+09-26 18:53:45.252  3807  4351 E AMC     : [P-oos_with_sim/0] execute failed in triggers[0]:[psnoregt:0][oos:null, psnoregt:0, csnoregt:0, screen:true]
+09-26 18:53:45.252  3807  4351 E AMC     : [P-oos_without_sim/0] execute failed in triggers[0]:[psnoregt:0][oos:null, psnoregt:0, csnoregt:0, screen:true]
+09-26 18:53:45.252  3807  4351 E AMC     : [P-oos_with_foreign_sim/0] execute failed in triggers[0]:[psnoregt:0][psnoregt:0, csnoregt:0]
+09-26 18:53:45.252  3807  4351 E AMC     : [P-oos_with_satellite/0] execute failed in triggers[0]:[psnoregt:0][oos:null, psnoregt:0, csnoregt:0, screen:true]
+09-26 18:53:45.252  3807  4351 E AMC     : [P-oos_with_simarrearage/0] execute failed in triggers[0]:[psnoregt:0][psnoregt:0, csnoregt:0]
+09-26 18:53:45.252  3807  4351 E AMC     : [P-oos_with_sniffer/0] execute failed in triggers[0]:[psnoregt:0][oos:null, psnoregt:0, csnoregt:0, screen:true]
+09-26 18:53:45.252  3807  4351 E AMC     : [P-oos_with_sim/1] execute failed in triggers[0]:[psnoregt:0][oos:null, psnoregt:0, csnoregt:0, screen:true]
+09-26 18:53:45.252  3807  4351 E AMC     : [P-oos_without_sim/1] execute failed in triggers[0]:[psnoregt:0][oos:null, psnoregt:0, csnoregt:0, screen:true]
+09-26 18:53:45.252  3807  4351 E AMC     : [P-oos_with_foreign_sim/1] execute failed in triggers[0]:[psnoregt:0][psnoregt:0, csnoregt:0]
+09-26 18:53:45.252  3807  4351 E AMC     : [P-oos_with_satellite/1] execute failed in triggers[0]:[psnoregt:0][oos:null, psnoregt:0, csnoregt:0, screen:true]
+09-26 18:53:45.252  3807  4351 E AMC     : [P-oos_with_simarrearage/1] execute failed in triggers[0]:[psnoregt:0][psnoregt:0, csnoregt:0]
+09-26 18:53:45.252  3807  4351 E AMC     : [P-oos_with_sniffer/1] execute failed in triggers[0]:[psnoregt:0][oos:null, psnoregt:0, csnoregt:0, screen:true]
+09-26 18:53:45.253  3807  4351 I AMC     : [P-idle_bgnr/0] execute single in triggers[0]:[sabgsearcht:0][still5min:true] successfully!
+09-26 18:53:45.256  3807  4351 E AMC     : [P-idle_bgnr/0] execute failed check triggers[0]:[sabgsearcht:0][screen:true]
+09-26 18:53:45.256  3807  4351 I AMC     : [P-idle_bgnr/1] execute single in triggers[0]:[sabgsearcht:0][still5min:true] successfully!
+09-26 18:53:45.259  3807  4351 E AMC     : [P-idle_bgnr/1] execute failed check triggers[0]:[sabgsearcht:0][screen:true]
+09-26 18:53:45.260  3807  4351 E AMC     : [P-oos_with_sim/0] execute failed in triggers[0]:[csnoregt:0][oos:null, psnoregt:0, csnoregt:0, screen:true]
+09-26 18:53:45.260  3807  4351 E AMC     : [P-oos_without_sim/0] execute failed in triggers[0]:[csnoregt:0][oos:null, psnoregt:0, csnoregt:0, screen:true]
+09-26 18:53:45.260  3807  4351 E AMC     : [P-oos_with_foreign_sim/0] execute failed in triggers[0]:[csnoregt:0][psnoregt:0, csnoregt:0]
+09-26 18:53:45.260  3807  4351 E AMC     : [P-oos_with_satellite/0] execute failed in triggers[0]:[csnoregt:0][oos:null, psnoregt:0, csnoregt:0, screen:true]
+09-26 18:53:45.260  3807  4351 E AMC     : [P-oos_with_simarrearage/0] execute failed in triggers[0]:[csnoregt:0][psnoregt:0, csnoregt:0]
+09-26 18:53:45.261  3807  4351 E AMC     : [P-oos_with_sniffer/0] execute failed in triggers[0]:[csnoregt:0][oos:null, psnoregt:0, csnoregt:0, screen:true]
+09-26 18:53:45.261  3807  4351 E AMC     : [P-oos_with_sim/1] execute failed in triggers[0]:[csnoregt:0][oos:null, psnoregt:0, csnoregt:0, screen:true]
+09-26 18:53:45.261  3807  4351 E AMC     : [P-oos_without_sim/1] execute failed in triggers[0]:[csnoregt:0][oos:null, psnoregt:0, csnoregt:0, screen:true]
+09-26 18:53:45.261  3807  4351 E AMC     : [P-oos_with_foreign_sim/1] execute failed in triggers[0]:[csnoregt:0][psnoregt:0, csnoregt:0]
+09-26 18:53:45.261  3807  4351 E AMC     : [P-oos_with_satellite/1] execute failed in triggers[0]:[csnoregt:0][oos:null, psnoregt:0, csnoregt:0, screen:true]
+09-26 18:53:45.261  3807  4351 E AMC     : [P-oos_with_simarrearage/1] execute failed in triggers[0]:[csnoregt:0][psnoregt:0, csnoregt:0]
+09-26 18:53:45.261  3807  4351 E AMC     : [P-oos_with_sniffer/1] execute failed in triggers[0]:[csnoregt:0][oos:null, psnoregt:0, csnoregt:0, screen:true]
+09-26 18:53:45.294  3298 29946 D JsBridgeTimer: com.oplus.shortcuts.lite_card setIntervalCallback id:1
+09-26 18:53:45.295  3298 29946 D JsConsole: news_small 任务 queryPlayStatusPeriodicity 已加入队列
+09-26 18:53:45.296  3298 29946 D JsConsole: news_small processQueue begin false null
+09-26 18:53:45.296  3298 29946 D JsConsole: news_small [执行] 任务 queryPlayStatusPeriodicity
+09-26 18:53:45.297  3298 24805 D NearmeContentResolver: invokeInner: action=query instanceId=10
+09-26 18:53:45.297  3298 24805 D NearmeContentResolver: lastCheckTime is 69348908, canExecuteByStepTime key: content://com.coloros.shortcuts.lite_cards.common_provider/ainews_query
+09-26 18:53:45.297  3298 24805 D NearmeContentResolver: uri content://com.coloros.shortcuts.lite_cards.common_provider/ainews
+09-26 18:53:45.297  3298 24805 W RemoteSubPackageManager: use cacheRemoteSubPackageInfo
+09-26 18:53:45.298  3298 24805 D NearmeContentResolver: getTask:  task:85334929  instantId:10
+09-26 18:53:45.298  3298 24805 D ContentResolverTask: executeResolver newUri: content://com.coloros.shortcuts.lite_cards.common_provider/ainews
+09-26 18:53:45.300  8408  8468 I Shortcut.CommonQuickCardProvider: query: content://com.coloros.shortcuts.lite_cards.common_provider/ainews projection: ["playStatus","topics","agreeStatement"] selection: cardPath=? selectionArgs: ["/cards/news_card_small"] sortOrder: 
+09-26 18:53:45.301  8408  8468 I Shortcut.CommonQuickCardProvider: matchCode: 2
+09-26 18:53:45.301  8408  8468 I Shortcut.CommonQuickCardProvider: query cardPath:/cards/news_card_small  operation: playStatus
+09-26 18:53:45.301  8408  8468 I Shortcut.ShortcutLabProvider: call: method: getAgreementState arg: null extras: null
+09-26 18:53:45.302  8408  8468 W Shortcut.NewsCardModel: getAgreeStatement value:false
+09-26 18:53:45.303  3298 24805 D ConvertUtils: projection not contains ,ignore
+09-26 18:53:45.305  3298 29946 D JsConsole: news_small queryPlayStatus 20260107: [{"topics":"null","playStatus":"paused","agreeStatement":"n"}]
+09-26 18:53:45.305  3298 29946 D JsConsole: news_small queryPlayStatus playStatus: paused
+09-26 18:53:45.305  3298 29946 D JsConsole: news_small queryPlayStatus topics: null
+09-26 18:53:45.305  3298 29946 D JsConsole: news_small queryPlayStatus 小布指令未授权 
+09-26 18:53:45.340  1283  1716 I OriginChannel: now system_time:69353953	pwm_rgb: system_time:69353694, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1861, g:1114, b:747, c:3193, algo:2, end:14639, ts:69353551690822	pwm_rgb: system_time:69353694, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1849, g:1090, b:729, c:3175, algo:2, end:14639, ts:69353560023822	pwm_rgb: system_time:69353694, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1855, g:1084, b:741, c:3175, algo:2, end:14639, ts:69353568356822	pwm_rgb: system_time:69353694, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1855, g:1096, b:729, c:3175, algo:2, end:14639, ts:69353576689822	pwm_rgb: system_time:69353694, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1849, g:1090, b:723, c:3157, algo:2, end:80175, ts:69353585022822	
+09-26 18:53:45.400  1300  1342 I libPerfCtl: xgfGetFPS pid:13256 fps:-1
+09-26 18:53:45.440  1278  1292 D CwbService: normal mode or switch to doze from power off/doze suspend mode, mPowerMode = 2
+09-26 18:53:45.441  1338  1338 D SensorFeature: name=ssc_screenshot_info ,index = 22
+09-26 18:53:45.442  1338  1338 D SensorFeature: write 37 bytes:69354045182892,69354053516225,14641,0
+09-26 18:53:45.549  1452  2072 D VRR [OTI]: handleIdle from 1 to 0
+09-26 18:53:45.550  1452  2072 I VRR [MVT]: requestFrameRateMode source: oti-hw, mode: {fps=120, modePtr={id=0, vsyncRate=120.00 Hz, peakRefreshRate=120.00 Hz}}
+09-26 18:53:45.550  1452  2072 I VRR [MVT]: chooseFrameRateMode : {fps=120, modePtr={id=0, vsyncRate=120.00 Hz, peakRefreshRate=120.00 Hz}}
+09-26 18:53:45.550  1452  2072 D VRR [RefreshRateDirector]: requestRefreshRateByOti update [ oti-hw, {fps=120, modePtr={id=0, vsyncRate=120.00 Hz, peakRefreshRate=120.00 Hz}} ]
+09-26 18:53:45.550  1452  2072 D VRR [RefreshRateDirector]: updateBestFrameRate [oti-hw, {fps=120, modePtr={id=0, vsyncRate=120.00 Hz, peakRefreshRate=120.00 Hz}}]
+09-26 18:53:45.550  1452  2083 D SurfaceFlinger: VRR [SurfaceFlinger] setDesiredActiveMode: displayId: 4627039422300187648, renderRate: 120, vsyncRate: 120, event: 1
+09-26 18:53:45.550 13256 13256 I DynamicFramerate [AnimationSpeedAware]: onEventHandled: info: InputEventInfo: mX = 0, mY = 0, mAction = 0, mVsyncTime = 32360523, mIsMoving = true, mUpdated = true
+09-26 18:53:45.550  1452  2083 D DisplayModeController: setDesiredMode 4627039422300187648 {mode={fps=120.00 Hz, modePtr={id=0, vsyncRate=120.00 Hz, peakRefreshRate=120.00 Hz}}, emitEvent=true, force=false}
+09-26 18:53:45.551  1452  2083 D Scheduler: frame_rate = 120, set halftime to 8ms
+09-26 18:53:45.551  1452  2083 I PowerHalWrapper: updateFps(): 120
+09-26 18:53:45.551  1452  2083 I mtkpower_client: perf_lock_acq, hdl:43, dur:0, num:4, pid:1452, tid:2083
+09-26 18:53:45.551 13256 13256 V AutofillManager: requestHideFillUi(null): anchor = null
+09-26 18:53:45.551  1452  2083 I mtkpower_client: ret_hdl:43
+09-26 18:53:45.549  1742  3265 D GestureLog_OplusMultiPointerDetector: onTouchEvent------>start, mCurNumPointers=1, mCurrStatus=0 mIsDownIntervalTimeout=true, action=0 downTime=32360519 deviceId=-1
+09-26 18:53:45.552  1742  3517 I [UAH_CLIENT]: UahEventAcquire, cmdid:37, pkg:none, identity:OplusUAwareInputHelper
+09-26 18:53:45.552  1742 18196 D PowerManagerService: userActivityNoUpdateLocked: groupId=0, eventTime=32360519, event=touch, flags=0x0, uid=1000
+09-26 18:53:45.553  1397  5401 I mtkpower@impl: [libpowerhal_setCpuIdle] set cpu idle from uah, idx = 0
+09-26 18:53:45.555  1742  2879 I DisplayDeviceRepository: Display device changed render timings: "内置屏幕", renderFrameRate=120.00001, presentationDeadlineNanos=11300000, appVsyncOffsetNanos=3099999, frameRateOverrides=[]
+09-26 18:53:45.555  1742  2879 D DisplayManagerService: Delivering display event: displayId=0, event=EVENT_DISPLAY_REFRESH_RATE_CHANGED
+09-26 18:53:45.556  1742 18196 D PowerManagerService: userActivityNoUpdateLocked: groupId=0, eventTime=32360519, event=touch, flags=0x0, uid=1000
+09-26 18:53:45.557  1742  2877 D WindowManager: DeferredDisplayUpdater: partially applying DisplayInfo(1272 x 2800) immediately
+09-26 18:53:45.559  1742  3127 D AudioSystem: +setParameters(): screen_state=on 
+09-26 18:53:45.559 13256 13256 I DynamicFramerate [AnimationSpeedAware]: onEventHandled: info: InputEventInfo: mX = 0, mY = 0, mAction = 1, mVsyncTime = 32360533, mIsMoving = false, mUpdated = true
+09-26 18:53:45.559  1742  2877 D OplusVFXScreenEffectFeature: notifySFCompatWindowStateChange entered false
+09-26 18:53:45.560  1742  3517 D UAH-UahAdaptHelper: adaptSetNotification identity = OplusUAwareInputHelpersrc = 1000 , type 1 ,p1 = -1 ,p2 = -1 ,p3 = -1 ,p4 =
+09-26 18:53:45.560  1742  3517 I [UAH_CLIENT]: uahRuleCtl, ruleId:1000, status:1
+09-26 18:53:45.560  1452  4450 D [PREVIEW]: SF obtain preview_adapter: 0
+09-26 18:53:45.560  1742  2877 D FSS_FoldScreenBlackCoverController: displayChangeToOn, dc:Display{#0 state=ON size=1272x2800 ROTATION_0}
+09-26 18:53:45.560  1452  4450 D [PREVIEW]: TabletPreviewAdapter::parallel world 0
+09-26 18:53:45.560  1442  3384 D AudioBoost: audioSchedBoost, pid=1442, tid=3384, enable=1, ret=0
+09-26 18:53:45.560  1742  1742 E OplusGestureAnimationManagerPolicy: mScreenHeight:2800 mScreenWidth:1272 mRotation:0
+09-26 18:53:45.561  1442  3384 D DeviceHalAidl: [default] setParameters: parameters: "screen_state=on"
+09-26 18:53:45.561  1742  7658 D PowerManagerService: userActivityNoUpdateLocked: groupId=0, eventTime=32360519, event=touch, flags=0x0, uid=1000
+09-26 18:53:45.562  1742  7658 D PowerManagerService: userActivityNoUpdateLocked: groupId=0, eventTime=32360519, event=touch, flags=0x0, uid=1000
+09-26 18:53:45.562  1262  1306 D AudioALSAHardware: +setParameters(): screen_state=on
+09-26 18:53:45.562  1262  1306 D AudioALSAHardware: =====>GetInstance()->MMI_Auto_Test
+09-26 18:53:45.562  1262  1306 D audio_engineer_test: do_audio_test_process Enter all_test[0]:NoneTest in_call:false
+09-26 18:53:45.562  1262  1306 D OplusVoiceTranslation: --getInstance()
+09-26 18:53:45.563  1262  1306 D AudioALSAHardware: -setParameters(): screen_state=on
+09-26 18:53:45.563  1442  3384 D DeviceHalAidl: [r_submix] setParameters: parameters: "screen_state=on"
+09-26 18:53:45.564  1742  2877 D InsetsSourceProvider: updateSourceFrameForServerVisibility mandatorySystemGestures EMPTY_RECT
+09-26 18:53:45.566  1442  3384 D DeviceHalAidl: [bluetooth] setParameters: parameters: "screen_state=on"
+09-26 18:53:45.566  1442  3384 D DeviceHalAidl: [binaural_record] setParameters: parameters: "screen_state=on"
+09-26 18:53:45.566  1442  3384 D DeviceHalAidl: [virtual] setParameters: parameters: "screen_state=on"
+09-26 18:53:45.567  1442  3384 D AudioBoost: audioSchedBoost, pid=1442, tid=3384, enable=0, ret=0
+09-26 18:53:45.570  1742  2605 D NotificationService: Show next toast CurrentToastShown =false
+09-26 18:53:45.569  3410  3410 I KeyguardDisplayManager: onDisplayChanged displayId: 0
+09-26 18:53:45.571  3410  3410 I SystemUi--Keyguard: KeyguardDisplayManagerExImpl-->orientationChanged=false, presentationDisplayChanged=false, lastPresentationWidth=0, lastPresentationHeight=0, lastPresentationDensity=0
+09-26 18:53:45.572 13256 13256 D ViewRootImplExtImpl: the up motion event handled by client, just return
+09-26 18:53:45.580  3410  3410 I SystemUi--Notification: OplusNotificationLogger-->TOAST-->showToast , pkg = com.takahashirinta.ncrust, uid = 10347 , token = android.os.BinderProxy@60b5f21 , content = no_need_print
+09-26 18:53:45.580 13256 13256 D InsetsController: hide(ime(), fromIme=false)
+09-26 18:53:45.581 13256 13256 I ImeTracker: com.takahashirinta.ncrust:e13cf769: onRequestHide at ORIGIN_CLIENT reason HIDE_SOFT_INPUT_BY_INSETS_API fromUser false
+09-26 18:53:45.581  3410  3410 D WindowManager: Add to mViews: com.oplus.systemui.toast.OplusToastLayout{aa1f507 I.E...... ......I. 0,0-0,0 alpha=1.0 viewInfo = },pkg= com.android.systemui
+09-26 18:53:45.581 13256 13256 I ImeTracker: com.takahashirinta.ncrust:e13cf769: onCancelled at PHASE_CLIENT_ALREADY_HIDDEN
+09-26 18:53:45.582  3410  3762 D skia    : setRusSupported enable 1
+09-26 18:53:45.589  1742  6164 D KEYLOG_PhoneWindowManagerExtImpl: checkAddPermission: com.oplus.permission.safe.WINDOW OKAY packageName = com.android.systemui
+09-26 18:53:45.591  1452  1452 I BufferQueueProducer: [com.takahashirinta.ncrust/com.takahashirinta.ncrust.MainActivity#13179](this:0xb400007997c7caf8,id:-1,api:0,p:-1,c:1452) queueBuffer: fps=26.52 dur=1847.47 max=1443.25 min=7.54
+09-26 18:53:45.592  1742  6164 I WindowManager: addWindow: New client android.os.BinderProxy@2eba68f : window=Window{d336d25 u0 Toast}
+09-26 18:53:45.594  3410  3410 D ViewRootImplExtImpl: onDisplayChanged -1 for VRI android.view.ViewRootImpl@3dedaa3
+09-26 18:53:45.595  1742  6164 I AccessibilityWindowsPopulator: getInsensibleFlag flag = 0
+09-26 18:53:45.600  1742  2887 W UserAwareMgr: event can not be released, id: 1010, count: 18, releasePid: 1742
+09-26 18:53:45.602  1742  2887 W UserAwareMgr: event can not be released, id: 1010, count: 18, releasePid: 1742
+09-26 18:53:45.603  3410  3410 E OplusBracketLog: [OplusViewMirrorManager] updateHostViewRootIfNeeded, not support android.view.ViewRootImpl@3dedaa3
+09-26 18:53:45.604  1283  1716 I OriginChannel: now system_time:69354216	pwm_rgb: system_time:69353953, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1831, g:1090, b:729, c:3157, algo:2, end:14640, ts:69353791073307	pwm_rgb: system_time:69353953, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1837, g:1072, b:723, c:3157, algo:2, end:14640, ts:69353799406307	pwm_rgb: system_time:69353953, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1843, g:1090, b:735, c:3145, algo:2, end:14640, ts:69353807739307	pwm_rgb: system_time:69353953, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1861, g:1108, b:747, c:3199, algo:2, end:14640, ts:69353816072307	pwm_rgb: system_time:69353953, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1861, g:1084, b:729, c:3163, algo:2, end:80176, ts:69353824405307	
+09-26 18:53:45.604  1742  2921 D VRR [OPlusRefreshRateService]: handleConfigIdChange physicalDisplayId: 4627039422300187648 configId: 0 renderPeriod: 8333333
+09-26 18:53:45.605  1452  2072 I VRR [MVT]: request is same as current request, ignore it.
+09-26 18:53:45.606  1742  3976 V WindowManager: Relayout Window{d336d25 u0 Toast}: viewVisibility=4, oldvis=4, req=1188x336 , apr = 0, , x=0, y=224
+09-26 18:53:45.607  1742  2921 D VRR [OPlusExternalRefreshRateManager]: handleOtiHistSwitch false
+09-26 18:53:45.607  1742  3976 D InsetsSourceProvider: updateSourceFrameForServerVisibility mandatorySystemGestures EMPTY_RECT
+09-26 18:53:45.607  1742  2921 D VRR [OPlusSurfaceFlingerController]:  setOtiHistogramSwitch : false
+09-26 18:53:45.607  1452  4450 D OplusHistogram: switch config: 0
+09-26 18:53:45.608  1742  3976 D InsetsSourceProvider: updateSourceFrameForServerVisibility mandatorySystemGestures EMPTY_RECT
+09-26 18:53:45.609  1742  3976 D WindowManager: NFW_findFocusedWindowIfNeeded:Window{d389a5a u0 com.takahashirinta.ncrust/com.takahashirinta.ncrust.MainActivity} mCurrentFocus:Window{d389a5a u0 com.takahashirinta.ncrust/com.takahashirinta.ncrust.MainActivity}
+09-26 18:53:45.610  1742  3976 D ActivityTaskManager: The isLandscapeFullscreenEnabled is: com.takahashirinta.ncrust/.MainActivity
+09-26 18:53:45.615  1742  6164 V WindowManager: Relayout Window{d336d25 u0 Toast}: viewVisibility=4, oldvis=4, req=1057x336 , apr = 0, 
+09-26 18:53:45.615  1742  6164 D InsetsSourceProvider: updateSourceFrameForServerVisibility mandatorySystemGestures EMPTY_RECT
+09-26 18:53:45.616  1742  6164 D InsetsSourceProvider: updateSourceFrameForServerVisibility mandatorySystemGestures EMPTY_RECT
+09-26 18:53:45.618  1742  6164 D ActivityTaskManager: The isLandscapeFullscreenEnabled is: com.takahashirinta.ncrust/.MainActivity
+09-26 18:53:45.630  1742  6164 V WindowManager: Relayout Window{d336d25 u0 Toast}: viewVisibility=0, oldvis=4, req=1197x381 , apr = 0, 
+09-26 18:53:45.630  1742  6164 I WindowManager: Window{d336d25 u0 Toast} state from NO_SURFACE to DRAW_PENDING; reason: resetDrawState
+09-26 18:53:45.631  1742  6164 D InsetsSourceProvider: updateSourceFrameForServerVisibility mandatorySystemGestures EMPTY_RECT
+09-26 18:53:45.631  1742  6164 D InsetsSourceProvider: updateSourceFrameForServerVisibility mandatorySystemGestures EMPTY_RECT
+09-26 18:53:45.632  1742  6164 E SchedAssist: binderSetThreadUxFlagByIoctl: ioctl failed, tid=-1 flag=1 ret=-1 errno=25 (Inappropriate ioctl for device)
+09-26 18:53:45.633  1742  6164 E SchedAssist: binderSetThreadUxFlagByIoctl: ioctl failed, tid=-1 flag=0 ret=-1 errno=25 (Inappropriate ioctl for device)
+09-26 18:53:45.633  3728  3728 D OplusTelephonyController: onSignalStrengthChanged: SignalStrength=SignalStrength:{mCdma=CellSignalStrengthCdma: cdmaDbm=2147483647 cdmaEcio=2147483647 evdoDbm=2147483647 evdoEcio=2147483647 evdoSnr=2147483647 level=0,mGsm=CellSignalStrengthGsm: rssi=2147483647 ber=2147483647 mTa=2147483647 mLevel=0,mWcdma=CellSignalStrengthWcdma: ss=2147483647 ber=2147483647 rscp=2147483647 ecno=2147483647 level=0,mTdscdma=CellSignalStrengthTdscdma: rssi=2147483647 ber=2147483647 rscp=2147483647 level=0,mLte=CellSignalStrengthLte: rssi=2147483647 rsrp=2147483647 rsrq=2147483647 rssnr=2147483647 cqiTableIndex=2147483647 cqi=2147483647 ta=2147483647 level=0 parametersUseForLevel=0,mNr=CellSignalStrengthNr:{ csiRsrp = 2147483647 csiRsrq = 2147483647 csiCqiTableIndex = 2147483647 csiCqiReport = [] ssRsrp = -101 ssRsrq = -12 ssSinr = 9 level = 4 parametersUseForLevel = 0 timingAdvance = 0 },primary=CellSignalStrengthNr}
+09-26 18:53:45.633  1742  6164 D WindowManager: NFW_findFocusedWindowIfNeeded:Window{d389a5a u0 com.takahashirinta.ncrust/com.takahashirinta.ncrust.MainActivity} mCurrentFocus:Window{d389a5a u0 com.takahashirinta.ncrust/com.takahashirinta.ncrust.MainActivity}
+09-26 18:53:45.633  1742  6164 D ActivityTaskManager: The isLandscapeFullscreenEnabled is: com.takahashirinta.ncrust/.MainActivity
+09-26 18:53:45.635  3903  3903 D SubsysEventListenerManager-SubsysTelephonyCallback[0]: onSignalStrengthsChanged
+09-26 18:53:45.637  3410  3410 D BufferQueueConsumer: [](id:d5200000444,api:0,p:-1,c:3410) connect: controlledByApp=false
+09-26 18:53:45.637  3410  3410 D BufferQueueConsumer: [VRI[Toast]#981(BLAST Consumer)981](id:d5200000444,api:0,p:-1,c:3410) setMaxAcquiredBufferCount: 3
+09-26 18:53:45.644  3410  3762 D Surface : setDisconnectFlag 0
+09-26 18:53:45.645  3410  3749 I SystemUi--Statusbar: MobileConnectionRepositoryImpl-->subId:1 isSoftSimCard:false slotId:0
+09-26 18:53:45.646  3410  3410 I SurfaceControl:  setExtendedRangeBrightness sc=Surface(name=Toast)/@0xefb0464,currentBufferRatio=1.0,desiredRatio=1.0
+09-26 18:53:45.648  3410  4602 E HoraeHelper: horae is not open
+09-26 18:53:45.648  3410  4602 D DynamicFramerate [DynamicFrameRateManagerImpl]: register ThermalListener failed
+09-26 18:53:45.652  3410  3762 D BLASTBufferQueue: [VRI[Toast]#981](f:0,a:1) acquireNextBufferLocked size=1197x381 mFrameNumber=1 applyTransaction=true mTimestamp=32360625513158(auto) mPendingTransactions.size=0 graphicBufferId=14645838492391 transform=0
+09-26 18:53:45.652  3410  3762 D VRI[Toast]: Received frameCommittedCallback lastAttemptedDrawFrameNum=1 didProduceBuffer=true syncBuffer=false
+09-26 18:53:45.653  3410  3410 D VRI[Toast]: draw finished. seqId=0
+09-26 18:53:45.653  1742  3058 I WindowManager: Window{d336d25 u0 Toast} state from DRAW_PENDING to COMMIT_DRAW_PENDING; reason: finishDrawingLocked
+09-26 18:53:45.654  1742  2880 D InsetsSourceProvider: updateSourceFrameForServerVisibility mandatorySystemGestures EMPTY_RECT
+09-26 18:53:45.655  1742  2880 D InsetsSourceProvider: updateSourceFrameForServerVisibility mandatorySystemGestures EMPTY_RECT
+09-26 18:53:45.655  1742  2880 I WindowManager: Window{d336d25 u0 Toast} state from COMMIT_DRAW_PENDING to READY_TO_SHOW; reason: commitFinishDrawingLocked
+09-26 18:53:45.655  1742  2880 I WindowManager: Window{d336d25 u0 Toast} state from READY_TO_SHOW to HAS_DRAWN; reason: performShowLocked
+09-26 18:53:45.655 11928 12866 W OPLUS_LOG_LOAD: ==LOGS PROG INFO, prog(com.oplus.camera) ==
+09-26 18:53:45.655 11928 12866 I APS_ALOG: flushRoutine g_immediateFlush=0 g_pendingCount=0 g_oobCount=0
+09-26 18:53:45.656  1742  2880 D OplusAONSmartDim: onWakeLockAcquireLocked: lock=27794143, flags=0x2000000a, packageName=android, tag="WindowManager/displayId:0", ws=WorkSource{10163 com.android.systemui}, uid=1000, pid=1742
+09-26 18:53:45.656  1742  6164 V WindowManager: Relayout Window{d336d25 u0 Toast}: viewVisibility=0, oldvis=0, req=1197x381 , apr = 0, 
+09-26 18:53:45.656  3410  3410 D Tile.OplusCellularTile: refreshState: tile not listening, ignore
+09-26 18:53:45.656  1742  6164 D InsetsSourceProvider: updateSourceFrameForServerVisibility mandatorySystemGestures EMPTY_RECT
+09-26 18:53:45.657  1742  6164 D InsetsSourceProvider: updateSourceFrameForServerVisibility mandatorySystemGestures EMPTY_RECT
+09-26 18:53:45.657  3298  6393 D JsBridgeTimer: com.alarmclock.quick setIntervalCallback id:362
+09-26 18:53:45.657  1742  6164 D ActivityTaskManager: The isLandscapeFullscreenEnabled is: com.takahashirinta.ncrust/.MainActivity
+09-26 18:53:45.662  3410  3410 I SurfaceControl:  setExtendedRangeBrightness sc=Surface(name=Toast)/@0xefb0464,currentBufferRatio=1.0,desiredRatio=1.0
+09-26 18:53:45.663  3410  3762 D VRI[Toast]: Received frameCommittedCallback lastAttemptedDrawFrameNum=2 didProduceBuffer=false syncBuffer=false
+09-26 18:53:45.663  3410  3410 D VRI[Toast]: draw finished. seqId=0
+09-26 18:53:45.664  1742  2880 D InsetsSourceProvider: updateSourceFrameForServerVisibility mandatorySystemGestures EMPTY_RECT
+09-26 18:53:45.665  1742  2880 D InsetsSourceProvider: updateSourceFrameForServerVisibility mandatorySystemGestures EMPTY_RECT
+09-26 18:53:45.670  1742  2879 I AccessibilityWindowsPopulator: getInsensibleFlag flag = 0
+09-26 18:53:45.683  1278  1292 D CwbService: normal mode or switch to doze from power off/doze suspend mode, mPowerMode = 2
+09-26 18:53:45.684  1278  1292 I CwbService: Configure changed, reconfig histogram mode: 0.
+09-26 18:53:45.684  1278  1292 D libcomposer_ext: DeviceImplAidl::DeviceClientContextAidl::ParseRequestPartialUpdateEnable()
+09-26 18:53:45.695  1742  2887 W UserAwareMgr: event can not be released, id: 1010, count: 18, releasePid: 1742
+09-26 18:53:45.699  1742  2887 W UserAwareMgr: event can not be released, id: 1010, count: 18, releasePid: 1742
+09-26 18:53:45.704  1397  5400 I mtkpower@impl: [libpowerhal_setCpuIdle] set cpu idle from uah, idx = 1
+09-26 18:53:45.721  1742  2879 I AccessibilityWindowsPopulator: getInsensibleFlag flag = 0
+09-26 18:53:45.741  1278  1292 D libcomposer_ext: DeviceImplAidl::DeviceClientContextAidl::ParseRequestPartialUpdateEnable()
+09-26 18:53:45.742  1278  1292 D CwbService: RGB value: 103, 105, 99, hist:1699, 1699, 1699,  rgb_state: 0
+09-26 18:53:45.743  1338  1338 D SensorFeature: name=ssc_screenshot_info ,index = 22
+09-26 18:53:45.743  1338  1338 D SensorFeature: write 37 bytes:69354346465123,69354354798456,14642,0
+09-26 18:53:45.759 15129 15129 D ExtensionsLoader: createInstance(64bit) : createExtendedFactory
+09-26 18:53:45.759  3903  5648 D CommonApp-188-10090: transport layer data is invalid
+09-26 18:53:45.759 15129 15129 D ExtensionsLoader: Opened libguiextimpl.so
+09-26 18:53:45.759  3903  5648 D CommonApp-188-10347: transport layer data is invalid
+09-26 18:53:45.773  1350  1384 D BatteryChargeControl: bcc get no support from charging protocol
+09-26 18:53:45.783  1278  1292 I hwcomposer: [HWCDisplay] (0 updateFps():4519), (type:1, mode:2) fps:24.962074,dur:1001.52,max:796.13,min:6.79  
+09-26 18:53:45.784 15129 15129 D AVStageFactory: Opened liboplusavenhancements.so
+09-26 18:53:45.784 15129 15129 D AVStageFactory: createInstance(64bit): createVendorAVFactory success!
+09-26 18:53:45.785 15129 15129 D AVStageUtils: Opened liboplusavenhancements.so
+09-26 18:53:45.785 15129 15129 D AVStageUtils: createInstance(64bit): createVendorAVUtils success!
+09-26 18:53:45.785 15129 15129 D OplusUtils: OplusUtils [84]: 
+09-26 18:53:45.785 15129 15129 D AVStageUtils: createInstance(64bit): createVendorAVUtils success!
+09-26 18:53:45.785 15129 15129 D OplusUtils: OplusUtils [84]: 
+09-26 18:53:45.787 15129 15129 D AVMediaServiceFactory: Opened liboplusavenhancements.so
+09-26 18:53:45.787 15129 15129 D AVMediaServiceFactory: createInstance(64bit): createExtendedMediaServiceFactory success!
+09-26 18:53:45.788 15129 15129 D AVNuFactory: Opened liboplusavenhancements.so
+09-26 18:53:45.788 15129 15129 D AVNuFactory: createInstance(64bit): createExtendedNuFactory success!
+09-26 18:53:45.788 15129 15129 D AVStageFactory: createInstance(64bit): createVendorAVFactory success!
+09-26 18:53:45.788 15129 15129 D AVStageUtils: createInstance(64bit): createVendorAVUtils success!
+09-26 18:53:45.788 15129 15129 D OplusUtils: OplusUtils [84]: 
+09-26 18:53:45.788 15129 15129 D AVMediaServiceFactory: createInstance(64bit): createExtendedMediaServiceFactory success!
+09-26 18:53:45.788 15129 15129 D AVNuFactory: createInstance(64bit): createExtendedNuFactory success!
+09-26 18:53:45.788 15129 15129 D AVStageFactory: Opened liboplusavenhancements.so
+09-26 18:53:45.788 15129 15129 D AVStageFactory: createInstance(64bit): createVendorAVFactory success!
+09-26 18:53:45.789 15129 15129 D AVStageUtils: Opened liboplusavenhancements.so
+09-26 18:53:45.789 15129 15129 D AVStageUtils: createInstance(64bit): createVendorAVUtils success!
+09-26 18:53:45.789 15129 15129 D OplusUtils: OplusUtils [84]: 
+09-26 18:53:45.792 15129 15129 E screencap: createInstance(64bit) : createExtendedFactory
+09-26 18:53:45.793 15129 15129 E screencap: createInstance(64bit) : createExtendedFactory
+09-26 18:53:45.793 15129 15129 E screencap: Opened libinputextensionsimpl.so
+09-26 18:53:45.793 15129 15129 E screencap: Opened libinputextensionsimpl.so
+09-26 18:53:45.796 15129 15129 W screencap: Thread Pool max thread count is 0. Cannot cache binder as linkToDeath cannot be implemented. serviceName: SurfaceFlingerAIDL
+09-26 18:53:45.796 15129 15129 W BpBinder: Linking to death on android.gui.ISurfaceComposer but there are no threads (yet?) listening to incoming transactions. See ProcessState::startThreadPool and ProcessState::setThreadPoolMaxThreadCount. Generally you should setup the binder threadpool before other initialization steps.
+09-26 18:53:45.797 15129 15129 W ProcessState: Extra binder thread started, but 0 threads requested. Do not use *startThreadPool when zero threads are requested.
+09-26 18:53:45.797  1452  4450 D SurfaceFlinger: captureDisplayById from pid 0 display 4627039422300187648
+09-26 18:53:45.815 15129 15133 I GrallocExtra: gralloc_extra_query:is_SW3D 0
+09-26 18:53:45.815 15129 15129 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_mm
+09-26 18:53:45.815 15129 15129 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_mm-uncached
+09-26 18:53:45.815 15129 15129 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_svp_page-uncached
+09-26 18:53:45.815 15129 15129 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_prot_region
+09-26 18:53:45.815 15129 15129 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_prot_page-uncached
+09-26 18:53:45.815 15129 15129 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_wfd_page-uncached
+09-26 18:53:45.871  1283  1716 I OriginChannel: now system_time:69354484	pwm_rgb: system_time:69354216, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1861, g:1078, b:735, c:3169, algo:2, end:14641, ts:69354029963220	pwm_rgb: system_time:69354217, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1831, g:1096, b:723, c:3169, algo:2, end:14641, ts:69354038296220	pwm_rgb: system_time:69354217, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1837, g:1090, b:735, c:3181, algo:2, end:14641, ts:69354046629220	pwm_rgb: system_time:69354217, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1855, g:1078, b:735, c:3163, algo:2, end:14641, ts:69354054962220	pwm_rgb: system_time:69354217, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1837, g:1090, b:729, c:3145, algo:2, end:80177, ts:69354063295220	
+09-26 18:53:45.900  1742  2887 W UserAwareMgr: event can not be released, id: 1010, count: 18, releasePid: 1742
+09-26 18:53:45.983  1278  1278 D CwbService: normal mode or switch to doze from power off/doze suspend mode, mPowerMode = 2
+09-26 18:53:45.984  1278  1278 I CwbService: Configure changed, reconfig histogram mode: 0.
+09-26 18:53:45.984  1278  1278 D libcomposer_ext: DeviceImplAidl::DeviceClientContextAidl::ParseRequestPartialUpdateEnable()
+09-26 18:53:46.013  3298  6393 D JsBridgeTimer: com.alarmclock.quick setIntervalCallback id:360
+09-26 18:53:46.014  3298  6393 D JsConsole: clock_quick_card5: updateClock() ->566.8833333333333-322.6-276
+09-26 18:53:46.019  3298  3298 W ViewUtils: childView no Component
+09-26 18:53:46.019  3298  3298 D LayoutHelper: d@0x3fa635e scheduleMeasureLayout   8
+09-26 18:53:46.021  3410  3410 I SystemUi--Notification: SimpleQsClock-->textWidth:214.0, mPaddingEnd 21, dynamicWidth 277, systemFontScale 1.0
+09-26 18:53:46.028  3298  3298 W ViewUtils: childView no Component
+09-26 18:53:46.028  3298  3298 W LayoutHelper: d@0x3fa635e do measure layout inner
+09-26 18:53:46.029  3298  3298 D CardView: 0x3fa635e onMeasure: w(1094, EXACTLY), h(514, EXACTLY)
+09-26 18:53:46.056  1278  1278 D libcomposer_ext: DeviceImplAidl::DeviceClientContextAidl::ParseRequestPartialUpdateEnable()
+09-26 18:53:46.057  1278  1278 D CwbService: RGB value: 103, 105, 99, hist:1699, 1699, 1699,  rgb_state: 0
+09-26 18:53:46.058  1338  1338 D SensorFeature: name=ssc_screenshot_info ,index = 22
+09-26 18:53:46.058  1338  1338 D SensorFeature: write 37 bytes:69354662131200,69354670464533,14643,0
+09-26 18:53:46.077  1350  1383 D vendor.oplus.hardware.charger-V11-service: ret_value:120, read content:,305,305,4031,4027,54,63,64,1,1,0,502,5101,64,1,4500,600,500,0,0,1500,0,0,1,0,2,0,0,0,1,6269,96,0,3490,5620,0,0,0,0,0,0
+09-26 18:53:46.077  1350  1383 D vendor.oplus.hardware.charger-V11-service: gmtime: 2026-09-26-18-53-46
+09-26 18:53:46.078  1350  1383 D vendor.oplus.hardware.charger-V11-service: usb_online:1, ac_online:-2147483648, wireless_online:-2147483648
+09-26 18:53:46.108  1742  2887 W UserAwareMgr: event can not be released, id: 1010, count: 18, releasePid: 1742
+09-26 18:53:46.132  1283  1716 I OriginChannel: now system_time:69354744	pwm_rgb: system_time:69354484, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1831, g:1084, b:729, c:3151, algo:2, end:14642, ts:69354335540576	pwm_rgb: system_time:69354484, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1867, g:1114, b:741, c:3181, algo:2, end:14642, ts:69354343873576	pwm_rgb: system_time:69354484, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1837, g:1084, b:735, c:3181, algo:2, end:14642, ts:69354352206576	pwm_rgb: system_time:69354484, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1849, g:1084, b:723, c:3151, algo:2, end:14642, ts:69354360539576	pwm_rgb: system_time:69354484, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1825, g:1096, b:729, c:3151, algo:2, end:80178, ts:69354368872576	
+09-26 18:53:46.132  1742  3014 D FusionLightNextGen: process end reported = 1, mode: 1, cnt: 62170, lux 17.1, cct -1.0, r/g/b/c: 1831.0/1084.0/717.0/3145.0, R/G/B: 103.0/105.0/99.0, bri 947.0, match 0.56, ir 0.096313, conf 0.0, ts 69354682759485
+09-26 18:53:46.154  7433  9059 I DRS_SDK_COMMON_UploadStrategyManager: Sending 5 records, ipcBodyBytes=6739 (limit=307200), pendingBefore=5, remaining(approx)=0, targetAppId=20210
+09-26 18:53:46.157  7433  9059 I DRS_SDK_COMMON_ClientDataDao: mark as uploading size: 5
+09-26 18:53:46.180  7433 15137 I DRS_SDK_COMMON_UploadStrategyManager: on ipc success, {"success":[{"id":"55dee96a-b24e-447d-8b44-501ec5b15be7"},{"id":"ef004b32-d918-4749-b2a9-23688ebb3981"},{"id":"e2d60ce0-1060-4b68-a085-8b14b1b59283"},{"id":"2090a605-e74d-44e1-864c-d8cb19bbfd57"},{"id":"d4a2944d-8487-4cd9-b755-e0cb2c1cebbe"}],"fails":[]}
+09-26 18:53:46.181  7433 15137 I DRS_SDK_COMMON_UploadStrategyManager: map: {55dee96a-b24e-447d-8b44-501ec5b15be7=746, 2090a605-e74d-44e1-864c-d8cb19bbfd57=749, e2d60ce0-1060-4b68-a085-8b14b1b59283=748, ef004b32-d918-4749-b2a9-23688ebb3981=747, d4a2944d-8487-4cd9-b755-e0cb2c1cebbe=750}
+09-26 18:53:46.181  7433 15137 I DRS_SDK_COMMON_UploadStrategyManager: successArr: [{"id":"55dee96a-b24e-447d-8b44-501ec5b15be7"},{"id":"ef004b32-d918-4749-b2a9-23688ebb3981"},{"id":"e2d60ce0-1060-4b68-a085-8b14b1b59283"},{"id":"2090a605-e74d-44e1-864c-d8cb19bbfd57"},{"id":"d4a2944d-8487-4cd9-b755-e0cb2c1cebbe"}]
+09-26 18:53:46.181  7433 15137 I DRS_SDK_COMMON_UploadStrategyManager: successIds: [746, 747, 748, 749, 750]
+09-26 18:53:46.181  7433 15137 I DRS_SDK_COMMON_UploadStrategyManager: fail groups: {}
+09-26 18:53:46.182  7433 15137 I DRS_SDK_COMMON_UploadStrategyManager: totals: []
+09-26 18:53:46.182  7433 15137 I DRS_SDK_COMMON_UploadStrategyManager: remainingIds: []
+09-26 18:53:46.182  7433 15137 I DRS_SDK_COMMON_ClientDataCacheManager: delete size: 5
+09-26 18:53:46.183  3452 15138 I DRS_LOG_DRS-IngestLogic[3097]: ingest.no_rule, triplet appId=20210, logTag=20210001, eventId=lan_discovery_event
+09-26 18:53:46.185  7433 15137 I DRS_SDK_COMMON_UploadStrategyManager: IPC upload successful, deleted 5 records
+09-26 18:53:46.185  3452 15138 I DRS_LOG_PrepareStep[3097]: buildDcsEventInfo: appId=20210, eventGroup=20210001, source=dcs_apk_ipc, parsedKeys=[lan_mac_query_count, lan_mac_announce_count]
+09-26 18:53:46.186  3452 15138 I DRS_LOG_PrepareStep[3097]: buildDcsEventInfo: appId=20210, eventGroup=20210001, source=dcs_apk_ipc, parsedKeys=[low_power_scan_nums, screen_off_ultra_low_power_scan_times, low_latency_scan_times, ultra_low_power_scan_nums, screen_off_low_power_scan_times, calling_package_name, low_latency_scan_nums, balance_scan_times, low_power_scan_times, ultra_low_power_scan_times, screen_off_low_power_scan_nums, screen_off_ultra_low_power_scan_nums, balance_scan_nums]
+09-26 18:53:46.187  3452 15138 I DRS_LOG_PrepareStep[3097]: buildDcsEventInfo: appId=20210, eventGroup=20210001, source=dcs_apk_ipc, parsedKeys=[low_power_scan_nums, screen_off_ultra_low_power_scan_times, low_latency_scan_times, ultra_low_power_scan_nums, screen_off_low_power_scan_times, calling_package_name, low_latency_scan_nums, balance_scan_times, low_power_scan_times, ultra_low_power_scan_times, screen_off_low_power_scan_nums, screen_off_ultra_low_power_scan_nums, balance_scan_nums]
+09-26 18:53:46.187  3452 15138 I DRS_LOG_PrepareStep[3097]: buildDcsEventInfo: appId=20210, eventGroup=20210001, source=dcs_apk_ipc, parsedKeys=[deviceType, nfcNearConnectSwitchState]
+09-26 18:53:46.187  3452 15138 I DRS_LOG_PrepareStep[3097]: buildDcsEventInfo: appId=20210, eventGroup=20210001, source=dcs_apk_ipc, parsedKeys=[nfcNearAllowScreenShot]
+09-26 18:53:46.193  3452 15138 I DRS_LOG_DbIngestStep[3097]: ingest_success line=nr appId=20210 size=5 inserted=5
+09-26 18:53:46.208  1742  2887 W UserAwareMgr: event can not be released, id: 1010, count: 18, releasePid: 1742
+09-26 18:53:46.209  1742  2887 W UserAwareMgr: event can not be released, id: 1010, count: 18, releasePid: 1742
+09-26 18:53:46.213  1742  2887 W UserAwareMgr: event can not be released, id: 1010, count: 18, releasePid: 1742
+09-26 18:53:46.249  3259  3262 D WifiHAL : WifiRequest::create vendor command to iface 40, vendor_id=0x1a11, subcmd=0x1200, res=0
+09-26 18:53:46.250  3259  3262 I WifiHAL : LLS RSP: data=0xb400007202c65020, len=4340
+09-26 18:53:46.250  3259  3262 I WifiHAL : LLS check_data_sanity: 1829: current_radio_stat->num_channels=13
+09-26 18:53:46.250  3259  3262 I WifiHAL : LLS check_data_sanity: 1829: current_radio_stat->num_channels=13
+09-26 18:53:46.250  3259  3262 I WifiHAL : LLS check_data_sanity: confirmed_size=4340, len=4340
+09-26 18:53:46.253  1742  3097 E WifiStaIfaceAidlImpl: getCachedScanData failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+09-26 18:53:46.261  1742  3249 D OplusMtkDynamicEdccaImpl: enableDynamicEdcca start index = 2
+09-26 18:53:46.262  1401  1401 D vendor.oplus.hardware.wifi-aidl-service: filePath is /odm/bin/iwpriv_vendor
+09-26 18:53:46.263  1401  1401 D vendor.oplus.hardware.wifi-aidl-service: the in_command is:/odm/bin/iwpriv_vendor wlan0 driver 'set_chip edccath 1 0xc4 0xc6 0xc8 0xca'
+09-26 18:53:46.263  3903  3903 D VendorWifiService: onEvent event:9,action:1
+09-26 18:53:46.273  1401  1401 D vendor.oplus.hardware.wifi-aidl-service: the buf of executeDriverCommand is wlan0     driver:
+09-26 18:53:46.273  1401  1401 D vendor.oplus.hardware.wifi-aidl-service: , remain_len is 4096
+09-26 18:53:46.275  1742  3249 D OplusLowLatencyDriverCmd: executeDriverCommandWithResult cmd = /odm/bin/iwpriv_vendor wlan0 driver 'set_chip edccath 1 0xc4 0xc6 0xc8 0xca', result = wlan0     driver:
+09-26 18:53:46.276  1742  3249 D OplusMtkDynamicEdccaImpl: enableDynamicEdcca success
+09-26 18:53:46.276  1452  1452 I BufferQueueProducer: [StatusBar#94](this:0xb4000079da1f8af8,id:-1,api:0,p:-1,c:1452) queueBuffer: fps=0.57 dur=3532.13 max=3005.09 min=527.04
+09-26 18:53:46.287  1742  3249 D ScorerUtils: isLowTraffic: txTputKBps=0, rxTputKBps=0
+09-26 18:53:46.288  1742  3249 D OplusWifiPower_TriggerCenter: mComponentCallback: wifistat
+09-26 18:53:46.299  1278  1278 D CwbService: normal mode or switch to doze from power off/doze suspend mode, mPowerMode = 2
+09-26 18:53:46.299  1278  1278 I CwbService: Configure changed, reconfig histogram mode: 0.
+09-26 18:53:46.300  1278  1278 D libcomposer_ext: DeviceImplAidl::DeviceClientContextAidl::ParseRequestPartialUpdateEnable()
+09-26 18:53:46.352  1278  1278 D libcomposer_ext: DeviceImplAidl::DeviceClientContextAidl::ParseRequestPartialUpdateEnable()
+09-26 18:53:46.353  1278  1278 D CwbService: RGB value: 103, 105, 99, hist:1699, 1699, 1699,  rgb_state: 0
+09-26 18:53:46.354  1338  1338 D SensorFeature: name=ssc_screenshot_info ,index = 22
+09-26 18:53:46.355  1338  1338 D SensorFeature: write 37 bytes:69354957620430,69354965953763,14644,0
+09-26 18:53:46.396  1283  1716 I OriginChannel: now system_time:69355008	pwm_rgb: system_time:69354744, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1849, g:1084, b:741, c:3151, algo:2, end:14643, ts:69354649427485	pwm_rgb: system_time:69354744, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1831, g:1084, b:717, c:3145, algo:2, end:14643, ts:69354657760485	pwm_rgb: system_time:69354744, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1837, g:1090, b:741, c:3169, algo:2, end:14643, ts:69354666093485	pwm_rgb: system_time:69354744, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1867, g:1108, b:735, c:3175, algo:2, end:14643, ts:69354674426485	pwm_rgb: system_time:69354744, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1825, g:1078, b:723, c:3163, algo:2, end:80179, ts:69354682759485	
+09-26 18:53:46.400  1300  1342 I libPerfCtl: xgfGetFPS pid:3410 fps:-1
+09-26 18:53:46.400  1300  1342 I libPerfCtl: xgfGetFPS pid:13256 fps:-1
+09-26 18:53:46.416 15129 15129 W RefBase : RefBase: Explicit destruction, weak count = 0 (in 0x7ee71faac8). Use sp<> to manage this object. Note - if weak count is 0, this leaks mRefs (weakref_impl).
+09-26 18:53:46.426 15129 15129 D RefBase :   #00 pc 000000000008c0e0  /apex/com.android.runtime/lib64/bionic/libc.so (__cxa_finalize+224) (BuildId: 606e619450c7c2bf3db238997d2b897d)
+09-26 18:53:46.426 15129 15129 D RefBase :   #01 pc 0000000000090e84  /apex/com.android.runtime/lib64/bionic/libc.so (exit+36) (BuildId: 606e619450c7c2bf3db238997d2b897d)
+09-26 18:53:46.427 15129 15129 D RefBase :   #02 pc 00000000000846cc  /apex/com.android.runtime/lib64/bionic/libc.so (__libc_init+124) (BuildId: 606e619450c7c2bf3db238997d2b897d)
+09-26 18:53:46.596  1278  1278 D CwbService: normal mode or switch to doze from power off/doze suspend mode, mPowerMode = 2
+09-26 18:53:46.596  1278  1278 I CwbService: Configure changed, reconfig histogram mode: 0.
+09-26 18:53:46.597  1278  1278 D libcomposer_ext: DeviceImplAidl::DeviceClientContextAidl::ParseRequestPartialUpdateEnable()
+09-26 18:53:46.597  1452  1452 I BufferQueueProducer: [com.takahashirinta.ncrust/com.takahashirinta.ncrust.MainActivity#13179](this:0xb400007997c7caf8,id:-1,api:0,p:-1,c:1452) queueBuffer: fps=106.35 dur=1006.15 max=82.49 min=7.26
+09-26 18:53:46.630  1742  2887 W UserAwareMgr: event can not be released, id: 1010, count: 20, releasePid: 1742
+09-26 18:53:46.630 15147 15147 D ExtensionsLoader: createInstance(64bit) : createExtendedFactory
+09-26 18:53:46.630 15147 15147 D ExtensionsLoader: Opened libguiextimpl.so
+09-26 18:53:46.649  1278  1278 D libcomposer_ext: DeviceImplAidl::DeviceClientContextAidl::ParseRequestPartialUpdateEnable()
+09-26 18:53:46.650  1278  1278 D CwbService: RGB value: 103, 105, 99, hist:1699, 1699, 1699,  rgb_state: 0
+09-26 18:53:46.651  1338  1338 D SensorFeature: name=ssc_screenshot_info ,index = 22
+09-26 18:53:46.651  1742  3284 W OPLUS_LOG_LOAD: ==LOGS PROG INFO, prog(system_server) ==
+09-26 18:53:46.651  1742  3284 E HoraeHelper: horae is not open
+09-26 18:53:46.651  1742  3284 E HoraeHelper: horae is not open
+09-26 18:53:46.651  1338  1338 D SensorFeature: write 37 bytes:69355254927200,69355263260533,14645,0
+09-26 18:53:46.653 15147 15147 D AVStageFactory: Opened liboplusavenhancements.so
+09-26 18:53:46.653 15147 15147 D AVStageFactory: createInstance(64bit): createVendorAVFactory success!
+09-26 18:53:46.654 15147 15147 D AVStageUtils: Opened liboplusavenhancements.so
+09-26 18:53:46.654 15147 15147 D AVStageUtils: createInstance(64bit): createVendorAVUtils success!
+09-26 18:53:46.654 15147 15147 D OplusUtils: OplusUtils [84]: 
+09-26 18:53:46.654 15147 15147 D AVStageUtils: createInstance(64bit): createVendorAVUtils success!
+09-26 18:53:46.654 15147 15147 D OplusUtils: OplusUtils [84]: 
+09-26 18:53:46.656 15147 15147 D AVMediaServiceFactory: Opened liboplusavenhancements.so
+09-26 18:53:46.656 15147 15147 D AVMediaServiceFactory: createInstance(64bit): createExtendedMediaServiceFactory success!
+09-26 18:53:46.656 15147 15147 D AVNuFactory: Opened liboplusavenhancements.so
+09-26 18:53:46.656 15147 15147 D AVNuFactory: createInstance(64bit): createExtendedNuFactory success!
+09-26 18:53:46.657 15147 15147 D AVStageFactory: createInstance(64bit): createVendorAVFactory success!
+09-26 18:53:46.657 15147 15147 D AVStageUtils: createInstance(64bit): createVendorAVUtils success!
+09-26 18:53:46.657 15147 15147 D OplusUtils: OplusUtils [84]: 
+09-26 18:53:46.657  3298  6393 D JsBridgeTimer: com.alarmclock.quick setIntervalCallback id:362
+09-26 18:53:46.657 15147 15147 D AVMediaServiceFactory: createInstance(64bit): createExtendedMediaServiceFactory success!
+09-26 18:53:46.657 15147 15147 D AVNuFactory: createInstance(64bit): createExtendedNuFactory success!
+09-26 18:53:46.657 15147 15147 D AVStageFactory: Opened liboplusavenhancements.so
+09-26 18:53:46.657 15147 15147 D AVStageFactory: createInstance(64bit): createVendorAVFactory success!
+09-26 18:53:46.657 15147 15147 D AVStageUtils: Opened liboplusavenhancements.so
+09-26 18:53:46.657 15147 15147 D AVStageUtils: createInstance(64bit): createVendorAVUtils success!
+09-26 18:53:46.657 15147 15147 D OplusUtils: OplusUtils [84]: 
+09-26 18:53:46.660 15147 15147 E screencap: createInstance(64bit) : createExtendedFactory
+09-26 18:53:46.660 15147 15147 E screencap: createInstance(64bit) : createExtendedFactory
+09-26 18:53:46.660 15147 15147 E screencap: Opened libinputextensionsimpl.so
+09-26 18:53:46.660 15147 15147 E screencap: Opened libinputextensionsimpl.so
+09-26 18:53:46.664 15147 15147 W screencap: Thread Pool max thread count is 0. Cannot cache binder as linkToDeath cannot be implemented. serviceName: SurfaceFlingerAIDL
+09-26 18:53:46.664 15147 15147 W BpBinder: Linking to death on android.gui.ISurfaceComposer but there are no threads (yet?) listening to incoming transactions. See ProcessState::startThreadPool and ProcessState::setThreadPoolMaxThreadCount. Generally you should setup the binder threadpool before other initialization steps.
+09-26 18:53:46.664 15147 15147 W ProcessState: Extra binder thread started, but 0 threads requested. Do not use *startThreadPool when zero threads are requested.
+09-26 18:53:46.665  1452  4450 D SurfaceFlinger: captureDisplayById from pid 0 display 4627039422300187648
+09-26 18:53:46.681 15147 15148 I GrallocExtra: gralloc_extra_query:is_SW3D 0
+09-26 18:53:46.681 15147 15147 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_mm
+09-26 18:53:46.681 15147 15147 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_mm-uncached
+09-26 18:53:46.681 15147 15147 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_svp_page-uncached
+09-26 18:53:46.681 15147 15147 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_prot_region
+09-26 18:53:46.681 15147 15147 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_prot_page-uncached
+09-26 18:53:46.681 15147 15147 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_wfd_page-uncached
+09-26 18:53:46.702  1452  2078 D SurfaceFlinger: calculateTimeoutTime, triggerInterval = 1 sec + 851367923 nsec
+09-26 18:53:46.718  1742  2887 W UserAwareMgr: event can not be released, id: 1010, count: 20, releasePid: 1742
+09-26 18:53:46.723  1742  2887 W UserAwareMgr: event can not be released, id: 1010, count: 20, releasePid: 1742
+09-26 18:53:46.724  1742  2887 W UserAwareMgr: event can not be released, id: 1010, count: 20, releasePid: 1742
+09-26 18:53:46.725  3410  3711 I SystemUi--Statusbar: OplusNetworkSpeedControllExImpl-->updateNetworkSpeed: isConnected:true,isSwitchOn:true,isSuspend:false,isPause:false
+09-26 18:53:46.727  3410  3711 I SystemUi--Statusbar: OplusNetworkSpeedControllExImpl-->getTotalByte: totalRxBytes:11334351530,totalTxBytes:4355128329,loopbackTxBytes:3049896411,loopbackRxBytes:3049814409 ,totalBytes:9589769039
+09-26 18:53:46.727  1742  2887 W UserAwareMgr: event can not be released, id: 1010, count: 20, releasePid: 1742
+09-26 18:53:46.774  1350  1384 D BatteryChargeControl: bcc get no support from charging protocol
+09-26 18:53:46.784  3903  5648 D CommonApp-188-10090: transport layer data is invalid
+09-26 18:53:46.784  3903  5648 D CommonApp-188-10347: commonScoreStrategy scenarios 5 mdnsScore=0
+09-26 18:53:46.784  3903  5648 D CommonApp-188-10347: notifyScoreChange appScene COMMON score 100
+09-26 18:53:46.788  1278  1278 I hwcomposer: [HWCDisplay] (0 updateFps():4519), (type:1, mode:2) fps:106.441818,dur:1005.24,max:82.35,min:6.06  
+09-26 18:53:46.820  1742  2887 W UserAwareMgr: event can not be released, id: 1010, count: 20, releasePid: 1742
+09-26 18:53:46.820  1742  2887 W UserAwareMgr: event can not be released, id: 1010, count: 20, releasePid: 1742
+09-26 18:53:46.832  1742  2887 W UserAwareMgr: event can not be released, id: 1010, count: 20, releasePid: 1742
+09-26 18:53:46.892  1278  1278 D CwbService: normal mode or switch to doze from power off/doze suspend mode, mPowerMode = 2
+09-26 18:53:46.892  1278  1278 I CwbService: Configure changed, reconfig histogram mode: 0.
+09-26 18:53:46.893  1278  1278 D libcomposer_ext: DeviceImplAidl::DeviceClientContextAidl::ParseRequestPartialUpdateEnable()
+09-26 18:53:46.925  1742  2887 W UserAwareMgr: event can not be released, id: 1010, count: 20, releasePid: 1742
+09-26 18:53:46.927  1283  1716 I OriginChannel: now system_time:69355540	pwm_rgb: system_time:69355008, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1837, g:1096, b:729, c:3145, algo:2, end:14644, ts:69354946736716	pwm_rgb: system_time:69355008, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1861, g:1084, b:723, c:3163, algo:2, end:14644, ts:69354955069716	pwm_rgb: system_time:69355008, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1831, g:1096, b:729, c:3169, algo:2, end:14644, ts:69354963402716	pwm_rgb: system_time:69355008, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1855, g:1096, b:741, c:3181, algo:2, end:14644, ts:69354971735716	pwm_rgb: system_time:69355008, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1837, g:1084, b:729, c:3151, algo:2, end:80180, ts:69354980068716	
+09-26 18:53:46.930  1742  2887 W UserAwareMgr: event can not be released, id: 1010, count: 20, releasePid: 1742
+09-26 18:53:46.944  1278  1278 I CwbService: WaitForLayerChange timeout,run mRefreshCb
+09-26 18:53:46.995  1278  1278 D libcomposer_ext: DeviceImplAidl::DeviceClientContextAidl::ParseRequestPartialUpdateEnable()
+09-26 18:53:46.996  1278  1278 D CwbService: RGB value: 103, 105, 99, hist:1699, 1699, 1699,  rgb_state: 0
+09-26 18:53:46.997  1338  1338 D SensorFeature: name=ssc_screenshot_info ,index = 22
+09-26 18:53:46.997  1338  1338 D SensorFeature: write 37 bytes:69355600802661,69355609135994,14646,0
+09-26 18:53:47.014  3298  6393 D JsBridgeTimer: com.alarmclock.quick setIntervalCallback id:360
+09-26 18:53:47.015  3298  6393 D JsConsole: clock_quick_card5: updateClock() ->566.8916666666667-322.7-282
+09-26 18:53:47.017  3410  3410 I SystemUi--Notification: SimpleQsClock-->textWidth:214.0, mPaddingEnd 21, dynamicWidth 277, systemFontScale 1.0
+09-26 18:53:47.019  3298  3298 W ViewUtils: childView no Component
+09-26 18:53:47.019  3298  3298 D LayoutHelper: d@0x3fa635e scheduleMeasureLayout   8
+09-26 18:53:47.028  3298  3298 W ViewUtils: childView no Component
+09-26 18:53:47.028  3298  3298 W LayoutHelper: d@0x3fa635e do measure layout inner
+09-26 18:53:47.028  3298  3298 D CardView: 0x3fa635e onMeasure: w(1094, EXACTLY), h(514, EXACTLY)
+09-26 18:53:47.153   542 12286 I AOSP-MdnsDiscoveryManag: (REDACTED) %s
+09-26 18:53:47.154   542 12286 I AOSP-MdnsDiscoveryManag: (REDACTED) %s
+09-26 18:53:47.154   542 12284 I AOSP-MdnsDiscoveryManag: (REDACTED) %s
+09-26 18:53:47.154   542  7237 I AOSP-MdnsDiscoveryManag: (REDACTED) %s
+09-26 18:53:47.155   542 12284 E AOSP-MdnsDiscoveryManag: Failed to send a multicast mDNS packet. [CONTEXT service_id=168 ]
+09-26 18:53:47.155   542 12284 E AOSP-MdnsDiscoveryManag: java.io.IOException: sendto failed: EPERM (Operation not permitted)
+09-26 18:53:47.155   542 12284 E AOSP-MdnsDiscoveryManag: 	at libcore.io.IoBridge.maybeThrowAfterSendto(IoBridge.java:721)
+09-26 18:53:47.155   542 12284 E AOSP-MdnsDiscoveryManag: 	at libcore.io.IoBridge.sendto(IoBridge.java:688)
+09-26 18:53:47.155   542 12284 E AOSP-MdnsDiscoveryManag: 	at java.net.PlainDatagramSocketImpl.send(PlainDatagramSocketImpl.java:126)
+09-26 18:53:47.155   542 12284 E AOSP-MdnsDiscoveryManag: 	at java.net.DatagramSocket.send(DatagramSocket.java:723)
+09-26 18:53:47.155   542 12284 E AOSP-MdnsDiscoveryManag: 	at ifgb.run(:com.google.android.gms@263436035@26.34.36 (260400-981326859):101)
+09-26 18:53:47.155   542 12284 E AOSP-MdnsDiscoveryManag: 	at java.lang.Thread.run(Thread.java:1119)
+09-26 18:53:47.155   542 12284 E AOSP-MdnsDiscoveryManag: Caused by: android.system.ErrnoException: sendto failed: EPERM (Operation not permitted)
+09-26 18:53:47.155   542 12284 E AOSP-MdnsDiscoveryManag: 	at libcore.io.Linux.sendtoBytes(Native Method)
+09-26 18:53:47.155   542 12284 E AOSP-MdnsDiscoveryManag: 	at libcore.io.Linux.sendto(Linux.java:274)
+09-26 18:53:47.155   542 12284 E AOSP-MdnsDiscoveryManag: 	at libcore.io.ForwardingOs.sendto(ForwardingOs.java:723)
+09-26 18:53:47.155   542 12284 E AOSP-MdnsDiscoveryManag: 	at libcore.io.BlockGuardOs.sendto(BlockGuardOs.java:398)
+09-26 18:53:47.155   542 12284 E AOSP-MdnsDiscoveryManag: 	at libcore.io.ForwardingOs.sendto(ForwardingOs.java:723)
+09-26 18:53:47.155   542 12284 E AOSP-MdnsDiscoveryManag: 	at libcore.io.IoBridge.sendto(IoBridge.java:686)
+09-26 18:53:47.155   542 12284 E AOSP-MdnsDiscoveryManag: 	... 4 more
+09-26 18:53:47.155   542 12284 I AOSP-MdnsDiscoveryManag: (REDACTED) %s
+09-26 18:53:47.156   542 12284 E AOSP-MdnsDiscoveryManag: Failed to send a multicast mDNS packet. [CONTEXT service_id=168 ]
+09-26 18:53:47.156   542 12284 E AOSP-MdnsDiscoveryManag: java.io.IOException: sendto failed: ENETUNREACH (Network is unreachable)
+09-26 18:53:47.156   542 12284 E AOSP-MdnsDiscoveryManag: 	at libcore.io.IoBridge.maybeThrowAfterSendto(IoBridge.java:721)
+09-26 18:53:47.156   542 12284 E AOSP-MdnsDiscoveryManag: 	at libcore.io.IoBridge.sendto(IoBridge.java:688)
+09-26 18:53:47.156   542 12284 E AOSP-MdnsDiscoveryManag: 	at java.net.PlainDatagramSocketImpl.send(PlainDatagramSocketImpl.java:126)
+09-26 18:53:47.156   542 12284 E AOSP-MdnsDiscoveryManag: 	at java.net.DatagramSocket.send(DatagramSocket.java:723)
+09-26 18:53:47.156   542 12284 E AOSP-MdnsDiscoveryManag: 	at ifgb.run(:com.google.android.gms@263436035@26.34.36 (260400-981326859):101)
+09-26 18:53:47.156   542 12284 E AOSP-MdnsDiscoveryManag: 	at java.lang.Thread.run(Thread.java:1119)
+09-26 18:53:47.156   542 12284 E AOSP-MdnsDiscoveryManag: Caused by: android.system.ErrnoException: sendto failed: ENETUNREACH (Network is unreachable)
+09-26 18:53:47.156   542 12284 E AOSP-MdnsDiscoveryManag: 	at libcore.io.Linux.sendtoBytes(Native Method)
+09-26 18:53:47.156   542 12284 E AOSP-MdnsDiscoveryManag: 	at libcore.io.Linux.sendto(Linux.java:274)
+09-26 18:53:47.156   542 12284 E AOSP-MdnsDiscoveryManag: 	at libcore.io.ForwardingOs.sendto(ForwardingOs.java:723)
+09-26 18:53:47.156   542 12284 E AOSP-MdnsDiscoveryManag: 	at libcore.io.BlockGuardOs.sendto(BlockGuardOs.java:398)
+09-26 18:53:47.156   542 12284 E AOSP-MdnsDiscoveryManag: 	at libcore.io.ForwardingOs.sendto(ForwardingOs.java:723)
+09-26 18:53:47.156   542 12284 E AOSP-MdnsDiscoveryManag: 	at libcore.io.IoBridge.sendto(IoBridge.java:686)
+09-26 18:53:47.156   542 12284 E AOSP-MdnsDiscoveryManag: 	... 4 more
+09-26 18:53:47.183  1283  1714 W AString : ctor got NULL, using empty string instead
+09-26 18:53:47.184  1283  1714 I SensorSavedChannel: [-707,-3464,3006]==>gyro_bias.json
+09-26 18:53:47.187  1283  1716 I OriginChannel: now system_time:69355800	pwm_rgb: system_time:69355540, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1831, g:1078, b:729, c:3157, algo:2, end:65536, ts:69355243889880	
+09-26 18:53:47.206  1452  2072 D VRR [OTI]: handleIdle from 0 to 1
+09-26 18:53:47.206  1452  2072 I VRR [MVT]: requestFrameRateMode source: oti-hw, mode: {fps=60, modePtr={id=0, vsyncRate=120.00 Hz, peakRefreshRate=120.00 Hz}}
+09-26 18:53:47.206  1452  2072 I VRR [MVT]: chooseFrameRateMode : {fps=60, modePtr={id=0, vsyncRate=120.00 Hz, peakRefreshRate=120.00 Hz}}
+09-26 18:53:47.206  1452  2072 D VRR [RefreshRateDirector]: requestRefreshRateByOti update [ oti-hw, {fps=60, modePtr={id=0, vsyncRate=120.00 Hz, peakRefreshRate=120.00 Hz}} ]
+09-26 18:53:47.206  1452  2072 D VRR [RefreshRateDirector]: updateBestFrameRate [oti-hw, {fps=60, modePtr={id=0, vsyncRate=120.00 Hz, peakRefreshRate=120.00 Hz}}]
+09-26 18:53:47.206  1452  2083 D SurfaceFlinger: VRR [SurfaceFlinger] setDesiredActiveMode: displayId: 4627039422300187648, renderRate: 60, vsyncRate: 120, event: 1
+09-26 18:53:47.206  1452  2083 D DisplayModeController: setDesiredMode 4627039422300187648 {mode={fps=60.00 Hz, modePtr={id=0, vsyncRate=120.00 Hz, peakRefreshRate=120.00 Hz}}, emitEvent=true, force=false}
+09-26 18:53:47.207  1452  2083 D Scheduler: frame_rate = 59, set halftime to 32ms
+09-26 18:53:47.207  1452  2083 I PowerHalWrapper: updateFps(): 60
+09-26 18:53:47.207  1452  2083 I mtkpower_client: perf_lock_acq, hdl:43, dur:0, num:4, pid:1452, tid:2083
+09-26 18:53:47.208  9074 29098 D ShellSubscriberWorkerThread: the first 8 bytes empty, and RestData length > 8 
+09-26 18:53:47.208  1452  2083 I mtkpower_client: ret_hdl:43
+09-26 18:53:47.208  1742  2879 I DisplayDeviceRepository: Display device changed render timings: "内置屏幕", renderFrameRate=60.0, presentationDeadlineNanos=11300000, appVsyncOffsetNanos=3099999, frameRateOverrides=[]
+09-26 18:53:47.209  1742  2879 D DisplayManagerService: Delivering display event: displayId=0, event=EVENT_DISPLAY_REFRESH_RATE_CHANGED
+09-26 18:53:47.210  1742  2877 D WindowManager: DeferredDisplayUpdater: partially applying DisplayInfo(1272 x 2800) immediately
+09-26 18:53:47.210  1742  1742 E OplusGestureAnimationManagerPolicy: mScreenHeight:2800 mScreenWidth:1272 mRotation:0
+09-26 18:53:47.211  1742  3127 D AudioSystem: +setParameters(): screen_state=on 
+09-26 18:53:47.211  1742  2877 D OplusVFXScreenEffectFeature: notifySFCompatWindowStateChange entered false
+09-26 18:53:47.212  1452  1545 D [PREVIEW]: SF obtain preview_adapter: 0
+09-26 18:53:47.212  1452  1545 D [PREVIEW]: TabletPreviewAdapter::parallel world 0
+09-26 18:53:47.212  1742  2877 D FSS_FoldScreenBlackCoverController: displayChangeToOn, dc:Display{#0 state=ON size=1272x2800 ROTATION_0}
+09-26 18:53:47.212  1442  3384 D AudioBoost: audioSchedBoost, pid=1442, tid=3384, enable=1, ret=0
+09-26 18:53:47.212  1742  2877 D InsetsSourceProvider: updateSourceFrameForServerVisibility mandatorySystemGestures EMPTY_RECT
+09-26 18:53:47.212  1442  3384 D DeviceHalAidl: [default] setParameters: parameters: "screen_state=on"
+09-26 18:53:47.216  1262  1306 D AudioALSAHardware: +setParameters(): screen_state=on
+09-26 18:53:47.217  1262  1306 D AudioALSAHardware: =====>GetInstance()->MMI_Auto_Test
+09-26 18:53:47.217  1262  1306 D audio_engineer_test: do_audio_test_process Enter all_test[0]:NoneTest in_call:false
+09-26 18:53:47.217  1262  1306 D OplusVoiceTranslation: --getInstance()
+09-26 18:53:47.217  1262  1306 D AudioALSAHardware: -setParameters(): screen_state=on
+09-26 18:53:47.221  3410  3410 I KeyguardDisplayManager: onDisplayChanged displayId: 0
+09-26 18:53:47.221  3410  3410 I SystemUi--Keyguard: KeyguardDisplayManagerExImpl-->orientationChanged=false, presentationDisplayChanged=false, lastPresentationWidth=0, lastPresentationHeight=0, lastPresentationDensity=0
+09-26 18:53:47.222  1442  3384 D DeviceHalAidl: [r_submix] setParameters: parameters: "screen_state=on"
+09-26 18:53:47.228  1442  3384 D DeviceHalAidl: [bluetooth] setParameters: parameters: "screen_state=on"
+09-26 18:53:47.232  1442  3384 D DeviceHalAidl: [binaural_record] setParameters: parameters: "screen_state=on"
+09-26 18:53:47.236  1442  3384 D DeviceHalAidl: [virtual] setParameters: parameters: "screen_state=on"
+09-26 18:53:47.237  1442  3384 D AudioBoost: audioSchedBoost, pid=1442, tid=3384, enable=0, ret=0
+09-26 18:53:47.238  1278  1278 D CwbService: normal mode or switch to doze from power off/doze suspend mode, mPowerMode = 2
+09-26 18:53:47.238  1338  1338 D SensorFeature: name=ssc_screenshot_info ,index = 22
+09-26 18:53:47.238  1338  1338 D SensorFeature: write 37 bytes:69355842467584,69355850800917,14647,0
+09-26 18:53:47.258  1742  2921 D VRR [OPlusRefreshRateService]: handleConfigIdChange physicalDisplayId: 4627039422300187648 configId: 0 renderPeriod: 16666667
+09-26 18:53:47.260  1452  2072 I VRR [MVT]: request is same as current request, ignore it.
+09-26 18:53:47.260  1742  2921 D VRR [OPlusExternalRefreshRateManager]: handleOtiHistSwitch false
+09-26 18:53:47.260  1742  2921 D VRR [OPlusSurfaceFlingerController]:  setOtiHistogramSwitch : false
+09-26 18:53:47.260  1452  1545 D OplusHistogram: switch config: 0
+09-26 18:53:47.287  1742  2879 I AccessibilityWindowsPopulator: getInsensibleFlag flag = 0
+09-26 18:53:47.340  3936  6333 D oplus_btm_ble_gap: [oplus_btm_ble_gap.cc:236] vendor/oplus/packages/modules/Bluetooth/system_unify/common/stack/btm/oplus_btm_ble_gap.cc:236 - oplus_btm_ble_handle_cod_reset: btm_ble_update_inq_result reset ble cod
+09-26 18:53:47.340  3936  6333 D bt_device_interop: [interop_oplus.cc:634] vendor/oplus/packages/modules/Bluetooth/system_unify/common/interop/interop_oplus.cc:634 - interop_oplus_match_name_impl: interop_oplus_match_name_impl:[OplusStillReportWhileNonDiscoverable] check ****igi BS3PRO return 0
+09-26 18:53:47.340  3936  6333 D btm_dev : [btm_dev.cc:417] btm_find_dev: bda=xx:xx:xx:xx:8c:d7 is not found
+09-26 18:53:47.340  3936  6333 D btm_dev : [btm_dev.cc:417] btm_find_dev: bda=xx:xx:xx:xx:8c:d7 is not found
+09-26 18:53:47.348  3903 19627 D RadioProxyJ[0]: startChannelMonitoring update mLatestRequestId:-1
+09-26 18:53:47.364  3936  6333 D oplus_btm_ble_gap: [oplus_btm_ble_gap.cc:236] vendor/oplus/packages/modules/Bluetooth/system_unify/common/stack/btm/oplus_btm_ble_gap.cc:236 - oplus_btm_ble_handle_cod_reset: btm_ble_update_inq_result reset ble cod
+09-26 18:53:47.364  3936  6333 D bt_device_interop: [interop_oplus.cc:634] vendor/oplus/packages/modules/Bluetooth/system_unify/common/interop/interop_oplus.cc:634 - interop_oplus_match_name_impl: interop_oplus_match_name_impl:[OplusStillReportWhileNonDiscoverable] check ****igi BS3PRO return 0
+09-26 18:53:47.364  3936  6333 D btm_dev : [btm_dev.cc:417] btm_find_dev: bda=xx:xx:xx:xx:8c:d7 is not found
+09-26 18:53:47.364  3936  6333 D btm_dev : [btm_dev.cc:417] btm_find_dev: bda=xx:xx:xx:xx:8c:d7 is not found
+09-26 18:53:47.400  1300  1342 I libPerfCtl: xgfGetFPS pid:3410 fps:-1
+09-26 18:53:47.400  1300  1342 I libPerfCtl: xgfGetFPS pid:13256 fps:-1
+09-26 18:53:47.420  1751  2413 D ULogGuard: Monitoring: 26 threads, 0 requests, 0 time-bombs; 1 guards. ResetFlags = 0x7
+09-26 18:53:47.438  3936  6333 D oplus_btm_ble_gap: [oplus_btm_ble_gap.cc:236] vendor/oplus/packages/modules/Bluetooth/system_unify/common/stack/btm/oplus_btm_ble_gap.cc:236 - oplus_btm_ble_handle_cod_reset: btm_ble_update_inq_result reset ble cod
+09-26 18:53:47.438  3936  6333 D bt_device_interop: [interop_oplus.cc:634] vendor/oplus/packages/modules/Bluetooth/system_unify/common/interop/interop_oplus.cc:634 - interop_oplus_match_name_impl: interop_oplus_match_name_impl:[OplusStillReportWhileNonDiscoverable] check ****igi BS3PRO return 0
+09-26 18:53:47.438  3936  6333 D btm_dev : [btm_dev.cc:417] btm_find_dev: bda=xx:xx:xx:xx:8c:d7 is not found
+09-26 18:53:47.438  3936  6333 D btm_dev : [btm_dev.cc:417] btm_find_dev: bda=xx:xx:xx:xx:8c:d7 is not found
+09-26 18:53:47.451  1283  1716 I OriginChannel: now system_time:69356064	pwm_rgb: system_time:69355800, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1855, g:1096, b:723, c:3187, algo:2, end:131072, ts:69355588399264	
+09-26 18:53:47.463  3936  6333 D oplus_btm_ble_gap: [oplus_btm_ble_gap.cc:236] vendor/oplus/packages/modules/Bluetooth/system_unify/common/stack/btm/oplus_btm_ble_gap.cc:236 - oplus_btm_ble_handle_cod_reset: btm_ble_update_inq_result reset ble cod
+09-26 18:53:47.463  3936  6333 D bt_device_interop: [interop_oplus.cc:634] vendor/oplus/packages/modules/Bluetooth/system_unify/common/interop/interop_oplus.cc:634 - interop_oplus_match_name_impl: interop_oplus_match_name_impl:[OplusStillReportWhileNonDiscoverable] check ****igi BS3PRO return 0
+09-26 18:53:47.463  3936  6333 D btm_dev : [btm_dev.cc:417] btm_find_dev: bda=xx:xx:xx:xx:8c:d7 is not found
+09-26 18:53:47.463  3936  6333 D btm_dev : [btm_dev.cc:417] btm_find_dev: bda=xx:xx:xx:xx:8c:d7 is not found
+09-26 18:53:47.479  1278  1278 D CwbService: normal mode or switch to doze from power off/doze suspend mode, mPowerMode = 2
+09-26 18:53:47.480  1338  1338 D SensorFeature: name=ssc_screenshot_info ,index = 22
+09-26 18:53:47.480  1338  1338 D SensorFeature: write 37 bytes:69356084112430,69356092445763,14648,0
+09-26 18:53:47.485  3936  6333 D oplus_btm_ble_gap: [oplus_btm_ble_gap.cc:236] vendor/oplus/packages/modules/Bluetooth/system_unify/common/stack/btm/oplus_btm_ble_gap.cc:236 - oplus_btm_ble_handle_cod_reset: btm_ble_update_inq_result reset ble cod
+09-26 18:53:47.485  3936  6333 D bt_device_interop: [interop_oplus.cc:634] vendor/oplus/packages/modules/Bluetooth/system_unify/common/interop/interop_oplus.cc:634 - interop_oplus_match_name_impl: interop_oplus_match_name_impl:[OplusStillReportWhileNonDiscoverable] check ****igi BS3PRO return 0
+09-26 18:53:47.485  3936  6333 D btm_dev : [btm_dev.cc:417] btm_find_dev: bda=xx:xx:xx:xx:8c:d7 is not found
+09-26 18:53:47.485  3936  6333 D btm_dev : [btm_dev.cc:417] btm_find_dev: bda=xx:xx:xx:xx:8c:d7 is not found
+09-26 18:53:47.500 15147 15147 W RefBase : RefBase: Explicit destruction, weak count = 0 (in 0x7bb3defac8). Use sp<> to manage this object. Note - if weak count is 0, this leaks mRefs (weakref_impl).
+09-26 18:53:47.505 15147 15147 D RefBase :   #00 pc 000000000008c0e0  /apex/com.android.runtime/lib64/bionic/libc.so (__cxa_finalize+224) (BuildId: 606e619450c7c2bf3db238997d2b897d)
+09-26 18:53:47.505 15147 15147 D RefBase :   #01 pc 0000000000090e84  /apex/com.android.runtime/lib64/bionic/libc.so (exit+36) (BuildId: 606e619450c7c2bf3db238997d2b897d)
+09-26 18:53:47.505 15147 15147 D RefBase :   #02 pc 00000000000846cc  /apex/com.android.runtime/lib64/bionic/libc.so (__libc_init+124) (BuildId: 606e619450c7c2bf3db238997d2b897d)
+09-26 18:53:47.638 15152 15152 D ExtensionsLoader: createInstance(64bit) : createExtendedFactory
+09-26 18:53:47.638 15152 15152 D ExtensionsLoader: Opened libguiextimpl.so
+09-26 18:53:47.652 15152 15152 D AVStageFactory: Opened liboplusavenhancements.so
+09-26 18:53:47.652 15152 15152 D AVStageFactory: createInstance(64bit): createVendorAVFactory success!
+09-26 18:53:47.653 15152 15152 D AVStageUtils: Opened liboplusavenhancements.so
+09-26 18:53:47.653 15152 15152 D AVStageUtils: createInstance(64bit): createVendorAVUtils success!
+09-26 18:53:47.653 15152 15152 D OplusUtils: OplusUtils [84]: 
+09-26 18:53:47.653 15152 15152 D AVStageUtils: createInstance(64bit): createVendorAVUtils success!
+09-26 18:53:47.653 15152 15152 D OplusUtils: OplusUtils [84]: 
+09-26 18:53:47.654 15152 15152 D AVMediaServiceFactory: Opened liboplusavenhancements.so
+09-26 18:53:47.654 15152 15152 D AVMediaServiceFactory: createInstance(64bit): createExtendedMediaServiceFactory success!
+09-26 18:53:47.654 15152 15152 D AVNuFactory: Opened liboplusavenhancements.so
+09-26 18:53:47.654 15152 15152 D AVNuFactory: createInstance(64bit): createExtendedNuFactory success!
+09-26 18:53:47.654 15152 15152 D AVStageFactory: createInstance(64bit): createVendorAVFactory success!
+09-26 18:53:47.654 15152 15152 D AVStageUtils: createInstance(64bit): createVendorAVUtils success!
+09-26 18:53:47.654 15152 15152 D OplusUtils: OplusUtils [84]: 
+09-26 18:53:47.655 15152 15152 D AVMediaServiceFactory: createInstance(64bit): createExtendedMediaServiceFactory success!
+09-26 18:53:47.655 15152 15152 D AVNuFactory: createInstance(64bit): createExtendedNuFactory success!
+09-26 18:53:47.655 15152 15152 D AVStageFactory: Opened liboplusavenhancements.so
+09-26 18:53:47.655 15152 15152 D AVStageFactory: createInstance(64bit): createVendorAVFactory success!
+09-26 18:53:47.655 15152 15152 D AVStageUtils: Opened liboplusavenhancements.so
+09-26 18:53:47.655 15152 15152 D AVStageUtils: createInstance(64bit): createVendorAVUtils success!
+09-26 18:53:47.655 15152 15152 D OplusUtils: OplusUtils [84]: 
+09-26 18:53:47.656 15152 15152 E screencap: createInstance(64bit) : createExtendedFactory
+09-26 18:53:47.657 15152 15152 E screencap: createInstance(64bit) : createExtendedFactory
+09-26 18:53:47.657 15152 15152 E screencap: Opened libinputextensionsimpl.so
+09-26 18:53:47.657 15152 15152 E screencap: Opened libinputextensionsimpl.so
+09-26 18:53:47.657  3298  6393 D JsBridgeTimer: com.alarmclock.quick setIntervalCallback id:362
+09-26 18:53:47.659 15152 15152 W screencap: Thread Pool max thread count is 0. Cannot cache binder as linkToDeath cannot be implemented. serviceName: SurfaceFlingerAIDL
+09-26 18:53:47.659 15152 15152 W BpBinder: Linking to death on android.gui.ISurfaceComposer but there are no threads (yet?) listening to incoming transactions. See ProcessState::startThreadPool and ProcessState::setThreadPoolMaxThreadCount. Generally you should setup the binder threadpool before other initialization steps.
+09-26 18:53:47.659 15152 15152 W ProcessState: Extra binder thread started, but 0 threads requested. Do not use *startThreadPool when zero threads are requested.
+09-26 18:53:47.660  1452  1545 D SurfaceFlinger: captureDisplayById from pid 0 display 4627039422300187648
+09-26 18:53:47.674 15152 15155 I GrallocExtra: gralloc_extra_query:is_SW3D 0
+09-26 18:53:47.674 15152 15152 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_mm
+09-26 18:53:47.674 15152 15152 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_mm-uncached
+09-26 18:53:47.674 15152 15152 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_svp_page-uncached
+09-26 18:53:47.675 15152 15152 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_prot_region
+09-26 18:53:47.675 15152 15152 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_prot_page-uncached
+09-26 18:53:47.675 15152 15152 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_wfd_page-uncached
+09-26 18:53:47.719  1283  1716 I OriginChannel: now system_time:69356332	pwm_rgb: system_time:69356064, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1855, g:1096, b:741, c:3181, algo:2, end:14647, ts:69355827284351	pwm_rgb: system_time:69356064, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1843, g:1096, b:735, c:3175, algo:2, end:14647, ts:69355835617351	pwm_rgb: system_time:69356064, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1849, g:1084, b:723, c:3175, algo:2, end:14647, ts:69355843950351	pwm_rgb: system_time:69356064, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1849, g:1090, b:723, c:3169, algo:2, end:14647, ts:69355852283351	pwm_rgb: system_time:69356064, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1867, g:1102, b:747, c:3169, algo:2, end:80183, ts:69355860616351	
+09-26 18:53:47.719  1742  3014 D FusionLightNextGen: process end reported = 1, mode: 1, cnt: 62175, lux 17.0, cct -1.0, r/g/b/c: 1855.0/1096.0/717.0/3175.0, R/G/B: 103.0/105.0/99.0, bri 947.0, match 0.95, ir 0.096366, conf 0.0, ts 69356107806966
+09-26 18:53:47.721  1278  1278 D CwbService: normal mode or switch to doze from power off/doze suspend mode, mPowerMode = 2
+09-26 18:53:47.722  1338  1338 D SensorFeature: name=ssc_screenshot_info ,index = 22
+09-26 18:53:47.722  1338  1338 D SensorFeature: write 37 bytes:69356326126969,69356334460302,14649,0
+09-26 18:53:47.774  1350  1384 D BatteryChargeControl: bcc get no support from charging protocol
+09-26 18:53:47.807  3903  5648 D CommonApp-188-10090: transport layer data is invalid
+09-26 18:53:47.809  3903  5648 D CommonApp-188-10347: transport layer data is invalid
+09-26 18:53:47.869  1742  3466 I Osense-BaseDecisionMaker: notifySceneToAthenaPolicy: SCENE_IDLE_RECOVER, bundle: Bundle[{scene=SCENE_IDLE_RECOVER}]
+09-26 18:53:47.870  1742  3466 E HoraeHelper: horae is not open
+09-26 18:53:47.871  1742  3466 E HoraeHelper: horae is not open
+09-26 18:53:47.871  1742  3466 E HoraeHelper: horae is not open
+09-26 18:53:47.872  1742  3466 I Osense-BaseDecisionMaker: scene: SCENE_IDLE_RECOVER, excutingPolicy: respreload
+09-26 18:53:47.872  1742  3466 D Osense-BaseDecisionMaker: invoke process preload policy
+09-26 18:53:47.872  1742  3466 I Osense-BaseDecisionMaker: scene: SCENE_IDLE_RECOVER, excutingPolicy: clear
+09-26 18:53:47.872  1742  3466 D Osense-BaseDecisionMaker: invoke clear policy,type: unforbid
+09-26 18:53:47.872  1742  3466 I OsenseKillAction: KillAction: skip reason: non-low-mem-req, req_id=3684, enable=false, scene=SCENE_IDLE_RECOVER, type=unforbid, cchOnly=false, appcare=0, bloM=false, bloP=false
+09-26 18:53:47.907  3410  3410 I SystemUi--Notification: OplusNotificationLogger-->TOAST-->hideToast , pkg = com.takahashirinta.ncrust, uid = no_need_print , token = android.os.BinderProxy@60b5f21 , content = no_need_print
+09-26 18:53:47.914  3410  3410 D OplusScrollToTopManager: Toast,window dying
+09-26 18:53:47.914  3410  3410 D OplusScrollToTopManager: Toast,unregisterGuidePopupDismissReceiverInSystemUI
+09-26 18:53:47.915  3410  3410 D OplusScrollToTopManager: Toast,Receiver not registered: android.view.OplusScrollToTopManager$1@ad66683
+09-26 18:53:47.918  3410  3410 D HWUI    : RenderProxy::destroy: this=0xb4000075b7445d00, mContext=0xb400007560749080
+09-26 18:53:47.918  3410  3762 D HWUI    : SkiaVulkanPipeline::setSurface: this=0xb4000075ad4e4900, surface=NULL
+09-26 18:53:47.919  3410  3762 D Surface : setDisconnectFlag 1
+09-26 18:53:47.921  3410  3410 D BLASTBufferQueue: [VRI[Toast]#981](f:0,a:1) destructor()
+09-26 18:53:47.921  3410  3410 D BufferQueueConsumer: [VRI[Toast]#981(BLAST Consumer)981](id:d5200000444,api:0,p:-1,c:3410) disconnect
+09-26 18:53:47.924  1742  3058 I WindowManager: Window{d336d25 u0 Toast} state from HAS_DRAWN to NO_SURFACE; reason: destroySurface
+09-26 18:53:47.925  1742  3058 D InsetsSourceProvider: updateSourceFrameForServerVisibility mandatorySystemGestures EMPTY_RECT
+09-26 18:53:47.927  1742  3058 D InsetsSourceProvider: updateSourceFrameForServerVisibility mandatorySystemGestures EMPTY_RECT
+09-26 18:53:47.928  1742  3058 D OplusAONSmartDim: onWakeLockReleaseLocked: lock=27794143, flags=0x2000000a, packageName=android, tag="WindowManager/displayId:0", ws=WorkSource{10163 com.android.systemui}, uid=1000, pid=1742
+09-26 18:53:47.928  1742  3058 D PowerManagerService: userActivityNoUpdateLocked: groupId=0, eventTime=32362901, event=other, flags=0x1, uid=1000
+09-26 18:53:47.930  1742  3058 D WindowManager: NFW_findFocusedWindowIfNeeded:Window{d389a5a u0 com.takahashirinta.ncrust/com.takahashirinta.ncrust.MainActivity} mCurrentFocus:Window{d389a5a u0 com.takahashirinta.ncrust/com.takahashirinta.ncrust.MainActivity}
+09-26 18:53:47.932  1278  1278 I hwcomposer: [HWCDisplay] (0 updateFps():4519), (type:1, mode:2) fps:6.992241,dur:1144.13,max:684.58,min:7.64  
+09-26 18:53:47.932  1742  3058 W NotificationService: Toast already killed. pkg=com.takahashirinta.ncrust token=android.os.BinderProxy@e041e4
+09-26 18:53:47.956  1742  2879 I AccessibilityWindowsPopulator: getInsensibleFlag flag = 0
+09-26 18:53:47.963  1278  1278 D CwbService: normal mode or switch to doze from power off/doze suspend mode, mPowerMode = 2
+09-26 18:53:47.963  1278  1278 I CwbService: Configure changed, reconfig histogram mode: 0.
+09-26 18:53:47.964  1278  1278 D libcomposer_ext: DeviceImplAidl::DeviceClientContextAidl::ParseRequestPartialUpdateEnable()
+09-26 18:53:47.981  1283  1716 I OriginChannel: now system_time:69356594	pwm_rgb: system_time:69356332, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1855, g:1078, b:729, c:3151, algo:2, end:14648, ts:69356074474966	pwm_rgb: system_time:69356332, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1855, g:1096, b:717, c:3175, algo:2, end:14648, ts:69356082807966	pwm_rgb: system_time:69356332, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1843, g:1090, b:735, c:3163, algo:2, end:14648, ts:69356091140966	pwm_rgb: system_time:69356332, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1831, g:1096, b:741, c:3163, algo:2, end:14648, ts:69356099473966	pwm_rgb: system_time:69356332, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1849, g:1078, b:723, c:3181, algo:2, end:80184, ts:69356107806966	
+09-26 18:53:48.004  1742  2879 I AccessibilityWindowsPopulator: getInsensibleFlag flag = 0
+09-26 18:53:48.014  3298  6393 D JsBridgeTimer: com.alarmclock.quick setIntervalCallback id:360
+09-26 18:53:48.015  1278  1278 I CwbService: WaitForLayerChange timeout,run mRefreshCb
+09-26 18:53:48.015  3298  6393 D JsConsole: clock_quick_card5: updateClock() ->566.9-322.8-288
+09-26 18:53:48.019  3298  3298 W ViewUtils: childView no Component
+09-26 18:53:48.019  3298  3298 D LayoutHelper: d@0x3fa635e scheduleMeasureLayout   8
+09-26 18:53:48.020  3903 19628 D RadioProxyJ[1]: startChannelMonitoring update mLatestRequestId:-1
+09-26 18:53:48.026  3298  3298 W ViewUtils: childView no Component
+09-26 18:53:48.027  3298  3298 W LayoutHelper: d@0x3fa635e do measure layout inner
+09-26 18:53:48.027  3298  3298 D CardView: 0x3fa635e onMeasure: w(1094, EXACTLY), h(514, EXACTLY)
+09-26 18:53:48.032  3410  3410 I SystemUi--Notification: SimpleQsClock-->textWidth:214.0, mPaddingEnd 21, dynamicWidth 277, systemFontScale 1.0
+09-26 18:53:48.063  1905  1905 I OplusTouchDaemon: ts_run_service: shellback temperature updated 29 (29500)
+09-26 18:53:48.065  1278  1278 D libcomposer_ext: DeviceImplAidl::DeviceClientContextAidl::ParseRequestPartialUpdateEnable()
+09-26 18:53:48.066  1278  1278 D CwbService: RGB value: 103, 105, 99, hist:1699, 1699, 1699,  rgb_state: 0
+09-26 18:53:48.067  1338  1338 D SensorFeature: name=ssc_screenshot_info ,index = 22
+09-26 18:53:48.067  1338  1338 D SensorFeature: write 37 bytes:69356671196430,69356679529763,14650,0
+09-26 18:53:48.122 15152 15152 W RefBase : RefBase: Explicit destruction, weak count = 0 (in 0x7e767f7ac8). Use sp<> to manage this object. Note - if weak count is 0, this leaks mRefs (weakref_impl).
+09-26 18:53:48.126 15152 15152 D RefBase :   #00 pc 000000000008c0e0  /apex/com.android.runtime/lib64/bionic/libc.so (__cxa_finalize+224) (BuildId: 606e619450c7c2bf3db238997d2b897d)
+09-26 18:53:48.126 15152 15152 D RefBase :   #01 pc 0000000000090e84  /apex/com.android.runtime/lib64/bionic/libc.so (exit+36) (BuildId: 606e619450c7c2bf3db238997d2b897d)
+09-26 18:53:48.126 15152 15152 D RefBase :   #02 pc 00000000000846cc  /apex/com.android.runtime/lib64/bionic/libc.so (__libc_init+124) (BuildId: 606e619450c7c2bf3db238997d2b897d)
+09-26 18:53:48.243  1283  1716 I OriginChannel: now system_time:69356855	pwm_rgb: system_time:69356594, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1831, g:1060, b:692, c:3145, algo:2, end:14649, ts:69356329458279	pwm_rgb: system_time:69356594, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1855, g:1090, b:741, c:3169, algo:2, end:14649, ts:69356337791279	pwm_rgb: system_time:69356594, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1849, g:1096, b:723, c:3157, algo:2, end:14649, ts:69356346124279	pwm_rgb: system_time:69356594, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1843, g:1090, b:723, c:3181, algo:2, end:14649, ts:69356354457279	pwm_rgb: system_time:69356594, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1843, g:1078, b:735, c:3181, algo:2, end:80185, ts:69356362790279	
+09-26 18:53:48.254 15158 15158 D ExtensionsLoader: createInstance(64bit) : createExtendedFactory
+09-26 18:53:48.254 15158 15158 D ExtensionsLoader: Opened libguiextimpl.so
+09-26 18:53:48.269 15158 15158 D AVStageFactory: Opened liboplusavenhancements.so
+09-26 18:53:48.269 15158 15158 D AVStageFactory: createInstance(64bit): createVendorAVFactory success!
+09-26 18:53:48.269 15158 15158 D AVStageUtils: Opened liboplusavenhancements.so
+09-26 18:53:48.269 15158 15158 D AVStageUtils: createInstance(64bit): createVendorAVUtils success!
+09-26 18:53:48.269 15158 15158 D OplusUtils: OplusUtils [84]: 
+09-26 18:53:48.269 15158 15158 D AVStageUtils: createInstance(64bit): createVendorAVUtils success!
+09-26 18:53:48.269 15158 15158 D OplusUtils: OplusUtils [84]: 
+09-26 18:53:48.270 15158 15158 D AVMediaServiceFactory: Opened liboplusavenhancements.so
+09-26 18:53:48.270 15158 15158 D AVMediaServiceFactory: createInstance(64bit): createExtendedMediaServiceFactory success!
+09-26 18:53:48.271 15158 15158 D AVNuFactory: Opened liboplusavenhancements.so
+09-26 18:53:48.271 15158 15158 D AVNuFactory: createInstance(64bit): createExtendedNuFactory success!
+09-26 18:53:48.271 15158 15158 D AVStageFactory: createInstance(64bit): createVendorAVFactory success!
+09-26 18:53:48.271 15158 15158 D AVStageUtils: createInstance(64bit): createVendorAVUtils success!
+09-26 18:53:48.271 15158 15158 D OplusUtils: OplusUtils [84]: 
+09-26 18:53:48.271 15158 15158 D AVMediaServiceFactory: createInstance(64bit): createExtendedMediaServiceFactory success!
+09-26 18:53:48.271 15158 15158 D AVNuFactory: createInstance(64bit): createExtendedNuFactory success!
+09-26 18:53:48.271 15158 15158 D AVStageFactory: Opened liboplusavenhancements.so
+09-26 18:53:48.271 15158 15158 D AVStageFactory: createInstance(64bit): createVendorAVFactory success!
+09-26 18:53:48.271 15158 15158 D AVStageUtils: Opened liboplusavenhancements.so
+09-26 18:53:48.271 15158 15158 D AVStageUtils: createInstance(64bit): createVendorAVUtils success!
+09-26 18:53:48.271 15158 15158 D OplusUtils: OplusUtils [84]: 
+09-26 18:53:48.273 15158 15158 E screencap: createInstance(64bit) : createExtendedFactory
+09-26 18:53:48.273 15158 15158 E screencap: createInstance(64bit) : createExtendedFactory
+09-26 18:53:48.273 15158 15158 E screencap: Opened libinputextensionsimpl.so
+09-26 18:53:48.273 15158 15158 E screencap: Opened libinputextensionsimpl.so
+09-26 18:53:48.275 15158 15158 W screencap: Thread Pool max thread count is 0. Cannot cache binder as linkToDeath cannot be implemented. serviceName: SurfaceFlingerAIDL
+09-26 18:53:48.275 15158 15158 W BpBinder: Linking to death on android.gui.ISurfaceComposer but there are no threads (yet?) listening to incoming transactions. See ProcessState::startThreadPool and ProcessState::setThreadPoolMaxThreadCount. Generally you should setup the binder threadpool before other initialization steps.
+09-26 18:53:48.275 15158 15158 W ProcessState: Extra binder thread started, but 0 threads requested. Do not use *startThreadPool when zero threads are requested.
+09-26 18:53:48.276  1452  1545 D SurfaceFlinger: captureDisplayById from pid 0 display 4627039422300187648
+09-26 18:53:48.296 15158 15160 I GrallocExtra: gralloc_extra_query:is_SW3D 0
+09-26 18:53:48.296 15158 15158 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_mm
+09-26 18:53:48.296 15158 15158 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_mm-uncached
+09-26 18:53:48.296 15158 15158 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_svp_page-uncached
+09-26 18:53:48.296 15158 15158 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_prot_region
+09-26 18:53:48.296 15158 15158 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_prot_page-uncached
+09-26 18:53:48.296 15158 15158 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_wfd_page-uncached
+09-26 18:53:48.307  1278  1278 D CwbService: normal mode or switch to doze from power off/doze suspend mode, mPowerMode = 2
+09-26 18:53:48.308  1338  1338 D SensorFeature: name=ssc_screenshot_info ,index = 22
+09-26 18:53:48.308  1338  1338 D SensorFeature: write 37 bytes:69356912470584,69356920803917,14651,0
+09-26 18:53:48.400  1300  1342 I libPerfCtl: xgfGetFPS pid:13256 fps:-1
+09-26 18:53:48.507  1283  1716 I OriginChannel: now system_time:69357119	pwm_rgb: system_time:69356855, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1837, g:1084, b:729, c:3181, algo:2, end:14650, ts:69356660512125	pwm_rgb: system_time:69356855, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1855, g:1084, b:723, c:3157, algo:2, end:14650, ts:69356668845125	pwm_rgb: system_time:69356856, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1849, g:1096, b:741, c:3181, algo:2, end:14650, ts:69356677178125	pwm_rgb: system_time:69356856, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1843, g:1096, b:735, c:3163, algo:2, end:14650, ts:69356685511125	pwm_rgb: system_time:69356856, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1855, g:1090, b:723, c:3199, algo:2, end:80186, ts:69356693844125	
+09-26 18:53:48.549  1278  1278 D CwbService: normal mode or switch to doze from power off/doze suspend mode, mPowerMode = 2
+09-26 18:53:48.549  1338  1338 D SensorFeature: name=ssc_screenshot_info ,index = 22
+09-26 18:53:48.550  1338  1338 D SensorFeature: write 37 bytes:69357153787815,69357162121148,14652,0
+09-26 18:53:48.553  1452  2078 D SurfaceFlinger: calculateTimeoutTime, triggerInterval = 2 sec + 375610231 nsec
+09-26 18:53:48.656  3298  6393 D JsBridgeTimer: com.alarmclock.quick setIntervalCallback id:362
+09-26 18:53:48.670 15158 15158 W RefBase : RefBase: Explicit destruction, weak count = 0 (in 0x79d51e0ac8). Use sp<> to manage this object. Note - if weak count is 0, this leaks mRefs (weakref_impl).
+09-26 18:53:48.671  1742  2879 I AccessibilityWindowsPopulator: getInsensibleFlag flag = 0
+09-26 18:53:48.674 15158 15158 D RefBase :   #00 pc 000000000008c0e0  /apex/com.android.runtime/lib64/bionic/libc.so (__cxa_finalize+224) (BuildId: 606e619450c7c2bf3db238997d2b897d)
+09-26 18:53:48.674 15158 15158 D RefBase :   #01 pc 0000000000090e84  /apex/com.android.runtime/lib64/bionic/libc.so (exit+36) (BuildId: 606e619450c7c2bf3db238997d2b897d)
+09-26 18:53:48.674 15158 15158 D RefBase :   #02 pc 00000000000846cc  /apex/com.android.runtime/lib64/bionic/libc.so (__libc_init+124) (BuildId: 606e619450c7c2bf3db238997d2b897d)
+09-26 18:53:48.774  1283  1716 I OriginChannel: now system_time:69357387	pwm_rgb: system_time:69357119, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1843, g:1078, b:729, c:3169, algo:2, end:14651, ts:69356899306986	pwm_rgb: system_time:69357119, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1855, g:1090, b:723, c:3169, algo:2, end:14651, ts:69356907639986	pwm_rgb: system_time:69357119, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1867, g:1108, b:753, c:3175, algo:2, end:14651, ts:69356915972986	pwm_rgb: system_time:69357119, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1843, g:1090, b:723, c:3175, algo:2, end:14651, ts:69356924305986	pwm_rgb: system_time:69357119, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1849, g:1090, b:729, c:3175, algo:2, end:80187, ts:69356932638986	
+09-26 18:53:48.775  1350  1384 D BatteryChargeControl: bcc get no support from charging protocol
+09-26 18:53:48.790  1278  1278 D CwbService: normal mode or switch to doze from power off/doze suspend mode, mPowerMode = 2
+09-26 18:53:48.791  1338  1338 D SensorFeature: name=ssc_screenshot_info ,index = 22
+09-26 18:53:48.792  1338  1338 D SensorFeature: write 37 bytes:69357395189354,69357403522687,14653,0
+09-26 18:53:48.832  3903  5648 D CommonApp-188-10090: transport layer data is invalid
+09-26 18:53:48.832  3903  5648 D CommonApp-188-10347: transport layer data is invalid
+09-26 18:53:48.856 15163 15163 D ExtensionsLoader: createInstance(64bit) : createExtendedFactory
+09-26 18:53:48.856 15163 15163 D ExtensionsLoader: Opened libguiextimpl.so
+09-26 18:53:48.870  3903  3903 D SubsysEventListenerManager-SubsysTelephonyCallback[1]: onSignalStrengthsChanged
+09-26 18:53:48.872  3410  3749 I SystemUi--Statusbar: MobileConnectionRepositoryImpl-->subId:2 isSoftSimCard:false slotId:1
+09-26 18:53:48.878 15163 15163 D AVStageFactory: Opened liboplusavenhancements.so
+09-26 18:53:48.878 15163 15163 D AVStageFactory: createInstance(64bit): createVendorAVFactory success!
+09-26 18:53:48.878 15163 15163 D AVStageUtils: Opened liboplusavenhancements.so
+09-26 18:53:48.878 15163 15163 D AVStageUtils: createInstance(64bit): createVendorAVUtils success!
+09-26 18:53:48.878 15163 15163 D OplusUtils: OplusUtils [84]: 
+09-26 18:53:48.879 15163 15163 D AVStageUtils: createInstance(64bit): createVendorAVUtils success!
+09-26 18:53:48.879 15163 15163 D OplusUtils: OplusUtils [84]: 
+09-26 18:53:48.881 15163 15163 D AVMediaServiceFactory: Opened liboplusavenhancements.so
+09-26 18:53:48.881 15163 15163 D AVMediaServiceFactory: createInstance(64bit): createExtendedMediaServiceFactory success!
+09-26 18:53:48.881 15163 15163 D AVNuFactory: Opened liboplusavenhancements.so
+09-26 18:53:48.881 15163 15163 D AVNuFactory: createInstance(64bit): createExtendedNuFactory success!
+09-26 18:53:48.881 15163 15163 D AVStageFactory: createInstance(64bit): createVendorAVFactory success!
+09-26 18:53:48.881 15163 15163 D AVStageUtils: createInstance(64bit): createVendorAVUtils success!
+09-26 18:53:48.881 15163 15163 D OplusUtils: OplusUtils [84]: 
+09-26 18:53:48.881 15163 15163 D AVMediaServiceFactory: createInstance(64bit): createExtendedMediaServiceFactory success!
+09-26 18:53:48.881 15163 15163 D AVNuFactory: createInstance(64bit): createExtendedNuFactory success!
+09-26 18:53:48.881 15163 15163 D AVStageFactory: Opened liboplusavenhancements.so
+09-26 18:53:48.882 15163 15163 D AVStageFactory: createInstance(64bit): createVendorAVFactory success!
+09-26 18:53:48.882 15163 15163 D AVStageUtils: Opened liboplusavenhancements.so
+09-26 18:53:48.882 15163 15163 D AVStageUtils: createInstance(64bit): createVendorAVUtils success!
+09-26 18:53:48.882 15163 15163 D OplusUtils: OplusUtils [84]: 
+09-26 18:53:48.884 15163 15163 E screencap: createInstance(64bit) : createExtendedFactory
+09-26 18:53:48.885 15163 15163 E screencap: createInstance(64bit) : createExtendedFactory
+09-26 18:53:48.885 15163 15163 E screencap: Opened libinputextensionsimpl.so
+09-26 18:53:48.885 15163 15163 E screencap: Opened libinputextensionsimpl.so
+09-26 18:53:48.888 15163 15163 W screencap: Thread Pool max thread count is 0. Cannot cache binder as linkToDeath cannot be implemented. serviceName: SurfaceFlingerAIDL
+09-26 18:53:48.888 15163 15163 W BpBinder: Linking to death on android.gui.ISurfaceComposer but there are no threads (yet?) listening to incoming transactions. See ProcessState::startThreadPool and ProcessState::setThreadPoolMaxThreadCount. Generally you should setup the binder threadpool before other initialization steps.
+09-26 18:53:48.888 15163 15163 W ProcessState: Extra binder thread started, but 0 threads requested. Do not use *startThreadPool when zero threads are requested.
+09-26 18:53:48.889  1452  1545 D SurfaceFlinger: captureDisplayById from pid 0 display 4627039422300187648
+09-26 18:53:48.904 15163 15164 I GrallocExtra: gralloc_extra_query:is_SW3D 0
+09-26 18:53:48.904 15163 15163 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_mm
+09-26 18:53:48.904 15163 15163 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_mm-uncached
+09-26 18:53:48.904 15163 15163 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_svp_page-uncached
+09-26 18:53:48.904 15163 15163 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_prot_region
+09-26 18:53:48.904 15163 15163 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_prot_page-uncached
+09-26 18:53:48.904 15163 15163 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_wfd_page-uncached
+09-26 18:53:49.014  3298  6393 D JsBridgeTimer: com.alarmclock.quick setIntervalCallback id:360
+09-26 18:53:49.015  3298  6393 D JsConsole: clock_quick_card5: updateClock() ->566.9083333333333-322.9-294
+09-26 18:53:49.020  3410  3410 I SystemUi--Notification: SimpleQsClock-->textWidth:214.0, mPaddingEnd 21, dynamicWidth 277, systemFontScale 1.0
+09-26 18:53:49.020  3298  3298 W ViewUtils: childView no Component
+09-26 18:53:49.020  3298  3298 D LayoutHelper: d@0x3fa635e scheduleMeasureLayout   8
+09-26 18:53:49.029  3298  3298 W ViewUtils: childView no Component
+09-26 18:53:49.029  3298  3298 W LayoutHelper: d@0x3fa635e do measure layout inner
+09-26 18:53:49.030  3298  3298 D CardView: 0x3fa635e onMeasure: w(1094, EXACTLY), h(514, EXACTLY)
+09-26 18:53:49.033  1278  1278 D CwbService: normal mode or switch to doze from power off/doze suspend mode, mPowerMode = 2
+09-26 18:53:49.034  1338  1338 D SensorFeature: name=ssc_screenshot_info ,index = 22
+09-26 18:53:49.035  1283  1716 I OriginChannel: now system_time:69357647	pwm_rgb: system_time:69357387, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1861, g:1096, b:729, c:3181, algo:2, end:14652, ts:69357138132001	pwm_rgb: system_time:69357387, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1837, g:1084, b:735, c:3181, algo:2, end:14652, ts:69357146465001	pwm_rgb: system_time:69357387, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1855, g:1096, b:729, c:3163, algo:2, end:14652, ts:69357154798001	pwm_rgb: system_time:69357387, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1837, g:1084, b:741, c:3169, algo:2, end:14652, ts:69357163131001	pwm_rgb: system_time:69357387, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1849, g:1090, b:723, c:3157, algo:2, end:80188, ts:69357171464001	
+09-26 18:53:49.035  1742  3014 D FusionLightNextGen: process end reported = 1, mode: 1, cnt: 62180, lux 17.0, cct -1.0, r/g/b/c: 1843.0/1090.0/735.0/3169.0, R/G/B: 103.0/105.0/99.0, bri 947.0, match 0.92, ir 0.098068, conf 0.0, ts 69357418652082
+09-26 18:53:49.035  1338  1338 D SensorFeature: write 37 bytes:69357638259584,69357646592917,14654,0
+09-26 18:53:49.035  1782  9552 D AALLightSensor: oldLux=16 [SA:-1 LA:-1] newLux=16 (oriLux: 17)
+09-26 18:53:49.184  1283  1714 W AString : ctor got NULL, using empty string instead
+09-26 18:53:49.185  1283  1714 I SensorSavedChannel: [-654,-3458,2943]==>gyro_bias.json
+09-26 18:53:49.259  3259  3262 D WifiHAL : WifiRequest::create vendor command to iface 40, vendor_id=0x1a11, subcmd=0x1200, res=0
+09-26 18:53:49.260  3259  3262 I WifiHAL : LLS RSP: data=0xb400007202c65020, len=4340
+09-26 18:53:49.260  3259  3262 I WifiHAL : LLS check_data_sanity: 1829: current_radio_stat->num_channels=13
+09-26 18:53:49.260  3259  3262 I WifiHAL : LLS check_data_sanity: 1829: current_radio_stat->num_channels=13
+09-26 18:53:49.260  3259  3262 I WifiHAL : LLS check_data_sanity: confirmed_size=4340, len=4340
+09-26 18:53:49.261  1742  3097 E WifiStaIfaceAidlImpl: getCachedScanData failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+09-26 18:53:49.264  9074 22049 E HoraeHelper: horae is not open
+09-26 18:53:49.268  1301  1301 D android.hardware.thermal-service.mediatek: i=3 tz_data[i].tz_idx[0]=63
+09-26 18:53:49.271  1301  1301 D android.hardware.thermal-service.mediatek: i=3 tz_data[i].tz_idx[0]=63
+09-26 18:53:49.271  3903  3903 D VendorWifiService: onEvent event:9,action:1
+09-26 18:53:49.272  9074 22049 E HoraeHelper: horae is not open
+09-26 18:53:49.273  1301  1301 D android.hardware.thermal-service.mediatek: i=2 tz_data[i].tz_idx[0]=11
+09-26 18:53:49.274  1742  3249 D ScorerUtils: isLowTraffic: txTputKBps=0, rxTputKBps=2
+09-26 18:53:49.275  1742  3249 D OplusWifiPower_TriggerCenter: mComponentCallback: wifistat
+09-26 18:53:49.277  1278  1278 D CwbService: normal mode or switch to doze from power off/doze suspend mode, mPowerMode = 2
+09-26 18:53:49.277  1338  1338 D SensorFeature: name=ssc_screenshot_info ,index = 22
+09-26 18:53:49.277  1338  1338 D SensorFeature: write 37 bytes:69357881479815,69357889813148,14655,0
+09-26 18:53:49.298  1283  1716 I OriginChannel: now system_time:69357911	pwm_rgb: system_time:69357647, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1831, g:1060, b:704, c:3139, algo:2, end:14653, ts:69357385320082	pwm_rgb: system_time:69357647, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1843, g:1090, b:735, c:3169, algo:2, end:14653, ts:69357393653082	pwm_rgb: system_time:69357647, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1849, g:1090, b:735, c:3163, algo:2, end:14653, ts:69357401986082	pwm_rgb: system_time:69357647, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1843, g:1090, b:735, c:3175, algo:2, end:14653, ts:69357410319082	pwm_rgb: system_time:69357647, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1861, g:1096, b:723, c:3187, algo:2, end:80189, ts:69357418652082	
+09-26 18:53:49.518  1278  1278 D CwbService: normal mode or switch to doze from power off/doze suspend mode, mPowerMode = 2
+09-26 18:53:49.519  1338  1338 D SensorFeature: name=ssc_screenshot_info ,index = 22
+09-26 18:53:49.519  1338  1338 D SensorFeature: write 37 bytes:69358123423815,69358131757148,14656,0
+09-26 18:53:49.546  5249 12800 E midasd  : MidasNativeBinder::registBinder horae failed!
+09-26 18:53:49.547  5249 12800 I midasd  : Thermal: connect Horae service failed
+09-26 18:53:49.562  1283  1716 I OriginChannel: now system_time:69358174	pwm_rgb: system_time:69357911, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1855, g:1090, b:729, c:3163, algo:2, end:14655, ts:69357849138605	pwm_rgb: system_time:69357911, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1849, g:1090, b:729, c:3181, algo:2, end:14655, ts:69357857471605	pwm_rgb: system_time:69357911, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1849, g:1090, b:735, c:3175, algo:2, end:14655, ts:69357865804605	pwm_rgb: system_time:69357911, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1849, g:1102, b:735, c:3163, algo:2, end:14655, ts:69357874137605	pwm_rgb: system_time:69357911, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1855, g:1078, b:735, c:3169, algo:2, end:80191, ts:69357882470605	
+09-26 18:53:49.593  1742  2879 D InsetsSourceProvider: updateSourceFrameForServerVisibility mandatorySystemGestures EMPTY_RECT
+09-26 18:53:49.598  1742  2879 D InsetsSourceProvider: updateSourceFrameForServerVisibility mandatorySystemGestures EMPTY_RECT
+09-26 18:53:49.630  1278  1278 I hwcomposer: [HWCDisplay] (0 updateFps():4519), (type:1, mode:2) fps:3.533420,dur:1698.07,max:997.92,min:16.32  
+09-26 18:53:49.656  3298  6393 D JsBridgeTimer: com.alarmclock.quick setIntervalCallback id:362
+09-26 18:53:49.671  1742  2879 I AccessibilityWindowsPopulator: getInsensibleFlag flag = 0
+09-26 18:53:49.696 15163 15163 W RefBase : RefBase: Explicit destruction, weak count = 0 (in 0x7564bfcac8). Use sp<> to manage this object. Note - if weak count is 0, this leaks mRefs (weakref_impl).
+09-26 18:53:49.707 15163 15163 D RefBase :   #00 pc 000000000008c0e0  /apex/com.android.runtime/lib64/bionic/libc.so (__cxa_finalize+224) (BuildId: 606e619450c7c2bf3db238997d2b897d)
+09-26 18:53:49.707 15163 15163 D RefBase :   #01 pc 0000000000090e84  /apex/com.android.runtime/lib64/bionic/libc.so (exit+36) (BuildId: 606e619450c7c2bf3db238997d2b897d)
+09-26 18:53:49.707 15163 15163 D RefBase :   #02 pc 00000000000846cc  /apex/com.android.runtime/lib64/bionic/libc.so (__libc_init+124) (BuildId: 606e619450c7c2bf3db238997d2b897d)
+09-26 18:53:49.711  1742  3284 E HoraeHelper: horae is not open
+09-26 18:53:49.760  1278  1278 D CwbService: normal mode or switch to doze from power off/doze suspend mode, mPowerMode = 2
+09-26 18:53:49.760  1338  1338 D SensorFeature: name=ssc_screenshot_info ,index = 22
+09-26 18:53:49.761  1338  1338 D SensorFeature: write 37 bytes:69358364794354,69358373127687,14657,0
+09-26 18:53:49.776  1350  1384 D BatteryChargeControl: bcc get no support from charging protocol
+09-26 18:53:49.799  1350  1368 D vendor.oplus.hardware.charger-V11-service: s_chg_user_mode: 3
+09-26 18:53:49.799  1350  1368 D vendor.oplus.hardware.charger-V11-service: scale_chg Start!!!
+09-26 18:53:49.799  1350  1368 D vendor.oplus.hardware.charger-V11-service: [0, 0, 3]
+09-26 18:53:49.799  1350  1368 D vendor.oplus.hardware.charger-V11-service: [0, 2, 9]
+09-26 18:53:49.799  1350  1368 D vendor.oplus.hardware.charger-V11-service: [0, 1, 3]
+09-26 18:53:49.799  1350  1368 D vendor.oplus.hardware.charger-V11-service: [0, 3, 3]
+09-26 18:53:49.799  1350  1368 D vendor.oplus.hardware.charger-V11-service: [0, 4, 3]
+09-26 18:53:49.799  1350  1368 D vendor.oplus.hardware.charger-V11-service: [0, 5, 3]
+09-26 18:53:49.800  1350  1368 D vendor.oplus.hardware.charger-V11-service: [0, 6, 9]
+09-26 18:53:49.800  1350  1368 D vendor.oplus.hardware.charger-V11-service: scale_chg Start!!!
+09-26 18:53:49.800  1350  1368 D vendor.oplus.hardware.charger-V11-service: [0, 0, 3]
+09-26 18:53:49.800  1350  1368 D vendor.oplus.hardware.charger-V11-service: [0, 2, 9]
+09-26 18:53:49.800  1350  1368 D vendor.oplus.hardware.charger-V11-service: [0, 1, 3]
+09-26 18:53:49.800  1350  1368 D vendor.oplus.hardware.charger-V11-service: [0, 3, 3]
+09-26 18:53:49.800  1350  1368 D vendor.oplus.hardware.charger-V11-service: [0, 4, 3]
+09-26 18:53:49.800  1350  1368 D vendor.oplus.hardware.charger-V11-service: [0, 5, 3]
+09-26 18:53:49.800  1350  1368 D vendor.oplus.hardware.charger-V11-service: [0, 6, 9]
+09-26 18:53:49.829  1283  1716 I OriginChannel: now system_time:69358442	pwm_rgb: system_time:69358174, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1837, g:1096, b:729, c:3181, algo:2, end:14656, ts:69358112995846	pwm_rgb: system_time:69358175, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1843, g:1078, b:735, c:3151, algo:2, end:14656, ts:69358121328846	pwm_rgb: system_time:69358175, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1849, g:1102, b:729, c:3175, algo:2, end:14656, ts:69358129661846	pwm_rgb: system_time:69358175, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1849, g:1084, b:729, c:3169, algo:2, end:14656, ts:69358137994846	pwm_rgb: system_time:69358175, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1849, g:1078, b:729, c:3187, algo:2, end:80192, ts:69358146327846	
+09-26 18:53:49.855  3903  5648 D CommonApp-188-10090: transport layer data is invalid
+09-26 18:53:49.856  3903  5648 D CommonApp-188-10347: transport layer data is invalid
+09-26 18:53:49.883 15169 15169 D ExtensionsLoader: createInstance(64bit) : createExtendedFactory
+09-26 18:53:49.884 15169 15169 D ExtensionsLoader: Opened libguiextimpl.so
+09-26 18:53:49.908 15169 15169 D AVStageFactory: Opened liboplusavenhancements.so
+09-26 18:53:49.908 15169 15169 D AVStageFactory: createInstance(64bit): createVendorAVFactory success!
+09-26 18:53:49.908 15169 15169 D AVStageUtils: Opened liboplusavenhancements.so
+09-26 18:53:49.908 15169 15169 D AVStageUtils: createInstance(64bit): createVendorAVUtils success!
+09-26 18:53:49.908 15169 15169 D OplusUtils: OplusUtils [84]: 
+09-26 18:53:49.909 15169 15169 D AVStageUtils: createInstance(64bit): createVendorAVUtils success!
+09-26 18:53:49.909 15169 15169 D OplusUtils: OplusUtils [84]: 
+09-26 18:53:49.911 15169 15169 D AVMediaServiceFactory: Opened liboplusavenhancements.so
+09-26 18:53:49.911 15169 15169 D AVMediaServiceFactory: createInstance(64bit): createExtendedMediaServiceFactory success!
+09-26 18:53:49.911 15169 15169 D AVNuFactory: Opened liboplusavenhancements.so
+09-26 18:53:49.911 15169 15169 D AVNuFactory: createInstance(64bit): createExtendedNuFactory success!
+09-26 18:53:49.911 15169 15169 D AVStageFactory: createInstance(64bit): createVendorAVFactory success!
+09-26 18:53:49.911 15169 15169 D AVStageUtils: createInstance(64bit): createVendorAVUtils success!
+09-26 18:53:49.911 15169 15169 D OplusUtils: OplusUtils [84]: 
+09-26 18:53:49.911 15169 15169 D AVMediaServiceFactory: createInstance(64bit): createExtendedMediaServiceFactory success!
+09-26 18:53:49.911 15169 15169 D AVNuFactory: createInstance(64bit): createExtendedNuFactory success!
+09-26 18:53:49.911 15169 15169 D AVStageFactory: Opened liboplusavenhancements.so
+09-26 18:53:49.911 15169 15169 D AVStageFactory: createInstance(64bit): createVendorAVFactory success!
+09-26 18:53:49.912 15169 15169 D AVStageUtils: Opened liboplusavenhancements.so
+09-26 18:53:49.912 15169 15169 D AVStageUtils: createInstance(64bit): createVendorAVUtils success!
+09-26 18:53:49.912 15169 15169 D OplusUtils: OplusUtils [84]: 
+09-26 18:53:49.914 15169 15169 E screencap: createInstance(64bit) : createExtendedFactory
+09-26 18:53:49.915 15169 15169 E screencap: createInstance(64bit) : createExtendedFactory
+09-26 18:53:49.915 15169 15169 E screencap: Opened libinputextensionsimpl.so
+09-26 18:53:49.915 15169 15169 E screencap: Opened libinputextensionsimpl.so
+09-26 18:53:49.918 15169 15169 W screencap: Thread Pool max thread count is 0. Cannot cache binder as linkToDeath cannot be implemented. serviceName: SurfaceFlingerAIDL
+09-26 18:53:49.919 15169 15169 W BpBinder: Linking to death on android.gui.ISurfaceComposer but there are no threads (yet?) listening to incoming transactions. See ProcessState::startThreadPool and ProcessState::setThreadPoolMaxThreadCount. Generally you should setup the binder threadpool before other initialization steps.
+09-26 18:53:49.919 15169 15169 W ProcessState: Extra binder thread started, but 0 threads requested. Do not use *startThreadPool when zero threads are requested.
+09-26 18:53:49.920  1452  1545 D SurfaceFlinger: captureDisplayById from pid 0 display 4627039422300187648
+09-26 18:53:49.937 15169 15170 I GrallocExtra: gralloc_extra_query:is_SW3D 0
+09-26 18:53:49.938 15169 15169 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_mm
+09-26 18:53:49.938 15169 15169 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_mm-uncached
+09-26 18:53:49.938 15169 15169 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_svp_page-uncached
+09-26 18:53:49.938 15169 15169 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_prot_region
+09-26 18:53:49.938 15169 15169 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_prot_page-uncached
+09-26 18:53:49.938 15169 15169 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_wfd_page-uncached
+09-26 18:53:50.002  1278  1278 D CwbService: normal mode or switch to doze from power off/doze suspend mode, mPowerMode = 2
+09-26 18:53:50.003  1338  1338 D SensorFeature: name=ssc_screenshot_info ,index = 22
+09-26 18:53:50.003  1338  1338 D SensorFeature: write 37 bytes:69358606937738,69358615271071,14658,0
+09-26 18:53:50.014  3298  6393 D JsBridgeTimer: com.alarmclock.quick setIntervalCallback id:360
+09-26 18:53:50.015  3298  6393 D JsConsole: clock_quick_card5: updateClock() ->566.9166666666666-323-300
+09-26 18:53:50.020  3410  3410 I SystemUi--Notification: SimpleQsClock-->textWidth:214.0, mPaddingEnd 21, dynamicWidth 277, systemFontScale 1.0
+09-26 18:53:50.021  3298  3298 W ViewUtils: childView no Component
+09-26 18:53:50.022  3298  3298 D LayoutHelper: d@0x3fa635e scheduleMeasureLayout   8
+09-26 18:53:50.030  3298  3298 W ViewUtils: childView no Component
+09-26 18:53:50.031  3298  3298 W LayoutHelper: d@0x3fa635e do measure layout inner
+09-26 18:53:50.031  3298  3298 D CardView: 0x3fa635e onMeasure: w(1094, EXACTLY), h(514, EXACTLY)
+09-26 18:53:50.039  1742  3779 I OplusHansManager : uid=10423, pkg=com.tencent.mm F enter(), M stay=5
+09-26 18:53:50.040 12606 12606 D IHansComunication: HANS sendMessageToKernel: threadId = 478834297920, netLinkSetup = 1, type = PKG, targetUid = 10423, pkgCmd = ADD_ONE_UID
+09-26 18:53:50.058  1742  3779 I OplusHansManager : freeze uid: 10423 com.tencent.mm pids: [25071, 25903, 6349, 10247] IsolatedUid: [99027] scene: LcdOn
+09-26 18:53:50.059  1742 28658 D MediaFocusControlExtImpl: onUidFrozenChanged success + uid = 10423, frozen = true
+09-26 18:53:50.059 12606 12606 D IHansComunication: HANS sendMessageToKernel: threadId = 478834297920, netLinkSetup = 1, type = PKG, targetUid = 10423, pkgCmd = ADD_ONE_UID
+09-26 18:53:50.059  1742  3792 D BroadcastQueue: setDeferPolicy processName: {com.tencent.mm:push, com.tencent.mm} uid: 10423 policy: 1 defer: true
+09-26 18:53:50.059  1742  3792 I OplusHansManager : p_BC uid=10423 pkg=com.tencent.mm
+09-26 18:53:50.059  1742  3792 I OplusCameraManagerGlobal: reportAppFreeze E
+09-26 18:53:50.060  1742  4704 I OStatsManager_OplusBatteryStatsManager: updateStateTime: PkgName = com.tencent.mm, uid = 10423, state to em, mForegroundCnt = 0, isFg = false
+09-26 18:53:50.060  1742  3300 E OAppNetControlService: failed to destroy socket for uid:10423 pid:25903, mismatch proc config!
+09-26 18:53:50.061  1742  3300 E OAppNetControlService: failed to destroy socket for uid:10423 pid:6349, mismatch proc config!
+09-26 18:53:50.061  1742  3300 E OAppNetControlService: failed to destroy socket for uid:10423 pid:10247, mismatch proc config!
+09-26 18:53:50.062  1742  3792 I OplusBinderProxy: proxyBinder uid: 10423 pkg: com.tencent.mm proxy: true calling: OFreezer
+09-26 18:53:50.063  1742  3792 I LocationFreezeProc: will freezeLocationProcess for com.tencent.mm, 10423, true, false
+09-26 18:53:50.063  1742  3792 I LocationFreezeProc: Executing freeze operation for com.tencent.mm, 10423, true, false
+09-26 18:53:50.063  1742  3792 W LocationFreezeProc: Do nothing for the app is not record!
+09-26 18:53:50.063  1742  3792 I OplusHansManager : p_gps: uid 10423 result false
+09-26 18:53:50.065  1742  3792 I OplusHansManager : p_BtScan: uid 10423 isProxy true
+09-26 18:53:50.065  1742  3792 D OplusHansManager : onUidHansStateChanged: uid = 10423, isFreeze = true, frozenStatus = 1
+09-26 18:53:50.090  1283  1716 I OriginChannel: now system_time:69358702	pwm_rgb: system_time:69358442, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1843, g:1090, b:729, c:3169, algo:2, end:14657, ts:69358351883615	pwm_rgb: system_time:69358442, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1855, g:1084, b:729, c:3169, algo:2, end:14657, ts:69358360216615	pwm_rgb: system_time:69358442, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1873, g:1114, b:759, c:3205, algo:2, end:14657, ts:69358368549615	pwm_rgb: system_time:69358442, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1837, g:1090, b:729, c:3163, algo:2, end:14657, ts:69358376882615	pwm_rgb: system_time:69358442, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1855, g:1096, b:723, c:3157, algo:2, end:80193, ts:69358385215615	
+09-26 18:53:50.124  1742  3284 E HoraeHelper: horae is not open
+09-26 18:53:50.124  1742  3284 E HoraeHelper: horae is not open
+09-26 18:53:50.124  1742  3284 E HoraeHelper: horae is not open
+09-26 18:53:50.124  1742  3284 E HoraeHelper: horae is not open
+09-26 18:53:50.124  1742  3284 E HoraeHelper: horae is not open
+09-26 18:53:50.124  1742  3284 E HoraeHelper: horae is not open
+09-26 18:53:50.125  1742  3284 E HoraeHelper: horae is not open
+09-26 18:53:50.125  1742  3284 E HoraeHelper: horae is not open
+09-26 18:53:50.125  1742  3284 E HoraeHelper: horae is not open
+09-26 18:53:50.125  1742  3284 E HoraeHelper: horae is not open
+09-26 18:53:50.126 13256 13256 I SearchViewModel: aggregate query='晴天' netease=30 qq=30 vip(netease=true qq=true) elapsed=4054ms
+09-26 18:53:50.164  1452  1452 I BufferQueueProducer: [com.takahashirinta.ncrust/com.takahashirinta.ncrust.MainActivity#13179](this:0xb400007997c7caf8,id:-1,api:0,p:-1,c:1452) queueBuffer: fps=8.13 dur=3567.06 max=3336.52 min=7.53
+09-26 18:53:50.170  1742  2887 W UserAwareMgr: event can not be released, id: 1010, count: 21, releasePid: 1742
+09-26 18:53:50.171  1742  2887 W UserAwareMgr: event can not be released, id: 1010, count: 21, releasePid: 1742
+09-26 18:53:50.174 27541 27591 I com.oplus.metis: HeapTask is not gc_task
+09-26 18:53:50.176  1742  2887 W UserAwareMgr: event can not be released, id: 1010, count: 21, releasePid: 1742
+09-26 18:53:50.177  1742  2887 W UserAwareMgr: event can not be released, id: 1010, count: 20, releasePid: 1742
+09-26 18:53:50.181  1742  2887 W UserAwareMgr: event can not be released, id: 1010, count: 21, releasePid: 1742
+09-26 18:53:50.244  1278  1278 D CwbService: normal mode or switch to doze from power off/doze suspend mode, mPowerMode = 2
+09-26 18:53:50.244  1278  1278 I CwbService: Configure changed, reconfig histogram mode: 0.
+09-26 18:53:50.245  1278  1278 D libcomposer_ext: DeviceImplAidl::DeviceClientContextAidl::ParseRequestPartialUpdateEnable()
+09-26 18:53:50.259 12606 12606 D IHansComunication: HANS sendMessageToKernel: threadId = 478834297920, netLinkSetup = 1, type = FROZEN_TRANS, targetUid = 10423, pkgCmd = PKG_CMD_MAX
+09-26 18:53:50.272  1742  2887 W UserAwareMgr: event can not be released, id: 1010, count: 24, releasePid: 1742
+09-26 18:53:50.273  1742  2887 W UserAwareMgr: event can not be released, id: 1010, count: 24, releasePid: 1742
+09-26 18:53:50.274  1742  2887 W UserAwareMgr: event can not be released, id: 1010, count: 24, releasePid: 1742
+09-26 18:53:50.275  1742  2887 W UserAwareMgr: event can not be released, id: 1010, count: 24, releasePid: 1742
+09-26 18:53:50.278  1742  2887 W UserAwareMgr: event can not be released, id: 1010, count: 24, releasePid: 1742
+09-26 18:53:50.280  1742  2887 W UserAwareMgr: event can not be released, id: 1010, count: 24, releasePid: 1742
+09-26 18:53:50.298  3298 29946 D JsBridgeTimer: com.oplus.shortcuts.lite_card setIntervalCallback id:1
+09-26 18:53:50.299  3298 29946 D JsConsole: news_small 任务 queryPlayStatusPeriodicity 已加入队列
+09-26 18:53:50.299  3298 29946 D JsConsole: news_small processQueue begin false null
+09-26 18:53:50.299  1278  1278 D libcomposer_ext: DeviceImplAidl::DeviceClientContextAidl::ParseRequestPartialUpdateEnable()
+09-26 18:53:50.299  3298 29946 D JsConsole: news_small [执行] 任务 queryPlayStatusPeriodicity
+09-26 18:53:50.300  1278  1278 D CwbService: RGB value: 103, 105, 99, hist:1699, 1699, 1699,  rgb_state: 0
+09-26 18:53:50.301  1338  1338 D SensorFeature: name=ssc_screenshot_info ,index = 22
+09-26 18:53:50.302  1338  1338 D SensorFeature: write 37 bytes:69358904516431,69358912849764,14659,0
+09-26 18:53:50.303  3298 11312 D NearmeContentResolver: invokeInner: action=query instanceId=10
+09-26 18:53:50.303  3298 11312 D NearmeContentResolver: lastCheckTime is 69353910, canExecuteByStepTime key: content://com.coloros.shortcuts.lite_cards.common_provider/ainews_query
+09-26 18:53:50.303  3298 11312 D NearmeContentResolver: uri content://com.coloros.shortcuts.lite_cards.common_provider/ainews
+09-26 18:53:50.303  3298 11312 W RemoteSubPackageManager: use cacheRemoteSubPackageInfo
+09-26 18:53:50.303  3298 11312 D NearmeContentResolver: getTask:  task:85334929  instantId:10
+09-26 18:53:50.303  3298 11312 D ContentResolverTask: executeResolver newUri: content://com.coloros.shortcuts.lite_cards.common_provider/ainews
+09-26 18:53:50.311 22301 27237 V BinderSender: Uid 10339 already starts
+09-26 18:53:50.313  8408  8468 I Shortcut.CommonQuickCardProvider: query: content://com.coloros.shortcuts.lite_cards.common_provider/ainews projection: ["playStatus","topics","agreeStatement"] selection: cardPath=? selectionArgs: ["/cards/news_card_small"] sortOrder: 
+09-26 18:53:50.316  8408  8468 I Shortcut.CommonQuickCardProvider: matchCode: 2
+09-26 18:53:50.316  8408  8468 I Shortcut.CommonQuickCardProvider: query cardPath:/cards/news_card_small  operation: playStatus
+09-26 18:53:50.316  8408  8468 I Shortcut.ShortcutLabProvider: call: method: getAgreementState arg: null extras: null
+09-26 18:53:50.316  8408  8468 W Shortcut.NewsCardModel: getAgreeStatement value:false
+09-26 18:53:50.319  3298 11312 D ConvertUtils: projection not contains ,ignore
+09-26 18:53:50.321  3298 29946 D JsConsole: news_small queryPlayStatus 20260107: [{"topics":"null","playStatus":"paused","agreeStatement":"n"}]
+09-26 18:53:50.321  3298 29946 D JsConsole: news_small queryPlayStatus playStatus: paused
+09-26 18:53:50.321  3298 29946 D JsConsole: news_small queryPlayStatus topics: null
+09-26 18:53:50.322  3298 29946 D JsConsole: news_small queryPlayStatus 小布指令未授权 
+09-26 18:53:50.354  1283  1716 I OriginChannel: now system_time:69358966	pwm_rgb: system_time:69358702, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1849, g:1090, b:723, c:3175, algo:2, end:14658, ts:69358590861173	pwm_rgb: system_time:69358703, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1837, g:1090, b:741, c:3175, algo:2, end:14658, ts:69358599194173	pwm_rgb: system_time:69358703, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1843, g:1090, b:729, c:3169, algo:2, end:14658, ts:69358607527173	pwm_rgb: system_time:69358703, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1861, g:1096, b:735, c:3181, algo:2, end:14658, ts:69358615860173	pwm_rgb: system_time:69358703, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1849, g:1096, b:729, c:3169, algo:2, end:80194, ts:69358624193173	
+09-26 18:53:50.354  1742  3014 D FusionLightNextGen: process end reported = 1, mode: 1, cnt: 62185, lux 17.0, cct -1.0, r/g/b/c: 1849.0/1096.0/723.0/3187.0, R/G/B: 103.0/105.0/99.0, bri 947.0, match 0.90, ir 0.092989, conf 0.0, ts 69358921467707
+09-26 18:53:50.376  1742  2887 W UserAwareMgr: event can not be released, id: 1010, count: 24, releasePid: 1742
+09-26 18:53:50.377  1742  2887 W UserAwareMgr: event can not be released, id: 1010, count: 24, releasePid: 1742
+09-26 18:53:50.379  1742  2887 W UserAwareMgr: event can not be released, id: 1010, count: 24, releasePid: 1742
+09-26 18:53:50.400  1300  1342 I libPerfCtl: xgfGetFPS pid:13256 fps:-1
+09-26 18:53:50.421  1751  2413 D ULogGuard: Monitoring: 26 threads, 0 requests, 0 time-bombs; 1 guards. ResetFlags = 0x7
+09-26 18:53:50.474  1742  2887 W UserAwareMgr: event can not be released, id: 1010, count: 24, releasePid: 1742
+09-26 18:53:50.481  1742  2887 W UserAwareMgr: event can not be released, id: 1010, count: 24, releasePid: 1742
+09-26 18:53:50.522  1742  3779 I OplusHansManager : uid=10339, pkg=com.coloros.shortcuts F enter(), M stay=10
+09-26 18:53:50.525  1742  3779 I OplusHansManager : freeze uid: 10339 com.coloros.shortcuts pids: [8408] scene: LcdOn
+09-26 18:53:50.526  1742  1622 I OStatsManager_OplusBatteryStatsManager: updateStateTime: PkgName = com.coloros.shortcuts, uid = 10339, state to em, mForegroundCnt = 0, isFg = false
+09-26 18:53:50.527  1742  3792 D BroadcastQueue: setDeferPolicy processName: {} uid: 10339 policy: 1 defer: true
+09-26 18:53:50.527  1742  3792 I OplusHansManager : p_BC uid=10339 pkg=com.coloros.shortcuts
+09-26 18:53:50.527  1222  3311 E         : destroyAllSocketForUid:10339
+09-26 18:53:50.527  1742  3792 I OplusBinderProxy: proxyBinder uid: 10339 pkg: com.coloros.shortcuts proxy: true calling: OFreezer
+09-26 18:53:50.527  1742  3792 I OplusHansManager : a_alarm 10339
+09-26 18:53:50.528  1742  3792 D OplusAlarmAdjustment: alignAlarmsByUid(), uid=10339, pkgName=com.coloros.shortcuts, actions=null, procs=null, requester=1
+09-26 18:53:50.528  1742  3792 I LocationFreezeProc: will freezeLocationProcess for com.coloros.shortcuts, 10339, true, false
+09-26 18:53:50.528  1742  3030 D OplusAlarmAdjustMap: addAlignUid, uid=10339, pkgName=com.coloros.shortcuts, requester=1, mode=1
+09-26 18:53:50.528  1742  3415 D MediaFocusControlExtImpl: onUidFrozenChanged success + uid = 10339, frozen = true
+09-26 18:53:50.528  1742  3792 I LocationFreezeProc: Executing freeze operation for com.coloros.shortcuts, 10339, true, false
+09-26 18:53:50.529  1742  3792 W LocationFreezeProc: Do nothing for the app is not record!
+09-26 18:53:50.529  1742  3792 I OplusHansManager : p_gps: uid 10339 result false
+09-26 18:53:50.530  1742  3792 I OplusHansManager : p_BtScan: uid 10339 isProxy true
+09-26 18:53:50.530  1742  3792 D OplusHansManager : onUidHansStateChanged: uid = 10339, isFreeze = true, frozenStatus = 0
+09-26 18:53:50.533  1742  3300 D OAppNetControlService: Hans update:[10339=true][0|0] blackList:[10418, 10409, 10419, 10446, 10320, 10352, 10346, 10339]
+09-26 18:53:50.547  1278  1278 D CwbService: normal mode or switch to doze from power off/doze suspend mode, mPowerMode = 2
+09-26 18:53:50.547  1278  1278 I CwbService: Configure changed, reconfig histogram mode: 0.
+09-26 18:53:50.547  1278  1278 D libcomposer_ext: DeviceImplAidl::DeviceClientContextAidl::ParseRequestPartialUpdateEnable()
+09-26 18:53:50.548  3936  6333 D oplus_btm_ble_gap: [oplus_btm_ble_gap.cc:236] vendor/oplus/packages/modules/Bluetooth/system_unify/common/stack/btm/oplus_btm_ble_gap.cc:236 - oplus_btm_ble_handle_cod_reset: btm_ble_update_inq_result reset ble cod
+09-26 18:53:50.548  3936  6333 D bt_device_interop: [interop_oplus.cc:634] vendor/oplus/packages/modules/Bluetooth/system_unify/common/interop/interop_oplus.cc:634 - interop_oplus_match_name_impl: interop_oplus_match_name_impl:[OplusStillReportWhileNonDiscoverable] check ****igi BS3PRO return 0
+09-26 18:53:50.548  3936  6333 D btm_dev : [btm_dev.cc:417] btm_find_dev: bda=xx:xx:xx:xx:8c:d7 is not found
+09-26 18:53:50.548  3936  6333 D btm_dev : [btm_dev.cc:417] btm_find_dev: bda=xx:xx:xx:xx:8c:d7 is not found
+09-26 18:53:50.573  3936  6333 D oplus_btm_ble_gap: [oplus_btm_ble_gap.cc:236] vendor/oplus/packages/modules/Bluetooth/system_unify/common/stack/btm/oplus_btm_ble_gap.cc:236 - oplus_btm_ble_handle_cod_reset: btm_ble_update_inq_result reset ble cod
+09-26 18:53:50.573  3936  6333 D bt_device_interop: [interop_oplus.cc:634] vendor/oplus/packages/modules/Bluetooth/system_unify/common/interop/interop_oplus.cc:634 - interop_oplus_match_name_impl: interop_oplus_match_name_impl:[OplusStillReportWhileNonDiscoverable] check ****igi BS3PRO return 0
+09-26 18:53:50.573  3936  6333 D btm_dev : [btm_dev.cc:417] btm_find_dev: bda=xx:xx:xx:xx:8c:d7 is not found
+09-26 18:53:50.573  3936  6333 D btm_dev : [btm_dev.cc:417] btm_find_dev: bda=xx:xx:xx:xx:8c:d7 is not found
+09-26 18:53:50.578  1742  2887 W UserAwareMgr: event can not be released, id: 1010, count: 24, releasePid: 1742
+09-26 18:53:50.596  3936  6333 D oplus_btm_ble_gap: [oplus_btm_ble_gap.cc:236] vendor/oplus/packages/modules/Bluetooth/system_unify/common/stack/btm/oplus_btm_ble_gap.cc:236 - oplus_btm_ble_handle_cod_reset: btm_ble_update_inq_result reset ble cod
+09-26 18:53:50.596  3936  6333 D bt_device_interop: [interop_oplus.cc:634] vendor/oplus/packages/modules/Bluetooth/system_unify/common/interop/interop_oplus.cc:634 - interop_oplus_match_name_impl: interop_oplus_match_name_impl:[OplusStillReportWhileNonDiscoverable] check ****igi BS3PRO return 0
+09-26 18:53:50.596  3936  6333 D btm_dev : [btm_dev.cc:417] btm_find_dev: bda=xx:xx:xx:xx:8c:d7 is not found
+09-26 18:53:50.596  3936  6333 D btm_dev : [btm_dev.cc:417] btm_find_dev: bda=xx:xx:xx:xx:8c:d7 is not found
+09-26 18:53:50.608  1278  1278 I CwbService: WaitForLayerChange timeout,run mRefreshCb
+09-26 18:53:50.620  3936  6333 D oplus_btm_ble_gap: [oplus_btm_ble_gap.cc:236] vendor/oplus/packages/modules/Bluetooth/system_unify/common/stack/btm/oplus_btm_ble_gap.cc:236 - oplus_btm_ble_handle_cod_reset: btm_ble_update_inq_result reset ble cod
+09-26 18:53:50.621  3936  6333 D bt_device_interop: [interop_oplus.cc:634] vendor/oplus/packages/modules/Bluetooth/system_unify/common/interop/interop_oplus.cc:634 - interop_oplus_match_name_impl: interop_oplus_match_name_impl:[OplusStillReportWhileNonDiscoverable] check ****igi BS3PRO return 0
+09-26 18:53:50.621  3936  6333 D btm_dev : [btm_dev.cc:417] btm_find_dev: bda=xx:xx:xx:xx:8c:d7 is not found
+09-26 18:53:50.621  3936  6333 D btm_dev : [btm_dev.cc:417] btm_find_dev: bda=xx:xx:xx:xx:8c:d7 is not found
+09-26 18:53:50.644  3936  6333 D oplus_btm_ble_gap: [oplus_btm_ble_gap.cc:236] vendor/oplus/packages/modules/Bluetooth/system_unify/common/stack/btm/oplus_btm_ble_gap.cc:236 - oplus_btm_ble_handle_cod_reset: btm_ble_update_inq_result reset ble cod
+09-26 18:53:50.644  3936  6333 D bt_device_interop: [interop_oplus.cc:634] vendor/oplus/packages/modules/Bluetooth/system_unify/common/interop/interop_oplus.cc:634 - interop_oplus_match_name_impl: interop_oplus_match_name_impl:[OplusStillReportWhileNonDiscoverable] check ****igi BS3PRO return 0
+09-26 18:53:50.644  3936  6333 D btm_dev : [btm_dev.cc:417] btm_find_dev: bda=xx:xx:xx:xx:8c:d7 is not found
+09-26 18:53:50.644  3936  6333 D btm_dev : [btm_dev.cc:417] btm_find_dev: bda=xx:xx:xx:xx:8c:d7 is not found
+09-26 18:53:50.656 11928 12866 I APS_ALOG: flushRoutine g_immediateFlush=0 g_pendingCount=0 g_oobCount=0
+09-26 18:53:50.656  3298  6393 D JsBridgeTimer: com.alarmclock.quick setIntervalCallback id:362
+09-26 18:53:50.659  1278  1278 D libcomposer_ext: DeviceImplAidl::DeviceClientContextAidl::ParseRequestPartialUpdateEnable()
+09-26 18:53:50.660  1278  1278 D CwbService: RGB value: 103, 105, 99, hist:1699, 1699, 1699,  rgb_state: 0
+09-26 18:53:50.660  1338  1338 D SensorFeature: name=ssc_screenshot_info ,index = 22
+09-26 18:53:50.661  1338  1338 D SensorFeature: write 37 bytes:69359264657738,69359272991071,14660,0
+09-26 18:53:50.672  3936  6333 D oplus_btm_ble_gap: [oplus_btm_ble_gap.cc:236] vendor/oplus/packages/modules/Bluetooth/system_unify/common/stack/btm/oplus_btm_ble_gap.cc:236 - oplus_btm_ble_handle_cod_reset: btm_ble_update_inq_result reset ble cod
+09-26 18:53:50.672  3936  6333 D bt_device_interop: [interop_oplus.cc:634] vendor/oplus/packages/modules/Bluetooth/system_unify/common/interop/interop_oplus.cc:634 - interop_oplus_match_name_impl: interop_oplus_match_name_impl:[OplusStillReportWhileNonDiscoverable] check ****igi BS3PRO return 0
+09-26 18:53:50.672  3936  6333 D btm_dev : [btm_dev.cc:417] btm_find_dev: bda=xx:xx:xx:xx:8c:d7 is not found
+09-26 18:53:50.672  3936  6333 D btm_dev : [btm_dev.cc:417] btm_find_dev: bda=xx:xx:xx:xx:8c:d7 is not found
+09-26 18:53:50.726 12606 12606 D IHansComunication: HANS sendMessageToKernel: threadId = 478834297920, netLinkSetup = 1, type = FROZEN_TRANS, targetUid = 10339, pkgCmd = PKG_CMD_MAX
+09-26 18:53:50.729  3410  3711 I SystemUi--Statusbar: OplusNetworkSpeedControllExImpl-->updateNetworkSpeed: isConnected:true,isSwitchOn:true,isSuspend:false,isPause:false
+09-26 18:53:50.731  3410  3711 I SystemUi--Statusbar: OplusNetworkSpeedControllExImpl-->getTotalByte: totalRxBytes:11334364492,totalTxBytes:4355129552,loopbackTxBytes:3049897146,loopbackRxBytes:3049815144 ,totalBytes:9589781754
+09-26 18:53:50.743  3410  4602 E HoraeHelper: horae is not open
+09-26 18:53:50.743  3410  4602 D DynamicFramerate [DynamicFrameRateManagerImpl]: register ThermalListener failed
+09-26 18:53:50.757 15169 15169 W RefBase : RefBase: Explicit destruction, weak count = 0 (in 0x79817e0ac8). Use sp<> to manage this object. Note - if weak count is 0, this leaks mRefs (weakref_impl).
+09-26 18:53:50.759  1452  1452 I BufferQueueProducer: [StatusBar#94](this:0xb4000079da1f8af8,id:-1,api:0,p:-1,c:1452) queueBuffer: fps=0.45 dur=4483.08 max=4012.84 min=470.23
+09-26 18:53:50.760  1278  1278 I hwcomposer: [HWCDisplay] (0 updateFps():4519), (type:1, mode:2) fps:15.927849,dur:1130.10,max:535.30,min:15.69  
+09-26 18:53:50.764 15169 15169 D RefBase :   #00 pc 000000000008c0e0  /apex/com.android.runtime/lib64/bionic/libc.so (__cxa_finalize+224) (BuildId: 606e619450c7c2bf3db238997d2b897d)
+09-26 18:53:50.764 15169 15169 D RefBase :   #01 pc 0000000000090e84  /apex/com.android.runtime/lib64/bionic/libc.so (exit+36) (BuildId: 606e619450c7c2bf3db238997d2b897d)
+09-26 18:53:50.764 15169 15169 D RefBase :   #02 pc 00000000000846cc  /apex/com.android.runtime/lib64/bionic/libc.so (__libc_init+124) (BuildId: 606e619450c7c2bf3db238997d2b897d)
+09-26 18:53:50.776  1350  1384 D BatteryChargeControl: bcc get no support from charging protocol
+09-26 18:53:50.879  3903  5648 D CommonApp-188-10090: transport layer data is invalid
+09-26 18:53:50.880  3903  5648 D CommonApp-188-10347: commonScoreStrategy scenarios 5 mdnsScore=0
+09-26 18:53:50.880  3903  5648 D CommonApp-188-10347: notifyScoreChange appScene COMMON score 100
+09-26 18:53:50.886  1283  1716 I OriginChannel: now system_time:69359498	pwm_rgb: system_time:69358966, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1855, g:1084, b:735, c:3181, algo:2, end:14659, ts:69358888135707	pwm_rgb: system_time:69358966, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1867, g:1108, b:753, c:3187, algo:2, end:14659, ts:69358896468707	pwm_rgb: system_time:69358966, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1849, g:1096, b:723, c:3187, algo:2, end:14659, ts:69358904801707	pwm_rgb: system_time:69358966, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1843, g:1090, b:729, c:3181, algo:2, end:14659, ts:69358913134707	pwm_rgb: system_time:69358966, lux:39, time_delta:8, pwm_turbo:1, bri:947, r:1861, g:1084, b:723, c:3175, algo:2, end:80195, ts:69358921467707	
+09-26 18:53:50.901  1278  1278 D CwbService: normal mode or switch to doze from power off/doze suspend mode, mPowerMode = 2
+09-26 18:53:50.902  1278  1278 I CwbService: Configure changed, reconfig histogram mode: 0.
+09-26 18:53:50.902  1278  1278 D libcomposer_ext: DeviceImplAidl::DeviceClientContextAidl::ParseRequestPartialUpdateEnable()
+09-26 18:53:50.962  1278  1278 I CwbService: WaitForLayerChange timeout,run mRefreshCb
+09-26 18:53:51.013  1278  1278 D libcomposer_ext: DeviceImplAidl::DeviceClientContextAidl::ParseRequestPartialUpdateEnable()
+09-26 18:53:51.013  1278  1278 D CwbService: RGB value: 103, 105, 99, hist:1699, 1699, 1699,  rgb_state: 0
+09-26 18:53:51.014  3298  6393 D JsBridgeTimer: com.alarmclock.quick setIntervalCallback id:360
+09-26 18:53:51.014  1338  1338 D SensorFeature: name=ssc_screenshot_info ,index = 22
+09-26 18:53:51.015  1338  1338 D SensorFeature: write 37 bytes:69359618134046,69359626467379,14661,0
+09-26 18:53:51.015  3298  6393 D JsConsole: clock_quick_card5: updateClock() ->566.925-323.1-306
+09-26 18:53:51.016  3410  3410 I SystemUi--Notification: SimpleQsClock-->textWidth:214.0, mPaddingEnd 21, dynamicWidth 277, systemFontScale 1.0
+09-26 18:53:51.019  3298  3298 W ViewUtils: childView no Component
+09-26 18:53:51.019  3298  3298 D LayoutHelper: d@0x3fa635e scheduleMeasureLayout   8
+09-26 18:53:51.028  3298  3298 W ViewUtils: childView no Component
+09-26 18:53:51.028  3298  3298 W LayoutHelper: d@0x3fa635e do measure layout inner
+09-26 18:53:51.028  3298  3298 D CardView: 0x3fa635e onMeasure: w(1094, EXACTLY), h(514, EXACTLY)

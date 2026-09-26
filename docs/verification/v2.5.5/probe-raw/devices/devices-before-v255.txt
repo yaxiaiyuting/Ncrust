@@ -1,0 +1,52 @@
+# 设备状态快照（v2.5.5 验证开始前） 2026-09-26T18:54:53+08:00
+=== 0715f763f54c023a ===
+SM-G9209
+7.0
+24
+Physical size: 1440x2560
+Physical density: 640
+1
+0
+0
+0
+0
+    versionCode=45 minSdk=24 targetSdk=36
+    versionName=2.5.4-gpl
+=== 3B15CD00GB700000 ===
+PLC110
+16
+36
+Physical size: 1272x2800
+Physical density: 560
+0
+0
+1.0
+1.0
+null
+    versionCode=45 minSdk=24 targetSdk=36
+    versionName=2.5.4-gpl
+=== WVQ6R22124000968 ===
+WGR-W09
+12
+31
+Physical size: 2560x1600
+Override size: 1600x2560
+Physical density: 320
+0
+1
+1.0
+1.0
+null
+    versionCode=45 minSdk=24 targetSdk=36
+    versionName=2.5.4-gpl
+=== emulator-5556 ===
+sdk_gphone64_x86_64
+14
+34
+Physical size: 2560x1600
+Physical density: 320
+1
+0
+1.0
+1.0
+null

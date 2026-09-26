@@ -1,0 +1,14 @@
+# device=3B15CD00GB700000 rounds=3  2026-09-26T18:51:27+08:00
+--- cold #1  tap@host 18:51:39.871 ---
+09-26 18:51:42.543 11280 11280 I SearchViewModel: aggregate query='晴天' netease=30 qq=30 vip(netease=true qq=true) elapsed=2117ms
+--- cold #2  tap@host 18:52:00.962 ---
+09-26 18:52:05.891 11913 11913 I SearchViewModel: aggregate query='晴天' netease=30 qq=30 vip(netease=true qq=true) elapsed=4363ms
+--- cold #3  tap@host 18:52:22.168 ---
+09-26 18:52:25.038 13256 13256 I SearchViewModel: aggregate query='晴天' netease=30 qq=30 vip(netease=true qq=true) elapsed=2295ms
+--- warm #1  tap@host 18:52:33.574 ---
+09-26 18:52:36.407 13256 13256 I SearchViewModel: aggregate query='晴天' netease=30 qq=30 vip(netease=true qq=true) elapsed=2259ms
+--- warm #2  tap@host 18:52:44.504 ---
+09-26 18:52:47.261 13256 13256 I SearchViewModel: aggregate query='晴天' netease=30 qq=30 vip(netease=true qq=true) elapsed=2176ms
+--- warm #3  tap@host 18:52:55.490 ---
+09-26 18:52:58.935 13256 13256 I SearchViewModel: aggregate query='晴天' netease=30 qq=30 vip(netease=true qq=true) elapsed=2864ms
+# done 2026-09-26T18:53:04+08:00

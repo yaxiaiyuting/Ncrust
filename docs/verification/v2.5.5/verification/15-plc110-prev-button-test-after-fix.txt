@@ -1,0 +1,7 @@
+== 上一首按钮 5 次受控复测（每次最多等 8s 看标题是否变化） ==
+  [1] OK   Hedgehog's Dilemma · 鷺巣詩郎  ->  花澤香菜 (1s)
+  [2] OK   恋愛サーキュレーション · 花澤香菜  ->  Innomania & Gold Band (1s)
+  [3] OK   Innomania & Gold Band  ->  God Save The King · City of London Choir/Royal Philharmonic Orchestra/Hilary Davan Wetton (1s)
+  [4] OK   God Save The King · City of London Choir/Royal Philharmonic Orchestra/Hilary Davan Wetton  ->  护花使者 · 李克勤 (1s)
+  [5] OK   护花使者 · 李克勤  ->  Butter-Fly · 和田光司 (1s)
+== 结果: 5/5 成功, 0/5 未观察到变化 ==
