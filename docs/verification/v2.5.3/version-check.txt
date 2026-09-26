@@ -1,0 +1,38 @@
+# version-check.txt · v2.5.3
+# 纪律（AGENTS.md「Versioning & Release」）：versionCode 三源交叉校验，取 max + 1
+#   ① git tag 指向的 app/build.gradle.kts
+#   ② dist/*.apk 的 aapt2 dump badging —— 唯一可信的「这个号已经发布出去了」事实来源
+#   ③ 仓库当前 app/build.gradle.kts
+# 时间：2026-09-26 09:08:16 +0800
+
+== ① tag 源（最近 5 个 tag）==
+  v2.5.2-gpl      versionCode = 43 versionName = "2.5.2-gpl"
+  v2.5.1-gpl      versionCode = 42 versionName = "2.5.1-gpl"
+  v2.5.0-gpl      versionCode = 41 versionName = "2.5.0-gpl"
+  v2.4.0-gpl      versionCode = 40 versionName = "2.4.0-gpl"
+  v2.3.0-gpl      versionCode = 39 versionName = "2.3.0-gpl"
+
+== ③ 仓库当前（本版改动前 = v2.5.2 的状态）==
+          versionCode = 43
+          versionName = "2.5.2-gpl"
+
+== ② dist 源（tools/next-version.sh 实测，尾部摘录）==
+    Ncrust-v2.5.1-gpl-release.apk	42
+    Ncrust-v2.5.2-gpl-debug.apk	43
+    Ncrust-v2.5.2-gpl-release.apk	43
+  
+  ==========================================
+    MAX versionCode (所有来源) = 43   [Ncrust-v2.5.2-gpl-debug.apk]
+    下一个可用 versionCode     = 44
+  ==========================================
+
+== 三源交叉 ==
+  ① tag          最大值 = 43  (v2.5.2-gpl)
+  ② dist APK     最大值 = 43  (Ncrust-v2.5.2-gpl-debug.apk / -release.apk)
+  ③ build.gradle      = 43  (versionName 2.5.2-gpl)
+  三源一致 ⇒ 下一个可用 versionCode = 44
+
+== 本版取值 ==
+  versionCode = 44
+  versionName = "2.5.3-gpl"
+  tag         = v2.5.3-gpl

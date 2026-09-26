@@ -1,0 +1,37 @@
+# build-summary.txt · v2.5.3
+# 命令：./gradlew clean testDebugUnitTest lint assembleDebug assembleRelease
+# 环境：ANDROID_HOME=/home/duanjb666/Android/sdk；Gradle wrapper 9.3.1；Daemon JVM 21；JDK launcher 26.0.2
+# 这段是**代码改动验证**构建（在版本号提交之前、工作区未提交状态下跑的）。
+# 父提交：9e0f67ed03a10fcb1703075c33ba77da9af29572（= v2.5.2-gpl）
+# 它的作用是证明「本版全部代码改动 + 既有 1100 个单测」一起是绿的。
+# 发布产物那一份构建见文件末尾的「发布构建」一节（在 build: 升级提交之后重跑）。
+# 时间：2026-09-26 09:07:41 +0800
+
+BUILD SUCCESSFUL in 3m 10s
+421 actionable tasks: 133 executed, 288 up-to-date
+
+== 单测 ==
+classes=83  tests=1134  failures=0  errors=0  skipped=0
+
+关键测试类：
+  StringsMigrationTest             tests=   8 failures=0 errors=0
+  StringsConstructorBudgetTest     tests=   9 failures=0 errors=0
+  QueueKeysTest                    tests=  24 failures=0 errors=0
+  QueueInsertTest                  tests=  23 failures=0 errors=0
+  TrackKeyTest                     tests=  16 failures=0 errors=0
+  SongSourceExtTest                tests=   8 failures=0 errors=0
+  PreloadSlotTest                  tests=  19 failures=0 errors=0
+  ShuffleRoundTest                 tests=   9 failures=0 errors=0
+
+== lint ==
+报告：app/build/reports/lint-results-debug.txt / .html / .xml
+未过滤 issue 总数 = 10
+按严重度： {'Information': 2, 'Warning': 8}
+Error + Fatal = 0   ← 验收要求 0
+
+（基线 app/lint-baseline.xml 过滤掉了 56 个既有 error —— 基线只挡 error，
+  本版新增的文件不在基线里，所以它们身上任何新问题仍会让构建失败。）
+
+== 产物 ==
+-rw-r--r-- 1 duanjb666 duanjb666 30762350  9月26日 09:05 app/build/outputs/apk/debug/app-debug.apk
+-rw-r--r-- 1 duanjb666 duanjb666 10042824  9月26日 09:07 app/build/outputs/apk/release/app-release.apk
