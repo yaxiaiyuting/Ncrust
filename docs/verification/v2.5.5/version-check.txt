@@ -38,18 +38,25 @@ $ grep -n "versionCode\|versionName" app/build.gradle.kts | head -2
 
 产物自证（**HEAD 就在 APK 里**）：
 
+**关键**：`dist/` 里那一份 APK 是在 **tag 提交上重新构建**的
+（`git checkout v2.5.5-gpl` 后 `./gradlew assembleRelease`），所以它的 VCS 戳就是 tag 提交本身：
+
 ```
-$ unzip -p app/build/outputs/apk/release/app-release.apk \
+$ unzip -p dist/Ncrust-v2.5.5-gpl-release.apk \
       META-INF/version-control-info.textproto
 repositories {
   system: GIT
   local_root_path: "$PROJECT_DIR"
-  revision: "7905a5958606e116a8aebf922bab42cb6d9dc71a"
+  revision: "de304d3835f8defa48d6d33e0d2a6029b624d563"
 }
 
-$ git rev-parse HEAD
-7905a5958606e116a8aebf922bab42cb6d9dc71a        ← 逐字相同
+$ git rev-parse v2.5.5-gpl^{commit}
+de304d3835f8defa48d6d33e0d2a6029b624d563        ← 逐字相同
 ```
+
+> 为什么必须这样：第一次构建时 HEAD 停在版本号提交**之前**，戳记是 `7905a59` ——
+> 那正是 v2.1.3 踩过的形状（tag 落在「产出这批 APK 的那个提交」之外）。
+> 本版在打 tag 后**回到 tag 提交重新构建**，让戳记与 tag 逐字相同，从根上消掉这次歧义。
 
 ```
 $ aapt2 dump badging dist/Ncrust-v2.5.5-gpl-release.apk | head -1
@@ -72,7 +79,7 @@ package: name='com.takahashirinta.ncrust' versionCode='46' versionName='2.5.5-gp
 ## 产物 sha256
 
 ```
-000d04ff05a8814abfe6c5e93b984dd57721f72b18810ee5fe0625e7b1e3e39b  Ncrust-v2.5.5-gpl-release.apk
+0506650a85efb9730e5079ce619fed2dd13882130ac83d2846a1f93ac97a187e  Ncrust-v2.5.5-gpl-release.apk
 79bab4117aa7ccf026753f626a5364ec6e1c00cd8350ae1964c18c54866114b4  Ncrust-v2.5.5-gpl-debug.apk
 ```
 

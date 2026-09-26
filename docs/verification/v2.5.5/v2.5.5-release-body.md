@@ -2,7 +2,7 @@
 
 > **正式版尚未发布** —— 这是 draft。请先实机 smoke test 再手动 publish。
 > 产物：`Ncrust-v2.5.5-gpl-release.apk`（`versionCode 46`）
-> `sha256 000d04ff05a8814abfe6c5e93b984dd57721f72b18810ee5fe0625e7b1e3e39b`
+> `sha256 0506650a85efb9730e5079ce619fed2dd13882130ac83d2846a1f93ac97a187e`
 
 ---
 
