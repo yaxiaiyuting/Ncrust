@@ -3400,3 +3400,121 @@ media3 的 `ChannelMixingMatrix` 只实现 `N→N / 1→2 / 2→1`，**6→1 抛
 | 一条死文案都没删 | 探针给出 12 条「外层未读」，但没有做跨语言 / 反射 / 文档承诺的二次核对。**证据不足时不动手** |
 | 不改 `SearchHistoryManager` 的表结构 | 它的音源丢失（只存 id）是本版**发现**的既有风险，不是本版引入的。完整修复要动持久化结构 + 迁移 + 单测，超出本次范围；本版通过选 `TrackKey.ofSong` **避开**了它，并如实列入下一版候选 |
 | 高频通用文案（`cancel`/`close`/`retry`/`loading`/`back`/`loadFailed`）一条不动 | 它们跨 8+ 个文件出现，「放哪个组」没有正确答案；留在外层最不容易让下一个人找错地方 |
+
+## v2.5.4 新增（本 fork · 转发属性量化 / 搜索历史音源修复 / QQ 兜底统计 / 平板横屏波浪条 / 竖屏托盘）
+
+> **探针**：`docs/verification/v2.5.4/PROBE-SUMMARY.md`
+> （五份探针 + 收敛结论；探针**推翻了两处任务书前提**，见该文件 §0）
+> **证据**：`docs/verification/v2.5.4/EVIDENCE.md`
+> **发布说明**：`docs/verification/v2.5.4/CHANGELOG-v2.5.4.md`
+
+### 四条新规则（本版起是硬约束）
+
+1. **持久化结构的字段名是**对外契约**，不许交给 R8 决定；也不许用「加 keep 规则」当唯一手段。**
+   本版在真机上取到第四个实例：`search_history.xml` 里是
+   `{"a":4611686018530183086,"b":"残酷な天使のテーゼ","c":"https://y.qq.com/…","d":"高橋洋子","e":1790344822158}`，
+   与 `mapping/release/mapping.txt` 的 `id→a, title→b, coverUrl→c, subtitle→d, timestamp→e` 逐字对得上。
+   前三个实例分别是 `local.**`（本地歌单，v2.3.0）、`crosssource.**`（匹配缓存，v2.4.0）
+   与 **`cache.**`（离线曲目索引 `ncrust_offline/tracks`，至今未修）**。
+   同一 APK 内读写自洽 ⇒ **不崩**，只会在下一次混淆映射变化时**静默丢数据**。
+   这类问题比崩溃难发现一个数量级，所以规则要写死：
+
+   落地要求：
+   - **写路径只经 DTO，每个字段显式 `@SerializedName("<稳定名字>")`**。
+     `proguard-rules.pro` 已有全局规则
+     `-keepclassmembers,allowobfuscation class * { @SerializedName <fields>; }`：
+     Gson 读的是**注解里的字符串常量**，字段本身怎么改名都不影响落盘形状；
+   - **不要用「加一条 `-keep class ….**`」作为首选手段**：那会**改掉全局混淆映射**，
+     把一个类的静默丢失换成另一个类的。本版因此**没有**给 `library.**` 加 keep，
+     代价是必须自己写编解码 —— 这个代价是值得的，它换来了「迁移逻辑显式存在」；
+   - **加字段时读路径必须同时认老形状**，而且要认**不止一种**老形状：
+     `SearchHistoryCodec` 认三种（稳定名字 / 已知单字母 / 未知 key 时按声明顺序兜底）。
+     第三种不是过度设计 —— 它防的是「字母表变了」这件事本身。
+     顺带一个容易看错的形状：`ncrust_offline` 的 `tracks` 真机上是
+     `{"a":…,"b":…,"e":…,"f":…,"g":…,"i":…}`，看起来像「字母表跳过了 h」，
+     其实是 `h`（`approxBytes`）**值为 null、整条 key 被 Gson 省掉**；
+     读的人若按「有几个 key 就按顺序对几个字段」去解，从 `i` 开始就全错位了；
+   - **坏数据逐条丢弃，不许整段丢光**。旧实现是 `catch { mutableListOf() }`：
+     一个字节坏了，用户整段搜索历史消失。新实现只跳过解析不出来的那一条；
+   - 守卫单测必须**断言确切的 key 名**（`SearchHistoryCodecTest` 的
+     `` `新写入的条目 key 是字段本名而不是单字母` ``），
+     字段改名会让用例变红，而不是让用户的数据消失。
+
+2. **只存 id 的持久化路径不许再开；已经开了的必须补音源，并给出「补不回来」时的诚实降级。**
+   搜索历史是那条开了之后留下隐患的路（v2.5.3 点名、v2.5.4 修复）。它的形态比任务书
+   描述的更细，三条都要记住：
+
+   - **「被当成网易云」只在字符串口径成立**。`SongItem.musicSource` 读 `source` 字符串；
+     而播放路径 `TrackKey.of(null, id)` 会用 **bit62** 把 QQ 认出来。
+     真正的用户可见故障是**「认得出是 QQ、songmid 丢了 ⇒ 取不到链」**，
+     外加一条方向错误的「可切到网易云」提示。**写 bug 报告时要按这个形态写**，
+     否则会去修一个不存在的问题；
+   - **唯一可证明的推断是 bit62**（`SourceIds.isQqId`）。**id 区间启发式必须放弃** ——
+     QQ 的裸 songid 与网易云的 id 同样是 9~10 位十进制，区间重叠。
+     散列兜底造出来的合成 id **不可逆**：`songmid` 推不回来，**任何启发式都不许补**；
+   - **降级要显式**：补不回 songmid 的老条目必须能被判出来
+     （`SearchHistoryMigration.isIncomplete`），并且
+     ① 不与「正常条目」共用同一个去重键、② 点击时不静默入队、
+     ③ 明确告诉用户「已为你重新搜索」。
+     **悄悄跳歌是最差的降级** —— 用户不知道发生了什么，也不知道该做什么。
+
+3. **本地统计：只落私有目录、绝不上报、绝不落在播放关键路径上。**
+   本版的 QQ 兜底统计（`QqProbeCounters` / `QqProbeStore`）把这条做成了模板：
+
+   - **判据必须是纯函数**。要判断「当前播放的这首歌的 id 是不是兜底造出来的」，
+     不能存一个 `lastXxx` 旁路字段 —— 那是 last-write-wins，跨源切歌 / 预载接续必错
+     （v2.1.5 的歌词串台就是同一个形状）。改为把定义重算一遍：
+     `SourceIds.isSynthesizedQqId(id, songmid)`；
+   - **自增用 `AtomicLong`**，不用 `@Volatile var` + `+=`（非原子），
+     也不用 `synchronized`（会与主线程 2Hz 心跳争锁）；
+   - **埋点点位不做 IO**：落盘只在「用户主动打开诊断入口」与 `Activity.onStop` 两处；
+   - **单开一个 prefs 文件，不要寄生在会被用户清掉的文件上**。
+     统计一度想放进 `ncrust_offline`，但那个文件与「清空离线缓存」是配对的不变量 ——
+     用户顺手清一次缓存就把样本抹了；
+   - **debug-only 的读出入口可以写死文案**（release 里整行不挂载），
+     但**不许**因此把一条 release 可见的文案也写死；
+   - 新增代码里不许出现任何网络类型，这条能用一条 grep 证明。
+
+4. **UI 组件的挂载条件必须在**全部目标形态**上做 A/B，并写成矩阵化的纯逻辑单测。**
+   平板横屏波浪条那个 bug 的形状是「**某一格**没有挂载」，而 bug 报告只会描述那一格 ——
+   修好之后，回归的方式同样是「某一格悄悄变了」。所以：
+
+   - 挂载判据抽成**纯函数**（`PlayerLayout.visualizerSlot`），
+     入参是那四个谓词，KDoc 里带一张**六格 A/B 表**（手机/平板 × 横/竖 × 是否大屏模式）；
+   - 单测逐个钉住六格 **加上**「用户关掉开关时任何形态都不挂载」；
+   - **区分「平板」与「横过来的手机」只能用 `smallestScreenWidthDp`**，
+     它与方向无关；`screenWidthDp >= 600` 在手机横屏与平板横竖**都成立**，
+     拿它当「平板」会改掉手机横屏的形态（本版的 `PlayerLayoutVisualizerTest`
+     专门有一条用例钉住这个误替换）；
+   - **判据只有一个落点、挂载点只有一个 composable**：同一个功能出现两份实现，
+     必然漂移成「某一边高度不同 / 某一边忘了挂 / 某一边订阅了会导致整棵子树重组的状态」。
+     本版把可视化收敛成 `AudioVisualizerSlot`，两处布局共用；
+   - **顺手发现但不同源的缺口要分开记**。本版发现「平板上根本没有 ⤢ 入口」
+     （它只在竖屏控制条变体里），但**没有**在同一个提交里改 ——
+     两件事的回归面会互相污染，如实列入遗留风险。
+
+### 本版的单一落点与新增守卫
+
+| 文件 | 作用 | 守卫 |
+|---|---|---|
+| `ui/i18n/Strings.kt` + 8 个 locale | 主构造器 128 → **129**（只加搜索历史那一条提示） | `StringsConstructorBudgetTest`（阈值 150 + 逐组监控 + 精确值 129） |
+| `library/SearchHistoryCodec.kt` | 搜索历史落盘契约（稳定 `@SerializedName` + 三种形状读取 + 逐条容错） | `SearchHistoryCodecTest`（17 例，含**真机 v1 样本**） |
+| `library/SearchHistoryMigration.kt` | 音源推断 / 去重键 / `isIncomplete` / `toSongItem` 的唯一落点 | `SearchHistoryMigrationTest`（15 例） |
+| `qq/QqFallbackStats.kt` | 兜底计数（纯 JVM）+ 埋点唯一入口 | `QqFallbackStatsTest`（20 例，含 8 线程并发） |
+| `qq/QqProbeStore.kt` | 落盘 `ncrust_qq_probe`/`stats`（**无网络出口**） | 同上（迁移 / 往返 / 坏 JSON） |
+| `source/MusicSource.kt` | 新增 `SourceIds.isSynthesizedQqId`（兜底判据的纯函数） | `QqFallbackStatsTest` |
+| `ui/player/PlayerLayout.kt` | 新增 `visualizerSlot` / `visualizerHeightDp` / `LARGE_SCREEN_BREAKPOINT_DP` | `PlayerLayoutVisualizerTest`（11 例） |
+| `ui/player/TrayLyric.kt` | 托盘第一行的取行与节流判据（纯逻辑） | `TrayLyricTest`（11 例，含节流比 10:1） |
+| `benchmark/…/SettingsScrollBenchmark.kt` | 设置页（转发属性最密面）的滚动帧率基线 | 产物为 release 包上的 `benchmarkData.json` |
+
+### 本版的关键取舍（有意为之，不是遗漏）
+
+| 取舍 | 理由 |
+|---|---|
+| **不给 `library.**` 加 `-keep`** | 加 keep 会改掉**全局**混淆映射，可能把同一类静默丢失换到 `cache.**`（`ncrust_offline/tracks`）上。改用 `@SerializedName` 固定契约 + 三形状读取，代价是手写 codec —— 换来了「迁移逻辑显式存在且可单测」 |
+| **不做「直读对照包」** | 产物级证据已经足够：120 条转发属性在 release 里 **0 条**留方法体，开销上界是每次 2 条 `iget`。为量化这个上界再编一个包不划算；因此本版只声称「建立基线」，**不声称因果** |
+| **不修 `PlayReporter` 的跨音源泄漏** | 它是探针**发现**的既有缺陷（QQ 合成 id 被 POST 给网易云 webLog），与「统计兜底频率」是两件事；改上报行为需要单独的证据与回归面 |
+| **不给平板补 ⤢ 入口** | 与「波浪条不显示」不同源；混改会让两者的回归面互相污染 |
+| **托盘不做逐字、不做跑马灯** | 逐字要接 `drawWithContent` 帧路径、跑马灯会持续排帧，两者都与铁律 17 冲突，而收益是一行 56dp 小字 |
+| **托盘不加方向闸门** | 它在两种方向下都是 56dp 两行；加一个方向谓词只会多一格需要 A/B 的状态 |
+| **老 QQ 历史条目不猜 songmid** | `QqApi.kt:126-131` 对同类兜底已有先例判决：猜测性兜底会把一次干净的失败换成一次诡异的播放错误 |

@@ -1,0 +1,54 @@
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/lint-baseline.xml: Information: 56 errors and 102 warnings were filtered out because they are listed in the baseline file, lint-baseline.xml [LintBaseline]
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/lint-baseline.xml: Information: 1 errors/warnings were listed in the baseline file (lint-baseline.xml) but not found in the project; perhaps they have been fixed? Another possible explanation is that lint recently stopped analyzing (and including results from) dependent projects by default. You can turn this back on with android.lintOptions.checkDependencies=true. Unmatched issue types: MissingOnPlayFromSearch [LintBaselineFixed]
+
+   Explanation for issues of type "LintBaselineFixed":
+   If a lint baseline describes a problem which is no longer reported, then
+   the problem has either been fixed, or perhaps the issue type has been
+   disabled. In any case, the entry can be removed from the baseline (such
+   that if the issue is reintroduced at some point, lint will complain rather
+   than just silently starting to match the old baseline entry again.)
+
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/local/LocalPlaylistStore.kt:91: Warning: Consider using apply() instead; commit writes its data to persistent storage immediately, whereas apply will handle it in the background [ApplySharedPref]
+        editor.commit()
+               ~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/local/LocalPlaylistStore.kt:108: Warning: Consider using apply() instead; commit writes its data to persistent storage immediately, whereas apply will handle it in the background [ApplySharedPref]
+            .commit()
+             ~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/local/LocalPlaylistStore.kt:113: Warning: Consider using apply() instead; commit writes its data to persistent storage immediately, whereas apply will handle it in the background [ApplySharedPref]
+        prefs(context).edit().remove(tracksKey(key)).commit()
+                                                     ~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/qq/QqPlaylistStore.kt:159: Warning: Consider using apply() instead; commit writes its data to persistent storage immediately, whereas apply will handle it in the background [ApplySharedPref]
+        e.commit()
+          ~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/qq/QqPlaylistStore.kt:164: Warning: Consider using apply() instead; commit writes its data to persistent storage immediately, whereas apply will handle it in the background [ApplySharedPref]
+        prefs(context).edit().clear().commit()
+                                      ~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/qq/QqPlaylistStore.kt:181: Warning: Consider using apply() instead; commit writes its data to persistent storage immediately, whereas apply will handle it in the background [ApplySharedPref]
+        e.commit()
+          ~~~~~~~~
+
+   Explanation for issues of type "ApplySharedPref":
+   Consider using apply() instead of commit on shared preferences. Whereas
+   commit blocks and writes its data to persistent storage immediately, apply
+   will handle it in the background.
+
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/components/DetailScaffold.kt:88: Warning: Modifier parameter should be named modifier [ModifierParameter from androidx.compose.ui]
+    contentModifier: Modifier = Modifier,
+    ~~~~~~~~~~~~~~~
+/home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/src/main/java/com/takahashirinta/ncrust/ui/components/DetailScaffold.kt:88: Warning: Modifier parameter should be the first optional parameter [ModifierParameter from androidx.compose.ui]
+    contentModifier: Modifier = Modifier,
+    ~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "ModifierParameter":
+   The first (or only) Modifier parameter in a Composable function should
+   follow the following rules:
+   - Be named modifier
+   - Have a type of Modifier
+   - Either have no default value, or have a default value of Modifier
+   - If optional, be the first optional parameter in the parameter list
+
+   Vendor: Jetpack Compose
+   Identifier: androidx.compose.ui
+   Feedback: https://issuetracker.google.com/issues/new?component=612128
+
+0 errors, 8 warnings (56 errors, 102 warnings filtered by baseline lint-baseline.xml)
