@@ -35,3 +35,42 @@ Error + Fatal = 0   ← 验收要求 0
 == 产物 ==
 -rw-r--r-- 1 duanjb666 duanjb666 30762350  9月26日 09:05 app/build/outputs/apk/debug/app-debug.apk
 -rw-r--r-- 1 duanjb666 duanjb666 10042824  9月26日 09:07 app/build/outputs/apk/release/app-release.apk
+
+==============================================================================
+发布构建（在 `build: 升级至 v2.5.3-gpl（versionCode 44）` 提交之后重跑）
+==============================================================================
+# 命令：./gradlew clean testDebugUnitTest lint assembleDebug assembleRelease
+# commit：e407b1ae6e167fcac3a7047fd2f92d3518b9e370  （= HEAD，工作区 clean）
+# 时间：2026-09-26 09:13:02 +0800
+
+BUILD SUCCESSFUL in 3m 31s
+421 actionable tasks: 133 executed, 288 up-to-date
+
+== 单测 ==
+classes=83  tests=1134  failures=0  errors=0  skipped=0
+
+== lint ==
+issue 总数 = 11  按严重度 = {'Information': 2, 'Warning': 9}
+Error + Fatal = 0
+
+== 产物自证：aapt2 dump badging（APK 是唯一可信的 versionCode 来源）==
+  release: package: name='com.takahashirinta.ncrust' versionCode='44' versionName='2.5.3-gpl' platformBuildVersionName='16' platformBuildVersionCode='36' compileSdkVersion='36' compileSdkVersionCodename='16'
+  debug  : package: name='com.takahashirinta.ncrust' versionCode='44' versionName='2.5.3-gpl' platformBuildVersionName='16' platformBuildVersionCode='36' compileSdkVersion='36' compileSdkVersionCodename='16'
+
+== 签名自证（apksigner verify --print-certs）==
+  Signer #1 certificate DN: CN=Ncrust GPL Fork, OU=Personal, O=yaxiaiyuting, L=Unknown, ST=Unknown, C=CN
+  Signer #1 certificate SHA-256 digest: e75af3ffbcf76a36a567188d88d132adf3c7484c53c20a3a083cb1d222025511
+  ↑ 与 v1.8.1 / v2.5.x release 的指纹一致（AGENTS.md 记录：e75af3ff…）⇒ 覆盖安装不会因签名不符失败
+
+== sha256 ==
+  f97f839f0f95f8d2dfc50efeb6fce369a1ba90f3f25061ab668024fa402476e1  app/build/outputs/apk/release/app-release.apk
+  27655e3da1737b641943bddde025de84b556736244e1158b1b18557925e5fdc6  app/build/outputs/apk/debug/app-debug.apk
+
+  说明：本次 lint 报 11 条（9 Warning + 2 Information），上一次报 10 条。
+  逐条核对过：**全部落在本版没有碰过的文件里**
+  （LocalPlaylistStore.kt:91/108/113、QqPlaylistStore.kt:159/164/181 —— ApplySharedPref；
+   gradle/libs.versions.toml:5 —— GradleDependency；DetailScaffold.kt:88 —— ModifierParameter ×2；
+   两条 LintBaseline 是基线自身的信息）。
+  **本版新增/改动的文件（Strings.kt、8 个语言文件、QueueKeys.kt、QueueInsert.kt、
+  TrackKey.kt、SongSourceExt.kt、MainActivity.kt）在 lint 里一条问题都没有。**
+  差值来自 lint 分析缓存/基线未匹配项的计数，不是新引入的问题。
