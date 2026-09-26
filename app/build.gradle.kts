@@ -261,8 +261,18 @@ android {
         //   `! [已拒绝] v2.5.5-gpl -> v2.5.5-gpl（会覆盖现有的标签）` ——
         //   与 v2.5.6 时记录的是同一件事：本地是轻量 tag、远端是附注 tag，
         //   指向的提交相同（`de304d38`）。按铁律 7 本次**不**推送/不强推任何 tag。
-        versionCode = 48
-        versionName = "2.6.0-gpl"
+        //   v2.6.1 定号：`bash tools/next-version.sh`（**先 fetch**）三源交叉验证
+        //   最大值 = 48（tag `v2.6.0-gpl` / `dist/Ncrust-v2.6.0-gpl-{debug,release}.apk`
+        //   的 aapt2 badging / 仓库上一版 build.gradle 三者一致）⇒ 本版 **49**。
+        //   实测记录：docs/verification/v2.6.1/verification/next-version.txt
+        //   打 tag 前用 `git show v2.6.1-gpl:app/build.gradle.kts | grep version` 自证过。
+        //
+        //   附注（不移动已发布 tag）：`git fetch` 再次报
+        //   `! [已拒绝] v2.5.5-gpl -> v2.5.5-gpl（会覆盖现有的标签）` ——
+        //   与 v2.5.6 / v2.6.0 时记录的是同一件事：本地是轻量 tag、远端是附注 tag，
+        //   指向的提交相同。按铁律 7 本次**不**推送/不强推任何 tag。
+        versionCode = 49
+        versionName = "2.6.1-gpl"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
