@@ -1,0 +1,30 @@
+== v2.6.2 发布物信息（打 tag 之后回填）==
+
+-- tag --
+  名称      : v2.6.2-gpl（附注 tag）
+  tag 对象  : e7c153f72e42d6d30bc0ba4d706f00b96dd03bdc
+  指向提交  : 744ff0e3d895c4d1e1ca576bc979705d0387b698  (docs(v2.6.2): 三源版本校验 + HEAD==产物源码自证 + 构建/测试/lint 证据)
+  远端复核  : e7c153f72e42d6d30bc0ba4d706f00b96dd03bdc
+
+-- 已发布 tag 未被移动（逐条复核）--
+  v2.6.1-gpl 本地=9d95ebf1c04c6041b7c423fd6ea454052e55c1d6  远端=9d95ebf1c04c6041b7c423fd6ea454052e55c1d6
+  v2.6.0-gpl 本地=c87a1993b7d5303807330ee2ecb288a51f5abb20  远端=c87a1993b7d5303807330ee2ecb288a51f5abb20
+  v2.5.6-gpl 本地=d2654ef2e1f32c4de6a980a842c2c9a256eb58fd  远端=d2654ef2e1f32c4de6a980a842c2c9a256eb58fd
+
+-- APK --
+  文件      : dist/Ncrust-v2.6.2-gpl-release.apk
+  大小      : 10075592 字节
+  sha256    : 10fd82049921e908e4e645564f03260a424e8ebce8a8c1a47153ce53e254ade2
+  GitHub digest: sha256:10fd82049921e908e4e645564f03260a424e8ebce8a8c1a47153ce53e254ade2
+  badging   : package: name='com.takahashirinta.ncrust' versionCode='50' versionName='2.6.2-gpl'
+
+-- draft release --
+  tag       : v2.6.2-gpl
+  draft     : true（未发布，等用户冒烟测试后手动发布）
+  url       : https://github.com/yaxiaiyuting/Ncrust/releases/tag/untagged-408178d5b95d9edc793b
+  附件      : Ncrust-v2.6.2-gpl-release.apk（10075592 字节）
+
+-- HEAD 与 tag 的源码关系（tag 之后又提交了 release 说明）--
+  HEAD      : 18a86214ffd8ffcaed6a7c6c9e5f081a8fa21b5c
+  diff v2.6.2-gpl..HEAD -- app/ :
+    （空 ⇒ tag 指向的 app/ 源码与产物源码一致）
