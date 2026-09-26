@@ -59,11 +59,13 @@ class SettingsScrollBenchmark {
     fun settingsScroll() = benchmarkRule.measureRepeated(
         packageName = PACKAGE,
         metrics = listOf(FrameTimingMetric()),
-        iterations = 6,
+        // v2.5.5 · F：可被 `-e ncrust.bench.iterations 3` 覆盖（见 BenchArgs）。
+        iterations = BenchArgs.iterations(default = 6),
         // COLD：与 HomeScrollBenchmark 同口径，让两页的数字可比。
         // 转发属性的开销发生在**组合期**（每次进页面都会重新读一遍文案），
         // 冷启动正好把「首次组合整页」这件事包含进来。
         startupMode = StartupMode.COLD,
+        compilationMode = BenchArgs.compilationMode(),
     ) {
         startActivityAndWait()
         device.waitForIdle()

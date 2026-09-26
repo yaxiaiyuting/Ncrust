@@ -30,11 +30,13 @@ class ExpandPlayerBenchmark {
     fun expandCollapse() = benchmarkRule.measureRepeated(
         packageName = PACKAGE,
         metrics = listOf(FrameTimingMetric()),
-        iterations = 6,
+        // v2.5.5 · F：可被 `-e ncrust.bench.iterations 3` 覆盖（见 BenchArgs）。
+        iterations = BenchArgs.iterations(default = 6),
         // HOT: 进程与 Activity 都在前台, startActivityAndWait 只是把它拉到最前,
         // 不重新走冷启动/首次组合。否则 FrameTiming 的 P90+ 会被启动那 160ms 帧污染,
         // 测到的不是展开动画本身。
         startupMode = StartupMode.HOT,
+        compilationMode = BenchArgs.compilationMode(),
     ) {
         startActivityAndWait()
         device.waitForIdle()

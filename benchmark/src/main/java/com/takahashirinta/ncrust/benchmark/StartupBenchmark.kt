@@ -28,9 +28,11 @@ class StartupBenchmark {
     fun coldStart() = benchmarkRule.measureRepeated(
         packageName = PACKAGE,
         metrics = listOf(StartupTimingMetric()),
-        iterations = 8,
+        // v2.5.5 · F：迭代数与编译模式可由 `am instrument -e` 覆盖（见 BenchArgs）。
+        // 不传参数时与 v2.5.4 **逐字节相同**（8 次 / CompilationMode.DEFAULT）。
+        iterations = BenchArgs.iterations(default = 8),
         startupMode = StartupMode.COLD,
-        compilationMode = CompilationMode.DEFAULT,
+        compilationMode = BenchArgs.compilationMode(),
     ) {
         startActivityAndWait()
     }

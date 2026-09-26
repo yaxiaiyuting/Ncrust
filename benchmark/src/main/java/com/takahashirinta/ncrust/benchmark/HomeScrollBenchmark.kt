@@ -33,8 +33,10 @@ class HomeScrollBenchmark {
     fun homeScroll() = benchmarkRule.measureRepeated(
         packageName = PACKAGE,
         metrics = listOf(FrameTimingMetric()),
-        iterations = 6,
+        // v2.5.5 · F：可被 `-e ncrust.bench.iterations 3` 覆盖（见 BenchArgs）。
+        iterations = BenchArgs.iterations(default = 6),
         startupMode = StartupMode.COLD,
+        compilationMode = BenchArgs.compilationMode(),
     ) {
         startActivityAndWait()
         device.waitForIdle()
