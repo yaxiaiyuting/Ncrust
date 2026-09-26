@@ -204,6 +204,7 @@ val koNK = Strings(
         aggConfidenceLow = "제목만 같음(합치지 않음)",
         aggConfidenceNone = "일치 없음",
         artistNavSearchFallback = "가수의 신원을 확정할수 없어 검색합니다",
+        albumNavSearchFallback = "앨범의 신원을 확정할수 없어 검색합니다",
     ),
 
     dailySongsTitle = "날마다 추천곡",

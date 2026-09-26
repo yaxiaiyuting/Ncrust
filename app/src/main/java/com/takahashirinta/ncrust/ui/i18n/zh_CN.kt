@@ -204,6 +204,7 @@ val zhCN = Strings(
         aggConfidenceLow = "仅同名（未合并）",
         aggConfidenceNone = "未匹配",
         artistNavSearchFallback = "未找到该歌手的准确身份，已为你搜索",
+        albumNavSearchFallback = "未找到该专辑的准确身份，已为你搜索",
     ),
 
     dailySongsTitle = "每日推荐",

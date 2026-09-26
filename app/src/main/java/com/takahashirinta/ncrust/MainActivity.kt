@@ -82,6 +82,8 @@ import com.takahashirinta.ncrust.network.SongItem
 import com.takahashirinta.ncrust.network.model.AlbumItem
 import com.takahashirinta.ncrust.network.model.ArtistItem
 import com.takahashirinta.ncrust.reco.ArtistReco
+import com.takahashirinta.ncrust.source.AlbumNav
+import com.takahashirinta.ncrust.source.AlbumNavigator
 import com.takahashirinta.ncrust.source.ArtistNav
 import com.takahashirinta.ncrust.source.ArtistNavigator
 import com.takahashirinta.ncrust.source.MusicSource
@@ -719,6 +721,15 @@ private const val SEARCH_TAB_INDEX = 2
 
 /** v2.6.1 · P0：艺人跳转的日志标签。降级为搜索时必须留痕，否则线上只能看到「没反应」。 */
 private const val TAG_ARTIST_NAV = "ArtistNav"
+
+/**
+ * v2.6.2 · P0：专辑跳转的日志标签。
+ *
+ * 与 [TAG_ARTIST_NAV] 分成两个 tag 而不是共用一个：两类跳转的降级原因不同
+ * （艺人看 `singerMID`、专辑看 `albumMID` 与 `pmid` 的区分），
+ * 合并之后 `adb logcat -s` 过滤不掉噪声，线上排查要先人肉分流。
+ */
+private const val TAG_ALBUM_NAV = "AlbumNav"
 
 /**
  * v1.8.0 · T4：自动进入大屏的**观察者**（无 UI，只做判定与回调）。
@@ -1898,42 +1909,93 @@ fun MainScreen(
     }
 
     /**
+     * 「转到专辑」的**唯一出口**（v2.6.2 · P0）。
+     *
+     * 与 [navigateToArtist] 完全同构的三态处置，判据全部来自 [AlbumNavigator]
+     * （纯函数、有单测）：
+     *
+     * - [AlbumNav.Direct] → 带 source 的两段路由 `album/{source}/{albumId}`，
+     *   进**本源**专辑页。QQ 曲目走的是 `albumMID`，不再经过网易云。
+     * - [AlbumNav.Search] → 切到搜索 tab 并预填关键词。这是「**找不到但用户能理解**」
+     *   的那条路：身份不可信时绝不猜一张专辑出来（AGENTS.md 铁律 14/15）。
+     * - [AlbumNav.Unavailable] → 什么都不做（连一个能当关键词的串都没有）。
+     *
+     * ## 与 v2.6.1 的艺人出口相比，这里少了两件事（都是**删掉**的）
+     *
+     * 1. **没有 `Dispatchers.IO` 协程**：旧实现把「读一个已经在手上的字段」包在一次
+     *    后台调度里，只为了保持与艺人分支的形状一致。身份就在 `song` 里，
+     *    跳转决策是纯函数 ⇒ 不需要线程切换，也不需要 `withContext(Dispatchers.Main)`。
+     * 2. **没有任何"补 id"的回落**：旧实现 `albumId == null` 时直接静默 no-op
+     *    （连一次网络请求都不发，所以 logcat 里什么都不留）—— 那正是本 P0 的第二种症状。
+     *    现在这条情形走 [AlbumNav.Search]，**有提示、有日志**。
+     *
+     * 定义顺序在 [resolveAndNavigate] **之前**是硬要求：Kotlin 的局部函数不能前向引用。
+     */
+    fun navigateToAlbum(song: SongItem) {
+        when (val nav = AlbumNavigator.resolve(song)) {
+            is AlbumNav.Direct -> {
+                if (progress.value > 0.01f) collapseCard()
+                // 成功路径也留痕（**与艺人出口的一个有意的差异**）：本版的验收要求
+                // logcat 里看得到**路由参数**，而修复前这条路径 release 包一条日志都没有
+                // —— 出了"跳到某张莫名其妙的专辑"时，唯一能对上的就是这一行。
+                // 艺人出口保持 v2.6.1 原样（只有降级留痕），不为对称去动它。
+                Log.i(
+                    TAG_ALBUM_NAV,
+                    "转到专辑 source=${nav.source.key} id=${nav.id} song=${song.trackKey}",
+                )
+                navController.navigate(NavRoutes.album(nav.source, nav.id))
+            }
+
+            is AlbumNav.Search -> {
+                if (progress.value > 0.01f) collapseCard()
+                // 先切 tab 再投递关键词：SearchScreen 只在可见时才消费它
+                // （见那里的 LaunchedEffect），顺序反了会丢掉这次预填。
+                selectedTab = SEARCH_TAB_INDEX
+                pendingSearchQuery = nav.keyword
+                snackbar.show(mainStrings.source.albumNavSearchFallback)
+                Log.i(
+                    TAG_ALBUM_NAV,
+                    "转到专辑降级为搜索 reason=${nav.reason} song=${song.trackKey} keyword=${nav.keyword}",
+                )
+            }
+
+            AlbumNav.Unavailable -> {
+                Log.w(TAG_ALBUM_NAV, "转到专辑：无专辑信息，忽略 song=${song.trackKey}")
+            }
+        }
+    }
+
+    /**
      * 从歌曲跳到歌手/专辑页(需求: 类 Apple Music 的来源回溯)。
      *
-     * ## v2.6.1 · P0：这条路以前会把 QQ 曲目送到**错误的艺人页**
+     * ## v2.6.1 · P0：艺人那一半
      *
-     * 旧实现在 artist 分支上做两件事，两件都错：
-     *
-     * 1. **补 id 的回落是网易云的**：`PlaylistApi.getSongsByIds(listOf(song.id))` 打的是
-     *    `/eapi/v3/song/detail`。QQ 曲目的 `song.id` 带 [SourceIds.QQ_ID_FLAG]（bit62），
-     *    问网易云必然查不到 ⇒ `?: song` ⇒ `artistId` 仍是 null ⇒ `when` 一个分支都不匹配
-     *    ⇒ **点了毫无反应**（PCL110 真机复现：冷启动恢复的 QQ 曲目走这条）。
-     * 2. **跳的是硬编码网易云的老路由**：`NavRoutes.artist(artistId: Long)` 在 composable 里
-     *    写死 `MusicSource.NETEASE`，于是 QQ 的数字 `singerID` 被当成网易云艺人 id 查 ——
-     *    周杰伦 `4558` → **马洪波**（WGR-W09 真机复现）。
-     *
+     * 这条路以前会把 QQ 曲目送到**错误的艺人页**：补 id 的回落打的是**网易云**的
+     * `/eapi/v3/song/detail`（QQ 的 bit62 合成 id 在那里必然查空 ⇒ 静默失败），
+     * 而跳的是硬编码网易云的 `NavRoutes.artist(artistId: Long)`（周杰伦 `4558` → 马洪波）。
      * 现在身份判定收在 [ArtistNavigator] 一处，本函数只负责**执行**它的结论。
      *
-     * ## 专辑分支为什么还留着网易云回落
+     * ## v2.6.2 · P0：专辑那一半（本版修的）
      *
-     * 与 artist 分支同形的那处 bug（QQ 的 `album.id` 被当网易云 album id）**本版不修**：
-     * 它需要 QQ 侧的 `albumMID`，而 `AlbumItem` 目前不带（本次只给 `ArtistItem` 加了字段）。
-     * 为它单独加一次跨表迁移 + 5 张持久化结构的回归，会把这次 hotfix 的面扩大到
-     * 半个数据层 —— 如实记进 release notes 的未修清单，不在这里顺手做。
+     * 专辑分支以前做两件事，两件都错：
+     *
+     * 1. 只读 `song.album?.id`（**QQ 域数字**），从不读 `song.musicSource`；
+     * 2. 走 `NavRoutes.album(albumId: Long)` —— composable 里把 `sourceKey` **写死**成
+     *    `MusicSource.NETEASE`。
+     *
+     * 于是 QQ 的数字专辑 id 被拿去查网易云：陈奕迅《What's Going On...?》`22276`
+     * → **《百万金曲 陈小云2 苦恋梦 免失志》/ 陈小云**（PCL110 + S6 两台真机复现，
+     * 页面渲染完全正常）；而 `album.id` 缺失时（老队列 / 冷启动恢复）**静默无反应**。
+     * 现在同样收在 [AlbumNavigator] 一处。
+     *
+     * 本函数保留「一个布尔切换两个出口」的形状，是因为长按菜单就是这么调它的
+     * （`resolveAndNavigate(song, toArtist = ...)`）；**判据一个字都不在这里**。
      */
     fun resolveAndNavigate(song: SongItem, toArtist: Boolean) {
         if (toArtist) {
             navigateToArtist(song)
-            return
-        }
-        coroutineScope.launch(Dispatchers.IO) {
-            val albumId = song.album?.id
-            if (albumId != null && albumId > 0L) {
-                withContext(Dispatchers.Main) {
-                    if (progress.value > 0.01f) collapseCard()
-                    navController.navigate(NavRoutes.album(albumId))
-                }
-            }
+        } else {
+            navigateToAlbum(song)
         }
     }
 

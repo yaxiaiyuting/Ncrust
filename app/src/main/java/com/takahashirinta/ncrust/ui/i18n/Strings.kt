@@ -859,6 +859,18 @@ data class SourceStrings(
      * 「找不到用户能理解，跳错会让用户以为数据错乱」的落点。
      */
     val artistNavSearchFallback: String,
+
+    /**
+     * v2.6.2 · P0：歌曲找不到可信的**专辑**身份时，提示已改为搜索（见 `AlbumNavigator`）。
+     *
+     * 与 [artistNavSearchFallback] 同一条理由，但这一版更必要：专辑那条路径在修复前
+     * **连一次网络请求都不发**（`albumId == null` 直接 no-op），所以不仅界面上没反应，
+     * **logcat 里也一条不留** —— 用户与开发者都拿不到任何线索。
+     *
+     * 文案上**不写"跳错了"**：这条提示只在"我们没有可靠身份"时出现，
+     * 正确结果是"用户自己搜到那张专辑"。说清楚"已为你搜索"就够。
+     */
+    val albumNavSearchFallback: String,
 )
 
 /**

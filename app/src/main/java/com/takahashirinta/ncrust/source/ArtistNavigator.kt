@@ -114,43 +114,26 @@ enum class ArtistNavReason {
 object ArtistNavigator {
 
     /**
-     * 网易云艺人 id 的值域上界（不含）。
+     * 网易云 id 的值域上界（不含）。
      *
-     * 取 `2^40`：网易云的 id 是十进制百万~十亿量级，远小于它；而
-     * [SourceIds.QQ_ID_FLAG]（`2^62`）造的合成 id 远大于它。
-     * 于是「这个 id 到底属于哪个值域」是一个**结构性**判据，不是启发式。
+     * v2.6.2 · P0：判定本身搬到了 [SourceIdDomain]（它现在同时服务艺人页与专辑页，
+     * 因为「网易云吃十进制、QQ 吃 base62 mid」是**音源的性质**，不是艺人的性质）。
+     * 这个常量保留成别名，是为了不惊动 v2.6.1 的调用点与文档 —— 取值与语义一字未改。
      */
-    const val NETEASE_ID_MAX: Long = 1L shl 40
-
-    /** `singerMID` 的合法字符集（base62）。 */
-    private val BASE62 = Regex("^[0-9A-Za-z]+$")
+    const val NETEASE_ID_MAX: Long = SourceIdDomain.NETEASE_ID_MAX
 
     /**
      * 这个 id 是不是 [source] 域内的合法**字符串**身份。纯函数，JVM 可单测。
      *
-     * - **网易云**：纯十进制、`1 ..< ` [NETEASE_ID_MAX]。这就是 `api/artist/{id}` 吃的形状。
-     * - **QQ 音乐**：base62 的 `singerMID`（`0025NhlN2yWrP4`），长度 >= 5，
-     *   **且不能是一个网易云值域内的纯数字** —— 后者正是「QQ 数字 `singerID` 被当成
-     *   mid 用」的形状。真实 `singerMID` 是 14 位 base62，恰好落在
-     *   [NETEASE_ID_MAX] 以内的纯数字概率约 `62^-14`，可以忽略；
-     *   而把这条写死成判据，是为了让「传错域」**必然**在闸门上失败。
+     * v2.6.2 · P0：**实现已搬到 [SourceIdDomain]**（值域判据的唯一落点），
+     * 本函数是它在「艺人」语境下的别名，**行为逐字未变** ——
+     * `ArtistNavigatorTest` 的全部「值域闸门」用例原样覆盖了这次搬迁。
+     *
+     * 保留这个入口而不是让调用方直接调 [SourceIdDomain] 的理由：艺人跳转的 KDoc
+     * 与单测都按这个语义写的，改名会把「v2.6.1 修了什么」这段历史从代码里抹掉。
      */
-    fun idDomainMatches(source: MusicSource, id: String?): Boolean {
-        val v = id?.trim().orEmpty()
-        if (v.isEmpty()) return false
-        return when (source) {
-            MusicSource.NETEASE ->
-                v.all { it in '0'..'9' } && v.toLongOrNull()?.let { it in 1 until NETEASE_ID_MAX } == true
-
-            MusicSource.QQMUSIC -> {
-                if (v.length < 5 || v.length > 64) return false
-                if (!BASE62.matches(v)) return false
-                // 纯数字且落在网易云值域 ⇒ 这是 QQ 的 singerID，不是 singerMID。
-                val asLong = v.toLongOrNull()
-                !(asLong != null && asLong in 1 until NETEASE_ID_MAX)
-            }
-        }
-    }
+    fun idDomainMatches(source: MusicSource, id: String?): Boolean =
+        SourceIdDomain.matches(source, id)
 
     /** [MatchConfidence.mergeable] 的**唯一**消费口 —— 不要在调用方写 `>= HIGH` 这类比较。 */
     fun crossSourceJumpAllowed(confidence: MatchConfidence?): Boolean =

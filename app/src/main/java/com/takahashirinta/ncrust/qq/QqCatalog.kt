@@ -339,15 +339,23 @@ object QqCatalogMapper {
         return out
     }
 
-    /** 与 [QqSongMapper] 共用的封面模板（这里保留一份是为了纯函数的可测性）。 */
+    /**
+     * 与 [QqSongMapper] 共用的封面模板（这里保留一份是为了纯函数的可测性）。
+     *
+     * v2.6.2 · P0：与 [QqSongMapper.fromSongObject] **逐值一致** —— 封面取
+     * `pmid ?: mid`，**身份只取 `mid`**。两条链路各自解析同一个 `album` 对象，
+     * 分叉的表现是「搜索进来的歌跳得对、歌单/歌手页进来的歌跳错」，
+     * 只在特定入口复现（`QqAlbumMidMappingTest` 钉住了这一条）。
+     */
     fun albumItemOf(item: JSONObject): AlbumItem? {
         val album = item.optJSONObject("album") ?: return null
-        val mid = album.optString("pmid").takeIf { it.isNotEmpty() }
+        val photoId = album.optString("pmid").takeIf { it.isNotEmpty() }
             ?: album.optString("mid").takeIf { it.isNotEmpty() }
         return AlbumItem(
             id = album.optLong("id", 0L).takeIf { it > 0L },
             name = album.optString("name").takeIf { it.isNotEmpty() },
-            picUrl = mid?.let { "https://y.qq.com/music/photo_new/T002R500x500M000$it.jpg" },
+            picUrl = photoId?.let { "https://y.qq.com/music/photo_new/T002R500x500M000$it.jpg" },
+            mid = album.optString("mid").takeIf { it.isNotEmpty() },
         )
     }
 

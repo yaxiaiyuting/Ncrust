@@ -204,6 +204,7 @@ val jpJP = Strings(
         aggConfidenceLow = "同名のみ（統合なし）",
         aggConfidenceNone = "一致なし",
         artistNavSearchFallback = "歌手を特定できなかったため、検索します",
+        albumNavSearchFallback = "アルバムを特定できなかったため、検索します",
     ),
 
     dailySongsTitle = "おすすめ今日の曲",

@@ -204,6 +204,7 @@ val en = Strings(
         aggConfidenceLow = "Same title only (not merged)",
         aggConfidenceNone = "No match",
         artistNavSearchFallback = "Couldn't pin down this artist, so we searched instead",
+        albumNavSearchFallback = "Couldn't pin down this album, so we searched instead",
     ),
 
     dailySongsTitle = "Daily Recommendations",

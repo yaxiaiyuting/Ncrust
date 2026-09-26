@@ -607,11 +607,42 @@ object LibraryManager {
     private const val TAG = "LibraryManager"
 }
 
+/**
+ * 收藏专辑（`ncrust_library` / `saved_albums`）的 **UI 模型**。
+ *
+ * 落盘契约在 [SavedAlbumCodec] 那一层（`AlbumDto` + 三种读法），本类保持干净、
+ * 不加持久化注解 —— 与 `SearchHistoryManager.HistoryItem` 同一条纪律。
+ *
+ * @property albumId 网易云的十进制专辑 id。它是 `LibraryScreen` 的 LazyColumn key，
+ *   也是「订阅 / 取消订阅」写接口的参数，**必须为正**（codec 会把非正的条目整条丢弃）。
+ * @property mid v2.6.2 · P0：专辑在**音源内**的字符串身份 —— QQ 音乐的 `albumMID`
+ *   （形如 `000MkMni19ClKG`）。网易云侧恒为 `null`（它的十进制 [albumId] 就是身份）。
+ *
+ *   **可空 + 默认值**是硬要求：本字段出现之前落盘的每一条收藏都没有这个 key，
+ *   而 Gson 走 Unsafe 反序列化、不调用构造函数。
+ *   `null` 的语义是「**身份不可信**」—— 它同时覆盖「v2.6.2 之前的旧数据」与
+ *   「这张专辑确实没有字符串身份」，两者的处置相同（不许拿它当跨源身份用），
+ *   判据只看**字段缺失**、不看空串（见 [identityTrusted]）。
+ *
+ *   为什么收藏专辑也要它：这张表的每一条都是「用户明确收藏过的一张专辑」，
+ *   而收藏页点进去走的是 `NavRoutes.album(source, id)` 那条**带音源**的两段路由 ——
+ *   少了它，将来 QQ 专辑进这张表时只能靠数字 id 猜源，正是本版修掉的那个形状。
+ */
 @Immutable
 data class AlbumInfo(
     val albumId: Long,
     val name: String,
     val picUrl: String,
     val artist: String,
-    val songCount: Int
-)
+    val songCount: Int,
+    val mid: String? = null
+) {
+    /**
+     * 这张专辑的**身份是否可信**（v2.6.2 · P0，铁律 14/15 的落点）。
+     *
+     * `mid == null` ⇒ 身份不可信 ⇒ 调用方应当**跳搜索**，绝不拿数字 id 去别的源猜。
+     * 用属性而不是让调用方自己写 `!= null`，是为了让「判据只有一处定义」
+     * （v2.4.0 铁律 2）—— 与 `MatchConfidence.mergeable` 同一个形状。
+     */
+    val identityTrusted: Boolean get() = !mid.isNullOrBlank()
+}

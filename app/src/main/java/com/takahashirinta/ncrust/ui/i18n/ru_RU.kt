@@ -204,6 +204,7 @@ val ruRU = Strings(
         aggConfidenceLow = "Только название (не объединено)",
         aggConfidenceNone = "Совпадений нет",
         artistNavSearchFallback = "Не удалось точно определить исполнителя — выполняется поиск",
+        albumNavSearchFallback = "Не удалось точно определить альбом — выполняется поиск",
     ),
 
     dailySongsTitle = "Ежедневные рекомендации",

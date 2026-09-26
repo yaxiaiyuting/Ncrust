@@ -122,13 +122,27 @@ object QqSongMapper {
         }
 
         val albumObj = item.optJSONObject("album")
-        val albumMid = albumObj?.optString("pmid")?.takeIf { it.isNotEmpty() }
+        // v2.6.2 · P0：`album` 对象上的**三个候选分两个职责**，绝不能互相顶替：
+        //
+        //   · 封面 = `pmid`（**封面照片 id**，形如 `000MkMni19ClKG_5`）优先，回落 `mid`；
+        //   · **身份** = `mid`（albumMID，base62，形如 `000MkMni19ClKG`）—— 这是
+        //     `music.musichallAlbum.AlbumSongList` 的 `albumMid` 参数唯一认的东西，
+        //     也是「转到专辑」要跳过去的那张专辑的键。
+        //
+        // 旧代码把 `pmid ?: mid` 读进一个局部 val 只喂给封面，`AlbumItem` 没有字段装身份，
+        // 于是跳转只能拿数字 `album.id` 去网易云查 —— 陈奕迅 `22276` → 陈小云（真机复现）。
+        // 实测 QQ 服务端**碰巧**能容忍把 `pmid` 当 `albumMid` 传（内部会剥掉 `_N`），
+        // 但那是服务端的宽容而不是契约，所以身份这一路只认 `mid`，
+        // 且由 `AlbumNavigator` 的值域闸门（base62，`_` 不合法）把 `pmid` 挡在门外。
+        val albumPhotoId = albumObj?.optString("pmid")?.takeIf { it.isNotEmpty() }
             ?: albumObj?.optString("mid")?.takeIf { it.isNotEmpty() }
+        val albumMid = albumObj?.optString("mid")?.takeIf { it.isNotEmpty() }
         val album = albumObj?.let {
             AlbumItem(
                 id = it.optLong("id", 0L).takeIf { v -> v > 0L },
                 name = it.optString("name").takeIf { v -> v.isNotEmpty() },
-                picUrl = albumMid?.let { m -> COVER_TEMPLATE.format(m) },
+                picUrl = albumPhotoId?.let { m -> COVER_TEMPLATE.format(m) },
+                mid = albumMid,
             )
         }
 

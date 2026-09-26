@@ -63,13 +63,23 @@ import com.google.gson.annotations.SerializedName
  */
 internal object SavedAlbumCodec {
 
-    /** 落盘 schema 版本（v1 = R8 决定 key；v2 = 显式名字）。版本号不落盘。 */
-    const val SCHEMA_VERSION = 2
+    /**
+     * 落盘 schema 版本。v1 = R8 决定 key；v2 = 显式名字；**v3 = 新增 `albumMid`**。
+     * 版本号不落盘 —— 判「老条目」只看**字段缺失**（见 [AlbumDto.albumMid] 的 KDoc）。
+     */
+    const val SCHEMA_VERSION = 3
 
-    /** v1 的落盘 key（`mapping.txt` 取证）。 */
+    /**
+     * v1 的落盘 key（`mapping.txt` 取证）。
+     *
+     * ⚠️ v2.6.2 新增 `albumMid` 时**没有**往这里补第六个字母：v1 的这个结构**只写过
+     * 五个字段**，第六个字母在任何真机上都不存在。凭空补一个 `f` 等于**发明**一条
+     * 没有取证支撑的映射 —— 那比"读不出来"更糟（它会安静地把某个别的字段读成专辑身份）。
+     * 所以 v1 形状读出来的 `albumMid` 恒为 `null`，语义正是「身份不可信」。
+     */
     private val LEGACY_KEYS = listOf("a", "b", "c", "d", "e")
 
-    private val STABLE_KEYS = listOf("albumId", "name", "picUrl", "artist", "songCount")
+    private val STABLE_KEYS = listOf("albumId", "name", "picUrl", "artist", "songCount", "albumMid")
 
     private val gson = Gson()
 
@@ -79,6 +89,18 @@ internal object SavedAlbumCodec {
      * `AlbumInfo` 本体是 UI 模型（`@Immutable`，被 `LibraryScreen` / `AlbumDetailScreen` 用），
      * 与 `SearchHistoryManager.HistoryItem` 一样**不加持久化注解** ——
      * 契约留在这一层，UI 模型保持干净。代价是下面这份 `toDto`/`fromDto` 必须手写。
+     *
+     * ## `albumMid`（v2.6.2 · P0）
+     *
+     * 音源内的**字符串**身份：QQ 音乐的 `albumMID`（`000MkMni19ClKG`），网易云恒为 `null`
+     * （它的十进制 `albumId` 就是身份）。加它的理由与 `AlbumItem.mid` 完全相同 ——
+     * 这张表里的专辑将来要被「转到专辑」直接打开，而**数字 id 不是跨源可用的身份**。
+     *
+     * **可空 + 默认值**是硬要求：Gson 走 Unsafe 反序列化、不调用构造函数，
+     * v2.6.2 之前落盘的每一条都没有这个 key，读出来必须是 `null`。
+     * `null` 的语义是「**身份不可信**」（老数据，或确实没有字符串身份），
+     * **不是**「不需要身份」—— 判据只看字段缺失，不看空串
+     * （AGENTS.md v1.9.3 规则 2：空串往往是"服务端确实没有"的权威结论）。
      */
     internal data class AlbumDto(
         @SerializedName("albumId") val albumId: Long? = null,
@@ -86,6 +108,7 @@ internal object SavedAlbumCodec {
         @SerializedName("picUrl") val picUrl: String? = null,
         @SerializedName("artist") val artist: String? = null,
         @SerializedName("songCount") val songCount: Int? = null,
+        @SerializedName("albumMid") val albumMid: String? = null,
     )
 
     // ---------------------------------------------------------------- 编码 ----
@@ -99,6 +122,7 @@ internal object SavedAlbumCodec {
         picUrl = picUrl,
         artist = artist,
         songCount = songCount,
+        albumMid = mid,
     )
 
     // ---------------------------------------------------------------- 解码 ----
@@ -129,6 +153,19 @@ internal object SavedAlbumCodec {
      * `albumId` 缺失或非正的条目**丢弃**：它是 `LibraryScreen` 的 LazyColumn key，
      * 一个 0 会让同一个 key 出现两次（Compose 直接抛异常），
      * 而这里恰好是「宁可少一张专辑，也不能让收藏页崩」。
+     *
+     * ## v2.6.2 的三条读法（`albumMid` 这一维）
+     *
+     * | 落盘形状 | `albumMid` 读成 | 语义 |
+     * |---|---|---|
+     * | 稳定名字且**有** `albumMid` | 该值 | 身份可信 |
+     * | 稳定名字但**没有** `albumMid`（v2.6.2 之前写的） | `null` | **身份不可信** |
+     * | v1 单字母 `a`~`e` | `null` | **身份不可信**（那个结构从没写过第六个字段） |
+     * | 未知 key 集合、6 个非空值 | 第 6 个值 | 按声明顺序读（`albumMid` 是最后一个声明的） |
+     * | 未知 key 集合、5 个非空值 | `null` | **身份不可信**（没有第 6 个可读） |
+     *
+     * 全程**不猜**：任何"字段不在"的情形都落成 `null`，由消费方按「身份不可信」处置
+     * （`AlbumInfo.identityTrusted == false`），绝不去推断一个 albumMid 出来。
      */
     internal fun decodeEntry(obj: JsonObject): AlbumInfo? {
         if (obj.has("albumId")) {
@@ -140,6 +177,8 @@ internal object SavedAlbumCodec {
                 picUrl = obj.stringOf("picUrl").orEmpty(),
                 artist = obj.stringOf("artist").orEmpty(),
                 songCount = obj.intOf("songCount") ?: 0,
+                // 缺失即 null（老条目）—— **不看空串**，只有非空串才算身份。
+                mid = obj.stringOf("albumMid")?.takeIf { it.isNotBlank() },
             )
         }
         if (obj.keySet().isNotEmpty() && obj.keySet().all { it in LEGACY_KEYS }) {
@@ -151,6 +190,8 @@ internal object SavedAlbumCodec {
                 picUrl = obj.stringOf("c").orEmpty(),
                 artist = obj.stringOf("d").orEmpty(),
                 songCount = obj.intOf("e") ?: 0,
+                // v1 结构只写过 5 个字段 ⇒ 这里永远是「身份不可信」，这是**结论**不是兜底。
+                mid = null,
             )
         }
         return fromDeclarationOrder(obj)
@@ -159,9 +200,13 @@ internal object SavedAlbumCodec {
     /**
      * 兜底：**未知 key 集合**时按声明顺序读。
      *
-     * 5 个字段全部非空（`AlbumInfo` 没有默认值），Gson 一定会按声明顺序写满 5 个，
-     * 所以位置读在这里是安全的 —— 这是与 `OfflineTrack`（有可空字段、会被跳过）
+     * 前 5 个字段全部非空（`AlbumInfo` 的构造器要求前 5 个全传），Gson 一定会按声明顺序
+     * 写满前 5 个，所以位置读在这里是安全的 —— 这是与 `OfflineTrack`（有可空字段、会被跳过）
      * 的关键区别，也是本兜底**不需要**「像不像 URL」那类启发式的原因。
+     *
+     * v2.6.2 起 `albumMid` 是**第 6 个、可空**：Gson 默认跳过 null，所以
+     * 「5 个值」与「6 个值」都是合法形状，前者 ⇒ `albumMid = null`（身份不可信）。
+     * 这里**不去**按"像不像 base62"猜第 5 个值是不是 mid —— 那正是铁律 14 禁止的猜。
      */
     private fun fromDeclarationOrder(obj: JsonObject): AlbumInfo? {
         val values = obj.entrySet().map { it.value }.filter { !it.isJsonNull }
@@ -176,12 +221,16 @@ internal object SavedAlbumCodec {
         val count = values[4].takeIf { it.isJsonPrimitive }?.let {
             runCatching { it.asInt }.getOrNull()
         } ?: 0
+        val mid = values.getOrNull(5)?.takeIf { it.isJsonPrimitive }?.let {
+            runCatching { it.asString }.getOrNull()
+        }?.takeIf { it.isNotBlank() }
         return AlbumInfo(
             albumId = id,
             name = str(1),
             picUrl = str(2),
             artist = str(3),
             songCount = count,
+            mid = mid,
         )
     }
 
