@@ -84,6 +84,12 @@ class PersistenceFieldNameContractTest {
         "com.takahashirinta.ncrust.player.ReportGateCounters",
         // v2.5.5 · A：续播记录本体（写路径直接序列化它）
         "com.takahashirinta.ncrust.player.PlaybackStateManager\$PositionEntry",
+        // v2.6.1 · P0：曲目里的艺人。它**嵌在 `SongItem.artists` 里**落盘（5 张表：
+        // `ncrust_library` / `ncrust_playback_state` / `ncrust_home_cache` /
+        // `ncrust_local_playlists` / `ncrust_qq_playlists`），所以它自己的字段名
+        // 必须进注册表 —— v2.6.1 给它加了 `mid`（QQ 的 `singerMID`），
+        // 这个名字一旦被 R8 改掉，QQ 曲目的「转到歌手」会静默退化成跳搜索。
+        "com.takahashirinta.ncrust.network.model.ArtistItem",
     )
 
     /**

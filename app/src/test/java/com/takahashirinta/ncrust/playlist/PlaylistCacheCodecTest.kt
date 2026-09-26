@@ -20,6 +20,7 @@ import com.takahashirinta.ncrust.qq.QqPlaylistStore
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -140,6 +141,66 @@ class PlaylistCacheCodecTest {
         assertEquals("002OVQbr00xbs6", ok.tracks[1].trackKey.mediaId)
         assertTrue(ok.complete)
         assertEquals(2, ok.total)
+    }
+
+    // ------------------------------------------------- v2.6.1 · P0：艺人 mid ----
+
+    /**
+     * v2.6.1 · P0：**艺人 `mid` 必须穿过这层扁平 DTO**。
+     *
+     * 详情缓存不是「直接把 `SongItem` 丢给 Gson」，而是手工映射到扁平 DTO，
+     * 所以 `ArtistItem` 上新增的字段**不会**自动跟过来。漏掉这一处的表现是
+     * 「QQ 歌单详情 → 长按曲目 → 转到歌手」从「进 QQ 艺人页」退化成「跳搜索」——
+     * 而搜索页在真机上看起来完全正常，只有点进去才知道降级了。
+     *
+     * 网易云一侧不受影响（它的身份就是 `id`），所以更不能靠「网易云没事」来发现。
+     */
+    @Test
+    fun `艺人 mid 穿过详情缓存往返保真`() {
+        val withMid = song(97773L, "0039MnYb0qxYhV", "003Qui1q2u1Zho").copy(
+            artists = listOf(ArtistItem(id = 4558L, name = "周杰伦", mid = "0025NhlN2yWrP4")),
+        )
+        val raw = PlaylistCacheCodec.encodeDetail(ownerA, listOf(withMid), now, complete = true, total = 1)
+        val ok = PlaylistCacheCodec.decodeDetail(raw, ownerA, now) as PlaylistCacheCodec.DetailRead.Ok
+        assertEquals("0025NhlN2yWrP4", ok.songs.single().artists!!.single().mid)
+        assertEquals(4558L, ok.songs.single().artists!!.single().id)
+    }
+
+    /**
+     * 本字段出现**之前**落盘的条目里没有 `mid` 这个 key（Gson 走 Unsafe、不调用构造函数）。
+     * 读出来必须是 `null`（=「没有字符串身份」⇒ 跳搜索），**不能**是空串，
+     * 也**不能**抛异常 —— 那会让老用户的 QQ 歌单详情整包打不开。
+     */
+    @Test
+    fun `老缓存条目缺 mid 时读出 null 而不是崩或空串`() {
+        val withMid = song(97773L, "0039MnYb0qxYhV", "003Qui1q2u1Zho").copy(
+            artists = listOf(ArtistItem(id = 4558L, name = "周杰伦", mid = "0025NhlN2yWrP4")),
+        )
+        val raw = PlaylistCacheCodec.encodeDetail(ownerA, listOf(withMid), now, complete = true, total = 1)
+        // 模拟旧版本写下的 JSON：把 artists 里那个新 key 抹掉，只留 id/name。
+        //
+        // 两层嵌套：信封是 `{…,"songsJson":"<转义后的歌曲数组>"}`（数组必须以**字符串**字段
+        // 承载，见「R8 泛型签名回归」那条用例），所以要先解外层再解内层。
+        // 用 JSON 树而不是正则改写：正则会因为字段顺序 / 空白差异**静默不生效**，
+        // 而「夹具没生效的测试」比没有测试更糟 —— 它会一直绿。
+        val envelope = com.google.gson.JsonParser.parseString(raw).asJsonObject
+        val songsArray = com.google.gson.JsonParser
+            .parseString(envelope.get("songsJson").asString).asJsonArray
+        var stripped = 0
+        songsArray.forEach { el ->
+            el.asJsonObject.getAsJsonArray("artists")?.forEach { a ->
+                if (a.asJsonObject.remove("mid") != null) stripped++
+            }
+        }
+        assertEquals("夹具没生效：一个 mid 都没抹掉", 1, stripped)
+        envelope.addProperty("songsJson", songsArray.toString())
+        val legacy = envelope.toString()
+        assertFalse("夹具没生效：mid 还在 JSON 里", legacy.contains("0025NhlN2yWrP4"))
+        val ok = PlaylistCacheCodec.decodeDetail(legacy, ownerA, now) as PlaylistCacheCodec.DetailRead.Ok
+        val artist = ok.songs.single().artists!!.single()
+        assertEquals(4558L, artist.id)
+        assertEquals("周杰伦", artist.name)
+        assertNull("缺字段 ⇒ null（不是空串）", artist.mid)
     }
 
     // --------------------------------------------------------------- 隔离 ----
