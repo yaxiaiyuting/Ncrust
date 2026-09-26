@@ -86,3 +86,38 @@
 4. **「转到专辑」对 QQ 曲目仍然错**（同类 bug，本版明确不修）——见
    `probe-artist-jump-static.md` §5。
 5. **搜索页「艺人」tab 仍只有网易云结果**（缺失功能，不是错误跳转）。
+
+---
+
+## G. 发布物信息（回填，2026-09-26）
+
+| 项 | 值 |
+|---|---|
+| tag | `v2.6.1-gpl`（**附注 tag**，对象 `9d95ebf1c04c6041b7c423fd6ea454052e55c1d6`） |
+| tag → 提交 | `3ac0cacd62f54d07871e7d75e45762df8027d817`（`docs(v2.6.1): HEAD==产物源码自证`） |
+| 产出产物的提交 | `5e2accf13a29faa0112f66b844bbb534822c2293` |
+| 两者在 `app/` 上的差异 | **空**（tag 提交只动 `docs/`，见 `verification/HEAD-vs-artifact.txt`） |
+| draft release | https://github.com/yaxiaiyuting/Ncrust/releases/tag/untagged-b1c544dc415c6af45ae1 |
+| draft 的 `tag_name` | `v2.6.1-gpl`（`target_commitish=master`，与该 tag 已指向的提交一致 ⇒ 发布时**不会**新建/移动 tag） |
+| release body | `docs/verification/v2.6.1/v2.6.1-release-body.md`（与 draft 上的正文同一份） |
+
+### 附件（sha256 双源一致：本地实测 = GitHub `digest`）
+
+| 文件 | 大小 | sha256 |
+|---|---|---|
+| `Ncrust-v2.6.1-gpl-release.apk` | 10 075 592 | `f331b863cab0af92616611fcf2e93da3d428ba2a3c70ecb178dfa2dc644623d1` |
+| `Ncrust-v2.6.1-gpl-debug.apk` | 30 877 038 | `5d56bbf3df95834f8b830bdf15a2a75404b23cc7a66c2b1fe3f809c93cf344d4` |
+| `SHA256SUMS-v2.6.1-gpl.txt` | 190 | `b0127be0dcb74201e5b5fcc477b5a98e67ed03994c9679b4ed62505dffcbc698` |
+
+### 流程（与 v2.6.0 逐条一致）
+
+1. `tools/next-version.sh`（**先 fetch**）三源交叉 → 49；记录在 `verification/next-version.txt`；
+2. 全量验证构建（clean + test + lint + assembleDebug + assembleRelease）→ `gradle-fullbuild-final.log`；
+3. `build: 升级至 v2.6.1-gpl（versionCode 49）` 提交；
+4. 修复与文档提交；
+5. 真机验证（两台，release 包）；
+6. 工作区干净 + `HEAD == 产物源码` 自证 → 打 tag → push；
+7. `gh release create --draft` 附 APK / CHANGELOG / 探针结论 / 测试证据路径 / 未验证缺口。
+
+**未移动任何已发布 tag**：`git ls-remote --tags origin` 实测 `refs/tags/v2.6.1-gpl`
+→ `9d95ebf…` → `3ac0cac…`，与本地 `git rev-parse v2.6.1-gpl^{commit}` 相同。
