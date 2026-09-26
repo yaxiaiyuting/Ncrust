@@ -1,0 +1,192 @@
+==============================================================================
+1) 队列去重的落点（HEAD，全部按裸 `song.id`）
+==============================================================================
+  app/src/main/java/com/takahashirinta/ncrust/MainActivity.kt
+     1084  [队列内按 id 找歌]  val found = playbackQueue.firstOrNull { it.id == id }
+     1190  [INFINITY 去重集]  val existingIds = playbackQueue.map { it.id }.toSet()
+     1190  [已存在 id 集]  val existingIds = playbackQueue.map { it.id }.toSet()
+     1494  [同曲短路（取反）]  if (song.id != currentId) {
+     1495  [队列去重（单曲）]  val filtered = playbackQueue.filter { it.id != song.id }.toMutableList()
+     1506  [播放前定位下标]  val idx = playbackQueue.indexOfFirst { it.id == song.id }
+     1637  [同曲短路]  if (song.id == currentId) return
+     1638  [队列去重（单曲）]  val filtered = playbackQueue.filter { it.id != song.id }
+     1641  [去重后重定位当前歌]  playbackQueue.indexOfFirst { it.id == currentId }.coerceAtLeast(0)
+     1688  [待插入列表剔除当前歌]  val toInsert = if (currentId != null) songs.filter { it.id != currentId } else songs
+     1691  [队列去重（批量）]  val filtered = playbackQueue.filter { it.id !in ids }.toMutableList()
+     1709  [INFINITY 去重集]  val existingIds = playbackQueue.map { it.id }.toSet()
+     1709  [已存在 id 集]  val existingIds = playbackQueue.map { it.id }.toSet()
+     1710  [批量追加去重]  val newSongs = songs.filter { it.id !in existingIds }
+  合计落点: 14 处，分布在 1 个文件
+
+  纯逻辑落点（JVM 可单测的那一层）：app/.../player/QueueInsert.kt
+
+  ★ 已存在但**零调用点**的身份属性：`SongItem.dedupeKey`
+    `X.dedupeKey` 在生产代码里的使用: 0 处 ← 定义在、守卫在，但**一次都没接线**
+    定义处: app/.../source/SongSourceExt.kt —— `get() = trackKey`（即 `source:id`）
+    已有的守卫: app/src/test/.../source/SongSourceExtTest.kt（断言跨源不相等）
+
+==============================================================================
+2) `SongItem.id` 的生产者与 id 形态
+==============================================================================
+  MainActivity.kt:887
+      id = songId
+      source = PlaybackStateManager.getSourceKey(context)
+  MainActivity.kt:979
+      id = <位置参数/未命名>
+      source = <无>
+  MainActivity.kt:1479
+      id = <位置参数/未命名>
+      source = <无>
+  MainActivity.kt:1752
+      id = it.id
+      source = <无>
+  MainActivity.kt:2171
+      id = <位置参数/未命名>
+      source = <无>
+  MainActivity.kt:2195
+      id = <位置参数/未命名>
+      source = <无>
+  MainActivity.kt:2249
+      id = <位置参数/未命名>
+      source = <无>
+  MainActivity.kt:2262
+      id = s.id
+      source = <无>
+  MainActivity.kt:2329
+      id = <位置参数/未命名>
+      source = <无>
+  crosssource/CatalogAggregator.kt:520
+      id = s.id
+      source = MusicSource.NETEASE.key
+  network/PlaylistApi.kt:246
+      id = track.optLong("id")
+      source = <无>
+  network/PlaylistApi.kt:325
+      id = s.optLong("id")
+      source = <无>
+  network/PlaylistApi.kt:385
+      id = s.optLong("id")
+      source = <无>
+  network/PlaylistApi.kt:415
+      id = s.optLong("id")
+      source = <无>
+  network/PlaylistApi.kt:481
+      id = s.optLong("id")
+      source = <无>
+  playlist/PlaylistCacheCodec.kt:440
+      id = id
+      source = srcKey
+  qq/QqSongMapper.kt:115
+      id = syntheticId
+      source = MusicSource.QQMUSIC.key
+  source/SongSourceExt.kt:65
+      id = id
+      source = if (source == MusicSource.NETEASE) null else source.key
+  ui/screen/SearchScreen.kt:253
+      id = <位置参数/未命名>
+      source = <无>
+  ui/screen/SearchScreen.kt:749
+      id = <位置参数/未命名>
+      source = <无>
+  ui/screen/SearchScreen.kt:749
+      id = id
+      source = <无>
+
+==============================================================================
+3) id 空间隔离的算术证明（结构事实，不是启发式）
+==============================================================================
+  QQ_ID_FLAG = 1L shl 62 = 4611686018427387904  (0x4000000000000000)
+  网易云 songId 实测量级   : 1e6 ~ 3e9   （远小于 2^40 = 1099511627776）
+  QQ 合成 id 的最小值      : 4611686018427387905  (bit62 恒置位)
+  两个区间是否相交          : 否
+  ⇒ 只要 QQ 曲目的 id 都经 `SourceIds.qqId()` 产出，
+    「网易云 id == QQ id」在 64 位整数上**不可能**成立 —— 与抽样无关。
+
+==============================================================================
+4) 抽样 1000 首双源配对：裸 id vs TrackKey 的冲突计数
+==============================================================================
+  样本数                        : 1000（网易云 × QQ 各 1 首配对）
+  裸 song.id 上的**跨源**数值冲突: 0 次
+  裸 song.id 上的同源重复        : 0（每首 id 唯一）
+  TrackKey 上的冲突              : 0 次
+
+  ── 关键限定（不许把结论说过头）──
+  这个 0 **不是因为抽样运气好**，而是因为第 3 节的算术：
+  样本里 QQ 的 id 由 `qq_id()` 产出（bit62 置位），网易云的没有。
+  换句话说：**冲突发生率 = 0 是当前实现的结构性结果**；
+  它成立的前提是「所有 QQ 生产者都走 qqId」—— 这正是第 2 节要逐点核对的事。
+
+==============================================================================
+5) 同源内唯一性 + 兜底散列的碰撞
+==============================================================================
+  网易云同源      : id 就是平台 songId，平台内唯一 —— 无重复可能
+  QQ 同源（有 songid）: 合成 id = bit62 | songid，songid 平台内唯一 ⇒ 唯一
+  QQ 同源（无 songid，FNV-1a 散列 songmid 兜底）:
+      抽样 20000 个 songmid → 0 个散列碰撞
+      理论碰撞概率 ≈ n²/2^63 = 4.337e-11（62 位空间）
+
+==============================================================================
+6) 队列持久化的形状 → 需要迁移吗
+==============================================================================
+  ncrust_playback_state / queue + queue_index
+  落盘类型: List<SongItem>（Gson 全量对象，不是 id 列表）: True
+  SongItem 的持久化字段:
+      id             -> id  ← 身份用
+      name           -> name
+      ar             -> artists
+      al             -> album
+      dt             -> duration
+      source         -> source  ← 身份用
+      mid            -> sourceId
+      media_id       -> mediaId
+      fee            -> fee
+      member_only    -> memberOnly
+      privilege      -> privilege
+      noCopyrightRcmd -> noCopyright
+      originCoverType -> originCoverType
+      originSongSimpleData -> originSong
+
+  ⇒ 队列快照**本来就带 source / mid / media_id**（v2.1.0 · A 起），
+    老数据缺 source 时 `MusicSource.fromKey(null)` 回落网易云 —— 这正是它的语义。
+    所以：**没有需要迁移的旧 key 形状**，TrackKey 可以从既有字段直接算出来。
+
+==============================================================================
+7) TrackKey 改造的影响面
+==============================================================================
+  MainActivity.insertNext             line 1536
+  MainActivity.appendToQueue          line 1635
+  MainActivity.insertAllNext          line 1679
+  MainActivity.appendAllToQueue       line 1703
+  MainActivity.removeFromQueue        line 1088
+  MainActivity.moveInQueue            line 1097
+  MainActivity.replaceQueueAndPlay    line 1647
+  MainActivity.playFromQueue          line 1121
+  MainActivity.generateShuffledIndices line 1023
+  MainActivity.launchInfinity         line 1187
+  MainActivity.playSongItem           line 1479
+
+  待播槽位（不受影响，它已经用 TrackKey）:
+    PreloadSlot.mediaIdFor(source: MusicSource, songId: Long, url: String)
+    PreloadSlot.mediaIdFor(songId: Long, url: String)
+    PreloadSlot.identityFromMediaId(mediaId: String?)
+    PreloadSlot.songIdFromMediaId(mediaId: String?)
+    PreloadSlot.decide(pendingSongId: Long, pendingUrl: String?, incomingSongId: Long, incomi)
+    PreloadSlot.transitionMatches(pendingSource: MusicSource, pendingSongId: Long, pendingUrl: String?, )
+    PreloadSlot.transitionMatches(pendingSongId: Long, pendingUrl: String?, itemSongId: Long?, itemUrl: )
+
+  随机模式（按**下标**编排，与身份 key 无关）:
+    MainActivity.kt:1025  shuffledIndices = emptyList()
+    MainActivity.kt:1030  shuffledIndices = ShuffleRound.newRound(
+    MainActivity.kt:1047  shuffledIndices = emptyList()
+    MainActivity.kt:1127  val pos = shuffledIndices.indexOf(index)
+    MainActivity.kt:1863  shuffledIndices = emptyList()
+    MainActivity.kt:2096  shuffledIndices = emptyList()
+
+==============================================================================
+8) 结论速览
+==============================================================================
+  · 队列去重当前用**裸 `song.id`**，落点 14 处
+  · `SongItem.dedupeKey` 已存在（= `source:id`）但生产代码零调用
+  · 双源 id 冲突发生率 = **0**，且是 bit62 标志位带来的**结构性 0**
+  · 队列快照落的是整个 SongItem（带 source/mid）⇒ **无需历史数据迁移**
+  · 待播槽位已用 TrackKey；随机模式按下标 ⇒ 改造不动它们

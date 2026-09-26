@@ -1,0 +1,196 @@
+==============================================================================
+1) Strings 主构造器现状
+==============================================================================
+  解析法 A（顶层逗号切分后取 val）      : 245
+  解析法 B（深度为 1 的 `    val x:` 行）: 245
+  两法一致                               : 是
+  dex 槽位算式  : this(1) + N(245) + mask ceil(N/32)=8 + marker(1) = 255
+  上限 255 / 余量 0   ← 天花板：再加一个参数即真机启动崩
+
+==============================================================================
+2) 既有嵌套组自身规模
+==============================================================================
+  SourceStrings           57 参数   (Strings.kt:653)
+  LocalPlaylistStrings    26 参数   (Strings.kt:883)
+  OfflineStrings          21 参数   (Strings.kt:609)
+  PlaylistsStrings        17 参数   (Strings.kt:807)
+  QueueStrings             8 参数   (Strings.kt:963)
+  TagsStrings              7 参数   (Strings.kt:856)
+  MotionStrings            2 参数   (Strings.kt:994)
+  合计（去重）                 136 参数
+
+==============================================================================
+3) 调用点分布（按消费文件）
+==============================================================================
+  消费 Strings 的文件数      : 36
+  被读取过的 key 总数        : 361 / 426
+  嵌套组参数名（7）: ['localPlaylist', 'motion', 'offline', 'playlists', 'queue', 'source', 'tags']
+  类体转发属性（111）: 调用点走 `strings.<转发名>` 的老写法
+  · 外层真参数未被读取       : 12
+    aboutTitle, addToPlaylistDuplicate, addToPlaylistFailed, artistDataLoadFailed, lyricsWordByWordLabel, noMoreContent, playlistUnsubscribe, playlistUpdated, queueClearAll, resumeFromFormat, searchHistoryEmpty, songDetailTitle
+  · 嵌套组内未被读取         : 45
+    addTrack, added, adopt, adopted, aggSongDetailAction, choose, clear, clearConfirm
+    cleared, cover, coverOrigin, create, created, delete, deleteConfirm, deleted
+    empty, emptyTracks, entryHint, favorite, localBadge, loginExpired, loginRequired, memberOnly
+    nameHint, newPlaylist, noCopyright, notFound, offline, original, playable, refresh
+    relogin, removeTrack, removed, sectionFav, sectionOwned, sectionTitle, switchSourceHint, sync
+    syncFailed, syncNoSource, synced, syncing, truncated
+
+  --- 每个消费文件用了多少 key（降序）---
+    screen:UserScreen                   78 keys   app/src/main/java/com/takahashirinta/ncrust/ui/screen/UserScreen.kt
+    screen:ArtistDetailScreen           29 keys   app/src/main/java/com/takahashirinta/ncrust/ui/screen/ArtistDetailScreen.kt
+    screen:AboutScreen                  25 keys   app/src/main/java/com/takahashirinta/ncrust/ui/screen/AboutScreen.kt
+    screen:AlbumDetailScreen            23 keys   app/src/main/java/com/takahashirinta/ncrust/ui/screen/AlbumDetailScreen.kt
+    screen:SearchScreen                 23 keys   app/src/main/java/com/takahashirinta/ncrust/ui/screen/SearchScreen.kt
+    screen:HomeScreen                   22 keys   app/src/main/java/com/takahashirinta/ncrust/ui/screen/HomeScreen.kt
+    MainActivity                        21 keys   app/src/main/java/com/takahashirinta/ncrust/MainActivity.kt
+    components:QqPhoneLoginDialog       21 keys   app/src/main/java/com/takahashirinta/ncrust/ui/components/QqPhoneLoginDialog.kt
+    screen:LibraryPlaylistsTab          21 keys   app/src/main/java/com/takahashirinta/ncrust/ui/screen/LibraryPlaylistsTab.kt
+    screen:LibraryScreen                21 keys   app/src/main/java/com/takahashirinta/ncrust/ui/screen/LibraryScreen.kt
+    screen:LocalPlaylistDetailScreen    20 keys   app/src/main/java/com/takahashirinta/ncrust/ui/screen/LocalPlaylistDetailScreen.kt
+    screen:PlaylistDetailScreen         18 keys   app/src/main/java/com/takahashirinta/ncrust/ui/screen/PlaylistDetailScreen.kt
+    player:FullPlayerControls           16 keys   app/src/main/java/com/takahashirinta/ncrust/ui/player/FullPlayerControls.kt
+    player:PlayerCard                   16 keys   app/src/main/java/com/takahashirinta/ncrust/ui/player/PlayerCard.kt
+    screen:OfflineCacheOverlay          16 keys   app/src/main/java/com/takahashirinta/ncrust/ui/screen/OfflineCacheOverlay.kt
+    screen:SongDetailScreen             15 keys   app/src/main/java/com/takahashirinta/ncrust/ui/screen/SongDetailScreen.kt
+    components:AddToPlaylistSheet       14 keys   app/src/main/java/com/takahashirinta/ncrust/ui/components/AddToPlaylistSheet.kt
+    components:QqQrLoginDialog          13 keys   app/src/main/java/com/takahashirinta/ncrust/ui/components/QqQrLoginDialog.kt
+    screen:QqPlaylistDetailScreen       13 keys   app/src/main/java/com/takahashirinta/ncrust/ui/screen/QqPlaylistDetailScreen.kt
+    components:EditPlaylistDialog       11 keys   app/src/main/java/com/takahashirinta/ncrust/ui/components/EditPlaylistDialog.kt
+    components:CreatePlaylistDialog     10 keys   app/src/main/java/com/takahashirinta/ncrust/ui/components/CreatePlaylistDialog.kt
+    components:SongTags                  9 keys   app/src/main/java/com/takahashirinta/ncrust/ui/components/SongTags.kt
+    components:QrLoginDialog             8 keys   app/src/main/java/com/takahashirinta/ncrust/ui/components/QrLoginDialog.kt
+    components:QrScannerScreen           8 keys   app/src/main/java/com/takahashirinta/ncrust/ui/components/QrScannerScreen.kt
+    components:PlayAllDialog             6 keys   app/src/main/java/com/takahashirinta/ncrust/ui/components/PlayAllDialog.kt
+    player:QueueView                     5 keys   app/src/main/java/com/takahashirinta/ncrust/ui/player/QueueView.kt
+    components:BackgroundActivityDialog   4 keys   app/src/main/java/com/takahashirinta/ncrust/ui/components/BackgroundActivityDialog.kt
+    components:QqCaptchaOverlay          3 keys   app/src/main/java/com/takahashirinta/ncrust/ui/components/QqCaptchaOverlay.kt
+    components:DetailScaffold            3 keys   app/src/main/java/com/takahashirinta/ncrust/ui/components/DetailScaffold.kt
+    components:SongCard                  3 keys   app/src/main/java/com/takahashirinta/ncrust/ui/components/SongCard.kt
+
+  --- 按功能面汇总 ---
+    screen           249 keys
+    components        97 keys
+    player            36 keys
+    MainActivity      21 keys
+    theme              2 keys
+
+==============================================================================
+4) 高频 / 低频 key（按读取次数）
+==============================================================================
+  --- 高频 top 30 ---
+    source                           reads=  32 files=  4
+    actionInsertNext                 reads=  11 files=  7
+    loadFailed                       reads=  10 files=  8
+    close                            reads=   9 files=  9
+    cancel                           reads=   9 files=  9
+    addedToLibrary                   reads=   9 files=  7
+    actionAppendToQueue              reads=   9 files=  7
+    actionAddToLibrary               reads=   8 files=  6
+    queue                            reads=   7 files=  2
+    trackCountSongs                  reads=   6 files=  6
+    coverDesc                        reads=   6 files=  3
+    playAllButton                    reads=   6 files=  5
+    loading                          reads=   5 files=  3
+    retry                            reads=   5 files=  5
+    playlistPrivacyPrivate           reads=   5 files=  3
+    sourceQqMusic                    reads=   5 files=  5
+    trackCount                       reads=   5 files=  5
+    playButton                       reads=   5 files=  4
+    qualityOptions                   reads=   5 files=  3
+    playlistPrivacyPublic            reads=   4 files=  2
+    unknownArtist                    reads=   4 files=  3
+    aggConfidence                    reads=   4 files=  2
+    albumCoverDesc                   reads=   4 files=  3
+    playlistCreateFailed             reads=   3 files=  3
+    sourceQqPhoneBadNumber           reads=   3 files=  1
+    sourceNetease                    reads=   3 files=  3
+    back                             reads=   3 files=  3
+    artistRecoTitle                  reads=   3 files=  3
+    playlistNew                      reads=   3 files=  2
+    localPlaylistNew                 reads=   3 files=  2
+  --- 只被读过 1 次的 key: 252 个 ---
+    aboutAppSubtitle, aboutAudioEngineLabel, aboutButton, aboutCreditAnim, aboutCreditCli, aboutCreditDesign
+    aboutDesignSystemLabel, aboutDeveloperFork, aboutDeveloperOriginal, aboutImageLabel, aboutLangLabel, aboutLicense
+    aboutLicenseGplWithMit, aboutNetworkLabel, aboutRepositoryFork, aboutRepositoryOriginal, aboutRoleDev, aboutRoleForkMaintainer
+    aboutRoleTester, aboutSectionCredits, aboutSectionProject, aboutSectionTeam, aboutSectionTechStack, aboutUIFrameworkLabel
+    aboutVersion, accentSourceCover, accentSourcePreset, accentSourceSectionTitle, accentSourceSystem, accentSourceSystemHint
+    accentSystemRefresh, accountDialogTitle, actionAddToNext, actionAddToPlaylist, actionAddToPlaylistSheet, actionGoToAlbum
+    actionGoToArtist, actionRemoveFromLibrary, actionSaveAlbum, actionUnsaveAlbum, addToPlaylistSuccess, addToPlaylistTitle
+    aggDefaultPlayable, aggFilterNetease, aggFilterQq, aggNoPlayable, aggOnlyOn, aggProbing
+    aggSongDetailTitle, aggUnmatched, aggVersionsTitle, albumArtistAndCount, albumLabel, albumReleaseDate
+    artistAlbumCount, artistAvatarDesc, artistRecoDesc, artistSongCount, artistStats, audioVisualizerDescription
+    audioVisualizerLabel, autoRotateDescription, autoRotateLabel, batteryAllow, batteryLater, batteryMessage
+    bgChange, bgImportFailed, bgPick, bgRemove, bgSectionTitle, bigScreenEnter
+    cacheCleared, cacheSizeLabel, cacheUsageAudio, cacheUsageImage, cacheUsageOther, clearCacheConfirm
+    clearQueue, clearSearchButton, collapsePlayer, controlsHandleLabel, dailySongsTitle, dynamicFontHint
+    dynamicFontLabel, emptyQueue, fmRadioSubtitle, fmRadioTitle, fmRadioTitleGeneric, gaplessDescription
+    gaplessSectionTitle, insertNextDesc, insertNextTitle, keepScreenOnHint, keepScreenOnLabel, languageSectionTitle
+    localPlaylistAddTrack, localPlaylistAdopt, localPlaylistAdopted, localPlaylistChoose, localPlaylistClearConfirm, localPlaylistCleared
+    localPlaylistCreated, localPlaylistDeleteConfirm, localPlaylistDeleted, localPlaylistEmptyTracks, localPlaylistLocalBadge, localPlaylistRemoveTrack
+    localPlaylistRemoved, localPlaylistSyncFailed, localPlaylistSyncNoSource, localPlaylistSynced, localPlaylistSyncing, loginHint
+    lyricsFontLarger, lyricsFontScaleLabel, lyricsFontSmaller, lyricsInMediaSessionHint, lyricsInMediaSessionLabel, lyricsLabel
+    lyricsRomanizationHint, lyricsRomanizationLabel, lyricsSweepQualityLabel, lyricsSweepQualityOptions, lyricsTranslationLabel, lyricsTtmlEnabledLabel
+    lyricsTtmlFirstLabel, lyricsWordAnimationLabel, lyricsWordAnimationOptions, mobileQualityLabel, networkOfflineHint, networkOfflineTitle
+    newSongsTitle, nicknameLabel, noAlbums, noPlaylists, noSavedAlbums, noSavedSongs
+    noSongPlaying, offlineCacheDeleteConfirm, offlineCacheDeleteTrack, offlineCacheDeleted, offlineCacheEmpty, offlineCacheFragmentNotice
+    offlineCacheLimitHint, offlineCacheLimitLabel, offlineCacheListTitle, offlineCacheManageLabel, offlineCachePlayingLocked, offlineCacheTitle
+    offlineCacheUsage, pageTransitionDescription, pageTransitionLabel, playModeButton, playNowDesc, playNowTitle
+    playbackSectionTitle, playlistCoverDesc, playlistCreateConfirm, playlistCreateTitle, playlistDeleteConfirm, playlistDeleteFailed
+    playlistDeleteWarning, playlistDeleted, playlistDescHint, playlistDetailTitle, playlistEmpty, playlistEmptyTracks
+    playlistFavorite, playlistLoginRequired, playlistNoOwned, playlistNotFound, playlistRefresh, playlistRelogin
+    playlistSave, playlistSongsAdded, qrGenericLogin, qrLoginTitle, qrScanHint, qrScannedHint
+    qualityDowngradedBadge, qualityNoEntitlementBadge, qualitySongLacksTierBadge, queueAddToNextAlreadyNext, queueAddToNextCurrent, queueAddToNextDone
+    queueAddToNextMoved, queueAddToNextStarted, queueInfinityPlaceholder, queueSectionNow, queueSectionPast, queueSectionUpcoming
+    queueTitle, recommendPlaylistTitle, refreshLabel, removeFromPlaylist, removedFromPlaylist, saveAsPlaylist
+    scanConnecting, scanEntryTitle, scanNoCookie, scanPermissionNeeded, scanPrompt, scanSuccess
+    searchAlbumsEmpty, searchArtistsEmpty, searchPlaceholder, searchSongsEmpty, songCountFormat, sourceQqAccountRestricted
+    sourceQqCaptchaHint, sourceQqCaptchaRetry, sourceQqCodeHint, sourceQqCodeLabel, sourceQqCodeSendFailed, sourceQqCodeSent
+    sourceQqDeviceLimit, sourceQqLoginRateLimited, sourceQqPhoneHint, sourceQqPhoneLabel, sourceQqPhoneSubmit, sourceQqPhoneTooFrequent
+    sourceQqResendCode, sourceQqSendCode, sourceQrAvailabilityNote, sourceQrExpired, sourceQrFailed, sourceQrLoadFailed
+    sourceQrNetworkHint, sourceQrScanned, sourceQrServiceUnavailable, sourceQrSwitchingToWeb, sourceQrWaiting, sourceSummary
+    storageSectionTitle, tabSearch, tagCover, tagMemberOnly, tagNoCopyright, tagOriginal
+    tagPlayable, themeColorNames, themeModeDark, themeModeLight, themeModeSectionTitle, themeModeSystem
+    themeSectionTitle, unknownAlbum, unknownArtistName, userAvatarDesc, userIconDesc, wifiQualityLabel
+
+==============================================================================
+5) 语言包一致性
+==============================================================================
+  各语言文件解析到的顶层实参个数:
+    zhCN   245   (Strings 主构造参数 245)
+    zhTW   245   (Strings 主构造参数 245)
+    en     244   (Strings 主构造参数 245)
+    jpJP   245   (Strings 主构造参数 245)
+    jpMY   244   (Strings 主构造参数 245)
+    koNK   244   (Strings 主构造参数 245)
+    deDE   244   (Strings 主构造参数 245)
+    ruRU   244   (Strings 主构造参数 245)
+  8 个语言文件都给的 key : 244
+    ⚠ en     缺 1: ['aboutDesignSystemLabel']
+    ⚠ jpMY   缺 1: ['aboutDesignSystemLabel']
+    ⚠ koNK   缺 1: ['aboutDesignSystemLabel']
+    ⚠ deDE   缺 1: ['aboutDesignSystemLabel']
+    ⚠ ruRU   缺 1: ['aboutDesignSystemLabel']
+  在所有 8 个语言里取值**逐字相同**的 key: 1
+    uidLabel
+      uidLabel                     = { "        " }
+
+==============================================================================
+6) 候选拆分方案
+==============================================================================
+  方案 A（按功能面 = 消费文件聚类）
+    screen           249 keys
+    components        97 keys
+    player            36 keys
+    MainActivity      21 keys
+    theme              2 keys
+
+  没有任何调用点的 key（拆分时可以留原位）: 65
+
+==============================================================================
+7) 结论速览
+==============================================================================
+  · Strings 主构造器 = 245 参数 = 255/255 槽，余量 0
+  · 嵌套组 7 个，最大 57 参数
+  · 消费 Strings 的文件 36 个，跨 5 个功能面
+  · 8 语言逐字相同的 key: 1
