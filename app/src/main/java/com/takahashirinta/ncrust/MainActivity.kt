@@ -83,9 +83,11 @@ import com.takahashirinta.ncrust.network.model.ArtistItem
 import com.takahashirinta.ncrust.reco.ArtistReco
 import com.takahashirinta.ncrust.source.MusicSource
 import com.takahashirinta.ncrust.source.SourceIds
+import com.takahashirinta.ncrust.source.TrackKey
 import com.takahashirinta.ncrust.source.musicSource
 import com.takahashirinta.ncrust.player.PlayOrigin
 import com.takahashirinta.ncrust.player.PlaybackStateManager
+import com.takahashirinta.ncrust.player.QueueKeys
 import com.takahashirinta.ncrust.player.ShuffleRound
 import com.takahashirinta.ncrust.power.BackgroundActivity
 import com.takahashirinta.ncrust.ui.components.BackgroundActivityDialog
@@ -1078,10 +1080,15 @@ fun MainScreen(
 
     // ViewModel 确认切歌后（URL fetch 完成或 gapless 快速路径），
     // 从队列中找到对应 SongItem 并更新 currentSong，保证 UI 与音频同步。
+    // v2.5.3 · P1：这里只有裸 id（ViewModel 广播的是 `currentSongId`），
+    // 所以按 **TrackKey.ofSong 推断出的音源**比对，而不是"id 相等即同一首"——
+    // 后者会让「网易云 123」与「QQ 合成的 123」互相认领。
     LaunchedEffect(vmCurrentSongId) {
         val id = vmCurrentSongId ?: return@LaunchedEffect
-        if (currentSong?.id == id) return@LaunchedEffect
-        val found = playbackQueue.firstOrNull { it.id == id }
+        val vmSourceKey = playerViewModel.currentTrackKey?.source?.key
+        val vmKey = TrackKey.of(vmSourceKey, id)
+        if (currentSong?.let { QueueKeys.keyOf(it) == vmKey } == true) return@LaunchedEffect
+        val found = playbackQueue.firstOrNull { QueueKeys.keyOf(it) == vmKey }
         if (found != null) currentSong = found
     }
 
@@ -1187,7 +1194,8 @@ fun MainScreen(
     fun launchInfinity() {
         if (infinityJob.value?.isActive == true) return
         val seed = playbackQueue.getOrNull(currentQueueIndex) ?: return
-        val existingIds = playbackQueue.map { it.id }.toSet()
+        // v2.5.3 · P1：续播去重同样走身份（TrackKey），避免"跨源同号被当成已有"。
+        val existingKeys = QueueKeys.keysOf(playbackQueue).toHashSet()
         val fromFm = fmMode
         infinityJob.value = coroutineScope.launch(Dispatchers.IO) {
             val primary = if (fromFm) {
@@ -1196,10 +1204,11 @@ fun MainScreen(
             } else {
                 // 相似歌曲（以当前歌为种子），听着听着往相似方向延伸。
                 runCatching { PlaylistApi.getSimilarSongs(seed.id) }.getOrDefault(emptyList())
-            }.filter { it.id !in existingIds }
+            }.filter { QueueKeys.keyOf(it) !in existingKeys }
             val continuation = if (primary.isNotEmpty()) primary else
                 runCatching {
-                    PlaylistApi.getDailyRecommendSongs().filter { it.id !in existingIds }
+                    PlaylistApi.getDailyRecommendSongs()
+                        .filter { QueueKeys.keyOf(it) !in existingKeys }
                 }.getOrDefault(emptyList())
             if (continuation.isEmpty()) return@launch
             withContext(Dispatchers.Main) {
@@ -1489,21 +1498,26 @@ fun MainScreen(
             expandCard()
             return
         }
-        // 内联 insertNext 语义：去重后把该曲插到当前歌的下一首，并让 currentQueueIndex 指向它
-        val currentId = playbackQueue.getOrNull(currentQueueIndex)?.id
-        if (song.id != currentId) {
-            val filtered = playbackQueue.filter { it.id != song.id }.toMutableList()
-            val newCurrentIndex = if (currentId != null)
-                filtered.indexOfFirst { it.id == currentId }.coerceAtLeast(0)
-            else -1
+        // 内联 insertNext 语义：去重后把该曲插到当前歌的下一首，并让 currentQueueIndex 指向它。
+        // v2.5.3 · P1：判重与重定位都改走 `TrackKey`（见 QueueKeys）。
+        val currentKey = playbackQueue.getOrNull(currentQueueIndex)?.let { QueueKeys.keyOf(it) }
+        val songKey = QueueKeys.keyOf(song)
+        if (songKey != currentKey) {
+            val filtered = QueueKeys.dedupe(QueueKeys.keysOf(playbackQueue), songKey).toMutableList()
+            val newCurrentIndex = QueueKeys.indexOfCurrent(filtered, currentKey).coerceAtLeast(0)
+                .let { if (currentKey == null) -1 else it }
             val insertPos = (newCurrentIndex + 1).coerceIn(0, filtered.size)
-            filtered.add(insertPos, song)
-            playbackQueue = filtered
+            filtered.add(insertPos, songKey)
+            playbackQueue = QueueKeys.rebuild(
+                songs = playbackQueue,
+                keys = filtered,
+                extra = listOf(song),
+            ) ?: playbackQueue
             currentQueueIndex = if (newCurrentIndex < 0) 0 else newCurrentIndex
             if (playMode == QueueModes.SHUFFLE) generateShuffledIndices()
             PlaybackStateManager.saveQueue(context, playbackQueue, currentQueueIndex)
         }
-        val idx = playbackQueue.indexOfFirst { it.id == song.id }
+        val idx = playbackQueue.indexOfFirst { QueueKeys.keyOf(it) == songKey }
         if (idx >= 0) playFromQueue(idx)
         expandCard()
     }
@@ -1534,8 +1548,13 @@ fun MainScreen(
      * （原先用户点下去什么都不会发生，看起来像按钮坏了）。
      */
     fun insertNext(song: SongItem) {
-        val oldIds = playbackQueue.map { it.id }
-        val plan = QueueInsert.plan(oldIds, currentQueueIndex, song.id)
+        // v2.5.3 · P1：身份从裸 `song.id` 换成 `TrackKey`（音源感知）。
+        // 探针确认跨源裸 id 撞号的实际发生率是 0（QQ 的 id 带 bit62 标志位），
+        // 但那 0 依赖「每个 id 生产者都记得走 SourceIds.qqId」这条纪律；
+        // 换成 TrackKey 之后判重语义由类型承载，且与待播槽位/歌词闸门只剩一套规则。
+        val oldKeys = QueueKeys.keysOf(playbackQueue)
+        val newKey = QueueKeys.keyOf(song)
+        val plan = QueueInsert.plan(oldKeys, currentQueueIndex, newKey)
 
         // ── 幂等路径：队列一个字节都不动，只给反馈 ──────────────────────────────
         if (!plan.queueChanged) {
@@ -1551,17 +1570,12 @@ fun MainScreen(
             return
         }
 
-        // ── 按 id 重建队列 ────────────────────────────────────────────────────
-        // 用显式循环而不是 mapNotNull：`plan.ids` 只可能由「旧队列的 id」+「song.id」
-        // 组成，任何一项装配不出来都说明输入不一致 —— 此时**放弃这次变更**
+        // ── 按身份重建队列 ────────────────────────────────────────────────────
+        // `plan.keys` 只可能由「旧队列的身份」+「这首歌的身份」组成；
+        // 任何一项装配不出来都说明输入不一致 —— 此时**放弃这次变更**，
         // 比让队列静默缺一首安全（队列缺项 = 某首歌再也播不到）。
-        val byId = playbackQueue.associateBy { it.id }
-        val rebuilt = ArrayList<SongItem>(plan.ids.size)
-        for (id in plan.ids) {
-            val item = byId[id] ?: (song.takeIf { it.id == id })
-            if (item == null) return
-            rebuilt.add(item)
-        }
+        // 装配逻辑收敛在 `QueueKeys.rebuild`（纯函数、有单测），不再内联在这里。
+        val rebuilt = QueueKeys.rebuild(playbackQueue, plan.keys, extra = listOf(song)) ?: return
 
         playbackQueue = rebuilt
         currentQueueIndex = plan.currentIndex
@@ -1569,8 +1583,8 @@ fun MainScreen(
         // ── 乱序模式：把插入项接到当前歌的播放顺序之后 ─────────────────────────
         if (playMode == QueueModes.SHUFFLE) {
             val fixed = QueueInsert.shuffleAfterInsert(
-                oldIds = oldIds,
-                newIds = plan.ids,
+                oldKeys = oldKeys,
+                newKeys = plan.keys,
                 shuffled = shuffledIndices,
                 newCurrentIndex = plan.currentIndex,
                 insertPos = plan.insertPos,
@@ -1633,13 +1647,18 @@ fun MainScreen(
     }
 
     fun appendToQueue(song: SongItem) {
-        val currentId = playbackQueue.getOrNull(currentQueueIndex)?.id
-        if (song.id == currentId) return
-        val filtered = playbackQueue.filter { it.id != song.id }
-        playbackQueue = filtered + song
-        currentQueueIndex = if (currentId != null)
-            playbackQueue.indexOfFirst { it.id == currentId }.coerceAtLeast(0)
-        else 0
+        // v2.5.3 · P1：身份走 TrackKey。跨源同号**不去重**（TrackKey 含 source），
+        // 同源同号去重且幂等。
+        val currentKey = playbackQueue.getOrNull(currentQueueIndex)?.let { QueueKeys.keyOf(it) }
+        val songKey = QueueKeys.keyOf(song)
+        if (songKey == currentKey) return
+        // 去重 + 追加一次算完再赋值：`rebuild` 失败（理论上不可达）时**整条队列不变**，
+        // 不会留下「去重成功但追加失败」的半成品状态。
+        val target = QueueKeys.dedupe(QueueKeys.keysOf(playbackQueue), songKey) + songKey
+        val rebuilt = QueueKeys.rebuild(playbackQueue, target, extra = listOf(song)) ?: return
+        playbackQueue = rebuilt
+        currentQueueIndex = QueueKeys.indexOfCurrent(QueueKeys.keysOf(rebuilt), currentKey)
+            .coerceAtLeast(0)
         if (playMode == QueueModes.SHUFFLE) generateShuffledIndices()
         PlaybackStateManager.saveQueue(context, playbackQueue, currentQueueIndex)
     }
@@ -1682,19 +1701,18 @@ fun MainScreen(
             replaceQueueAndPlay(songs)
             return
         }
-        val currentId = playbackQueue.getOrNull(currentQueueIndex)?.id
+        // v2.5.3 · P1：身份走 TrackKey。
+        val currentKey = playbackQueue.getOrNull(currentQueueIndex)?.let { QueueKeys.keyOf(it) }
         // 不允许把当前歌本身"塞到下一首"——那会让当前歌在队列里被 filter 掉、
         // currentQueueIndex 指向的东西完全变了。
-        val toInsert = if (currentId != null) songs.filter { it.id != currentId } else songs
+        val toInsert = QueueKeys.excludeCurrent(QueueKeys.keysOf(songs), currentKey)
         if (toInsert.isEmpty()) return
-        val ids = toInsert.map { it.id }.toSet()
-        val filtered = playbackQueue.filter { it.id !in ids }.toMutableList()
-        val newCurrentIndex = if (currentId != null)
-            filtered.indexOfFirst { it.id == currentId }.coerceAtLeast(0)
-        else 0
+        val insertSet = toInsert.toHashSet()
+        val filtered = QueueKeys.without(QueueKeys.keysOf(playbackQueue), insertSet).toMutableList()
+        val newCurrentIndex = QueueKeys.indexOfCurrent(filtered, currentKey).coerceAtLeast(0)
         val insertPos = (newCurrentIndex + 1).coerceIn(0, filtered.size)
         filtered.addAll(insertPos, toInsert)
-        playbackQueue = filtered
+        playbackQueue = QueueKeys.rebuild(playbackQueue, filtered, extra = songs) ?: return
         currentQueueIndex = newCurrentIndex
         if (playMode == QueueModes.SHUFFLE) generateShuffledIndices()
         PlaybackStateManager.saveQueue(context, playbackQueue, currentQueueIndex)
@@ -1706,8 +1724,10 @@ fun MainScreen(
             replaceQueueAndPlay(songs)
             return
         }
-        val existingIds = playbackQueue.map { it.id }.toSet()
-        val newSongs = songs.filter { it.id !in existingIds }
+        // v2.5.3 · P1：身份走 TrackKey（原先按裸 id 的 existingIds 过滤）。
+        val existingKeys = QueueKeys.keysOf(playbackQueue)
+        val newKeys = QueueKeys.missing(existingKeys, QueueKeys.keysOf(songs)).toHashSet()
+        val newSongs = QueueKeys.selectSongs(songs, newKeys)
         if (newSongs.isEmpty()) return
         // 尾追加不动 currentQueueIndex 前面的项，无需修正索引。
         playbackQueue = playbackQueue + newSongs

@@ -12,6 +12,7 @@
 package com.takahashirinta.ncrust.player
 
 import com.takahashirinta.ncrust.QueueModes
+import com.takahashirinta.ncrust.source.TrackKey
 
 /**
  * v2.5.0 · D：「添加到下一首播放」的**队列边界判定**（纯逻辑，不依赖 Android）。
@@ -56,14 +57,21 @@ import com.takahashirinta.ncrust.QueueModes
  * 代价（如实记录）：用户无法用这个入口把同一首歌排两次。
  * 需要重复时的既有手段是单曲循环，本版不新增「允许重复」的开关。
  *
- * ## 身份用裸 `Long` id，跨源同号的理论风险**沿用既有行为**
+ * ## 身份：v2.5.3 · P1 起用 [TrackKey]（不再是裸 `Long` id）
  *
- * 本对象按 `song.id` 判重，与 `insertNext` / `appendToQueue` 等全部既有队列写入**同一把尺子**。
- * `PlayerViewModel` 另有一个更严格的 `TrackKey`（带音源），但**队列去重从来没用过它**。
- * 本版刻意不在这里单独升级判重强度：那会让「同一份队列」在两处用两套身份语义
- * （队列去重按 id、预载槽位按 TrackKey），反而制造新的不一致。
- * 立即可见的后果：网易云某首歌与 QQ 某首歌**裸 id 相同**时，其中一首会被当成重复。
- * 这是**既有**风险、不是本版引入的，列入未验证清单。
+ * v2.5.0 写这一节时的原话是「本对象按 `song.id` 判重，与全部既有队列写入同一把尺子；
+ * `PlayerViewModel` 另有更严格的 `TrackKey`，但队列去重从来没用过它 —— 本版刻意
+ * 不单独升级判重强度，以免两处身份语义不一致」。那个取舍在当时是对的：**单独**升级
+ * 这一处确实会制造第三种口径。
+ *
+ * v2.5.3 换了一条路：**不是升级一处，而是把全部队列写入一起升级**，
+ * 并把身份运算收敛到 `player/QueueKeys.kt`。于是「不一致」的顾虑消失了，
+ * 队列判重与待播槽位（[PreloadSlot]）、歌词闸门、续播恢复用同一个 [TrackKey]。
+ *
+ * 探针结论（`docs/verification/v2.5.3/probe-queue-dedup.md`）：跨源裸 id 撞号的
+ * **实际发生率是 0** —— 全部 QQ id 都经 `SourceIds.qqId()` 产出、bit62 恒置位，
+ * 与网易云的 id 区间结构性不相交。所以这次改造**不修任何线上 bug**，
+ * 它买到的是「那个 0 不再依赖调用点的纪律，而由类型承载」。
  */
 object QueueInsert {
 
@@ -91,13 +99,13 @@ object QueueInsert {
     /**
      * 判定结果。
      *
-     * @param ids 新队列的 id 序列（[Outcome.ALREADY_NEXT] / [Outcome.ALREADY_CURRENT] 时与入参相同）
+     * @param keys 新队列的**身份序列**（[Outcome.ALREADY_NEXT] / [Outcome.ALREADY_CURRENT] 时与入参相同）
      * @param currentIndex 新的 `currentQueueIndex`
      * @param insertPos 新歌在新队列里的下标；**-1 表示这次调用没有改变队列**
      * @param outcome 结果类型，调用方据此决定提示文案
      */
     data class Plan(
-        val ids: List<Long>,
+        val keys: List<TrackKey>,
         val currentIndex: Int,
         val insertPos: Int,
         val outcome: Outcome,
@@ -114,36 +122,48 @@ object QueueInsert {
     }
 
     /**
-     * 计算「把 [newId] 添加到当前歌的下一首」之后队列该长什么样。
+     * 计算「把 [newKey] 添加到当前歌的下一首」之后队列该长什么样。
      *
      * 覆盖的边界（每条都有对应用例，见 `QueueInsertTest`）：
      *
      * | 输入 | 结果 |
      * |---|---|
-     * | 队列为空 | [Outcome.START_FRESH]，队列 = `[newId]`，`currentIndex = 0` |
+     * | 队列为空 | [Outcome.START_FRESH]，队列 = `[newKey]`，`currentIndex = 0` |
      * | 有队列但没有有效当前项 | [Outcome.START_FRESH]，追加到队尾并**起播它** |
-     * | `newId` == 当前歌 | [Outcome.ALREADY_CURRENT]，队列不变 |
-     * | `newId` 已在 `currentIndex + 1` | [Outcome.ALREADY_NEXT]，队列不变（**幂等**） |
+     * | `newKey` == 当前歌 | [Outcome.ALREADY_CURRENT]，队列不变 |
+     * | `newKey` 已在 `currentIndex + 1` | [Outcome.ALREADY_NEXT]，队列不变（**幂等**） |
      * | 当前歌是**最后一首** | [Outcome.INSERTED]，插到队尾（`insertPos == size - 1`） |
-     * | `newId` 在队列别处 | [Outcome.MOVED_TO_NEXT]，把它**搬**过来，不新增 |
+     * | `newKey` 在队列别处 | [Outcome.MOVED_TO_NEXT]，把它**搬**过来，不新增 |
      * | 其余 | [Outcome.INSERTED] |
      *
-     * @param queueIds 当前队列的 id 序列（调用方保证**已去重**，与既有队列写入一致）
-     * @param currentIndex 当前 `currentQueueIndex`；不在 `queueIds.indices` 内视为「没有当前项」
-     * @param newId 要插入的歌的 id
+     * @param queueKeys 当前队列的**身份序列**（调用方保证**已去重**，与既有队列写入一致）
+     * @param currentIndex 当前 `currentQueueIndex`；不在 `queueKeys.indices` 内视为「没有当前项」
+     * @param newKey 要插入的那首歌的身份
+     *
+     * ## v2.5.3 · P1：参数从裸 `Long` 换成 [TrackKey]
+     *
+     * 旧签名是 `plan(queueIds: List<Long>, currentIndex: Int, newId: Long)`，
+     * 与当时 `MainActivity` 里另外三处队列写入用同一把尺子（裸 `song.id`）。
+     * 探针确认跨源撞号的实际发生率是 **0**（QQ 的 id 带 bit62 标志位，与网易云的
+     * id 区间结构性不相交），但那 0 依赖「每个 id 生产者都记得走 `SourceIds.qqId`」
+     * 这条**纪律**；换成 [TrackKey] 之后判重语义由类型承载，且与待播槽位、
+     * 歌词闸门、续播恢复**只剩一套**身份规则。
+     *
+     * 换成强类型之后，`QueueInsert.plan(queue.map { it.id }, …)` 这种写法**编译不过** ——
+     * 这正是要的效果：队列身份不许再退回裸 id。
      */
-    fun plan(queueIds: List<Long>, currentIndex: Int, newId: Long): Plan {
+    fun plan(queueKeys: List<TrackKey>, currentIndex: Int, newKey: TrackKey): Plan {
         // ── 边界 1/2：没有有效的当前项 ────────────────────────────────────────
         // 队列为空 ⇒ 这一首就是全部（任务书 §6.2「队列为空 → 直接播放」）。
         // 队列非空但下标失效（理论上不该出现，但它是**可能**的状态）⇒ 追加到队尾并起播它，
         // 而不是把 id 硬塞到下标 0 —— 那会让队列顺序莫名其妙地反转。
-        if (currentIndex !in queueIds.indices) {
-            val rest = queueIds.filter { it != newId }
-            val ids = rest + newId
+        if (currentIndex !in queueKeys.indices) {
+            val rest = queueKeys.filter { it != newKey }
+            val keys = rest + newKey
             return Plan(
-                ids = ids,
-                currentIndex = ids.lastIndex,
-                insertPos = ids.lastIndex,
+                keys = keys,
+                currentIndex = keys.lastIndex,
+                insertPos = keys.lastIndex,
                 outcome = Outcome.START_FRESH,
             )
         }
@@ -151,26 +171,26 @@ object QueueInsert {
         // ── 边界 3：它就是在播的那一首 ────────────────────────────────────────
         // 既有实现在这里 `return`（静默无反馈）。本对象把它变成一个**可上报的结果**，
         // 让 UI 能给出「这首歌正在播放」而不是「点了没反应」。
-        val currentId = queueIds[currentIndex]
-        if (newId == currentId) {
-            return Plan(queueIds, currentIndex, -1, Outcome.ALREADY_CURRENT)
+        val currentKey = queueKeys[currentIndex]
+        if (newKey == currentKey) {
+            return Plan(queueKeys, currentIndex, -1, Outcome.ALREADY_CURRENT)
         }
 
         // ── 边界 4：它已经在下一首的位置上 ────────────────────────────────────
         // 幂等：队列一个字节不动。注意必须用「旧队列里 newId 的位置」判断，
         // 不能用「去重后的位置」—— 后者恒等于 currentIndex + 1，永远成立。
-        val existingIndex = queueIds.indexOf(newId)
+        val existingIndex = queueKeys.indexOf(newKey)
         if (existingIndex == currentIndex + 1) {
-            return Plan(queueIds, currentIndex, existingIndex, Outcome.ALREADY_NEXT)
+            return Plan(queueKeys, currentIndex, existingIndex, Outcome.ALREADY_NEXT)
         }
 
         // ── 通用路径 ──────────────────────────────────────────────────────────
         // ① 去重：把 newId 从任何位置拿掉；
         // ② **重新定位**当前歌 —— 这是 AGENTS.md 点名的关键不变量：
         //    直接 `.filter` 之后沿用旧下标，会把 currentQueueIndex 指到错误的项上。
-        val filtered = queueIds.filter { it != newId }
-        val relocated = filtered.indexOf(currentId)
-        // relocated 不可能为 -1：newId != currentId，filter 删不掉当前歌。
+        val filtered = queueKeys.filter { it != newKey }
+        val relocated = filtered.indexOf(currentKey)
+        // relocated 不可能为 -1：newKey != currentKey，filter 删不掉当前歌。
         // 但仍然显式兜底 —— 真出现 -1 说明调用方违反了「队列已去重」的前置条件，
         // 此时插到队首比抛异常好（播放链路不能因为队列写入而中断）。
         val safeRelocated = if (relocated >= 0) relocated else 0
@@ -180,10 +200,10 @@ object QueueInsert {
         // 插到末尾之后当前歌**不再**是最后一首，所以 CYCLE/LINE/INFINITY 的
         // 「队尾没有下一首」判定会自然指向它 —— 不需要为这个边界写特例。
         val insertPos = (safeRelocated + 1).coerceIn(0, filtered.size)
-        val ids = filtered.toMutableList().also { it.add(insertPos, newId) }
+        val keys = filtered.toMutableList().also { it.add(insertPos, newKey) }
 
         return Plan(
-            ids = ids,
+            keys = keys,
             currentIndex = safeRelocated,
             insertPos = insertPos,
             // 边界 6：原本就在队列别处 ⇒ 这是「搬过来」，不是「新增一首」。
@@ -217,32 +237,32 @@ object QueueInsert {
      * 错顺序的表现是「点了添加，下一首是别的歌」或「某首歌再也播不到」，
      * 而重洗一轮只是随机性变了一次。
      *
-     * @param oldIds 变更**前**的队列 id 序列
-     * @param newIds 变更**后**的队列 id 序列（= [Plan.ids]）
+     * @param oldKeys 变更**前**的队列**身份**序列
+     * @param newKeys 变更**后**的队列身份序列（= [Plan.keys]）
      * @param shuffled 变更前的乱序排列（旧下标）
      * @param newCurrentIndex 变更后的 `currentQueueIndex`
-     * @param insertPos 新歌在 [newIds] 里的下标
+     * @param insertPos 新歌在 [newKeys] 里的下标
      */
     fun shuffleAfterInsert(
-        oldIds: List<Long>,
-        newIds: List<Long>,
+        oldKeys: List<TrackKey>,
+        newKeys: List<TrackKey>,
         shuffled: List<Int>,
         newCurrentIndex: Int,
         insertPos: Int,
     ): List<Int>? {
         // 没有可修正的排列（空队列 / 尚未建立乱序）⇒ 交给调用方重新生成。
         if (shuffled.isEmpty()) return null
-        if (insertPos !in newIds.indices) return null
-        if (newCurrentIndex !in newIds.indices) return null
+        if (insertPos !in newKeys.indices) return null
+        if (newCurrentIndex !in newKeys.indices) return null
 
         // O(n) 反查表：队列可能有上千首，逐项 indexOf 会退化成 O(n²)。
-        val posById = HashMap<Long, Int>(newIds.size * 2)
-        for (i in newIds.indices) posById[newIds[i]] = i
+        val posByKey = HashMap<TrackKey, Int>(newKeys.size * 2)
+        for (i in newKeys.indices) posByKey[newKeys[i]] = i
 
         val shifted = ArrayList<Int>(shuffled.size)
         for (oldIdx in shuffled) {
-            val id = oldIds.getOrNull(oldIdx) ?: return null
-            val newIdx = posById[id] ?: return null
+            val key = oldKeys.getOrNull(oldIdx) ?: return null
+            val newIdx = posByKey[key] ?: return null
             // 被搬走的那一份：丢弃旧的落点，稍后统一插到当前位置之后。
             if (newIdx == insertPos) continue
             shifted.add(newIdx)
@@ -260,8 +280,8 @@ object QueueInsert {
         // 最后一道闸：结果必须是**恰好覆盖新队列每个下标一次**的排列。
         // 不满足就返回 null（重洗），绝不把一个缺项/重项的排列交给播放链路 ——
         // 那正是「某首歌再也播不到」或「同一首连播两次」的形状。
-        if (out.size != newIds.size) return null
-        if (out.toHashSet().size != newIds.size) return null
+        if (out.size != newKeys.size) return null
+        if (out.toHashSet().size != newKeys.size) return null
         return out
     }
 

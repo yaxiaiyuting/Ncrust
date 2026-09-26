@@ -47,9 +47,34 @@ val SongItem.mediaIdOrNull: String?
  *
  * **不能用 [SongItem.id] 单独判重**：QQ 音乐的数字 songid 与网易云的 songId 各自独立编号，
  * 撞号是迟早的事，撞上就是「点了 QQ 的歌，播放器跳到了网易云那首同名 id 的歌」。
+ *
+ * ## v2.5.3 · P1：从「另写一份」改成「就是 [TrackKey] 的那一份」
+ *
+ * 原先它是 `SourceIds.trackKey(musicSource, id)` —— 与 [TrackKey] **各算各的**，
+ * 区别在音源怎么定：这里信 `source` 字符串（缺失回落网易云），
+ * `TrackKey.of` 会再看 id 的 bit62 标志位。两份规则意味着
+ * 「同一个队列里，判重按一套、待播槽位按另一套」，正是 AGENTS.md 点名的形状。
+ *
+ * 现在改为 `TrackKey.ofSong(this).tag`：
+ *  · **判重的键与待播槽位/歌词闸门用的身份，由构造保证是同一个值**；
+ *  · `dedupeKey` 这个属性也**第一次真的接到了生产调用点**上
+ *    （v2.1.0 定义它、v2.1.0 加了守卫测试，但队列去重一直用的是裸 `song.id`）。
+ *
+ * 取值变化只发生在「id 带 QQ 标志位、而 `source` 字符串为空」这一种形态上：
+ * 旧值 `netease:<合成id>`，新值 `qqmusic:<合成id>`。这是**修正**（那确实是一首 QQ 曲目），
+ * 且因为 id 里的标志位使两者数值上仍不可能与任何真实网易云曲目相撞，
+ * 所以没有任何既有队列会因此判重失败。
  */
 val SongItem.dedupeKey: String
-    get() = trackKey
+    get() = trackKeyOf().tag
+
+/**
+ * v2.5.3 · P1：该曲在**队列里的身份**（[TrackKey.ofSong] 的扩展写法）。
+ *
+ * 队列的判重、重定位、待播槽位、随机模式全部走它 —— 见 `player/QueueKeys.kt`。
+ * **不要**在队列代码里直接写 `song.id`：那正是本版要收敛掉的东西。
+ */
+fun SongItem.trackKeyOf(): TrackKey = TrackKey.ofSong(this)
 
 /**
  * 从 `(source, id, sourceId)` 三件套构造一个 [SongItem]（只有 id 与来源，没有元数据）。

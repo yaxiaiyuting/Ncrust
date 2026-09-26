@@ -110,9 +110,43 @@ data class TrackKey(
             return TrackKey(source, id, sourceId, mediaId)
         }
 
-        /** 从队列里的 [SongItem] 取身份（播放/预载两条路都用它，保证同源）。 */
+        /**
+         * 从队列里的 [SongItem] 取身份（播放/预载两条路都用它，保证同源）。
+         *
+         * ⚠️ **新代码请优先用 [ofSong]**：本函数信 [`SongItem.musicSource`]（那个
+         * **字符串**字段），字符串缺失时一律回落网易云。而队列条目确实存在
+         * 「id 带 QQ 标志位、source 字符串丢了」的形态（搜索结果进历史记录那条路
+         * 只存得下 id，见 `SearchHistoryManager.HistoryItem`），此时本函数会把一首
+         * QQ 曲目认成网易云。v2.1.5 之前它只用在「取词/取链」上，认错会明确失败；
+         * v2.5.3 起队列**判重**也要用身份，认错音源就是认错歌，所以改了默认选择。
+         *
+         * 保留它是因为它的语义（只看显式声明）本身没有错，
+         * 只是不该当默认 —— 既有测试与文档仍在引用它。
+         */
         fun fromSong(song: SongItem): TrackKey =
             TrackKey(song.musicSource, song.id, song.sourceId, song.mediaId)
+
+        /**
+         * **v2.5.3 · P1：`SongItem` → 身份的唯一落点**
+         * （队列判重、待播槽位、随机模式的共同入口）。
+         *
+         * 与 [fromSong] 的唯一区别在音源怎么定：这里走 [of]，
+         * 于是 `source` 字符串为空时会先看 id 有没有 QQ 的 bit62 标志位
+         * （[SourceIds.sourceOfId]）—— **只存得下裸 id 的持久化路径恢复出来的曲目，
+         * 因此不会被当成网易云的同号歌曲**。
+         *
+         * 三条理由，按重要性：
+         *  1. **结构性优先于声明性**：bit62 是 id 自带的、不会在序列化里丢；
+         *     `source` 字符串会在「只存 id」的历史路径上丢。拿不会丢的那个当默认，
+         *     错判面更小。
+         *  2. **与既有语义一致**：[TrackKey.of] 从 v2.1.5 起就是这么定的
+         *     （`PlaybackStateManager` 的续播恢复走的正是它）。队列判重跟上它之后，
+         *     整条链路只剩**一套**身份规则。
+         *  3. **不改变正常路径的行为**：`source` 有值时 [of] 以它为准，
+         *     所以网易云曲目、以及任何显式标了音源的 QQ 曲目，取值与 [fromSong] 完全相同。
+         */
+        fun ofSong(song: SongItem): TrackKey =
+            of(song.source, song.id, song.sourceId, song.mediaId)
 
         /**
          * 从 media3 的 `MediaItem.mediaId` 反解身份（v2.1.5）。
