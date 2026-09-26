@@ -1,0 +1,14 @@
+# versionCode 三源交叉校验（v2.5.4）
+
+## 1) tools/next-version.sh（带 fetch，铁律 9）
+  Ncrust-v2.5.3-gpl-release.apk	44
+
+==========================================
+  MAX versionCode (所有来源) = 44   [Ncrust-v2.5.3-gpl-debug.apk]
+  下一个可用 versionCode     = 45
+==========================================
+
+## 2) APK badging（产物自证）
+package: name='com.takahashirinta.ncrust' versionCode='45' versionName='2.5.4-gpl' platformBuildVersionName='16' platformBuildVersionCode='36' compileSdkVersion='36' compileSdkVersionCodename='16'
+
+## 3) git tag 指向的 build.gradle.kts（打 tag 后回填）
