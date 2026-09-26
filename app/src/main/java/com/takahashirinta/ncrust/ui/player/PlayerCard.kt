@@ -265,12 +265,18 @@ fun PlayerCard(
         else PlayerLayout.coverFallbackSizePx(screenWidthPx, screenHeightPx)
     } else screenWidthPx
     val coverSizeDp = with(density) { coverSizePx.toDp() }
-    val miniCoverHalfPx = with(density) { 28.dp.toPx() }
+    // ---- v2.5.5 · C：托盘几何全部由 TrayLayout 派生（唯一落点）----
+    // 托盘从 56dp 加到 80dp 时，这一组常量是「封面落点忘记跟着改」的现场：
+    // 旧写法 `miniCoverHalfPx = 28.dp` 隐含了「托盘高 == 封面高」这个前提，
+    // 托盘加高之后封面中心会偏上 12dp。现在中心显式取**托盘中心**
+    // （`statusBar + HEIGHT/2`），且封面尺寸是独立的 56dp 定值 —— 两者不再耦合。
+    // 公式在旧值（HEIGHT=COVER=56）上退化为 `statusBar + 28dp`，与旧实现逐值相同。
+    val miniCoverHalfPx = with(density) { TrayLayout.coverHalfDp().dp.toPx() }
     val miniScale = miniCoverHalfPx * 2f / coverSizePx
     val statusBarPx = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
         .let { with(density) { it.toPx() } }
     val miniCoverCenterX = miniCoverHalfPx
-    val miniCoverCenterY = statusBarPx + miniCoverHalfPx
+    val miniCoverCenterY = statusBarPx + with(density) { TrayLayout.coverCenterOffsetDp().dp.toPx() }
     val largeCoverCenterX = if (usesSideCover) wideCoverCenter.x else screenWidthPx / 2f
     val largeCoverCenterY = if (usesSideCover) wideCoverCenter.y else screenHeightPx * 0.3f + dp24px
     val boundsCenter = coverSizePx / 2f
@@ -1359,11 +1365,17 @@ fun PlayerCard(
         }
 
         // 迷你播放栏叠加层：始终在 Composition 中，透明度仅在绘制阶段控制，避免动画期间触发重组
+        //
+        // v2.5.5 · C：高度 56 → `TrayLayout.HEIGHT_DP`（80dp）—— 三层文本（歌词 / 歌名 /
+        // 作者·音源）的排版盒合计 56dp，56dp 的托盘上下各只剩 0dp 留白（真机实测，
+        // 见 docs/verification/v2.5.5/probe-tray-regression.md §3）。
+        // 这个高度有**三个**消费者（本行 / MainActivity.collapsedOffsetY / BottomOverlayInsetDp），
+        // 所以它只有 TrayLayout 一个定义处。
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .statusBarsPadding()
-                .height(56.dp)
+                .height(TrayLayout.HEIGHT_DP.dp)
                 .then(
                     // 暂无播放（hasSong=false）时不可点击展开，避免空白播放器被拉起。
                     if (miniBarEnabled && hasSong) Modifier.clickable(
@@ -1391,7 +1403,13 @@ fun PlayerCard(
                 if (hasSong) {
                     val s = song!!
                     // 唯一封面 overlay 会落到这个方形占位处（窄屏与宽屏一致）。
-                    Spacer(modifier = Modifier.fillMaxHeight().aspectRatio(1f))
+                    //
+                    // v2.5.5 · C：占位从「与托盘等高」改成 TrayLayout 的**定值 56dp**
+                    // （托盘本身已涨到 80dp）。Row 的 CenterVertically 让它垂直居中，
+                    // 中心点与 miniCoverCenterY = statusBar + HEIGHT/2 逐像素一致。
+                    // 若仍用 fillMaxHeight().aspectRatio(1f)，封面会变成 80dp，
+                    // 在 360dp 窄屏上把文本列再挤掉 24dp（136 → 112dp），而封面并不需要它。
+                    Spacer(modifier = Modifier.size(TrayLayout.COVER_SIZE_DP.dp))
                     Column(
                         modifier = Modifier
                             .weight(1f)
@@ -1435,25 +1453,42 @@ fun PlayerCard(
                                     showLyrics = true
                                 }
                         )
-                        // ===== 第二行：歌名 · 作者 · 音源（v2.5.4 · E）=====
+                        // ===== 第二行：歌名（v2.5.5 · C：独占一行）=====
                         //
-                        // 三个视觉层级：歌名是主视觉（bodyMedium + 主文本色）、
-                        // 作者是次要且**可点进艺人页**、音源是角标（定宽不参与省略）。
-                        // 歌名不做成独立点击区：整条托盘的点击本来就是「展开播放器」，
+                        // v2.5.4 里歌名与作者/音源挤在同一行、三者各带 `weight(1f, fill = false)`，
+                        // 于是「谁被省略」取决于服务端返回的字符串长度 —— 长歌名会把作者挤成
+                        // 一个字。三层布局把歌名**独占**一行，它不再与任何东西抢宽度。
+                        //
+                        // 歌名**不做成独立点击区**：整条托盘的点击本来就是「展开播放器」，
                         // 给它再包一层同名行为的 clickable 只会多一个命中层
                         // （见 AGENTS.md 触摸陷阱第 5/6 条：多出来的命中层是最难查的一类问题）。
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            MetroText(
-                                s.name,
-                                color = LocalMetroColors.current.onBackground,
-                                style = LocalMetroTypography.current.bodyMedium,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier.weight(1f, fill = false)
-                            )
+                        // 「点歌名 → 展开播放器」由外层 Box 的 clickable 承载，行为逐字相同。
+                        Spacer(Modifier.height(TrayLayout.LINE_GAP_DP.dp))
+                        MetroText(
+                            s.name,
+                            color = LocalMetroColors.current.onBackground,
+                            style = LocalMetroTypography.current.bodyMedium,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        // ===== 第三行：作者（左）… 音源（右）（v2.5.5 · C）=====
+                        //
+                        // 左右对齐靠两个 `weight(1f)` 之间的 `Spacer` 撑开：作者的 weight
+                        // 让它吃掉「作者名之后的全部剩余宽度」，音源角标因此永远贴右。
+                        // v2.5.4 是两段相邻的 `weight(1f, fill = false)`，中间没有撑开物，
+                        // 角标实际贴在作者名后面（真机截图可见：`苏谭谭QQ音乐` 之间只有 6dp）。
+                        //
+                        // 音源角标**不加 clickable** —— 判据见 probe-tray-layout.md §6.1
+                        // （跨源换播需要跨源身份，v2.3.0 已判决接口里没有；「看信息」与
+                        // onSongInfoClick 语义重叠；「切默认音源」是设置页的职责）。
+                        Spacer(Modifier.height(TrayLayout.LINE_GAP_DP.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
                             val artist = s.artists?.firstOrNull()
                             if (artist != null) {
-                                Spacer(Modifier.width(6.dp))
                                 MetroText(
                                     artist.name,
                                     color = LocalMetroColors.current.onSurfaceVariant,
@@ -1461,7 +1496,7 @@ fun PlayerCard(
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
                                     modifier = Modifier
-                                        .weight(1f, fill = false)
+                                        .weight(1f)
                                         .clickable(
                                             interactionSource = remember { MutableInteractionSource() },
                                             indication = null,
@@ -1472,6 +1507,10 @@ fun PlayerCard(
                                             if (id != null && id > 0L) onArtistClick(id) else onSongInfoClick()
                                         }
                                 )
+                            } else {
+                                // 没有艺人信息时也要占住左半边，否则音源角标会滑到最左 ——
+                                // 「右对齐」是布局契约，不该随数据缺失而变。
+                                Spacer(Modifier.weight(1f))
                             }
                             // v2.1.0 · F：音源角标（折叠态 mini bar，两个音源都标）。同字号
                             // （bodySmall）+ 次要色，与列表行逐像素同款；角标定宽、歌手让位省略。
@@ -1485,25 +1524,62 @@ fun PlayerCard(
                             )
                         }
                     }
+                    // ===== 控制区：上一首 / 播放暂停 / 下一首（v2.5.5 · C）=====
+                    //
+                    // 铁律 19：三个按钮都是核心功能，缺一个属 P0 回归。
+                    // **上一首是本版补的** —— 探针证明它从来没有在托盘里存在过
+                    // （`git log -S "SkipPrevious" -- PlayerCard.kt` 零命中；v2.5.3 的托盘
+                    // 也只有 play/pause 与 next），所以这不是「回归修复」而是「补功能」。
+                    // 定性与证据见 docs/verification/v2.5.5/probe-tray-regression.md §0。
+                    //
+                    // 顺序走 TrayLayout.controls（PREVIOUS / PLAY_PAUSE / NEXT），
+                    // 由 TrayLayoutTest 断言存在性、顺序与「一个都不能少」。
+                    //
+                    // 收起态才挂载：展开态三个按钮若仍在，会与歌词面板的字号按钮抢命中区
+                    // （AGENTS.md 触摸陷阱第 4 条：隐藏必须走「不挂载」）。
                     if (miniBarEnabled) {
+                        val onBackground = LocalMetroColors.current.onBackground
+                        // 上一首
+                        MetroIconButton(onClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            onPlayPrevious()
+                        }) {
+                            MetroIcon(
+                                imageVector = Icons.Default.SkipPrevious,
+                                // 无障碍：三个图标按钮只有形状可辨，contentDescription 是
+                                // TalkBack 用户唯一的识别途径（旧代码两个按钮都传 null，
+                                // 是既有缺口，本版一并补上）。
+                                contentDescription = strings.prevButton,
+                                tint = onBackground
+                            )
+                        }
+                        // 播放 / 暂停
                         MetroIconButton(onClick = {
                             haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                             onPlayPause()
                         }) {
                             MetroIcon(
                                 imageVector = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
-                                contentDescription = null,
-                                tint = LocalMetroColors.current.onBackground
+                                contentDescription = if (isPlaying) strings.pauseButton else strings.playButton,
+                                tint = onBackground
                             )
                         }
+                        // 下一首
                         MetroIconButton(onClick = {
                             haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                             onPlayNext()
                         }) {
-                            MetroIcon(Icons.Default.SkipNext, null, tint = LocalMetroColors.current.onBackground)
+                            MetroIcon(
+                                imageVector = Icons.Default.SkipNext,
+                                contentDescription = strings.nextButton,
+                                tint = onBackground
+                            )
                         }
                     } else {
-                        Spacer(modifier = Modifier.width(96.dp))
+                        // 展开态：文本列可用宽度必须与收起态**逐像素相同**，
+                        // 否则展开/收起动画会让文字重排。宽度由 TrayLayout 派生
+                        // （旧实现写死 96.dp = 两个按钮，加第三个按钮后会少 48dp）。
+                        Spacer(modifier = Modifier.width(TrayLayout.controlsPlaceholderWidthDp().dp))
                     }
                 } else {
                     // 暂无播放: 卡片仍不可拉起(保持既有约束), 但给一个播放键

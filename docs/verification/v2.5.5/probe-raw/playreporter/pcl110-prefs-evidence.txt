@@ -1,0 +1,23 @@
+# PCL110 落盘状态证据（探针开始前，2026-09-26 18:32:xx 采集）
+# 命令：adb -s 3B15CD00GB700000 shell su -c 'cat /data/data/com.takahashirinta.ncrust/shared_prefs/ncrust_playback_state.xml'
+# 只摘录与「当前曲身份」有关的字段；该文件里的 queue（1073 首 JSON）未收录。
+# 同一目录下的 ncrust_prefs.xml / ncrust_qq_prefs.xml 含登录凭证，**未采集、未收录**。
+
+<string name="song_media_id">000g0rin0v8VU2</string>
+<string name="song_name">怪我太天真</string>
+<string name="song_source">qqmusic</string>
+<long name="song_id" value="4611686018784987997" />
+<string name="song_artist">苏谭谭</string>
+<boolean name="is_playing" value="false" />
+<int name="play_mode" value="2" />
+<string name="song_source_id">001A7neE3LB7Ki</string>
+<int name="queue_index" value="228" />
+<boolean name="has_state" value="true" />
+
+# 同一时刻 S6（0715f763f54c023a）的对照：当前曲是网易云（bit62 未置位；该机 prefs 由 v2.5.4 之前的会话写入，没有 source_id/media_id 键）
+<long name="song_id" value="557920" />
+<boolean name="is_playing" value="false" />
+<boolean name="has_state" value="true" />
+<string name="song_source">netease</string>
+<string name="song_artist">arlie Ray</string>
+<string name="song_name">终わる世界 - 主よ、人の望みの喜びよ (Original Japanese Version)</string>

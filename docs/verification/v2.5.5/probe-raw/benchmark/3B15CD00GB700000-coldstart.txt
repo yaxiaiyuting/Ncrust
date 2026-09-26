@@ -1,0 +1,57 @@
+== coldstart_probe.sh serial=3B15CD00GB700000 n=5 date=2026-09-26T18:35:45+08:00 ==
+--- run 1
+$ am force-stop
+$ am start -W -n com.takahashirinta.ncrust/.MainActivity
+Starting: Intent { cmp=com.takahashirinta.ncrust/.MainActivity }
+Status: ok
+LaunchState: COLD
+Activity: com.android.permissioncontroller/.permission.ui.GrantPermissionsActivity
+TotalTime: 436
+WaitTime: 451
+Complete
+[exit=0]
+--- run 2
+$ am force-stop
+$ am start -W -n com.takahashirinta.ncrust/.MainActivity
+Starting: Intent { cmp=com.takahashirinta.ncrust/.MainActivity }
+Status: ok
+LaunchState: COLD
+Activity: com.android.permissioncontroller/.permission.ui.GrantPermissionsActivity
+TotalTime: 462
+WaitTime: 470
+Complete
+[exit=0]
+--- run 3
+$ am force-stop
+$ am start -W -n com.takahashirinta.ncrust/.MainActivity
+Starting: Intent { cmp=com.takahashirinta.ncrust/.MainActivity }
+Status: ok
+LaunchState: COLD
+Activity: com.android.permissioncontroller/.permission.ui.GrantPermissionsActivity
+TotalTime: 524
+WaitTime: 536
+Complete
+[exit=0]
+--- run 4
+$ am force-stop
+$ am start -W -n com.takahashirinta.ncrust/.MainActivity
+Starting: Intent { cmp=com.takahashirinta.ncrust/.MainActivity }
+Status: ok
+LaunchState: COLD
+Activity: com.android.permissioncontroller/.permission.ui.GrantPermissionsActivity
+TotalTime: 476
+WaitTime: 488
+Complete
+[exit=0]
+--- run 5
+$ am force-stop
+$ am start -W -n com.takahashirinta.ncrust/.MainActivity
+Starting: Intent { cmp=com.takahashirinta.ncrust/.MainActivity }
+Status: ok
+LaunchState: COLD
+Activity: com.android.permissioncontroller/.permission.ui.GrantPermissionsActivity
+TotalTime: 445
+WaitTime: 457
+Complete
+[exit=0]
+== done ==

@@ -1,0 +1,18 @@
+== 生成时间 2026-09-26T18:40:03+08:00 ==
+$ javap -cp gradle-api-8.5.1.jar com.android.build.api.dsl.TestExtension
+Compiled from "TestExtension.kt"
+public interface com.android.build.api.dsl.TestExtension extends com.android.build.api.dsl.CommonExtension<com.android.build.api.dsl.TestBuildFeatures, com.android.build.api.dsl.TestBuildType, com.android.build.api.dsl.TestDefaultConfig, com.android.build.api.dsl.TestProductFlavor, com.android.build.api.dsl.TestAndroidResources, com.android.build.api.dsl.TestInstallation> {
+  public abstract java.lang.String getTargetProjectPath();
+  public abstract void setTargetProjectPath(java.lang.String);
+  public abstract com.android.build.api.dsl.PrivacySandbox getPrivacySandbox();
+  public abstract void privacySandbox(kotlin.jvm.functions.Function1<? super com.android.build.api.dsl.PrivacySandbox, kotlin.Unit>);
+}
+
+$ javap -cp gradle-api-8.5.1.jar com.android.build.api.dsl.TestBuildType | head
+Compiled from "TestBuildType.kt"
+public interface com.android.build.api.dsl.TestBuildType extends com.android.build.api.dsl.BuildType,com.android.build.api.dsl.TestVariantDimension {
+  public abstract boolean isDebuggable();
+  public abstract void setDebuggable(boolean);
+  public abstract java.lang.Boolean isCrunchPngs();
+  public abstract void setCrunchPngs(java.lang.Boolean);
+}

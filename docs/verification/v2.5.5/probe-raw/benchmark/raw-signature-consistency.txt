@@ -1,0 +1,16 @@
+== 签名一致性：本地 v2.5.4 release APK vs 设备上已安装的 base.apk ==
+$ apksigner verify --print-certs /home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build/outputs/apk/release/app-release.apk
+Signer #1 certificate DN: CN=Ncrust GPL Fork, OU=Personal, O=yaxiaiyuting, L=Unknown, ST=Unknown, C=CN
+Signer #1 certificate SHA-256 digest: e75af3ffbcf76a36a567188d88d132adf3c7484c53c20a3a083cb1d222025511
+
+--- device 3B15CD00GB700000 path=/data/app/~~tjEO5kYAXcVVLXm58x8bVQ==/com.takahashirinta.ncrust-JX3C3ekT381bnjz1bU92kQ==/base.apk
+$ apksigner verify --print-certs /tmp/installed-3B15CD00GB700000.apk
+Signer #1 certificate DN: CN=Ncrust GPL Fork, OU=Personal, O=yaxiaiyuting, L=Unknown, ST=Unknown, C=CN
+Signer #1 certificate SHA-256 digest: e75af3ffbcf76a36a567188d88d132adf3c7484c53c20a3a083cb1d222025511
+-rw-r--r-- 1 duanjb666 duanjb666 10042824  9月26日 18:40 /tmp/installed-3B15CD00GB700000.apk
+
+--- device 0715f763f54c023a path=/data/app/com.takahashirinta.ncrust-1/base.apk
+$ apksigner verify --print-certs /tmp/installed-0715f763f54c023a.apk
+Signer #1 certificate DN: CN=Ncrust GPL Fork, OU=Personal, O=yaxiaiyuting, L=Unknown, ST=Unknown, C=CN
+Signer #1 certificate SHA-256 digest: e75af3ffbcf76a36a567188d88d132adf3c7484c53c20a3a083cb1d222025511
+-rw-r--r-- 1 duanjb666 duanjb666 10042824  9月26日 18:40 /tmp/installed-0715f763f54c023a.apk

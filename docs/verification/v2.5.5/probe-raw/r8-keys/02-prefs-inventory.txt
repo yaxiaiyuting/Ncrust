@@ -1,0 +1,188 @@
+# 命令: grep -rn 'PREFS\w* = "|PREFS_NAME = "|getSharedPreferences|put*(...)' app/src/main/java/com/takahashirinta/ncrust/
+./auth/CookieManager.kt:7:    private const val PREFS_NAME = "ncrust_prefs"
+./auth/NeteaseVipStore.kt:62:    private const val PREFS = "ncrust_netease_vip"
+./cache/HomeSnapshot.kt:39:    private const val PREFS_NAME = "ncrust_home_cache"
+./cache/OfflineAudioCache.kt:59:    private const val PREFS = "ncrust_settings"
+./cache/OfflineLibrary.kt:176:    private const val PREFS = "ncrust_offline"
+./cache/OfflineUrlStore.kt:107:    private const val PREFS = "ncrust_offline"
+./crosssource/MatchCacheStore.kt:45:    const val PREFS = "ncrust_match_cache"
+./KeepScreenOnSetting.kt:32:    private const val PREFS = "ncrust_settings"
+./library/LibraryManager.kt:49:    private const val PREFS_NAME = "ncrust_library"
+./library/SearchHistoryManager.kt:36:    private const val PREFS_NAME = "search_history"
+./local/LocalPlaylistStore.kt:56:    const val PREFS = "ncrust_local_playlists"
+./lyric/LyricsCache.kt:63:    private const val PREFS = "ncrust_lyrics_cache"
+./lyric/LyricsDisplayPrefs.kt:65:    const val PREFS_NAME = "ncrust_settings"
+./network/ClientIdentity.kt:23:    private const val PREFS = "ncrust_device"
+./player/LiveUpdateNotifier.kt:54:    private const val PREFS = "ncrust_settings"
+./player/PlaybackStateManager.kt:29:    private const val PREFS_NAME = "ncrust_playback_state"
+./player/QualityLadder.kt:26:    const val PREFS = "ncrust_settings"
+./qq/QqAuthStore.kt:62:    const val PREFS = "ncrust_qq_prefs"
+./qq/QqIdentity.kt:32:    private const val PREFS = "ncrust_qq_prefs"
+./qq/QqPlaylistStore.kt:52:    const val PREFS = "ncrust_qq_playlists"
+./qq/QqProbeStore.kt:40:    private const val PREFS = "ncrust_qq_probe"
+./reco/ArtistReco.kt:40:    private const val PREFS = "ncrust_settings"
+./RotationSetting.kt:38:    private const val PREFS = "ncrust_settings"
+./ui/i18n/LanguageManager.kt:25:private const val PREFS_NAME = "ncrust_settings"
+./ui/player/AudioVisualizer.kt:37:    private const val PREFS = "ncrust_settings"
+./ui/theme/AccentSource.kt:26:private const val PREFS_NAME = "ncrust_settings"
+./ui/theme/BackgroundImageManager.kt:38:    private const val PREFS = "ncrust_settings"
+./ui/theme/PageTransitionSetting.kt:65:    const val PREFS = "ncrust_settings"
+./ui/theme/ThemeManager.kt:38:private const val PREFS_NAME = "ncrust_settings"
+
+## getSharedPreferences 调用点
+./auth/CookieManager.kt:11:        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+./auth/NeteaseVipStore.kt:77:        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+./cache/HomeSnapshot.kt:56:        context.applicationContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+./cache/OfflineAudioCache.kt:69:                .getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+./cache/OfflineAudioCache.kt:88:            context.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+./cache/OfflineLibrary.kt:186:            val prefs = context.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+./cache/OfflineLibrary.kt:195:            context.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+./cache/OfflineUrlStore.kt:117:            val prefs = context.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+./cache/OfflineUrlStore.kt:126:            context.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+./crosssource/MatchCacheStore.kt:56:        context.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+./KeepScreenOnSetting.kt:64:        context.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+./library/LibraryManager.kt:87:        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+./library/SearchHistoryManager.kt:148:        val json = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+./library/SearchHistoryManager.kt:154:        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+./local/LocalPlaylistStore.kt:69:        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+./lyric/LyricsCache.kt:113:        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
+./lyric/LyricsCache.kt:90:        val raw = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+./MainActivity.kt:379:                        getSharedPreferences("ncrust_settings", 0)
+./NcrustApplication.kt:40:        QualityLadder.migrate(getSharedPreferences(QualityLadder.PREFS, Context.MODE_PRIVATE))
+./network/ClientIdentity.kt:46:        val prefs = context.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+./player/LiveUpdateNotifier.kt:61:            context.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+./player/PlaybackService.kt:1405:        get() = getSharedPreferences("ncrust_settings", 0)
+./player/PlaybackService.kt:880:        val prefs = getSharedPreferences("ncrust_settings", 0)
+./player/PlaybackStateManager.kt:259:                ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit()
+./player/PlaybackStateManager.kt:71:        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+./qq/QqAuthStore.kt:75:        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+./qq/QqIdentity.kt:48:        val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+./qq/QqPlaylistStore.kt:77:        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+./qq/QqProbeStore.kt:61:        context.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+./reco/ArtistReco.kt:70:    private fun prefs(ctx: Context) = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+./RotationSetting.kt:76:        context.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+./ui/i18n/LanguageManager.kt:29:    context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+./ui/i18n/LanguageManager.kt:33:    context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+./ui/player/AudioVisualizer.kt:73:        context.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+./ui/player/LyricsView.kt:218:            context.getSharedPreferences(
+./ui/screen/UserScreen.kt:144:    val prefs = remember { context.getSharedPreferences("ncrust_settings", 0) }
+./ui/theme/AccentSource.kt:34:    val raw = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+./ui/theme/AccentSource.kt:40:    context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+./ui/theme/BackgroundImageManager.kt:57:        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getBoolean(KEY_ENABLED, false) &&
+./ui/theme/BackgroundImageManager.kt:61:        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+./ui/theme/PageTransitionSetting.kt:124:        context.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+./ui/theme/ThemeManager.kt:44:    val raw = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+./ui/theme/ThemeManager.kt:50:    context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+./ui/theme/ThemeManager.kt:60:    return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+./ui/theme/ThemeManager.kt:68:    context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+./ui/viewmodel/PlayerViewModel.kt:1020:        val prefs = getApplication<Application>().getSharedPreferences("ncrust_settings", 0)
+./ui/viewmodel/PlayerViewModel.kt:1065:        val prefs = getApplication<Application>().getSharedPreferences("ncrust_settings", 0)
+./ui/viewmodel/PlayerViewModel.kt:1124:        val prefs = getApplication<Application>().getSharedPreferences("ncrust_settings", 0)
+./ui/viewmodel/PlayerViewModel.kt:1576:                val prefs = getApplication<Application>().getSharedPreferences("ncrust_settings", 0)
+./ui/viewmodel/PlayerViewModel.kt:494:                .getSharedPreferences(LyricsDisplayPrefs.PREFS_NAME, android.content.Context.MODE_PRIVATE)
+./ui/viewmodel/PlayerViewModel.kt:497:            .getSharedPreferences("ncrust_settings", 0)
+./ui/viewmodel/PlayerViewModel.kt:502:                .getSharedPreferences(LyricsDisplayPrefs.PREFS_NAME, android.content.Context.MODE_PRIVATE)
+./ui/viewmodel/PlayerViewModel.kt:507:                .getSharedPreferences(LyricsDisplayPrefs.PREFS_NAME, android.content.Context.MODE_PRIVATE)
+./ui/viewmodel/PlayerViewModel.kt:511:            .getSharedPreferences("ncrust_settings", 0)
+./ui/viewmodel/PlayerViewModel.kt:515:            .getSharedPreferences(LyricsDisplayPrefs.PREFS_NAME, android.content.Context.MODE_PRIVATE)
+./ui/viewmodel/PlayerViewModel.kt:775:        val prefs = getApplication<Application>().getSharedPreferences("ncrust_settings", 0)
+./ui/viewmodel/PlayerViewModel.kt:789:                .getSharedPreferences(LyricsDisplayPrefs.PREFS_NAME, android.content.Context.MODE_PRIVATE),
+./ui/viewmodel/PlayerViewModel.kt:805:                .getSharedPreferences(LyricsDisplayPrefs.PREFS_NAME, android.content.Context.MODE_PRIVATE),
+./ui/viewmodel/PlayerViewModel.kt:819:            .getSharedPreferences("ncrust_settings", android.content.Context.MODE_PRIVATE)
+./ui/viewmodel/PlayerViewModel.kt:839:                    .getSharedPreferences(LyricsDisplayPrefs.PREFS_NAME, android.content.Context.MODE_PRIVATE),
+./ui/viewmodel/PlayerViewModel.kt:852:        getApplication<Application>().getSharedPreferences("ncrust_settings", 0)
+./ui/viewmodel/PlayerViewModel.kt:864:                .getSharedPreferences(LyricsDisplayPrefs.PREFS_NAME, android.content.Context.MODE_PRIVATE),
+./ui/viewmodel/PlayerViewModel.kt:877:                .getSharedPreferences(LyricsDisplayPrefs.PREFS_NAME, android.content.Context.MODE_PRIVATE),
+./ui/viewmodel/PlayerViewModel.kt:904:        .getSharedPreferences(LyricsDisplayPrefs.PREFS_NAME, Context.MODE_PRIVATE)
+./ui/viewmodel/PlayerViewModel.kt:975:        val prefs = getApplication<Application>().getSharedPreferences("ncrust_settings", 0)
+./warmup/AppWarmup.kt:100:        // SharedPreferences 按 name 单例，首次 getSharedPreferences 会同步读磁盘+解析 XML
+./warmup/AppWarmup.kt:105:                runCatching { app.getSharedPreferences(name, Context.MODE_PRIVATE) }
+./warmup/AppWarmup.kt:82:    // 全部 SharedPreferences 文件名——IO 线程一次性触碰，让主线程 getSharedPreferences 命中缓存。
+
+## 写入点（值表达式）
+./auth/CookieManager.kt:15:        getPrefs(context).edit().putString(KEY_COOKIE, cookie).apply()
+./auth/NeteaseVipStore.kt:103:            .putInt(KEY_IS_VIP, if (level > 0) 1 else 0)
+./auth/NeteaseVipStore.kt:104:            .putInt(KEY_LEVEL, level)
+./auth/NeteaseVipStore.kt:105:            .putLong(KEY_CHECKED_AT, System.currentTimeMillis())
+./cache/HomeSnapshot.kt:79:                    ?.let { editor.putString(KEY_DAILY, gson.toJson(it.take(MAX_ITEMS), songListType)) }
+./cache/HomeSnapshot.kt:81:                    ?.let { editor.putString(KEY_PLAYLISTS, gson.toJson(it.take(MAX_ITEMS), cardListType)) }
+./cache/HomeSnapshot.kt:83:                    ?.let { editor.putString(KEY_NEW_SONGS, gson.toJson(it.take(MAX_ITEMS), songListType)) }
+./cache/HomeSnapshot.kt:85:                    ?.let { editor.putString(KEY_TOPLISTS, gson.toJson(it.take(MAX_ITEMS), cardListType)) }
+./cache/HomeSnapshot.kt:86:                editor.putLong(KEY_SAVED_AT, System.currentTimeMillis())
+./cache/OfflineAudioCache.kt:89:                .edit().putInt(KEY_MAX_MB, mb).apply()
+./cache/OfflineLibrary.kt:196:                .edit().putString(KEY_TRACKS, idx.toJson()).apply()
+./cache/OfflineUrlStore.kt:127:                .edit().putString(KEY_URLS, idx.toJson()).apply()
+./crosssource/MatchCacheStore.kt:190:                .putString(key, value)
+./crosssource/MatchCacheStore.kt:191:                .putInt(KEY_SCHEMA, MatchCacheCodec.SCHEMA_VERSION)
+./KeepScreenOnSetting.kt:53:        prefs(context).edit().putBoolean(KEY, enabled).apply()
+./library/LibraryManager.kt:163:                .putString(KEY_SONGS, gson.toJson(songsSnapshot))
+./library/LibraryManager.kt:164:                .putString(KEY_ALBUMS, gson.toJson(albumsSnapshot))
+./library/LibraryManager.kt:165:                .putString(KEY_LIKED_IDS, gson.toJson(likedIdsSnapshot))
+./library/SearchHistoryManager.kt:155:            .edit().putString(key, SearchHistoryCodec.encode(items)).apply()
+./local/LocalPlaylistStore.kt:107:            .putString(tracksKey(key), LocalPlaylistCodec.encodeTracks(bounded))
+./local/LocalPlaylistStore.kt:89:            .putString(KEY_PLAYLISTS, LocalPlaylistCodec.encodePlaylists(kept))
+./lyric/LyricsCache.kt:114:            .putString(KEY_ENTRIES, gson.toJson(map))
+./lyric/LyricsDisplayPrefs.kt:142:        prefs.edit().putInt(KEY_WORD_ANIMATION, migrated).apply()
+./lyric/LyricsDisplayPrefs.kt:147:        prefs.edit().putInt(KEY_WORD_ANIMATION, LyricsWordAnimationMode.normalize(mode)).apply()
+./lyric/LyricsDisplayPrefs.kt:156:        prefs.edit().putInt(KEY_SWEEP_QUALITY, LyricsSweepQuality.normalize(quality)).apply()
+./lyric/LyricsDisplayPrefs.kt:169:        prefs.edit().putBoolean(KEY_TTML_ENABLED, enabled).apply()
+./lyric/LyricsDisplayPrefs.kt:176:        prefs.edit().putBoolean(KEY_TTML_FIRST, first).apply()
+./lyric/LyricsDisplayPrefs.kt:190:        prefs.edit().putBoolean(KEY_ROMANIZATION, enabled).apply()
+./lyric/LyricsDisplayPrefs.kt:198:        prefs.edit().putBoolean(KEY_DYNAMIC_FONT, enabled).apply()
+./lyric/LyricsDisplayPrefs.kt:208:        prefs.edit().putFloat(KEY_FONT_SCALE, scale.coerceIn(FONT_SCALE_MIN, FONT_SCALE_MAX)).apply()
+./MainActivity.kt:392:                                batteryPrefs.edit().putBoolean("battery_prompt_done", true).apply()
+./MainActivity.kt:403:                                batteryPrefs.edit().putBoolean("battery_prompt_done", true).apply()
+./network/ClientIdentity.kt:49:            prefs.edit().putString(KEY_DEVICE_ID, it).apply()
+./player/LiveUpdateNotifier.kt:65:            prefs.edit().putBoolean("live_update_probed", true).apply()
+./player/PlaybackStateManager.kt:105:        getPrefs(context).edit().putBoolean(KEY_IS_PLAYING, isPlaying).apply()
+./player/PlaybackStateManager.kt:220:                getPrefs(context).edit().putString(KEY_SONG_POSITIONS, json).apply()
+./player/PlaybackStateManager.kt:260:                    .putString(KEY_QUEUE, json)
+./player/PlaybackStateManager.kt:261:                    .putInt(KEY_QUEUE_INDEX, index)
+./player/PlaybackStateManager.kt:300:        getPrefs(context).edit().putInt(KEY_PLAY_MODE, mode).apply()
+./player/PlaybackStateManager.kt:87:            .putBoolean(KEY_HAS_STATE, true)
+./player/PlaybackStateManager.kt:88:            .putLong(KEY_SONG_ID, songId)
+./player/PlaybackStateManager.kt:89:            .putString(KEY_SONG_NAME, title)
+./player/PlaybackStateManager.kt:90:            .putString(KEY_SONG_ARTIST, artist)
+./player/PlaybackStateManager.kt:91:            .putString(KEY_SONG_ARTWORK, artwork)
+./player/PlaybackStateManager.kt:92:            .putBoolean(KEY_IS_PLAYING, isPlaying)
+./player/PlaybackStateManager.kt:93:            .putString(KEY_SONG_SOURCE, sourceKey)
+./player/PlaybackStateManager.kt:94:            .putString(KEY_SONG_SOURCE_ID, sourceId)
+./player/PlaybackStateManager.kt:95:            .putString(KEY_SONG_MEDIA_ID, mediaId)
+./player/QualityLadder.kt:59:            if (old >= OLD_INDEX_FIRST_SHIFTED) edit.putInt(key, old + 1)
+./player/QualityLadder.kt:61:        edit.putInt(KEY_VERSION, CURRENT_VERSION).apply()
+./qq/QqAuthStore.kt:117:            .putString(KEY_NICK, profile.nick)
+./qq/QqAuthStore.kt:118:            .putLong(KEY_UID, profile.uid)
+./qq/QqAuthStore.kt:119:            .putInt(KEY_VIP_TYPE, profile.vipType)
+./qq/QqAuthStore.kt:120:            .putLong(KEY_VIP_EXPIRE, profile.vipExpireAt)
+./qq/QqAuthStore.kt:121:            .putLong(KEY_PROFILE_AT, System.currentTimeMillis())
+./qq/QqAuthStore.kt:85:        prefs(context).edit().putString(KEY_COOKIE, merged).apply()
+./qq/QqAuthStore.kt:90:        prefs(context).edit().putString(KEY_COOKIE, cookie).apply()
+./qq/QqIdentity.kt:51:        return if (prefs.edit().putString(KEY_DEVICE, candidate).commit()) {
+./qq/QqPlaylistStore.kt:125:            .putString(
+./qq/QqPlaylistStore.kt:129:            .putLong(detailAtKey(key.source, key.ownerId, key.id), savedAt)
+./qq/QqPlaylistStore.kt:130:            .putInt(KEY_SCHEMA, PlaylistCacheCodec.SCHEMA_VERSION)
+./qq/QqPlaylistStore.kt:94:            .putString(listKey(MusicSource.QQMUSIC, ownerId), PlaylistCacheCodec.encodeList(ownerId, playlists, savedAt))
+./qq/QqPlaylistStore.kt:95:            .putLong(listAtKey(MusicSource.QQMUSIC, ownerId), savedAt)
+./qq/QqPlaylistStore.kt:96:            .putInt(KEY_SCHEMA, PlaylistCacheCodec.SCHEMA_VERSION)
+./qq/QqProbeStore.kt:81:            prefs(context).edit().putString(KEY, encode(counters)).apply()
+./reco/ArtistReco.kt:163:                    .putString(KEY_AUTO_ANCHORS, found.joinToString(","))
+./reco/ArtistReco.kt:164:                    .putLong(KEY_AUTO_AT, System.currentTimeMillis())
+./reco/ArtistReco.kt:75:        prefs(ctx).edit().putBoolean(KEY_ENABLED, enabled).apply()
+./reco/ArtistReco.kt:81:        prefs(ctx).edit().putLong(KEY_TARGET, artistId).apply()
+./reco/ArtistReco.kt:87:        prefs(ctx).edit().putString(KEY_ANCHORS, ids.joinToString(",")).apply()
+./RotationSetting.kt:61:        prefs(context).edit().putBoolean(KEY, enabled).apply()
+./ui/i18n/LanguageManager.kt:34:        .edit().putString(KEY_LANGUAGE, code).apply()
+./ui/player/AudioVisualizer.kt:58:        prefs(context).edit().putBoolean(KEY, enabled).apply()
+./ui/screen/UserScreen.kt:428:                    prefs.edit().putInt("wifi_quality", it).apply()
+./ui/screen/UserScreen.kt:442:                    prefs.edit().putInt("mobile_quality", it).apply()
+./ui/screen/UserScreen.kt:460:                    prefs.edit().putBoolean("gapless_playback", it).apply()
+./ui/screen/UserScreen.kt:525:                    prefs.edit().putBoolean("lyrics_translation", it).apply()
+./ui/theme/AccentSource.kt:42:        .putString(KEY_ACCENT_SOURCE, source.name)
+./ui/theme/BackgroundImageManager.kt:62:            .edit().putBoolean(KEY_ENABLED, enabled).apply()
+./ui/theme/PageTransitionSetting.kt:102:        prefs.edit().putBoolean(KEY, enabled).apply()
+./ui/theme/PageTransitionSetting.kt:29: * ## 为什么要一个对象，而不是在设置页 `prefs.edit().putBoolean(...)`
+./ui/theme/ThemeManager.kt:52:        .putString(KEY_THEME_MODE, mode.name)
+./ui/theme/ThemeManager.kt:70:        .putInt(KEY_THEME_INDEX, index)
+./ui/viewmodel/PlayerViewModel.kt:1067:            .putInt(if (isOnWifi()) "wifi_quality" else "mobile_quality", index)
+./ui/viewmodel/PlayerViewModel.kt:820:            .edit().putBoolean("lyrics_in_media_session", enabled).apply()
+./ui/viewmodel/PlayerViewModel.kt:853:            .edit().putBoolean("lyrics_translation", enabled).apply()

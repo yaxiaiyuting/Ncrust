@@ -1,0 +1,118 @@
+== 生成时间 2026-09-26T18:40:03+08:00 ==
+$ javap -v androidx.benchmark.Errors | 字符串常量（前置检查项）
+#117          //
+#134          // DEBUGGABLE_
+#136          // \n                |WARNING: Debuggable Benchmark\n                |    Benchmark is running with debuggable=true, which drastically reduces\n                |    runtime performance in order to support debugging features. Run\n                |    benchmarks with debuggable=false. Debuggable affects execution speed\n                |    in ways that mean benchmark improvements might not carry over to a\n                |    real user\'s experience (or even regress release performance).\n
+#148          // EMULATOR_
+#14           // <this>
+#150          // \n                |WARNING: Running on Emulator\n                |    Benchmark is running on an emulator, which is not representative of\n                |    real user devices. Use a physical device to benchmark. Emulator\n                |    benchmark improvements might not carry over to a real user\'s\n                |    experience (or even regress real device performance).\n
+#154          // FINGERPRINT
+#161          // :eng/
+#167          // ENG-BUILD_
+#169          // \n                |WARNING: Running on Eng Build\n                |    Benchmark is running on device flashed with a \'-eng\' build. Eng builds\n                |    of the platform drastically reduce performance to enable testing\n                |    changes quickly. For this reason they should not be used for\n                |    benchmarking. Use a \'-user\' or \'-userdebug\' system image.\n
+#175          // coverage
+#182          // true
+#188          // CODE-COVERAGE_
+#190          // \n                |WARNING: Code coverage enabled\n                |    Benchmark is running with code coverage enabled, which typically alters the dex\n                |    in a way that can affect performance. Ensure that code coverage is disabled by\n                |    setting testCoverageEnabled to false in the buildType your benchmarks run in.\n
+#203          // UNLOCKED_
+#205          // \n                |WARNING: Unlocked CPU clocks\n                |    Benchmark appears to be running on a rooted device with unlocked CPU\n                |    clocks. Unlocked CPU clocks can lead to inconsistent results due to\n                |    dynamic frequency scaling, and thermal throttling. On a rooted device,\n                |    lock your device clocks to a stable frequency with `./gradlew lockClocks`\n
+#221          // UNSUSTAINED-ACTIVITY-MISSING_
+#223          // \n                |WARNING: Cannot use SustainedPerformanceMode without IsolationActivity\n                |    Benchmark running on device that supports Window.setSustainedPerformanceMode,\n                |    but not launching IsolationActivity via the AndroidBenchmarkRunner. This\n                |    Activity is required to limit CPU clock max frequency, to prevent thermal\n                |    throttling. To fix this, add the following to your benchmark module-level\n                |    build.gradle:\n                |        android.defaultConfig.testInstrumentationRunner\n                |            = \"androidx.benchmark.junit4.AndroidBenchmarkRunner\"\n
+#235          // ACTIVITY-MISSING_
+#237          // \n                |WARNING: Not using IsolationActivity via AndroidBenchmarkRunner\n                |    AndroidBenchmarkRunner should be used to isolate benchmarks from interference\n                |    from other visible apps. To fix this, add the following to your module-level\n                |    build.gradle:\n                |        android.defaultConfig.testInstrumentationRunner\n                |            = \"androidx.benchmark.junit4.AndroidBenchmarkRunner\"\n
+#249          // SIMPLEPERF_
+#251          // \n                    |ERROR: Cannot use Simpleperf on this device\'s API level (
+#256          // )\n                    |    Simpleperf prior to API 28 (P) requires AOT compilation, and isn\'t \n                    |    currently supported by the benchmark library.\n
+#258          // )\n                    |    without root. Simpleperf on API 28 (P) can only be used on a rooted device,\n                    |    or when the APK is debuggable. Debuggable performance measurements should\n                    |    be avoided, due to measurement inaccuracy.\n
+#272          // \n                    |ERROR: Apk must be profileable to use simpleperf.\n                    |    ensure you put <profileable android:shell=\"true\"/> within the\n                    |    <application ...> tag of your benchmark module\n
+#276          // android.intent.action.BATTERY_CHANGED
+#285          // present
+#293          // level
+#299          // scale
+#301          // LOW-BATTERY_
+#303          // \n                |WARNING: Device has low battery (
+#305          // %)\n                |    When battery is low, devices will often reduce performance (e.g. disabling big\n                |    cores) to save remaining battery. This occurs even when they are plugged in.\n                |    Wait for your battery to charge to at least 25%.\n                |    Currently at
+#307          // %.\n
+#320          // speed
+#322          // NOT-AOT-COMPILED_
+#324          // \n                |WARNING: Benchmark running without full AOT compilation.\n                |    Benchmarks should be speed compiled to reduce noise. This is enabled by default\n                |    in the benchmark plugin. Observed compilation state =
+#326          // .\n
+#336          // dalvik.vm.extra-opts
+#341          // -Xusejit:false
+#343          // JIT-ENABLED_
+#345          // \n                |WARNING: Rooted device with JIT enabled.\n                |    Even in a speed-compiled, fully AOT\'d benchmark, JIT can occur and reduce perf\n                |    consistency. Use the following script to disable JIT and restart the runtime:\n                |        ./benchmark/gradle-plugin/src/main/resources/scripts/disableJit.sh\n
+#38           //  \n
+#392          // SIMPLEPERF
+#411          // \n                |ERRORS (not suppressed):
+#415          // \n                |(Suppressed errors:
+#417          // )\n                |
+#419          // \n                |While you can suppress these errors (turning them into warnings)\n                |PLEASE NOTE THAT EACH SUPPRESSED ERROR COMPROMISES ACCURACY\n                |\n                |// Sample suppression, in a benchmark module\'s build.gradle:\n                |android {\n                |    defaultConfig {\n                |        // Enable measuring on an emulator, or devices with low battery\n                |        testInstrumentationRunnerArguments[\"androidx.benchmark.suppressErrors\"] = \"EMULATOR,LOW-BATTERY\"\n                |    }\n                |}\n
+#60           //
+
+$ javap -p -c androidx.benchmark.perfetto.PerfettoHelper$Companion  # ABI→资产后缀 & perfetto/tracebox 分支
+         0: ldc           #14                 // String PerfettoCapture
+         9: ldc           #19                 // String Supported ABIs:
+        18: ldc           #30                 // String SUPPORTED_ABIS
+        32: bipush        63
+        52: ldc           #58                 // String SUPPORTED_64_BIT_ABIS
+       121: ldc           #76                 // String SUPPORTED_32_BIT_ABIS
+         1: ldc           #105                // String tool
+        13: ldc           #110                // String create executable:
+        35: bipush        14
+        65: ldc           #129                // String Unsupported ABI (
+        74: ldc           #30                 // String SUPPORTED_ABIS
+        88: bipush        63
+        97: bipush        41
+       114: ldc           #58                 // String SUPPORTED_64_BIT_ABIS
+       166: ldc           #141                // String x86_64
+       191: ldc           #141                // String x86_64
+       203: ldc           #76                 // String SUPPORTED_32_BIT_ABIS
+       255: ldc           #151                // String x86
+       280: ldc           #151                // String x86
+       292: ldc           #58                 // String SUPPORTED_64_BIT_ABIS
+       344: ldc           #153                // String arm64
+       369: ldc           #155                // String aarch64
+       381: ldc           #76                 // String SUPPORTED_32_BIT_ABIS
+       433: ldc           #157                // String armeabi
+       458: ldc           #159                // String arm
+       477: ldc           #129                // String Unsupported ABI (
+       486: ldc           #30                 // String SUPPORTED_ABIS
+       500: bipush        63
+       509: bipush        41
+       549: bipush        95
+       566: ldc           #188                // String open(...)
+         1: ldc           #222                // String output
+        11: ldc_w         #273                // String perfetto
+        17: ldc_w         #275                // String tracebox
+        76: bipush        10
+        97: getstatic     #332                // Field android/os/Build$VERSION.SDK_INT:I
+       100: bipush        29
+       122: ldc_w         #336                // String  traced_probes --cleanup-after-crash
+       158: ldc_w         #351                // String Hard resetting ftrace state
+       191: ldc_w         #357                // String Unexpected output from --cleanup-after-crash:
+         1: ldc_w         #381                // String errorMessage
+         7: ldc           #14                 // String PerfettoCapture
+         1: ldc_w         #388                // String processes
+        48: ldc           #14                 // String PerfettoCapture
+        57: ldc_w         #392                // String killing existing perfetto recording:
+        71: ldc_w         #397                // String  (pid=
+        85: bipush        41
+
+$ javap -p -c androidx.benchmark.macro.ShellServerLifecycleManager  # trace_processor_shell 以 HTTP server 方式在设备上跑
+// String ).
+// String Benchmark
+// String  -D --http-port \"9001\"
+// String echo pid:$$ ; exec
+// String kill -TERM
+// String Macrobenchmark requires cleartext HTTP traffic to the on-device localhost to enable\nquerying data from perfetto traces, such as timestamps that are used to calculate\nmetrics. This should be enabled by default via manifest merging when building with\nGradle.  Please refer to\nhttps://d.android.com/training/articles/security-config#CleartextTrafficPermitted\nand enable cleartext http requests towards localhost in your test android manifest.
+// String Perfetto trace_processor_shell did not start correctly. Stderr =
+// String Perfetto trace processor shell server stopped (pid=
+// String pid:
+// String Sequence contains no element matching the predicate.
+// String ShellServerLifecycleManager#start
+// String ShellServerLifecycleManager#stop
+// String Started, processId
+// String stop, processId=
+// String The instrumentation app cannot connect to the trace_processor_shell server.
+// String trace_processor_shell
+// String Tried to stop trace shell processor http server without starting it.

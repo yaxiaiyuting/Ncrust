@@ -1,0 +1,33 @@
+# 命令: apkanalyzer dex code --class S4.s (ThemeMode 的混淆名) <apk>
+# 目的: 枚举常量字段被 R8 改名（SYSTEM -> U），但传给 Enum.<init> 的字符串常量未变
+# ⇒ ThemeMode.name / valueOf 写读 prefs 的口径稳定（假阳性证据）
+.method static constructor <clinit>()V
+    .registers 5
+
+    .line 1
+    new-instance v0, LS4/s;
+
+    .line 2
+    .line 3
+    const-string v1, "SYSTEM"
+
+    .line 4
+    .line 5
+    const/4 v2, 0x0
+
+    .line 6
+    invoke-direct {v0, v1, v2}, Ljava/lang/Enum;-><init>(Ljava/lang/String;I)V
+
+    .line 7
+    .line 8
+    .line 9
+    sput-object v0, LS4/s;->U:LS4/s;
+
+    .line 10
+    .line 11
+    new-instance v1, LS4/s;
+
+    .line 12
+    .line 13
+    const-string v2, "DARK"
+

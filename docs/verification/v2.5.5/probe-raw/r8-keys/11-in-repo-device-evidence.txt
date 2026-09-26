@@ -1,0 +1,80 @@
+# 命令: grep -rn 相关形状 于 docs/verification/v2.5.4/ 与 v2.3.0/（本仓既有的真机取证）
+########## v2.5.4/PROBE-SUMMARY.md:64 与 :84-88（search_history 与 ncrust_offline/tracks 的真机形状）
+
+真机 S6（v2.5.2 release）的 `search_history.xml` 实际内容是：
+
+```json
+[{"a":4611686018530183086,"b":"残酷な天使のテーゼ",
+  "c":"https://y.qq.com/music/photo_new/T002R500x500M000000pmPam3gTtA5_1.jpg",
+  "d":"高橋洋子","e":1790344822158}, {…net ease 657666…}]
+```
+
+**字段名是被 R8 混淆过的单字母。** 与 `mapping/release/mapping.txt` 逐字对得上：
+
+```text
+com.takahashirinta.ncrust.library.SearchHistoryManager$HistoryItem -> G4.k:
+    long id -> a
+    java.lang.String title -> b
+    java.lang.String coverUrl -> c
+    java.lang.String subtitle -> d
+    long timestamp -> e
+```
+
+这与 `proguard-rules.pro` 里 v2.3.0 记下的本地歌单事故是**同一类问题的第三个实例**
+（前两个：`local.**` 的本地歌单 `ncrust_local_playlists.xml`、`crosssource.**` 的匹配缓存）。
+同一 APK 内读写自洽所以**不崩**，但下一次混淆映射一变，用户的搜索历史就会**静默消失**。
+
+同一次取证还发现**第四个实例**：`ncrust_offline` 的 `tracks` 也是单字母 key
+（`{"a":557902,"b":"…","e":287533,"f":"jymaster","g":"song:557902:jymaster","i":…}` ——
+`h` 是 `approxBytes`，值为 null 所以**整条 key 被省掉**；`mapping.txt` 里 `h` 其实是分配了的）。
+**`cache.**` 至今没有 keep 规则** —— 本版**不动它**（见 §6 遗留风险）。
+
+**本版的取舍**：不去加 `-keep class …library.**`。理由是那条规则会**改掉全局混淆映射**，
+反而可能让 `cache.**` 里那套单字母 key 在升级时读不出来 —— 用一个静默数据丢失
+
+########## v2.5.4/EVIDENCE.md:216-238（v2.5.3 vs v2.5.4 两次构建的 mapping 对照）
+`mapping/release/mapping.txt`（**v2.5.4** 构建产物 —— 修完之后前五个字母没变，
+所以即使 codec 的旧形状分支失效，老数据仍然读得出来；这是第二道防线）：
+
+```text
+com.takahashirinta.ncrust.library.SearchHistoryManager$HistoryItem -> G4.m:
+    long id -> a
+    java.lang.String title -> b
+    java.lang.String coverUrl -> c
+    java.lang.String subtitle -> d
+    long timestamp -> e
+    java.lang.String source -> f
+    java.lang.String sourceId -> g
+    java.lang.String mediaId -> h
+
+com.takahashirinta.ncrust.cache.OfflineTrack -> F4.h:      ← 与本版无关的结构，字母表逐字未变
+    long songId -> a
+    …（a~i 九个字段全部保持）
+```
+
+**最后一条是本版最重要的回归证据**：本版往 `HistoryItem` 里加了 3 个字段，
+而 `cache.**`（`ncrust_offline/tracks`）的混淆字母表**一个字母都没动** ⇒
+老用户的离线曲目索引在升级后照常可读。这正是「不加 `-keep class …library.**`」这个
+取舍想要保住的东西（加 keep 会改全局映射）。
+
+########## v2.5.4/EVIDENCE.md:82-86（QqFallbackCounters 旧 blob {a:30,...}）
+| 落盘位置 | `/data/data/com.takahashirinta.ncrust/shared_prefs/ncrust_qq_probe.xml`（**本地私有目录**） |
+| 写入时机 | `Activity.onStop`（按 HOME 触发） |
+| 第一次读出的 blob | `{"a":30,"b":0,…,"k":1790406025803,"l":1790406025806,"m":1}` |
+| 为什么是单字母 | **又被 R8 混淆了**（本版新增规则 1 的第五个实例，这次是在本版自己新加的文件上） |
+| 处置 | 给 `QqFallbackCounters` 的每个字段补 `@SerializedName` → 重新构建 → 重装 |
+| 第二次读出的 blob | `{"parsedTotal":0,"parsedNoSongId":0,"parsedNoMediaMid":0,"resolveTotal":0,…,"schemaVersion":1}` |
+| 迁移代价（如实） | 修好之前那份 `{"a":30,…}` 被新版本读成全 0 —— 这正是「字段名是跨版本契约」的现场演示。**v2.5.4 是第一个带计数的发布版**，所以用户侧没有真实的数据连续性损失 |
+| **本次真机样本的结论** | 第一份样本里 **`parsedTotal = 30`、`parsedNoSongId = 0`** —— 解析了 30 首 QQ 曲目，**没有一首**触发「无 songid」散列兜底 |
+| 网络出口 | 新增代码里 `grep -rn "RetrofitClient\|QqClient\|HttpURLConnection" QqFallbackStats.kt QqProbeStore.kt` → **0 命中** |
+
+########## v2.3.0/verification/device-migration.txt:52（local.** 事故的真机形状）
+
+第一次 release 验证时读回 `ncrust_local_playlists.xml`，发现落盘 JSON 是
+
+```
+{"a":"netease","b":"local:1790327514802-0","c":"anonymous","d":"v230test","e":...,"f":...}
+```
+
+—— **R8 把 DTO 字段名混淆成了单字母**。同一个 APK 内读写自洽所以不崩，
+但升级到下一个构建时映射一变，老数据就一条都读不出来 ⇒ **本地歌单静默消失**。

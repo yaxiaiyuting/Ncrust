@@ -1,0 +1,115 @@
+== 生成时间 2026-09-26T18:39:58+08:00 ==
+== 来源: ~/.gradle/caches/.../androidx.benchmark/benchmark-macro/1.4.1/*.aar (classes.jar) ==
+
+$ javap -p -c androidx.benchmark.macro.CompilationMode  # static{} 决定 DEFAULT
+  static {};
+    Code:
+         0: new           #79                 // class androidx/benchmark/macro/CompilationMode$Companion
+         3: dup
+         4: aconst_null
+         5: invokespecial #398                // Method androidx/benchmark/macro/CompilationMode$Companion."<init>":(Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+         8: putstatic     #75                 // Field Companion:Landroidx/benchmark/macro/CompilationMode$Companion;
+        11: getstatic     #36                 // Field android/os/Build$VERSION.SDK_INT:I
+        14: bipush        24
+        16: if_icmplt     36
+        19: new           #400                // class androidx/benchmark/macro/CompilationMode$Partial
+        22: dup
+        23: getstatic     #406                // Field androidx/benchmark/macro/BaselineProfileMode.UseIfAvailable:Landroidx/benchmark/macro/BaselineProfileMode;
+        26: iconst_0
+        27: invokespecial #409                // Method androidx/benchmark/macro/CompilationMode$Partial."<init>":(Landroidx/benchmark/macro/BaselineProfileMode;I)V
+        30: checkcast     #2                  // class androidx/benchmark/macro/CompilationMode
+        33: goto          46
+        36: new           #411                // class androidx/benchmark/macro/CompilationMode$Full
+        39: dup
+        40: invokespecial #412                // Method androidx/benchmark/macro/CompilationMode$Full."<init>":()V
+        43: checkcast     #2                  // class androidx/benchmark/macro/CompilationMode
+        46: putstatic     #415                // Field DEFAULT:Landroidx/benchmark/macro/CompilationMode;
+        49: new           #417                // class java/util/LinkedHashSet
+        52: dup
+        53: invokespecial #418                // Method java/util/LinkedHashSet."<init>":()V
+        56: checkcast     #150                // class java/util/Set
+        59: putstatic     #148                // Field poisonedRuntimeImages:Ljava/util/Set;
+        62: return
+}
+
+$ javap -p -c CompilationMode$Full  # shouldReset / compileImpl
+  public void compileImpl$benchmark_macro_release(androidx.benchmark.macro.MacrobenchmarkScope, kotlin.jvm.functions.Function0<kotlin.Unit>);
+    Code:
+         0: aload_1
+         1: ldc           #21                 // String scope
+         3: invokestatic  #27                 // Method kotlin/jvm/internal/Intrinsics.checkNotNullParameter:(Ljava/lang/Object;Ljava/lang/String;)V
+--
+  public boolean shouldReset$benchmark_macro_release();
+    Code:
+         0: iconst_1
+         1: ireturn
+}
+
+$ javap -p -c CompilationMode$None  # shouldReset / compileImpl
+  public void compileImpl$benchmark_macro_release(androidx.benchmark.macro.MacrobenchmarkScope, kotlin.jvm.functions.Function0<kotlin.Unit>);
+    Code:
+         0: aload_1
+         1: ldc           #21                 // String scope
+         3: invokestatic  #27                 // Method kotlin/jvm/internal/Intrinsics.checkNotNullParameter:(Ljava/lang/Object;Ljava/lang/String;)V
+--
+  public boolean shouldReset$benchmark_macro_release();
+    Code:
+         0: iconst_1
+         1: ireturn
+
+
+$ javap -p -c CompilationMode$Ignore  # shouldReset / compileImpl
+  public void compileImpl$benchmark_macro_release(androidx.benchmark.macro.MacrobenchmarkScope, kotlin.jvm.functions.Function0<kotlin.Unit>);
+    Code:
+         0: aload_1
+         1: ldc           #21                 // String scope
+         3: invokestatic  #27                 // Method kotlin/jvm/internal/Intrinsics.checkNotNullParameter:(Ljava/lang/Object;Ljava/lang/String;)V
+--
+  public boolean shouldReset$benchmark_macro_release();
+    Code:
+         0: iconst_0
+         1: ireturn
+}
+
+$ javap -p -c CompilationMode$Partial  # shouldReset / compileImpl
+  public void compileImpl$benchmark_macro_release(androidx.benchmark.macro.MacrobenchmarkScope, kotlin.jvm.functions.Function0<kotlin.Unit>);
+    Code:
+         0: aload_1
+         1: ldc           #98                 // String scope
+         3: invokestatic  #20                 // Method kotlin/jvm/internal/Intrinsics.checkNotNullParameter:(Ljava/lang/Object;Ljava/lang/String;)V
+--
+  public boolean shouldReset$benchmark_macro_release();
+    Code:
+         0: iconst_1
+         1: ireturn
+
+
+$ javap -p -c CompilationMode # resetAndCompile 中的 profile 清除路径
+         1: ldc           #16                 // String scope
+         7: ldc           #24                 // String warmupBlock
+        13: invokevirtual #30                 // Method androidx/benchmark/macro/MacrobenchmarkScope.getPackageName:()Ljava/lang/String;
+        18: getstatic     #36                 // Field android/os/Build$VERSION.SDK_INT:I
+        21: bipush        24
+        29: invokevirtual #46                 // Method androidx/benchmark/Arguments.getEnableCompilation:()Z
+        39: ldc           #48                 // String Benchmark
+        48: ldc           #53                 // String Clearing ART profiles for
+        72: ldc           #48                 // String Benchmark
+        81: ldc           #71                 // String Resetting profiles for
+        98: getstatic     #36                 // Field android/os/Build$VERSION.SDK_INT:I
+       101: bipush        34
+       111: ldc           #77                 // String verify
+       113: invokevirtual #83                 // Method androidx/benchmark/macro/CompilationMode$Companion.cmdPackageCompile$benchmark_macro_release:(Ljava/lang/String;Ljava/lang/String;)V
+       126: ldc           #90                 // String pm art clear-app-profiles
+       142: invokestatic  #94                 // Method androidx/benchmark/Shell.executeScriptCaptureStdout$default:(Landroidx/benchmark/Shell;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Ljava/lang/String;
+       158: ldc           #105                // String Profiles cleared
+       179: invokevirtual #117                // Method androidx/benchmark/DeviceInfo.isEmulator:()Z
+       182: invokevirtual #121                // Method androidx/benchmark/macro/CompilationMode$Companion.compileResetErrorString:(Ljava/lang/String;Ljava/lang/String;Z)Ljava/lang/String;
+       203: invokevirtual #129                // Method androidx/benchmark/Shell.isSessionRooted:()Z
+       214: invokevirtual #132                // Method androidx/benchmark/macro/CompilationMode$Companion.cmdPackageCompileReset$benchmark_macro_release:(Ljava/lang/String;)V
+       220: ldc           #48                 // String Benchmark
+       229: ldc           #134                // String Reinstalling
+       260: invokevirtual #144                // Method androidx/benchmark/DeviceInfo.getPoisonTheRuntimeImage:()Z
+       282: invokevirtual #157                // Method androidx/benchmark/DeviceInfo.sleepToAwaitRuntimeImageFlush:()V
+       305: ldc           #48                 // String Benchmark
+       314: ldc           #166                // String Compilation is disabled, skipping compilation of
+         9: ldc           #182                // String Super calls with default arguments not supported in this target, function: resetAndCompile

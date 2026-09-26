@@ -1,0 +1,57 @@
+# 命令: apkanalyzer dex code --class M4.b / <keep 类>  —— keep 类在 dex 里字段名保持原样
+# network.SongItem 的混淆名（identity）: com.takahashirinta.ncrust.network.SongItem -> com.takahashirinta.ncrust.network.SongItem:
+# lyric.CachedLyrics 的混淆名（identity）: com.takahashirinta.ncrust.lyric.CachedLyrics -> com.takahashirinta.ncrust.lyric.CachedLyrics:
+
+########## com.takahashirinta.ncrust.network.SongItem（keep 后字段名原样）
+# instance fields
+.field private final album:Lcom/takahashirinta/ncrust/network/model/AlbumItem;
+    .annotation runtime LZ3/b;
+        value = "al"
+    .end annotation
+.end field
+
+.field private final artists:Ljava/util/List;
+    .annotation runtime LZ3/b;
+        value = "ar"
+    .end annotation
+
+    .annotation system Ldalvik/annotation/Signature;
+        value = {
+            "Ljava/util/List<",
+            "Lcom/takahashirinta/ncrust/network/model/ArtistItem;",
+            ">;"
+        }
+    .end annotation
+.end field
+
+.field private final duration:Ljava/lang/Long;
+    .annotation runtime LZ3/b;
+        value = "dt"
+    .end annotation
+.end field
+
+.field private final fee:Ljava/lang/Integer;
+    .annotation runtime LZ3/b;
+        value = "fee"
+
+########## com.takahashirinta.ncrust.lyric.CachedLyrics（keep 后字段名原样）
+# instance fields
+.field private final lrc:Ljava/lang/String;
+
+.field private final romalrc:Ljava/lang/String;
+
+.field private final romanSource:Ljava/lang/String;
+
+.field private final timestamp:J
+
+.field private final tlyric:Ljava/lang/String;
+
+.field private final translationSource:Ljava/lang/String;
+
+.field private final ttml:Ljava/lang/String;
+
+.field private final ttmlAt:J
+
+.field private final yrc:Ljava/lang/String;
+
+

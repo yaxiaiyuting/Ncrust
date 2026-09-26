@@ -1,0 +1,147 @@
+{
+  "device": "3B15CD00GB700000",
+  "tag": "cold-1",
+  "tap": [
+    570,
+    705
+  ],
+  "t_tap_after_minus_before_ms": 88,
+  "frames": [
+    {
+      "idx": 0,
+      "file": "frame_000.png",
+      "t_before": 0.088,
+      "t_after": 2.518,
+      "bytes": 3223011
+    },
+    {
+      "idx": 1,
+      "file": "frame_001.png",
+      "t_before": 2.518,
+      "t_after": 2.978,
+      "bytes": 71274
+    },
+    {
+      "idx": 2,
+      "file": "frame_002.png",
+      "t_before": 2.978,
+      "t_after": 3.421,
+      "bytes": 821280
+    },
+    {
+      "idx": 3,
+      "file": "frame_003.png",
+      "t_before": 3.421,
+      "t_after": 3.824,
+      "bytes": 821296
+    },
+    {
+      "idx": 4,
+      "file": "frame_004.png",
+      "t_before": 3.824,
+      "t_after": 4.463,
+      "bytes": 821296
+    },
+    {
+      "idx": 5,
+      "file": "frame_005.png",
+      "t_before": 4.463,
+      "t_after": 4.845,
+      "bytes": 821296
+    },
+    {
+      "idx": 6,
+      "file": "frame_006.png",
+      "t_before": 4.845,
+      "t_after": 5.234,
+      "bytes": 821296
+    },
+    {
+      "idx": 7,
+      "file": "frame_007.png",
+      "t_before": 5.234,
+      "t_after": 5.62,
+      "bytes": 821296
+    },
+    {
+      "idx": 8,
+      "file": "frame_008.png",
+      "t_before": 5.62,
+      "t_after": 6.002,
+      "bytes": 821296
+    },
+    {
+      "idx": 9,
+      "file": "frame_009.png",
+      "t_before": 6.002,
+      "t_after": 6.404,
+      "bytes": 821296
+    },
+    {
+      "idx": 10,
+      "file": "frame_010.png",
+      "t_before": 6.405,
+      "t_after": 6.797,
+      "bytes": 821296
+    },
+    {
+      "idx": 11,
+      "file": "frame_011.png",
+      "t_before": 6.797,
+      "t_after": 7.196,
+      "bytes": 821296
+    },
+    {
+      "idx": 12,
+      "file": "frame_012.png",
+      "t_before": 7.196,
+      "t_after": 7.59,
+      "bytes": 821200
+    },
+    {
+      "idx": 13,
+      "file": "frame_013.png",
+      "t_before": 7.59,
+      "t_after": 7.986,
+      "bytes": 821200
+    },
+    {
+      "idx": 14,
+      "file": "frame_014.png",
+      "t_before": 7.986,
+      "t_after": 8.446,
+      "bytes": 821200
+    },
+    {
+      "idx": 15,
+      "file": "frame_015.png",
+      "t_before": 8.446,
+      "t_after": 8.883,
+      "bytes": 821200
+    },
+    {
+      "idx": 16,
+      "file": "frame_016.png",
+      "t_before": 8.883,
+      "t_after": 9.306,
+      "bytes": 821200
+    },
+    {
+      "idx": 17,
+      "file": "frame_017.png",
+      "t_before": 9.306,
+      "t_after": 9.755,
+      "bytes": 821200
+    },
+    {
+      "idx": 18,
+      "file": "frame_018.png",
+      "t_before": 9.755,
+      "t_after": 10.144,
+      "bytes": 821200
+    }
+  ],
+  "aggregate_lines": [],
+  "qq_lines": [],
+  "captured_at": "2026-09-26T18:36:45+0800"
+}

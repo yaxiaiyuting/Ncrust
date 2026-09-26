@@ -1,0 +1,73 @@
+== displayed_probe.sh serial=3B15CD00GB700000 n=5 date=2026-09-26T18:36:34+08:00 ==
+--- run 1
+Starting: Intent { cmp=com.takahashirinta.ncrust/.MainActivity }
+$ logcat -d | grep -E 'Displayed|Fully drawn|GrantPermissions|permissioncontroller'
+09-26 18:36:37.466 11709 11709 D BLASTBufferQueue: [VRI[GrantPermissionsActivity]#11](f:0,a:0) destructor()
+09-26 18:36:37.466 11709 11709 D BufferQueueConsumer: [VRI[GrantPermissionsActivity]#11(BLAST Consumer)11](id:2dbd0000000b,api:0,p:-1,c:11709) disconnect
+09-26 18:36:37.469 11709 11709 D VRI[GrantPermissionsActivity]: setWindowStopped stopped:true
+09-26 18:36:37.486 11709 11709 D OplusScrollToTopManager: com.android.permissioncontroller/com.android.permissioncontroller.permission.ui.GrantPermissionsActivity,window dying
+09-26 18:36:37.486 11709 11709 D OplusScrollToTopManager: com.android.permissioncontroller/com.android.permissioncontroller.permission.ui.GrantPermissionsActivity,unregisterSystemUIBroadcastReceiver 
+09-26 18:36:37.486 11709 11709 D OplusScrollToTopManager: com.android.permissioncontroller/com.android.permissioncontroller.permission.ui.GrantPermissionsActivity, unregisterSystemUIBroadcastReceiver failed java.lang.IllegalArgumentException: Receiver not registered: android.view.OplusScrollToTopManager$2@e3cd2ca
+09-26 18:36:37.486 11709 11709 I DynamicFramerate [InAppFrameRateManager]: removeViewRootInfo: ViewRootAnimationInfos have been removed, viewRoot-android.view.ViewRootImpl@ee41f29, activity-com.android.permissioncontroller.permission.ui.GrantPermissionsActivity
+09-26 18:36:37.487  1742  3786 D CoreBackPreview: Window{ebb4bda u0 com.android.permissioncontroller/com.android.permissioncontroller.permission.ui.GrantPermissionsActivity}: Setting back callback null
+09-26 18:36:37.491  1742  3786 I WindowManager: Window{ebb4bda u0 com.android.permissioncontroller/com.android.permissioncontroller.permission.ui.GrantPermissionsActivity} state from DRAW_PENDING to NO_SURFACE; reason: destroySurface
+09-26 18:36:37.495  1742  3786 D ActivityTaskManager: removeAppToken: ActivityRecord{206600212 u0 com.android.permissioncontroller/.permission.ui.GrantPermissionsActivity t1090 f}} delayed=false parent=Task{abb441 #1090 type=standard A=10347:com.takahashirinta.ncrust} animating=false Callers=com.android.server.wm.DisplayContent.removeAppToken:1757 com.android.server.wm.ActivityRecord.removeFromHistory:4996 com.android.server.wm.ActivityRecord.destroyed:5086 com.android.server.wm.ActivityClientController.activityDestroyed:339 
+$ 当前前台窗口
+  mCurrentFocus=Window{1fa7a0c u0 com.takahashirinta.ncrust/com.takahashirinta.ncrust.MainActivity}
+  mFocusedApp=ActivityRecord{82557860 u0 com.takahashirinta.ncrust/.MainActivity t1090}
+--- run 2
+Starting: Intent { cmp=com.takahashirinta.ncrust/.MainActivity }
+Warning: Activity not started, intent has been delivered to currently running top-most instance.
+$ logcat -d | grep -E 'Displayed|Fully drawn|GrantPermissions|permissioncontroller'
+09-26 18:36:47.435 11709 11709 D BLASTBufferQueue: [VRI[GrantPermissionsActivity]#12](f:0,a:0) destructor()
+09-26 18:36:47.435 11709 11709 D BufferQueueConsumer: [VRI[GrantPermissionsActivity]#12(BLAST Consumer)12](id:2dbd0000000c,api:0,p:-1,c:11709) disconnect
+09-26 18:36:47.438 11709 11709 D VRI[GrantPermissionsActivity]: setWindowStopped stopped:true
+09-26 18:36:47.452 11709 11709 D OplusScrollToTopManager: com.android.permissioncontroller/com.android.permissioncontroller.permission.ui.GrantPermissionsActivity,window dying
+09-26 18:36:47.452 11709 11709 D OplusScrollToTopManager: com.android.permissioncontroller/com.android.permissioncontroller.permission.ui.GrantPermissionsActivity,unregisterSystemUIBroadcastReceiver 
+09-26 18:36:47.453 11709 11709 D OplusScrollToTopManager: com.android.permissioncontroller/com.android.permissioncontroller.permission.ui.GrantPermissionsActivity, unregisterSystemUIBroadcastReceiver failed java.lang.IllegalArgumentException: Receiver not registered: android.view.OplusScrollToTopManager$2@f583ce0
+09-26 18:36:47.453 11709 11709 I DynamicFramerate [InAppFrameRateManager]: removeViewRootInfo: ViewRootAnimationInfos have been removed, viewRoot-android.view.ViewRootImpl@3732e77, activity-com.android.permissioncontroller.permission.ui.GrantPermissionsActivity
+09-26 18:36:47.453  1742  3062 D CoreBackPreview: Window{391738d u0 com.android.permissioncontroller/com.android.permissioncontroller.permission.ui.GrantPermissionsActivity}: Setting back callback null
+09-26 18:36:47.457  1742  3062 I WindowManager: Window{391738d u0 com.android.permissioncontroller/com.android.permissioncontroller.permission.ui.GrantPermissionsActivity} state from DRAW_PENDING to NO_SURFACE; reason: destroySurface
+09-26 18:36:47.461  1742  5088 D ActivityTaskManager: removeAppToken: ActivityRecord{142778953 u0 com.android.permissioncontroller/.permission.ui.GrantPermissionsActivity t1091 f}} delayed=false parent=Task{88be72 #1091 type=standard A=10347:com.takahashirinta.ncrust} animating=false Callers=com.android.server.wm.DisplayContent.removeAppToken:1757 com.android.server.wm.ActivityRecord.removeFromHistory:4996 com.android.server.wm.ActivityRecord.destroyed:5086 com.android.server.wm.ActivityClientController.activityDestroyed:339 
+$ 当前前台窗口
+  mCurrentFocus=Window{389060f u0 com.takahashirinta.ncrust/com.takahashirinta.ncrust.MainActivity}
+  mFocusedApp=ActivityRecord{233326857 u0 com.takahashirinta.ncrust/.MainActivity t1091}
+--- run 3
+Starting: Intent { cmp=com.takahashirinta.ncrust/.MainActivity }
+$ logcat -d | grep -E 'Displayed|Fully drawn|GrantPermissions|permissioncontroller'
+$ 当前前台窗口
+  mCurrentFocus=Window{5c7d16e u0 com.takahashirinta.ncrust/com.takahashirinta.ncrust.MainActivity}
+  mFocusedApp=ActivityRecord{260216134 u0 com.takahashirinta.ncrust/.MainActivity t1092}
+--- run 4
+Starting: Intent { cmp=com.takahashirinta.ncrust/.MainActivity }
+$ logcat -d | grep -E 'Displayed|Fully drawn|GrantPermissions|permissioncontroller'
+09-26 18:37:08.705 11709 11709 D BLASTBufferQueue: [VRI[GrantPermissionsActivity]#14](f:0,a:0) destructor()
+09-26 18:37:08.705 11709 11709 D BufferQueueConsumer: [VRI[GrantPermissionsActivity]#14(BLAST Consumer)14](id:2dbd0000000e,api:0,p:-1,c:11709) disconnect
+09-26 18:37:08.707 11709 11709 D VRI[GrantPermissionsActivity]: setWindowStopped stopped:true
+09-26 18:37:08.724 11709 11709 D OplusScrollToTopManager: com.android.permissioncontroller/com.android.permissioncontroller.permission.ui.GrantPermissionsActivity,window dying
+09-26 18:37:08.724 11709 11709 D OplusScrollToTopManager: com.android.permissioncontroller/com.android.permissioncontroller.permission.ui.GrantPermissionsActivity,unregisterSystemUIBroadcastReceiver 
+09-26 18:37:08.724 11709 11709 D OplusScrollToTopManager: com.android.permissioncontroller/com.android.permissioncontroller.permission.ui.GrantPermissionsActivity, unregisterSystemUIBroadcastReceiver failed java.lang.IllegalArgumentException: Receiver not registered: android.view.OplusScrollToTopManager$2@ad90a54
+09-26 18:37:08.724 11709 11709 I DynamicFramerate [InAppFrameRateManager]: removeViewRootInfo: ViewRootAnimationInfos have been removed, viewRoot-android.view.ViewRootImpl@ba359fb, activity-com.android.permissioncontroller.permission.ui.GrantPermissionsActivity
+09-26 18:37:08.724  1742  6163 D CoreBackPreview: Window{97a02a1 u0 com.android.permissioncontroller/com.android.permissioncontroller.permission.ui.GrantPermissionsActivity}: Setting back callback null
+09-26 18:37:08.730  1742  2922 I WindowManager: Window{97a02a1 u0 com.android.permissioncontroller/com.android.permissioncontroller.permission.ui.GrantPermissionsActivity} state from DRAW_PENDING to NO_SURFACE; reason: destroySurface
+09-26 18:37:08.733  1742  2922 D ActivityTaskManager: removeAppToken: ActivityRecord{168543325 u0 com.android.permissioncontroller/.permission.ui.GrantPermissionsActivity t1093 f}} delayed=false parent=Task{5dfe5a6 #1093 type=standard A=10347:com.takahashirinta.ncrust} animating=false Callers=com.android.server.wm.DisplayContent.removeAppToken:1757 com.android.server.wm.ActivityRecord.removeFromHistory:4996 com.android.server.wm.ActivityRecord.destroyed:5086 com.android.server.wm.ActivityClientController.activityDestroyed:339 
+$ 当前前台窗口
+  mCurrentFocus=Window{fcce718 u0 com.takahashirinta.ncrust/com.takahashirinta.ncrust.MainActivity}
+  mFocusedApp=ActivityRecord{230291405 u0 com.takahashirinta.ncrust/.MainActivity t1093}
+--- run 5
+Starting: Intent { cmp=com.takahashirinta.ncrust/.MainActivity }
+$ logcat -d | grep -E 'Displayed|Fully drawn|GrantPermissions|permissioncontroller'
+09-26 18:37:19.063 11709 11709 D BLASTBufferQueue: [VRI[GrantPermissionsActivity]#15](f:0,a:0) destructor()
+09-26 18:37:19.063 11709 11709 D BufferQueueConsumer: [VRI[GrantPermissionsActivity]#15(BLAST Consumer)15](id:2dbd0000000f,api:0,p:-1,c:11709) disconnect
+09-26 18:37:19.066 11709 11709 D VRI[GrantPermissionsActivity]: setWindowStopped stopped:true
+09-26 18:37:19.088 11709 11709 D OplusScrollToTopManager: com.android.permissioncontroller/com.android.permissioncontroller.permission.ui.GrantPermissionsActivity,window dying
+09-26 18:37:19.088 11709 11709 D OplusScrollToTopManager: com.android.permissioncontroller/com.android.permissioncontroller.permission.ui.GrantPermissionsActivity,unregisterSystemUIBroadcastReceiver 
+09-26 18:37:19.089 11709 11709 D OplusScrollToTopManager: com.android.permissioncontroller/com.android.permissioncontroller.permission.ui.GrantPermissionsActivity, unregisterSystemUIBroadcastReceiver failed java.lang.IllegalArgumentException: Receiver not registered: android.view.OplusScrollToTopManager$2@b966556
+09-26 18:37:19.089 11709 11709 I DynamicFramerate [InAppFrameRateManager]: removeViewRootInfo: ViewRootAnimationInfos have been removed, viewRoot-android.view.ViewRootImpl@d95d3a5, activity-com.android.permissioncontroller.permission.ui.GrantPermissionsActivity
+09-26 18:37:19.092  1742  2922 D CoreBackPreview: Window{ee7984 u0 com.android.permissioncontroller/com.android.permissioncontroller.permission.ui.GrantPermissionsActivity}: Setting back callback null
+09-26 18:37:19.095  1742  2922 I WindowManager: Window{ee7984 u0 com.android.permissioncontroller/com.android.permissioncontroller.permission.ui.GrantPermissionsActivity} state from DRAW_PENDING to NO_SURFACE; reason: destroySurface
+09-26 18:37:19.099  1742  2922 D ActivityTaskManager: removeAppToken: ActivityRecord{220360681 u0 com.android.permissioncontroller/.permission.ui.GrantPermissionsActivity t1094 f}} delayed=false parent=Task{b26618c #1094 type=standard A=10347:com.takahashirinta.ncrust} animating=false Callers=com.android.server.wm.DisplayContent.removeAppToken:1757 com.android.server.wm.ActivityRecord.removeFromHistory:4996 com.android.server.wm.ActivityRecord.destroyed:5086 com.android.server.wm.ActivityClientController.activityDestroyed:339 
+$ 当前前台窗口
+  mCurrentFocus=Window{1b59ca6 u0 com.takahashirinta.ncrust/com.takahashirinta.ncrust.MainActivity}
+  mFocusedApp=ActivityRecord{88585707 u0 com.takahashirinta.ncrust/.MainActivity t1094}
+== done ==

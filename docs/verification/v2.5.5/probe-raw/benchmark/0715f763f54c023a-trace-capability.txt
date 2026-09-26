@@ -1,0 +1,23 @@
+== S6: tracefs/ftrace 可用性（决定 Android 7 能不能采 trace）==
+$ ls /sys/kernel/debug/tracing
+README
+available_events
+available_tracers
+buffer_size_kb
+buffer_total_size_kb
+$ ls -ld /sys/kernel/debug/tracing
+drwxr-xr-x 6 root root 0 1970-01-01 08:00 /sys/kernel/debug/tracing
+$ cat /sys/kernel/debug/tracing/tracing_on
+0
+$ atrace -t 1 gfx view (1 秒实测)
+capturing trace... done
+TRACE:
+# tracer: nop
+#
+# entries-in-buffer/entries-written: 551/551   #P:8
+[exit=0]
+$ atrace -t 1 -a com.takahashirinta.ncrust gfx
+capturing trace... done
+TRACE:
+# tracer: nop
+[exit=0]

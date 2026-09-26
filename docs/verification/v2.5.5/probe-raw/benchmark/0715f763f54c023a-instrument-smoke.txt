@@ -1,0 +1,59 @@
+== S6: 已安装 benchmark APK 的版本/路径 ==
+    codePath=/data/app/com.takahashirinta.ncrust.benchmark-1
+    primaryCpuAbi=arm64-v8a
+    versionCode=0 minSdk=24 targetSdk=36
+    versionName=null
+    firstInstallTime=2026-09-26 15:03:24
+    lastUpdateTime=2026-09-26 15:03:24
+== S6: am instrument 0 用例冒烟（只验证 instrumentation 能被 shell 拉起，不跑任何基准）==
+$ am instrument -w -e class com.takahashirinta.ncrust.benchmark.NoSuchBenchmarkForProbe com.takahashirinta.ncrust.benchmark/androidx.test.runner.AndroidJUnitRunner
+
+com.takahashirinta.ncrust.benchmark.NoSuchBenchmarkForProbe:
+Error in initializationError(com.takahashirinta.ncrust.benchmark.NoSuchBenchmarkForProbe):
+java.lang.RuntimeException: Failed loading specified test class 'com.takahashirinta.ncrust.benchmark.NoSuchBenchmarkForProbe'
+	at androidx.test.internal.runner.DirectTestLoader.doCreateRunner(DirectTestLoader.java:50)
+	at androidx.test.internal.runner.TestLoader.getRunnersFor(TestLoader.java:64)
+	at androidx.test.internal.runner.TestRequestBuilder.build(TestRequestBuilder.java:835)
+	at androidx.test.runner.AndroidJUnitRunner.buildRequest(AndroidJUnitRunner.java:650)
+	at androidx.test.runner.AndroidJUnitRunner.onStart(AndroidJUnitRunner.java:418)
+	at android.app.Instrumentation$InstrumentationThread.run(Instrumentation.java:1967)
+Caused by: java.lang.ClassNotFoundException: com.takahashirinta.ncrust.benchmark.NoSuchBenchmarkForProbe
+	at java.lang.Class.classForName(Native Method)
+	at java.lang.Class.forName(Class.java:400)
+	at androidx.test.internal.runner.DirectTestLoader.doCreateRunner(DirectTestLoader.java:44)
+	... 5 more
+Caused by: java.lang.ClassNotFoundException: Didn't find class "com.takahashirinta.ncrust.benchmark.NoSuchBenchmarkForProbe" on path: DexPathList[[zip file "/system/framework/android.test.runner.jar", zip file "/data/app/com.takahashirinta.ncrust.benchmark-1/base.apk"],nativeLibraryDirectories=[/data/app/com.takahashirinta.ncrust.benchmark-1/lib/arm64, /data/app/com.takahashirinta.ncrust.benchmark-1/base.apk!/lib/arm64-v8a, /system/lib64, /vendor/lib64]]
+	at dalvik.system.BaseDexClassLoader.findClass(BaseDexClassLoader.java:56)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:380)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:312)
+	... 8 more
+
+
+Time: 0.014
+There was 1 failure:
+1) initializationError(com.takahashirinta.ncrust.benchmark.NoSuchBenchmarkForProbe)
+java.lang.RuntimeException: Failed loading specified test class 'com.takahashirinta.ncrust.benchmark.NoSuchBenchmarkForProbe'
+	at androidx.test.internal.runner.DirectTestLoader.doCreateRunner(DirectTestLoader.java:50)
+	at androidx.test.internal.runner.TestLoader.getRunnersFor(TestLoader.java:64)
+	at androidx.test.internal.runner.TestRequestBuilder.build(TestRequestBuilder.java:835)
+	at androidx.test.runner.AndroidJUnitRunner.buildRequest(AndroidJUnitRunner.java:650)
+	at androidx.test.runner.AndroidJUnitRunner.onStart(AndroidJUnitRunner.java:418)
+	at android.app.Instrumentation$InstrumentationThread.run(Instrumentation.java:1967)
+Caused by: java.lang.ClassNotFoundException: com.takahashirinta.ncrust.benchmark.NoSuchBenchmarkForProbe
+	at java.lang.Class.classForName(Native Method)
+	at java.lang.Class.forName(Class.java:400)
+	at androidx.test.internal.runner.DirectTestLoader.doCreateRunner(DirectTestLoader.java:44)
+	... 5 more
+Caused by: java.lang.ClassNotFoundException: Didn't find class "com.takahashirinta.ncrust.benchmark.NoSuchBenchmarkForProbe" on path: DexPathList[[zip file "/system/framework/android.test.runner.jar", zip file "/data/app/com.takahashirinta.ncrust.benchmark-1/base.apk"],nativeLibraryDirectories=[/data/app/com.takahashirinta.ncrust.benchmark-1/lib/arm64, /data/app/com.takahashirinta.ncrust.benchmark-1/base.apk!/lib/arm64-v8a, /system/lib64, /vendor/lib64]]
+	at dalvik.system.BaseDexClassLoader.findClass(BaseDexClassLoader.java:56)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:380)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:312)
+	... 8 more
+
+FAILURES!!!
+Tests run: 1,  Failures: 1
+
+
+[exit=0]
+== S6: 跑完后被测 app 状态（不应被卸载）==
+package:/data/app/com.takahashirinta.ncrust-1/base.apk

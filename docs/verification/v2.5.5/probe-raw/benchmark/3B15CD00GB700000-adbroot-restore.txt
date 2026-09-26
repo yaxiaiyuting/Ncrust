@@ -1,0 +1,38 @@
+== 恢复 PCL110 adbd 到探测前状态（探测开始时 adbd 已是 root）==
+$ adb -s 3B15CD00GB700000 root
+adbd is already running as root
+$ adb -s 3B15CD00GB700000 shell id
+uid=0(root) gid=0(root) groups=0(root),1004(input),1007(log),1011(adb),1015(sdcard_rw),1028(sdcard_r),1078(ext_data_rw),1079(ext_obb_rw),3001(net_bt_admin),3002(net_bt),3003(inet),3006(net_bw_stats),3009(readproc),3011(uhid),3012(readtracefs) context=u:r:ksu:s0
+== 登录态证据（只列 prefs 文件名与 key，不打印 cookie 值）==
+total 2396
+-rw-rw---- 1 u0_a347 u0_a347     528 2026-09-25 02:02 AwOriginVisitLoggerPrefs.xml
+-rw-rw---- 1 u0_a347 u0_a347     360 2026-09-25 03:15 WebViewChromiumPrefs.xml
+-rw-rw---- 1 u0_a347 u0_a347     148 2026-09-23 22:37 ncrust_device.xml
+-rw-rw---- 1 u0_a347 u0_a347   39687 2026-09-26 18:35 ncrust_home_cache.xml
+-rw-rw---- 1 u0_a347 u0_a347  109783 2026-09-26 18:35 ncrust_library.xml
+-rw-rw---- 1 u0_a347 u0_a347 1699008 2026-09-26 18:35 ncrust_lyrics_cache.xml
+-rw-rw---- 1 u0_a347 u0_a347     587 2026-09-26 15:46 ncrust_match_cache.xml
+-rw-rw---- 1 u0_a347 u0_a347     202 2026-09-26 18:34 ncrust_netease_vip.xml
+-rw-rw---- 1 u0_a347 u0_a347   67091 2026-09-26 18:35 ncrust_offline.xml
+-rw-rw---- 1 u0_a347 u0_a347  465778 2026-09-26 18:35 ncrust_playback_state.xml
+-rw-rw---- 1 u0_a347 u0_a347    1007 2026-09-23 23:48 ncrust_playback_state.xml.orig
+-rw-rw---- 1 u0_a347 u0_a347    2661 2026-09-23 22:37 ncrust_prefs.xml
+-rw-rw---- 1 u0_a347 u0_a347   16618 2026-09-26 15:45 ncrust_qq_playlists.xml
+-rw-rw---- 1 u0_a347 u0_a347     803 2026-09-25 14:10 ncrust_qq_prefs.xml
+-rw-rw---- 1 u0_a347 u0_a347     527 2026-09-26 18:01 ncrust_qq_probe.xml
+-rw-rw---- 1 u0_a347 u0_a347    1210 2026-09-25 21:56 ncrust_settings.xml
+-rw-rw---- 1 u0_a347 u0_a347    1041 2026-09-26 18:36 search_history.xml
+name=
+== 名单：本机是否装了 benchmark APK ==
+package:com.takahashirinta.ncrust
+== input swipe 单次耗时（uiautomator swipe 的代理量）==
+bash: 行 12: /usr/bin/time: 没有那个文件或目录
+bash: 行 12: /usr/bin/time: 没有那个文件或目录
+bash: 行 12: /usr/bin/time: 没有那个文件或目录
+== 登录态 key 检查（只数 key 名，不打印值）==
+user_cookie count=1
+MUSIC_U count=1
+== input swipe 单次耗时（3 次，date 计时）==
+swipe1 = 361 ms
+swipe2 = 368 ms
+swipe3 = 374 ms

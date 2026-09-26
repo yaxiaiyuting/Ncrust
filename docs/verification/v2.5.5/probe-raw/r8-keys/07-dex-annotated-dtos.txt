@@ -1,0 +1,139 @@
+# 产物自证: package: name='com.takahashirinta.ncrust' versionCode='45' versionName='2.5.4-gpl' platformBuildVersionName='16' platformBuildVersionCode='36' compileSdkVersion='36' compileSdkVersionCodename='16'
+# 命令: apkanalyzer dex code --class <混淆类名> <apk>  （先经 mapping.txt 得到混淆类名）
+
+########## G4.k = com.takahashirinta.ncrust.library.SearchHistoryCodec$EntryDto
+########## 结论：字段被混淆成 a..h，但每个字段都带 runtime 注解 value="稳定名" ⇒ 落盘 key 稳定
+# instance fields
+.field private final a:Ljava/lang/Long;
+    .annotation runtime LZ3/b;
+        value = "id"
+    .end annotation
+.end field
+
+.field private final b:Ljava/lang/String;
+    .annotation runtime LZ3/b;
+        value = "title"
+    .end annotation
+.end field
+
+.field private final c:Ljava/lang/String;
+    .annotation runtime LZ3/b;
+        value = "coverUrl"
+    .end annotation
+.end field
+
+.field private final d:Ljava/lang/String;
+    .annotation runtime LZ3/b;
+        value = "subtitle"
+    .end annotation
+.end field
+
+.field private final e:Ljava/lang/Long;
+    .annotation runtime LZ3/b;
+        value = "timestamp"
+    .end annotation
+.end field
+
+.field private final f:Ljava/lang/String;
+    .annotation runtime LZ3/b;
+        value = "source"
+    .end annotation
+.end field
+
+.field private final g:Ljava/lang/String;
+    .annotation runtime LZ3/b;
+        value = "sourceId"
+    .end annotation
+.end field
+
+.field private final h:Ljava/lang/String;
+    .annotation runtime LZ3/b;
+        value = "mediaId"
+    .end annotation
+.end field
+
+
+# direct methods
+
+########## I4.I = com.takahashirinta.ncrust.qq.QqFallbackCounters（同名机制）
+# instance fields
+.field private final a:Ljava/lang/Long;
+    .annotation runtime LZ3/b;
+        value = "parsedTotal"
+    .end annotation
+.end field
+
+.field private final b:Ljava/lang/Long;
+    .annotation runtime LZ3/b;
+        value = "parsedNoSongId"
+    .end annotation
+.end field
+
+.field private final c:Ljava/lang/Long;
+    .annotation runtime LZ3/b;
+        value = "parsedNoMediaMid"
+    .end annotation
+.end field
+
+.field private final d:Ljava/lang/Long;
+    .annotation runtime LZ3/b;
+        value = "resolveTotal"
+    .end annotation
+.end field
+
+.field private final e:Ljava/lang/Long;
+    .annotation runtime LZ3/b;
+        value = "resolveNoSongMid"
+    .end annotation
+.end field
+
+.field private final f:Ljava/lang/Long;
+    .annotation runtime LZ3/b;
+        value = "resolveMediaMidFallback"
+    .end annotation
+.end field
+
+.field private final g:Ljava/lang/Long;
+    .annotation runtime LZ3/b;
+        value = "resolveOk"
+    .end annotation
+.end field
+
+.field private final h:Ljava/lang/Long;
+    .annotation runtime LZ3/b;
+        value = "resolveFail"
+    .end annotation
+.end field
+
+.field private final i:Ljava/lang/Long;
+    .annotation runtime LZ3/b;
+        value = "fallbackPlaybackConfirmed"
+    .end annotation
+.end field
+
+.field private final j:Ljava/lang/Long;
+    .annotation runtime LZ3/b;
+        value = "fallbackPlaybackFailed"
+    .end annotation
+.end field
+
+.field private final k:Ljava/lang/Long;
+    .annotation runtime LZ3/b;
+        value = "firstSeenAtMs"
+    .end annotation
+.end field
+
+.field private final l:Ljava/lang/Long;
+    .annotation runtime LZ3/b;
+        value = "lastUpdatedAtMs"
+    .end annotation
+.end field
+
+.field private final m:Ljava/lang/Integer;
+    .annotation runtime LZ3/b;
+        value = "schemaVersion"
+    .end annotation
+.end field
+
+
+# direct methods

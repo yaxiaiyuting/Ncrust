@@ -1,0 +1,102 @@
+==============================================================================
+A. bit62 合成 id 的 64 位有符号 Long 形态
+==============================================================================
+QQ_ID_FLAG = 1L shl 62 = 4611686018427387904
+2^63 - 1 (Long.MAX_VALUE) = 9223372036854775807
+
+样本                                                           十进制值     符号    > 0 ?    isQqId sourceOfId        qqRawId
+----------------------------------------------------------------------------------------------------------------------
+真机实测 QQ 曲目（怪我太天真 / 苏谭谭）                       4611686018784987997      +      yes      True   QQMUSIC      357600093
+真机实测 QQ 曲目反解出的裸 songid                                  357600093      +      yes     False   NETEASE           None
+网易云样本（S6 落盘的 song_id）                                      557920      +      yes     False   NETEASE           None
+网易云《晴天》                                                    186016      +      yes     False   NETEASE           None
+1L shl 62 本身（标志位）                             4611686018427387904      +      yes      True   QQMUSIC              0
+QQ 标志位 + 1000000000                           4611686019427387904      +      yes      True   QQMUSIC     1000000000
+QQ 标志位 + 1                                    4611686018427387905      +      yes      True   QQMUSIC              1
+
+判据结论：bit62 置位后 **符号位（bit63）仍为 0**，所以 id 依然是一个巨大的正数，
+`songId <= 0` 这条卫语句**拦不住**它；而 `isQqId()` 是唯一能一眼分辨音源的判据。
+
+==============================================================================
+B. PlayReporter.reportPlay() 入口卫语句逐条求值
+==============================================================================
+
+--- 样本：真机实测 QQ 曲目（怪我太天真 / 苏谭谭）
+    songId = 4611686018784987997   （sourceOfId = QQMUSIC）
+    [PASS] L47  getCookie() != null               cookie=<非空>
+    [PASS] L48a cookie.contains("MUSIC_U")        网易云登录态
+    [PASS] L48b songId <= 0                       songId=4611686018784987997 ⇒ songId<=0 为 False
+    [PASS] L50  getCsrfToken() != null            cookie 里是否有 __csrf=
+    => 通过全部卫语句，**会发出上报**
+    将 POST 到 https://clientlogusf.music.163.com/api/feedback/weblog?csrf_token=deadbeef
+    form: logs=[{"action":"play","json":{"type":"song","wifi":1,"download":0,"id":4611686018784987997,"time":200000,"end":"playend","mainsite":"1","mainsiteWeb":"1"}}]
+
+--- 样本：真机实测 QQ 曲目反解出的裸 songid
+    songId = 357600093   （sourceOfId = NETEASE）
+    [PASS] L47  getCookie() != null               cookie=<非空>
+    [PASS] L48a cookie.contains("MUSIC_U")        网易云登录态
+    [PASS] L48b songId <= 0                       songId=357600093 ⇒ songId<=0 为 False
+    [PASS] L50  getCsrfToken() != null            cookie 里是否有 __csrf=
+    => 通过全部卫语句，**会发出上报**
+    将 POST 到 https://clientlogusf.music.163.com/api/feedback/weblog?csrf_token=deadbeef
+    form: logs=[{"action":"play","json":{"type":"song","wifi":1,"download":0,"id":357600093,"time":200000,"end":"playend","mainsite":"1","mainsiteWeb":"1"}}]
+
+--- 样本：网易云样本（S6 落盘的 song_id）
+    songId = 557920   （sourceOfId = NETEASE）
+    [PASS] L47  getCookie() != null               cookie=<非空>
+    [PASS] L48a cookie.contains("MUSIC_U")        网易云登录态
+    [PASS] L48b songId <= 0                       songId=557920 ⇒ songId<=0 为 False
+    [PASS] L50  getCsrfToken() != null            cookie 里是否有 __csrf=
+    => 通过全部卫语句，**会发出上报**
+    将 POST 到 https://clientlogusf.music.163.com/api/feedback/weblog?csrf_token=deadbeef
+    form: logs=[{"action":"play","json":{"type":"song","wifi":1,"download":0,"id":557920,"time":200000,"end":"playend","mainsite":"1","mainsiteWeb":"1"}}]
+
+--- 样本：网易云《晴天》
+    songId = 186016   （sourceOfId = NETEASE）
+    [PASS] L47  getCookie() != null               cookie=<非空>
+    [PASS] L48a cookie.contains("MUSIC_U")        网易云登录态
+    [PASS] L48b songId <= 0                       songId=186016 ⇒ songId<=0 为 False
+    [PASS] L50  getCsrfToken() != null            cookie 里是否有 __csrf=
+    => 通过全部卫语句，**会发出上报**
+    将 POST 到 https://clientlogusf.music.163.com/api/feedback/weblog?csrf_token=deadbeef
+    form: logs=[{"action":"play","json":{"type":"song","wifi":1,"download":0,"id":186016,"time":200000,"end":"playend","mainsite":"1","mainsiteWeb":"1"}}]
+
+--- 样本：1L shl 62 本身（标志位）
+    songId = 4611686018427387904   （sourceOfId = QQMUSIC）
+    [PASS] L47  getCookie() != null               cookie=<非空>
+    [PASS] L48a cookie.contains("MUSIC_U")        网易云登录态
+    [PASS] L48b songId <= 0                       songId=4611686018427387904 ⇒ songId<=0 为 False
+    [PASS] L50  getCsrfToken() != null            cookie 里是否有 __csrf=
+    => 通过全部卫语句，**会发出上报**
+    将 POST 到 https://clientlogusf.music.163.com/api/feedback/weblog?csrf_token=deadbeef
+    form: logs=[{"action":"play","json":{"type":"song","wifi":1,"download":0,"id":4611686018427387904,"time":200000,"end":"playend","mainsite":"1","mainsiteWeb":"1"}}]
+
+--- 样本：QQ 标志位 + 1000000000
+    songId = 4611686019427387904   （sourceOfId = QQMUSIC）
+    [PASS] L47  getCookie() != null               cookie=<非空>
+    [PASS] L48a cookie.contains("MUSIC_U")        网易云登录态
+    [PASS] L48b songId <= 0                       songId=4611686019427387904 ⇒ songId<=0 为 False
+    [PASS] L50  getCsrfToken() != null            cookie 里是否有 __csrf=
+    => 通过全部卫语句，**会发出上报**
+    将 POST 到 https://clientlogusf.music.163.com/api/feedback/weblog?csrf_token=deadbeef
+    form: logs=[{"action":"play","json":{"type":"song","wifi":1,"download":0,"id":4611686019427387904,"time":200000,"end":"playend","mainsite":"1","mainsiteWeb":"1"}}]
+
+--- 样本：QQ 标志位 + 1
+    songId = 4611686018427387905   （sourceOfId = QQMUSIC）
+    [PASS] L47  getCookie() != null               cookie=<非空>
+    [PASS] L48a cookie.contains("MUSIC_U")        网易云登录态
+    [PASS] L48b songId <= 0                       songId=4611686018427387905 ⇒ songId<=0 为 False
+    [PASS] L50  getCsrfToken() != null            cookie 里是否有 __csrf=
+    => 通过全部卫语句，**会发出上报**
+    将 POST 到 https://clientlogusf.music.163.com/api/feedback/weblog?csrf_token=deadbeef
+    form: logs=[{"action":"play","json":{"type":"song","wifi":1,"download":0,"id":4611686018427387905,"time":200000,"end":"playend","mainsite":"1","mainsiteWeb":"1"}}]
+
+==============================================================================
+C. reachedCompletion 的浮点判定（纯函数，与音源无关）
+==============================================================================
+    reachedCompletion(pos=      0, dur=      0) = False
+    reachedCompletion(pos=      0, dur= 200000) = False
+    reachedCompletion(pos= 159999, dur= 200000) = False
+    reachedCompletion(pos= 160000, dur= 200000) = True
+    reachedCompletion(pos= 200000, dur= 200000) = True
+    判定只看两个 Long 的比值，**输入里没有音源维度** ⇒ 对 QQ 曲目与网易云曲目完全同构。

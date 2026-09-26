@@ -1,0 +1,123 @@
+# 命令: grep -n -A 12 "^<FQCN> ->" mapping.txt   —— 行号 = mapping.txt 物理行号，可用于逐条指认
+########## com.takahashirinta.ncrust.cache.OfflineTrack
+406570:com.takahashirinta.ncrust.cache.OfflineTrack -> F4.h:
+406571-# {"id":"sourceFile","fileName":"OfflineLibrary.kt"}
+406572-    long songId -> a
+406573-    java.lang.String name -> b
+406574-    java.lang.String artist -> c
+406575-    java.lang.String albumPicUrl -> d
+406576-    java.lang.Long durationMs -> e
+406577-    java.lang.String level -> f
+406578-    java.lang.String cacheKey -> g
+406579-    java.lang.Long approxBytes -> h
+406580-    java.lang.Long completedAt -> i
+406581-    1:3:void <init>(long,java.lang.String,java.lang.String,java.lang.String,java.lang.Long,java.lang.String,java.lang.String,java.lang.Long,java.lang.Long):36:36 -> <init>
+406582-    4:5:void <init>(long,java.lang.String,java.lang.String,java.lang.String,java.lang.Long,java.lang.String,java.lang.String,java.lang.Long,java.lang.Long):38:38 -> <init>
+########## com.takahashirinta.ncrust.player.PlaybackStateManager$PositionEntry
+419670:com.takahashirinta.ncrust.player.PlaybackStateManager$PositionEntry -> H4.F:
+419671-# {"id":"sourceFile","fileName":"PlaybackStateManager.kt"}
+419672-    long posMs -> a
+419673-    long savedAtMs -> b
+419674-    1:8:void <init>(long,long):143:143 -> <init>
+419675-    5:31:boolean equals(java.lang.Object):0:0 -> equals
+419676-    1:16:int hashCode():0:0 -> hashCode
+419677-    22:26:java.lang.String toString():0:0 -> toString
+419678-    22:26:java.lang.String H4.PlaybackStateManager$PositionEntry.toString():0 -> toString
+419681-    27:27:java.lang.String toString():0:0 -> toString
+419682-    29:29:java.lang.String toString():0:0 -> toString
+########## com.takahashirinta.ncrust.library.AlbumInfo
+409058:com.takahashirinta.ncrust.library.AlbumInfo -> G4.a:
+409059-# {"id":"sourceFile","fileName":"LibraryManager.kt"}
+409060-    long albumId -> a
+409061-    java.lang.String name -> b
+409062-    java.lang.String picUrl -> c
+409063-    java.lang.String artist -> d
+409064-    int songCount -> e
+409065-    16:18:void <init>(long,java.lang.String,java.lang.String,java.lang.String,int):429:429 -> <init>
+409066-    19:20:void <init>(long,java.lang.String,java.lang.String,java.lang.String,int):431:431 -> <init>
+409067-    21:22:void <init>(long,java.lang.String,java.lang.String,java.lang.String,int):432:432 -> <init>
+409068-    23:24:void <init>(long,java.lang.String,java.lang.String,java.lang.String,int):433:433 -> <init>
+409069-    25:26:void <init>(long,java.lang.String,java.lang.String,java.lang.String,int):434:434 -> <init>
+409070-    27:29:void <init>(long,java.lang.String,java.lang.String,java.lang.String,int):435:435 -> <init>
+########## com.takahashirinta.ncrust.library.SearchHistoryCodec$EntryDto
+409687:com.takahashirinta.ncrust.library.SearchHistoryCodec$EntryDto -> G4.k:
+409688-# {"id":"sourceFile","fileName":"SearchHistoryCodec.kt"}
+409689-    java.lang.Long id -> a
+409690-    java.lang.String title -> b
+409691-    java.lang.String coverUrl -> c
+409692-    java.lang.String subtitle -> d
+409693-    java.lang.Long timestamp -> e
+409694-    java.lang.String source -> f
+409695-    java.lang.String sourceId -> g
+409696-    java.lang.String mediaId -> h
+409697-    1:3:void <init>(java.lang.Long,java.lang.String,java.lang.String,java.lang.String,java.lang.Long,java.lang.String,java.lang.String,java.lang.String):125:125 -> <init>
+409698-    4:5:void <init>(java.lang.Long,java.lang.String,java.lang.String,java.lang.String,java.lang.Long,java.lang.String,java.lang.String,java.lang.String):126:126 -> <init>
+409699-    6:7:void <init>(java.lang.Long,java.lang.String,java.lang.String,java.lang.String,java.lang.Long,java.lang.String,java.lang.String,java.lang.String):127:127 -> <init>
+########## com.takahashirinta.ncrust.library.SearchHistoryManager$HistoryItem
+409718:com.takahashirinta.ncrust.library.SearchHistoryManager$HistoryItem -> G4.m:
+409719-# {"id":"sourceFile","fileName":"SearchHistoryManager.kt"}
+409720-    long id -> a
+409721-    java.lang.String title -> b
+409722-    java.lang.String coverUrl -> c
+409723-    java.lang.String subtitle -> d
+409724-    long timestamp -> e
+409725-    java.lang.String source -> f
+409726-    java.lang.String sourceId -> g
+409727-    java.lang.String mediaId -> h
+409728-    1:6:void <init>(long,java.lang.String,java.lang.String,java.lang.String,long,java.lang.String,java.lang.String,java.lang.String):44:49 -> <init>
+409729-    7:7:void <init>(long,java.lang.String,java.lang.String,java.lang.String,long,java.lang.String,java.lang.String,java.lang.String):55:55 -> <init>
+409730-    8:8:void <init>(long,java.lang.String,java.lang.String,java.lang.String,long,java.lang.String,java.lang.String,java.lang.String):57:57 -> <init>
+########## com.takahashirinta.ncrust.qq.QqFallbackCounters
+424065:com.takahashirinta.ncrust.qq.QqFallbackCounters -> I4.I:
+424066-# {"id":"sourceFile","fileName":"QqFallbackStats.kt"}
+424067-    java.lang.Long parsedTotal -> a
+424068-    java.lang.Long parsedNoSongId -> b
+424069-    java.lang.Long parsedNoMediaMid -> c
+424070-    java.lang.Long resolveTotal -> d
+424071-    java.lang.Long resolveNoSongMid -> e
+424072-    java.lang.Long resolveMediaMidFallback -> f
+424073-    java.lang.Long resolveOk -> g
+424074-    java.lang.Long resolveFail -> h
+424075-    java.lang.Long fallbackPlaybackConfirmed -> i
+424076-    java.lang.Long fallbackPlaybackFailed -> j
+424077-    java.lang.Long firstSeenAtMs -> k
+########## com.takahashirinta.ncrust.lyric.CachedLyrics
+410568:com.takahashirinta.ncrust.lyric.CachedLyrics -> com.takahashirinta.ncrust.lyric.CachedLyrics:
+410569-# {"id":"sourceFile","fileName":"LyricsCache.kt"}
+410570-    1:10:void <init>(java.lang.String,java.lang.String,long,java.lang.String,java.lang.String,long,java.lang.String,java.lang.String,java.lang.String):36:45 -> <init>
+410571-    11:11:void <init>(java.lang.String,java.lang.String,long,java.lang.String,java.lang.String,long,java.lang.String,java.lang.String,java.lang.String,int,kotlin.jvm.internal.DefaultConstructorMarker):36:36 -> <init>
+410573-    1:3:java.lang.String getLrc():37:37 -> getLrc
+410574-    1:3:java.lang.String getRomalrc():43:43 -> getRomalrc
+410575-    1:3:java.lang.String getRomanSource():45:45 -> getRomanSource
+410576-    1:3:long getTimestamp():39:39 -> getTimestamp
+410577-    1:3:java.lang.String getTlyric():38:38 -> getTlyric
+410578-    1:3:java.lang.String getTranslationSource():44:44 -> getTranslationSource
+410579-    1:3:java.lang.String getTtml():41:41 -> getTtml
+410580-    1:3:long getTtmlAt():42:42 -> getTtmlAt
+########## com.takahashirinta.ncrust.network.SongItem
+414683:com.takahashirinta.ncrust.network.SongItem -> com.takahashirinta.ncrust.network.SongItem:
+414684-# {"id":"sourceFile","fileName":"SearchResponse.kt"}
+414685-    1:1:void <init>(long,java.lang.String,java.util.List,com.takahashirinta.ncrust.network.model.AlbumItem,java.lang.Long,java.lang.String,java.lang.String,java.lang.String,java.lang.Integer,java.lang.Boolean,com.takahashirinta.ncrust.network.SongPrivilege,com.takahashirinta.ncrust.network.NoCopyrightRecommendation,java.lang.Integer,com.takahashirinta.ncrust.network.OriginSongRef):21:21 -> <init>
+414686-    2:6:void <init>(long,java.lang.String,java.util.List,com.takahashirinta.ncrust.network.model.AlbumItem,java.lang.Long,java.lang.String,java.lang.String,java.lang.String,java.lang.Integer,java.lang.Boolean,com.takahashirinta.ncrust.network.SongPrivilege,com.takahashirinta.ncrust.network.NoCopyrightRecommendation,java.lang.Integer,com.takahashirinta.ncrust.network.OriginSongRef):23:27 -> <init>
+414687-    7:7:void <init>(long,java.lang.String,java.util.List,com.takahashirinta.ncrust.network.model.AlbumItem,java.lang.Long,java.lang.String,java.lang.String,java.lang.String,java.lang.Integer,java.lang.Boolean,com.takahashirinta.ncrust.network.SongPrivilege,com.takahashirinta.ncrust.network.NoCopyrightRecommendation,java.lang.Integer,com.takahashirinta.ncrust.network.OriginSongRef):36:36 -> <init>
+414688-    8:8:void <init>(long,java.lang.String,java.util.List,com.takahashirinta.ncrust.network.model.AlbumItem,java.lang.Long,java.lang.String,java.lang.String,java.lang.String,java.lang.Integer,java.lang.Boolean,com.takahashirinta.ncrust.network.SongPrivilege,com.takahashirinta.ncrust.network.NoCopyrightRecommendation,java.lang.Integer,com.takahashirinta.ncrust.network.OriginSongRef):44:44 -> <init>
+414689-    9:9:void <init>(long,java.lang.String,java.util.List,com.takahashirinta.ncrust.network.model.AlbumItem,java.lang.Long,java.lang.String,java.lang.String,java.lang.String,java.lang.Integer,java.lang.Boolean,com.takahashirinta.ncrust.network.SongPrivilege,com.takahashirinta.ncrust.network.NoCopyrightRecommendation,java.lang.Integer,com.takahashirinta.ncrust.network.OriginSongRef):54:54 -> <init>
+414690-    10:10:void <init>(long,java.lang.String,java.util.List,com.takahashirinta.ncrust.network.model.AlbumItem,java.lang.Long,java.lang.String,java.lang.String,java.lang.String,java.lang.Integer,java.lang.Boolean,com.takahashirinta.ncrust.network.SongPrivilege,com.takahashirinta.ncrust.network.NoCopyrightRecommendation,java.lang.Integer,com.takahashirinta.ncrust.network.OriginSongRef):66:66 -> <init>
+414691-    11:11:void <init>(long,java.lang.String,java.util.List,com.takahashirinta.ncrust.network.model.AlbumItem,java.lang.Long,java.lang.String,java.lang.String,java.lang.String,java.lang.Integer,java.lang.Boolean,com.takahashirinta.ncrust.network.SongPrivilege,com.takahashirinta.ncrust.network.NoCopyrightRecommendation,java.lang.Integer,com.takahashirinta.ncrust.network.OriginSongRef):76:76 -> <init>
+414692-    12:12:void <init>(long,java.lang.String,java.util.List,com.takahashirinta.ncrust.network.model.AlbumItem,java.lang.Long,java.lang.String,java.lang.String,java.lang.String,java.lang.Integer,java.lang.Boolean,com.takahashirinta.ncrust.network.SongPrivilege,com.takahashirinta.ncrust.network.NoCopyrightRecommendation,java.lang.Integer,com.takahashirinta.ncrust.network.OriginSongRef):90:90 -> <init>
+414693-    13:13:void <init>(long,java.lang.String,java.util.List,com.takahashirinta.ncrust.network.model.AlbumItem,java.lang.Long,java.lang.String,java.lang.String,java.lang.String,java.lang.Integer,java.lang.Boolean,com.takahashirinta.ncrust.network.SongPrivilege,com.takahashirinta.ncrust.network.NoCopyrightRecommendation,java.lang.Integer,com.takahashirinta.ncrust.network.OriginSongRef):98:98 -> <init>
+414694-    14:14:void <init>(long,java.lang.String,java.util.List,com.takahashirinta.ncrust.network.model.AlbumItem,java.lang.Long,java.lang.String,java.lang.String,java.lang.String,java.lang.Integer,java.lang.Boolean,com.takahashirinta.ncrust.network.SongPrivilege,com.takahashirinta.ncrust.network.NoCopyrightRecommendation,java.lang.Integer,com.takahashirinta.ncrust.network.OriginSongRef):107:107 -> <init>
+414695-    15:15:void <init>(long,java.lang.String,java.util.List,com.takahashirinta.ncrust.network.model.AlbumItem,java.lang.Long,java.lang.String,java.lang.String,java.lang.String,java.lang.Integer,java.lang.Boolean,com.takahashirinta.ncrust.network.SongPrivilege,com.takahashirinta.ncrust.network.NoCopyrightRecommendation,java.lang.Integer,com.takahashirinta.ncrust.network.OriginSongRef):114:114 -> <init>
+########## com.takahashirinta.ncrust.cache.OfflineUrlIndex
+406594:com.takahashirinta.ncrust.cache.OfflineUrlIndex -> F4.i:
+406595-# {"id":"sourceFile","fileName":"OfflineUrlStore.kt"}
+406596-    int maxEntries -> a
+406597-    java.util.LinkedHashMap map -> b
+406598-    1:7:void <init>(int):22:22 -> <init>
+406599-    1:7:void <init>(int,int,kotlin.jvm.internal.DefaultConstructorMarker):22 -> <init>
+406601-    8:15:void <init>(int):24:24 -> <init>
+406602-    8:15:void <init>(int,int,kotlin.jvm.internal.DefaultConstructorMarker):22 -> <init>
+406603-    11:24:void put(java.lang.String,java.lang.String):27:27 -> a
+406604-    25:29:void put(java.lang.String,java.lang.String):28:28 -> a
+406605-    30:32:void put(java.lang.String,java.lang.String):29:29 -> a
+406606-    33:40:void put(java.lang.String,java.lang.String):30:30 -> a

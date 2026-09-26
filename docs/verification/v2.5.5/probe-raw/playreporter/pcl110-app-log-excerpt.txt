@@ -1,0 +1,80 @@
+# PCL110 (Android 16 / v2.5.4-gpl, versionCode 45) · 应用侧日志摘录
+# 来源：adb -s 3B15CD00GB700000 logcat -v time（2026-09-26 18:33:11 清缓冲后开始捕获）
+# 过滤：只保留 tag ∈ {NcrustTrack, PlayReporter, PlaybackService, PlayerViewModel, QqProbe*} 的行
+# 未编辑、未重排；时间戳与 pid 原样。
+
+09-26 18:34:32.857 I/PlaybackService(17924): idle release: dropped artwork bitmaps
+09-26 18:35:12.270 I/NcrustTrack(32055): restore -> track=qqmusic:4611686018784987997 mid=001A7neE3LB7Ki media=000g0rin0v8VU2 mid=001A7neE3LB7Ki media=000g0rin0v8VU2 (sourceKey=qqmusic)
+09-26 18:35:12.271 I/NcrustTrack(32055): lyric request begin: track=qqmusic:4611686018784987997 mid=001A7neE3LB7Ki media=000g0rin0v8VU2 gen=1
+09-26 18:35:12.817 I/NcrustTrack(32055): qq lyric APPLIED track=qqmusic:4611686018784987997 mid=001A7neE3LB7Ki media=000g0rin0v8VU2 lines=62
+09-26 18:35:19.999 D/PlaybackService(32055): onCreate
+09-26 18:35:20.008 I/PlaybackService(32055): AudioOffload: mp3 supported=false (decision: disabled by design)
+09-26 18:35:20.013 I/PlaybackService(32055): LoadControl profile=low totalMem=15371MB
+09-26 18:35:20.097 D/PlaybackService(32055): onStartCommand action=next
+09-26 18:35:20.127 I/NcrustTrack(32055): playSong -> currentTrack=netease:503572 cacheKey=503572
+09-26 18:35:20.308 I/NcrustTrack(32055): preload enqueued: slotTrack=netease:557897
+09-26 18:35:20.308 D/PlaybackService(32055): onStartCommand action=preload_next
+09-26 18:35:20.320 D/PlaybackService(32055): Queued next: 魂のルフラン (English Version) url=http://m801.music.126.net/20260926190020/b3aeb5a58e1e3b0578b7f35f1fcca7df/jdymusic/obj/wo3DlMOGwrbDjj7DisKw/61260564964/a768/a26e/f647/22938d4fddfb388cf37c9a93050a8179.flac?vuutv=m4wLYgcTf8xc+6x73G/7QDHB8o9pJ1+hHvsP5oTeKPv6JXgdcmw/EXDDZ4/Ona4EQGuO9sSEB7hiONReIbosc0uSYsblv/ir0fipmeI9PuU=&ncrustkey=song:557897:jymaster count=1
+09-26 18:35:20.325 I/NcrustTrack(32055): lyric request begin: track=netease:503572 gen=3
+09-26 18:35:20.325 I/PlayerViewModel(32055): quality verdict requested=jymaster granted=jymaster br=5783202 type=flac songMax=null -> displayIdx=6 status=NORMAL
+09-26 18:35:20.331 D/PlaybackService(32055): onStartCommand action=null
+09-26 18:35:20.332 D/PlaybackService(32055): Playing: http://m701.music.126.net/20260926190020/966dec91a40f5cc6e770bc7f3e68aef5/jdymusic/obj/wo3DlMOGwrbDjj7DisKw/61063726140/6311/0e8d/3727/63fb392220f97ed0fbc50b1fbbe0e764.flac?vuutv=9T74J0FtA+T5S+ymfIbGH/oxzqWMr/vVLLSI9enRkw1cabFwnpTeO8OCxtPbb3qnLHEa6x2afvISm+zqewrgEWx6ThHcQAa42CIMFeb9vI0=&ncrustkey=song:503572:jymaster startPositionMs=0
+09-26 18:35:20.390 D/PlayReporter(32055): weblog resp: 200 duration=0/0
+09-26 18:35:20.640 D/PlayerViewModel(32055): fetchLyrics id=503572 code=200 lrc=18 tlyric=0 yrc=0 romalrc=0 current=503572
+09-26 18:35:20.642 I/PlayerViewModel(32055): 歌词源 songId=503572 phase=1 picked=YRC lines=1 words=false
+09-26 18:35:31.885 I/NcrustTrack(32055): playSong -> currentTrack=netease:186016 cacheKey=186016
+09-26 18:35:32.063 I/NcrustTrack(32055): preload enqueued: slotTrack=netease:1483504660
+09-26 18:35:32.064 D/PlaybackService(32055): onStartCommand action=preload_next
+09-26 18:35:32.066 D/PlaybackService(32055): Queued next: 無限抱擁 url=http://m701.music.126.net/20260926190032/0e3f15be322f3cf45f4983f9066d1f8b/jdymusic/obj/wo3DlMOGwrbDjj7DisKw/26311985983/3eb3/cb6b/4e9f/84a8ec1a3045e554e3c644c182f7b34b.flac?vuutv=sPD3MeEz/RPuegYDLLPPvyFoZXJaOy9Skf1YKwgrpl2DYx0Ag71eivRe367U1sd7Aq2nqAKjgwRq6OZFXNJXYgCrAzcglpZyvzUlz0ndCNI=&ncrustkey=song:1483504660:jymaster count=2
+09-26 18:35:32.583 W/PlayerViewModel(32055): no playable url songId=186016 requested=jymaster origin=USER (retryAttempts=0)
+09-26 18:35:32.588 W/PlayerViewModel(32055): auto skip #1 for songId=186016
+09-26 18:35:32.588 I/NcrustTrack(32055): playSong -> currentTrack=netease:1483504660 cacheKey=1483504660
+09-26 18:35:32.590 I/PlayerViewModel(32055): quality verdict requested=jymaster granted=jymaster br=4693708 type=flac songMax=null -> displayIdx=6 status=NORMAL
+09-26 18:35:32.607 I/NcrustTrack(32055): lyric request begin: track=netease:1483504660 gen=6
+09-26 18:35:32.627 D/PlaybackService(32055): onStartCommand action=null
+09-26 18:35:32.627 D/PlaybackService(32055): Playing: http://m701.music.126.net/20260926190032/0e3f15be322f3cf45f4983f9066d1f8b/jdymusic/obj/wo3DlMOGwrbDjj7DisKw/26311985983/3eb3/cb6b/4e9f/84a8ec1a3045e554e3c644c182f7b34b.flac?vuutv=sPD3MeEz/RPuegYDLLPPvyFoZXJaOy9Skf1YKwgrpl2DYx0Ag71eivRe367U1sd7Aq2nqAKjgwRq6OZFXNJXYgCrAzcglpZyvzUlz0ndCNI=&ncrustkey=song:1483504660:jymaster startPositionMs=0
+09-26 18:35:32.735 I/NcrustTrack(32055): preload enqueued: slotTrack=netease:1483511270
+09-26 18:35:32.738 D/PlaybackService(32055): onStartCommand action=preload_next
+09-26 18:35:32.739 D/PlaybackService(32055): Queued next: Kanon D dur (Strings Orchestra) url=http://m8.music.126.net/20260926190032/aa421fd3a4e8e7ccb796cad5d709f25a/ymusic/obj/w5zDlMODwrDDiGjCn8Ky/26406491490/399c/9f1a/3652/54665197d910786774b5b957359deccc.flac?vuutv=2d3sGercUBVyJFQe6yx8+Iyr6+J3TwmFmL3MpkNtzJuk5MbB7EFUkXWRT9nIbYcuNVt8NzIJ/kxJuQnvVq4dpwigke2R2DO430SPE9WxfAQ=&ncrustkey=song:1483511270:jymaster count=2
+09-26 18:35:32.871 D/PlayerViewModel(32055): fetchLyrics id=1483504660 code=200 lrc=715 tlyric=674 yrc=4510 romalrc=0 current=1483504660
+09-26 18:35:32.918 I/PlayerViewModel(32055): 歌词源 songId=1483504660 phase=1 picked=YRC lines=33 words=true
+09-26 18:35:48.002 I/NcrustTrack(13412): restore -> track=netease:1483504660 mid=none media=none (sourceKey=inferred)
+09-26 18:35:48.002 I/NcrustTrack(13412): lyric request begin: track=netease:1483504660 gen=1
+09-26 18:35:48.158 D/PlayerViewModel(13412): fetchLyrics cache hit id=1483504660 lrc=715
+09-26 18:35:48.336 I/PlayerViewModel(13412): 歌词源 songId=1483504660 phase=1 picked=YRC lines=33 words=true
+09-26 18:35:53.682 I/NcrustTrack(32732): restore -> track=netease:1483504660 mid=none media=none (sourceKey=inferred)
+09-26 18:35:53.682 I/NcrustTrack(32732): lyric request begin: track=netease:1483504660 gen=1
+09-26 18:35:53.857 D/PlayerViewModel(32732): fetchLyrics cache hit id=1483504660 lrc=715
+09-26 18:35:53.999 I/PlayerViewModel(32732): 歌词源 songId=1483504660 phase=1 picked=YRC lines=33 words=true
+09-26 18:35:59.432 I/NcrustTrack( 1571): restore -> track=netease:1483504660 mid=none media=none (sourceKey=inferred)
+09-26 18:35:59.432 I/NcrustTrack( 1571): lyric request begin: track=netease:1483504660 gen=1
+09-26 18:35:59.623 D/PlayerViewModel( 1571): fetchLyrics cache hit id=1483504660 lrc=715
+09-26 18:35:59.787 I/PlayerViewModel( 1571): 歌词源 songId=1483504660 phase=1 picked=YRC lines=33 words=true
+09-26 18:36:05.176 I/NcrustTrack( 1912): restore -> track=netease:1483504660 mid=none media=none (sourceKey=inferred)
+09-26 18:36:05.176 I/NcrustTrack( 1912): lyric request begin: track=netease:1483504660 gen=1
+09-26 18:36:05.335 D/PlayerViewModel( 1912): fetchLyrics cache hit id=1483504660 lrc=715
+09-26 18:36:05.477 I/PlayerViewModel( 1912): 歌词源 songId=1483504660 phase=1 picked=YRC lines=33 words=true
+09-26 18:36:10.898 I/NcrustTrack( 2139): restore -> track=netease:1483504660 mid=none media=none (sourceKey=inferred)
+09-26 18:36:10.898 I/NcrustTrack( 2139): lyric request begin: track=netease:1483504660 gen=1
+09-26 18:36:11.042 D/PlayerViewModel( 2139): fetchLyrics cache hit id=1483504660 lrc=715
+09-26 18:36:11.197 I/PlayerViewModel( 2139): 歌词源 songId=1483504660 phase=1 picked=YRC lines=33 words=true
+09-26 18:36:18.881 I/NcrustTrack( 2335): restore -> track=netease:1483504660 mid=none media=none (sourceKey=inferred)
+09-26 18:36:18.881 I/NcrustTrack( 2335): lyric request begin: track=netease:1483504660 gen=1
+09-26 18:36:19.010 D/PlayerViewModel( 2335): fetchLyrics cache hit id=1483504660 lrc=715
+09-26 18:36:19.160 I/PlayerViewModel( 2335): 歌词源 songId=1483504660 phase=1 picked=YRC lines=33 words=true
+09-26 18:36:36.792 I/NcrustTrack( 2588): restore -> track=netease:1483504660 mid=none media=none (sourceKey=inferred)
+09-26 18:36:36.792 I/NcrustTrack( 2588): lyric request begin: track=netease:1483504660 gen=1
+09-26 18:36:37.008 D/PlayerViewModel( 2588): fetchLyrics cache hit id=1483504660 lrc=715
+09-26 18:36:37.272 I/PlayerViewModel( 2588): 歌词源 songId=1483504660 phase=1 picked=YRC lines=33 words=true
+09-26 18:36:46.943 I/NcrustTrack( 3022): restore -> track=netease:1483504660 mid=none media=none (sourceKey=inferred)
+09-26 18:36:46.943 I/NcrustTrack( 3022): lyric request begin: track=netease:1483504660 gen=1
+09-26 18:36:47.073 D/PlayerViewModel( 3022): fetchLyrics cache hit id=1483504660 lrc=715
+09-26 18:36:47.207 I/PlayerViewModel( 3022): 歌词源 songId=1483504660 phase=1 picked=YRC lines=33 words=true
+09-26 18:36:57.682 I/NcrustTrack( 3826): restore -> track=netease:1483504660 mid=none media=none (sourceKey=inferred)
+09-26 18:36:57.682 I/NcrustTrack( 3826): lyric request begin: track=netease:1483504660 gen=1
+09-26 18:36:57.892 D/PlayerViewModel( 3826): fetchLyrics cache hit id=1483504660 lrc=715
+09-26 18:36:58.106 I/PlayerViewModel( 3826): 歌词源 songId=1483504660 phase=1 picked=YRC lines=33 words=true
+09-26 18:37:08.084 I/NcrustTrack( 4605): restore -> track=netease:1483504660 mid=none media=none (sourceKey=inferred)
+09-26 18:37:08.084 I/NcrustTrack( 4605): lyric request begin: track=netease:1483504660 gen=1
+09-26 18:37:08.260 D/PlayerViewModel( 4605): fetchLyrics cache hit id=1483504660 lrc=715
+09-26 18:37:08.356 I/PlayerViewModel( 4605): 歌词源 songId=1483504660 phase=1 picked=YRC lines=33 words=true

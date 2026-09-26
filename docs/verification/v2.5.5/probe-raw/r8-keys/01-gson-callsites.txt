@@ -1,0 +1,54 @@
+# 命令: grep -rn "toJson\|fromJson" app/src/main/java/com/takahashirinta/ncrust/ | sort
+# 时间: 2026-09-26T18:35:01+08:00  仓库 HEAD: 10e9df9
+./cache/HomeSnapshot.kt:118:        return runCatching { gson.fromJson<List<T>>(raw, type) }.getOrNull()?.takeIf { it.isNotEmpty() }
+./cache/HomeSnapshot.kt:79:                    ?.let { editor.putString(KEY_DAILY, gson.toJson(it.take(MAX_ITEMS), songListType)) }
+./cache/HomeSnapshot.kt:81:                    ?.let { editor.putString(KEY_PLAYLISTS, gson.toJson(it.take(MAX_ITEMS), cardListType)) }
+./cache/HomeSnapshot.kt:83:                    ?.let { editor.putString(KEY_NEW_SONGS, gson.toJson(it.take(MAX_ITEMS), songListType)) }
+./cache/HomeSnapshot.kt:85:                    ?.let { editor.putString(KEY_TOPLISTS, gson.toJson(it.take(MAX_ITEMS), cardListType)) }
+./cache/OfflineLibrary.kt:144:    fun toJson(): String = Gson().toJson(map.values.toList())
+./cache/OfflineLibrary.kt:150:        fun fromJson(json: String?): OfflineLibraryIndex {
+./cache/OfflineLibrary.kt:155:                val loaded: List<OfflineTrack>? = Gson().fromJson(json, type)
+./cache/OfflineLibrary.kt:187:            val loaded = OfflineLibraryIndex.fromJson(prefs.getString(KEY_TRACKS, null))
+./cache/OfflineLibrary.kt:196:                .edit().putString(KEY_TRACKS, idx.toJson()).apply()
+./cache/OfflineUrlStore.kt:118:            val loaded = OfflineUrlIndex.fromJson(prefs.getString(KEY_URLS, null))
+./cache/OfflineUrlStore.kt:127:                .edit().putString(KEY_URLS, idx.toJson()).apply()
+./cache/OfflineUrlStore.kt:81:    fun toJson(): String = Gson().toJson(map)
+./cache/OfflineUrlStore.kt:86:        fun fromJson(json: String?): OfflineUrlIndex {
+./cache/OfflineUrlStore.kt:91:                val loaded: LinkedHashMap<String, String>? = Gson().fromJson(json, type)
+./crosssource/MatchCacheCodec.kt:171:            aliasesJson = gson.toJson(aliases),
+./crosssource/MatchCacheCodec.kt:173:        return gson.toJson(env)
+./crosssource/MatchCacheCodec.kt:181:        val env = runCatching { gson.fromJson(raw, EnvelopeDto::class.java) }.getOrNull()
+./crosssource/MatchCacheCodec.kt:203:            ?.let { json -> runCatching { gson.fromJson<List<AliasDto>>(json, aliasListType) }.getOrNull() }
+./library/LibraryManager.kt:113:                    else (gson.fromJson<List<AlbumInfo>>(json, albumListType) ?: emptyList())
+./library/LibraryManager.kt:129:                    else (gson.fromJson<List<Long>>(json, idListType) ?: emptyList())
+./library/LibraryManager.kt:163:                .putString(KEY_SONGS, gson.toJson(songsSnapshot))
+./library/LibraryManager.kt:164:                .putString(KEY_ALBUMS, gson.toJson(albumsSnapshot))
+./library/LibraryManager.kt:165:                .putString(KEY_LIKED_IDS, gson.toJson(likedIdsSnapshot))
+./library/LibraryManager.kt:97:                    else (gson.fromJson<List<SongItem>>(json, songListType) ?: emptyList())
+./library/SearchHistoryCodec.kt:140:        gson.toJson(items.map { it.toDto() })
+./local/LocalPlaylistCodec.kt:117:        gson.toJson(playlists.map { it.toDto() }, playlistListType)
+./local/LocalPlaylistCodec.kt:123:            gson.fromJson<List<LocalPlaylistDto>>(json, playlistListType)
+./local/LocalPlaylistCodec.kt:130:        gson.toJson(
+./local/LocalPlaylistCodec.kt:159:                gson.fromJson<List<LocalTrackDto>>(trimmed, trackListType)
+./local/LocalPlaylistCodec.kt:164:            gson.fromJson(trimmed, PlaylistEnvelopeDto::class.java)
+./local/LocalPlaylistCodec.kt:208:        song = song?.let { runCatching { gson.toJson(it) }.getOrNull() },
+./local/LocalPlaylistCodec.kt:228:                runCatching { gson.fromJson<SongItem>(it, songListType) }.getOrNull()
+./lyric/LyricsCache.kt:114:            .putString(KEY_ENTRIES, gson.toJson(map))
+./lyric/LyricsCache.kt:95:            runCatching { gson.fromJson<MutableMap<String, CachedLyrics>>(raw, type) }
+./player/PlaybackStateManager.kt:156:                    else (gson.fromJson<MutableMap<Long, PositionEntry>>(json, positionMapType)
+./player/PlaybackStateManager.kt:218:            val json = withContext(Dispatchers.Default) { gson.toJson(snapshot) }
+./player/PlaybackStateManager.kt:257:            val json = withContext(Dispatchers.Default) { gson.toJson(queue) }
+./player/PlaybackStateManager.kt:276:                gson.fromJson(json, songListType)
+./player/PlaybackStateManager.kt:62:    // 200 ms 合并一次能把连续 20 首歌的加入压成 1 次 IO，避免主线程 Gson.toJson 抖动。
+./playlist/PlaylistCacheCodec.kt:242:        gson.toJson(
+./playlist/PlaylistCacheCodec.kt:247:                playlistsJson = gson.toJson(playlists.map { it.toDto() }, playlistListType),
+./playlist/PlaylistCacheCodec.kt:257:    ): String = gson.toJson(
+./playlist/PlaylistCacheCodec.kt:264:            songsJson = gson.toJson(songs.map { it.toDto() }, songListType),
+./playlist/PlaylistCacheCodec.kt:285:        val env = runCatching { gson.fromJson(raw, ListEnvelope::class.java) }.getOrNull()
+./playlist/PlaylistCacheCodec.kt:315:        val env = runCatching { gson.fromJson(raw, DetailEnvelope::class.java) }.getOrNull()
+./playlist/PlaylistCacheCodec.kt:80:        return runCatching { gson.fromJson<List<PlaylistDto>>(json, playlistListType) }.getOrNull()
+./playlist/PlaylistCacheCodec.kt:85:        return runCatching { gson.fromJson<List<SongDto>>(json, songListType) }.getOrNull()
+./qq/QqProbeStore.kt:52:            gson.fromJson(json, QqFallbackCounters::class.java)
+./qq/QqProbeStore.kt:58:    fun encode(counters: QqFallbackCounters): String = gson.toJson(counters)
+./ui/screen/UserScreen.kt:377:                            "qq fallback stats = " + com.google.gson.Gson().toJson(stats),
+./ui/viewmodel/SongViewModel.kt:29:                val c = Gson().toJson(listOf(mapOf("id" to songId, "v" to 0)))

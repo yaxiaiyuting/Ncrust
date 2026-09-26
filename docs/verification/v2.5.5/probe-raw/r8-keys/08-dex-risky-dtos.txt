@@ -1,0 +1,58 @@
+# 命令: apkanalyzer dex code --class <混淆类名> <apk>
+# 三个「无注解 + 无 keep」的落盘 DTO：字段名就是单字母，无任何注解
+########## F4.h = com.takahashirinta.ncrust.cache.OfflineTrack -> ncrust_offline/tracks
+# instance fields
+.field public final a:J
+
+.field public final b:Ljava/lang/String;
+
+.field public final c:Ljava/lang/String;
+
+.field public final d:Ljava/lang/String;
+
+.field public final e:Ljava/lang/Long;
+
+.field public final f:Ljava/lang/String;
+
+.field public final g:Ljava/lang/String;
+
+.field public final h:Ljava/lang/Long;
+
+.field public final i:Ljava/lang/Long;
+
+
+# direct methods
+
+########## H4.F = com.takahashirinta.ncrust.player.PlaybackStateManager$PositionEntry -> ncrust_playback_state/song_positions
+# instance fields
+.field public final a:J
+
+.field public final b:J
+
+
+# direct methods
+
+########## G4.a = com.takahashirinta.ncrust.library.AlbumInfo -> ncrust_library/saved_albums
+# instance fields
+.field public final a:J
+
+.field public final b:Ljava/lang/String;
+
+.field public final c:Ljava/lang/String;
+
+.field public final d:Ljava/lang/String;
+
+.field public final e:I
+
+
+# direct methods
+
+########## F4.i = com.takahashirinta.ncrust.cache.OfflineUrlIndex -> ncrust_offline/urls（本身不直接序列化，见 §3）
+# instance fields
+.field public final a:I
+
+.field public final b:Ljava/util/LinkedHashMap;
+
+
+# direct methods
+

@@ -1,0 +1,25 @@
+== 生成时间 2026-09-26T18:40:04+08:00 ==
+$ find benchmark/src -type f
+benchmark/src/main/AndroidManifest.xml
+benchmark/src/main/java/com/takahashirinta/ncrust/benchmark/ExpandPlayerBenchmark.kt
+benchmark/src/main/java/com/takahashirinta/ncrust/benchmark/HomeScrollBenchmark.kt
+benchmark/src/main/java/com/takahashirinta/ncrust/benchmark/SettingsScrollBenchmark.kt
+benchmark/src/main/java/com/takahashirinta/ncrust/benchmark/StartupBenchmark.kt
+
+$ grep -rn 'LoginCookieInjector|cookie.secret|cookieSecret' --include=*.kt --include=*.kts --include=*.sh .
+(无命中)
+
+$ ls -la benchmark/cookie.secret
+ls: 无法访问 'benchmark/cookie.secret': 没有那个文件或目录
+
+$ grep -n 'cleartext|usesCleartextTraffic|networkSecurityConfig' benchmark/src/main/AndroidManifest.xml
+(无命中: 测试 manifest 未声明 localhost 明文 HTTP)
+
+$ grep -n 'profileable' -A3 app/src/main/AndroidManifest.xml
+37:        <profileable
+38-            android:shell="true"
+39-            tools:targetApi="29" />
+40-
+
+$ grep -n 'requestPermissions' app/src/main/java/com/takahashirinta/ncrust/MainActivity.kt
+212:            requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1001)

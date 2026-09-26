@@ -12,6 +12,7 @@
  */
 
 package com.takahashirinta.ncrust
+import com.takahashirinta.ncrust.ui.player.TrayLayout
 import com.takahashirinta.ncrust.ui.player.VisualizerSetting
 import com.takahashirinta.ncrust.ui.theme.LocalNcrustColors
 
@@ -880,7 +881,11 @@ fun MainScreen(
 
     // 卡片相关尺寸。宽屏无底部导航, navBar 高度记 0, miniBar 直接贴到系统栏之上。
     val navBarHeightPx = if (isWideLayout) 0f else with(density) { 56.dp.toPx() }
-    val miniBarHeightPx = with(density) { 56.dp.toPx() }
+    // v2.5.5 · C：托盘高度改由 TrayLayout 唯一提供（旧实现是这里与 PlayerCard、与
+    // BottomOverlayInset 各写一份 56.dp）。它是 collapsedOffsetY 的一项，写错的表现是
+    // 「卡片收起后与托盘之间露出一条空白带」，同时让折叠态命中区判定（collapsedHitGate /
+    // isOverCardVisibleArea）整体错位 —— 与「托盘高度」在代码上没有任何可见关联。
+    val miniBarHeightPx = with(density) { TrayLayout.HEIGHT_DP.dp.toPx() }
     val screenHeightPx = with(density) { LocalConfiguration.current.screenHeightDp.dp.toPx() }
     // 内容区高度：车机用根布局实测（CarSystemUI 把内容区 inset 到系统栏之间，但
     // WindowInsets 全为 0、screenHeightDp 又对不上）；手机/平板沿用 screenHeightDp，

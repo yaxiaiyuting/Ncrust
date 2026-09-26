@@ -1,0 +1,224 @@
+{
+  "device": "3B15CD00GB700000",
+  "tag": "run1",
+  "tap": [
+    570,
+    705
+  ],
+  "t_tap_after_minus_before_ms": 79,
+  "frames": [
+    {
+      "idx": 0,
+      "file": "frame_000.png",
+      "t_before": 0.079,
+      "t_after": 0.521,
+      "bytes": 340447
+    },
+    {
+      "idx": 1,
+      "file": "frame_001.png",
+      "t_before": 0.521,
+      "t_after": 0.849,
+      "bytes": 204381
+    },
+    {
+      "idx": 2,
+      "file": "frame_002.png",
+      "t_before": 0.849,
+      "t_after": 1.161,
+      "bytes": 204241
+    },
+    {
+      "idx": 3,
+      "file": "frame_003.png",
+      "t_before": 1.161,
+      "t_after": 1.466,
+      "bytes": 204149
+    },
+    {
+      "idx": 4,
+      "file": "frame_004.png",
+      "t_before": 1.466,
+      "t_after": 1.782,
+      "bytes": 204306
+    },
+    {
+      "idx": 5,
+      "file": "frame_005.png",
+      "t_before": 1.782,
+      "t_after": 2.083,
+      "bytes": 204138
+    },
+    {
+      "idx": 6,
+      "file": "frame_006.png",
+      "t_before": 2.083,
+      "t_after": 2.387,
+      "bytes": 204303
+    },
+    {
+      "idx": 7,
+      "file": "frame_007.png",
+      "t_before": 2.387,
+      "t_after": 2.689,
+      "bytes": 174647
+    },
+    {
+      "idx": 8,
+      "file": "frame_008.png",
+      "t_before": 2.689,
+      "t_after": 2.984,
+      "bytes": 173826
+    },
+    {
+      "idx": 9,
+      "file": "frame_009.png",
+      "t_before": 2.984,
+      "t_after": 3.676,
+      "bytes": 173896
+    },
+    {
+      "idx": 10,
+      "file": "frame_010.png",
+      "t_before": 3.676,
+      "t_after": 3.977,
+      "bytes": 173822
+    },
+    {
+      "idx": 11,
+      "file": "frame_011.png",
+      "t_before": 3.977,
+      "t_after": 4.28,
+      "bytes": 173941
+    },
+    {
+      "idx": 12,
+      "file": "frame_012.png",
+      "t_before": 4.28,
+      "t_after": 4.581,
+      "bytes": 173703
+    },
+    {
+      "idx": 13,
+      "file": "frame_013.png",
+      "t_before": 4.581,
+      "t_after": 4.879,
+      "bytes": 173937
+    },
+    {
+      "idx": 14,
+      "file": "frame_014.png",
+      "t_before": 4.879,
+      "t_after": 5.187,
+      "bytes": 173853
+    },
+    {
+      "idx": 15,
+      "file": "frame_015.png",
+      "t_before": 5.187,
+      "t_after": 5.519,
+      "bytes": 173800
+    },
+    {
+      "idx": 16,
+      "file": "frame_016.png",
+      "t_before": 5.519,
+      "t_after": 5.852,
+      "bytes": 173994
+    },
+    {
+      "idx": 17,
+      "file": "frame_017.png",
+      "t_before": 5.852,
+      "t_after": 6.145,
+      "bytes": 173822
+    },
+    {
+      "idx": 18,
+      "file": "frame_018.png",
+      "t_before": 6.145,
+      "t_after": 6.462,
+      "bytes": 173837
+    },
+    {
+      "idx": 19,
+      "file": "frame_019.png",
+      "t_before": 6.462,
+      "t_after": 6.768,
+      "bytes": 174617
+    },
+    {
+      "idx": 20,
+      "file": "frame_020.png",
+      "t_before": 6.768,
+      "t_after": 7.081,
+      "bytes": 174430
+    },
+    {
+      "idx": 21,
+      "file": "frame_021.png",
+      "t_before": 7.081,
+      "t_after": 7.386,
+      "bytes": 174633
+    },
+    {
+      "idx": 22,
+      "file": "frame_022.png",
+      "t_before": 7.386,
+      "t_after": 7.69,
+      "bytes": 174520
+    },
+    {
+      "idx": 23,
+      "file": "frame_023.png",
+      "t_before": 7.69,
+      "t_after": 7.99,
+      "bytes": 174482
+    },
+    {
+      "idx": 24,
+      "file": "frame_024.png",
+      "t_before": 7.99,
+      "t_after": 8.302,
+      "bytes": 174621
+    },
+    {
+      "idx": 25,
+      "file": "frame_025.png",
+      "t_before": 8.302,
+      "t_after": 8.608,
+      "bytes": 174438
+    },
+    {
+      "idx": 26,
+      "file": "frame_026.png",
+      "t_before": 8.608,
+      "t_after": 8.918,
+      "bytes": 174506
+    },
+    {
+      "idx": 27,
+      "file": "frame_027.png",
+      "t_before": 8.918,
+      "t_after": 9.256,
+      "bytes": 174563
+    },
+    {
+      "idx": 28,
+      "file": "frame_028.png",
+      "t_before": 9.256,
+      "t_after": 9.783,
+      "bytes": 174408
+    },
+    {
+      "idx": 29,
+      "file": "frame_029.png",
+      "t_before": 9.783,
+      "t_after": 10.158,
+      "bytes": 174430
+    }
+  ],
+  "aggregate_lines": [],
+  "qq_lines": [],
+  "captured_at": "2026-09-26T18:38:13+0800"
+}

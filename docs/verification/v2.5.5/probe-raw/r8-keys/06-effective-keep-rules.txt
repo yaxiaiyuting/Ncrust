@@ -1,0 +1,11 @@
+# 命令: grep -n 'takahashirinta' mapping/release/configuration.txt （R8 实际生效的配置）
+124:-keep class com.takahashirinta.ncrust.network.** { *; }
+125:-keep class com.takahashirinta.ncrust.network.model.** { *; }
+126:-keep class com.takahashirinta.ncrust.lyric.** { *; }
+133:-keep class com.takahashirinta.ncrust.playlist.** { *; }
+144:-keep class com.takahashirinta.ncrust.local.** { *; }
+190:-keep class com.takahashirinta.ncrust.BuildConfig { *; }
+202:-keep class com.takahashirinta.ncrust.crosssource.** { *; }
+1017:-keep class com.takahashirinta.ncrust.MainActivity { <init>(); }
+1018:-keep class com.takahashirinta.ncrust.NcrustApplication { <init>(); }
+1019:-keep class com.takahashirinta.ncrust.player.PlaybackService { <init>(); }

@@ -1,0 +1,30 @@
+QQ_ID_FLAG(1L shl 62) = 4611686018427387904
+Long.MAX_VALUE        = 9223372036854775807
+Long.signum(QQ_ID_FLAG) = 1
+
+样本                                       十进制    符号     >0    isQqId source          qqRawId
+--------------------------------------------------------------------------------------------
+真机 QQ《怪我太天真》             4611686018784987997     +   true      true QQMUSIC       357600093
+  其裸 songid                        357600093     +   true     false NETEASE            null
+网易云 S6 样本                             557920     +   true     false NETEASE            null
+网易云《晴天》                               186016     +   true     false NETEASE            null
+只有 bit62                 4611686018427387904     +   true      true QQMUSIC               0
+bit62+1                  4611686018427387905     +   true      true QQMUSIC               1
+bit62+1e9                4611686019427387904     +   true      true QQMUSIC      1000000000
+
+入口卫语句逐条求值（cookie 含 MUSIC_U 与 __csrf，即网易云已登录）：
+  真机 QQ《怪我太天真》           id=  4611686018784987997 -> PASS：会发出上报
+    其裸 songid            id=            357600093 -> PASS：会发出上报
+  网易云 S6 样本              id=               557920 -> PASS：会发出上报
+  网易云《晴天》                id=               186016 -> PASS：会发出上报
+  只有 bit62               id=  4611686018427387904 -> PASS：会发出上报
+  bit62+1                id=  4611686018427387905 -> PASS：会发出上报
+  bit62+1e9              id=  4611686019427387904 -> PASS：会发出上报
+
+reachedCompletion（float 除法，阈值 0.8f）：
+  reachedCompletion(pos=      0, dur=      0) = false
+  reachedCompletion(pos=      0, dur= 200000) = false
+  reachedCompletion(pos= 159999, dur= 200000) = false
+  reachedCompletion(pos= 160000, dur= 200000) = true
+  reachedCompletion(pos= 200000, dur= 200000) = true
+  reachedCompletion(pos=      1, dur=      3) = false

@@ -1,0 +1,23 @@
+# 命令: grep -c '^<FQCN>' seeds.txt —— keep 规则命中时 seeds.txt 列出该类与其成员；0 = 未被 keep
+com.takahashirinta.ncrust.network.SongItem                               51
+com.takahashirinta.ncrust.cache.OfflineTrack                             0
+com.takahashirinta.ncrust.player.PlaybackStateManager$PositionEntry      0
+com.takahashirinta.ncrust.library.AlbumInfo                              0
+com.takahashirinta.ncrust.lyric.CachedLyrics                             36
+com.takahashirinta.ncrust.playlist.PlaylistCacheCodec$PlaylistDto        40
+com.takahashirinta.ncrust.library.SearchHistoryCodec$EntryDto            8
+com.takahashirinta.ncrust.qq.QqFallbackCounters                          13
+
+## network.SongItem 的 seeds 成员（示例：keep 规则把字段名一并保住）
+com.takahashirinta.ncrust.network.SongItem
+com.takahashirinta.ncrust.network.SongItem: java.lang.Integer originCoverType
+com.takahashirinta.ncrust.network.SongItem: int $stable
+com.takahashirinta.ncrust.network.SongItem: java.lang.String sourceId
+com.takahashirinta.ncrust.network.SongItem: java.util.List artists
+com.takahashirinta.ncrust.network.SongItem: java.lang.String name
+com.takahashirinta.ncrust.network.SongItem: java.lang.Boolean memberOnly
+com.takahashirinta.ncrust.network.SongItem: java.lang.Long duration
+com.takahashirinta.ncrust.network.SongItem: com.takahashirinta.ncrust.network.model.AlbumItem album
+com.takahashirinta.ncrust.network.SongItem: java.lang.String mediaId
+com.takahashirinta.ncrust.network.SongItem: com.takahashirinta.ncrust.network.NoCopyrightRecommendation noCopyright
+com.takahashirinta.ncrust.network.SongItem: java.lang.Integer fee

@@ -1,0 +1,44 @@
+== 生成时间 2026-09-26T18:39:57+08:00 ==
+$ unzip -l benchmark/build/outputs/apk/debug/benchmark-debug.apk | grep -E 'assets/|lib/'
+   265320  1981-01-01 01:01   lib/arm64-v8a/libbenchmarkNative.so
+  3807496  1981-01-01 01:01   lib/arm64-v8a/libtracing_perfetto.so
+   155048  1981-01-01 01:01   lib/armeabi-v7a/libbenchmarkNative.so
+  2718476  1981-01-01 01:01   lib/armeabi-v7a/libtracing_perfetto.so
+   232452  1981-01-01 01:01   lib/x86/libbenchmarkNative.so
+  3924944  1981-01-01 01:01   lib/x86/libtracing_perfetto.so
+   251688  1981-01-01 01:01   lib/x86_64/libbenchmarkNative.so
+  4010792  1981-01-01 01:01   lib/x86_64/libtracing_perfetto.so
+ 10799128  1981-01-01 01:01   assets/trace_processor_shell_aarch64
+  8373124  1981-01-01 01:01   assets/trace_processor_shell_arm
+ 11999808  1981-01-01 01:01   assets/trace_processor_shell_x86
+ 11218896  1981-01-01 01:01   assets/trace_processor_shell_x86_64
+  2204216  1981-01-01 01:01   assets/tracebox_aarch64
+  1398084  1981-01-01 01:01   assets/tracebox_arm
+  2416252  1981-01-01 01:01   assets/tracebox_x86
+  2244944  1981-01-01 01:01   assets/tracebox_x86_64
+
+$ du -h benchmark/build/outputs/apk/debug/benchmark-debug.apk
+39M	benchmark/build/outputs/apk/debug/benchmark-debug.apk
+
+$ cat benchmark/build/outputs/apk/debug/output-metadata.json
+{
+  "version": 3,
+  "artifactType": {
+    "type": "APK",
+    "kind": "Directory"
+  },
+  "applicationId": "com.takahashirinta.ncrust.benchmark",
+  "variantName": "debug",
+  "elements": [
+    {
+      "type": "SINGLE",
+      "filters": [],
+      "attributes": [],
+      "versionCode": 0,
+      "versionName": "",
+      "outputFile": "benchmark-debug.apk"
+    }
+  ],
+  "elementType": "File",
+  "minSdkVersionForDexing": 24
+}

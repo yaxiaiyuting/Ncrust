@@ -1,0 +1,38 @@
+== 生成时间 2026-09-26T18:39:57+08:00 ==
+$ aapt2 dump badging app/build/outputs/apk/release/app-release.apk
+package: name='com.takahashirinta.ncrust' versionCode='45' versionName='2.5.4-gpl' platformBuildVersionName='16' platformBuildVersionCode='36' compileSdkVersion='36' compileSdkVersionCodename='16'
+minSdkVersion:'24'
+targetSdkVersion:'36'
+uses-permission: name='android.permission.INTERNET'
+uses-permission: name='android.permission.ACCESS_NETWORK_STATE'
+uses-permission: name='android.permission.FOREGROUND_SERVICE'
+uses-permission: name='android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK'
+uses-permission: name='android.permission.WAKE_LOCK'
+
+$ apksigner verify --print-certs -v app/build/outputs/apk/release/app-release.apk
+
+Verifies
+Verified using v1 scheme (JAR signing): false
+Verified using v2 scheme (APK Signature Scheme v2): true
+Verified using v3 scheme (APK Signature Scheme v3): false
+Verified using v3.1 scheme (APK Signature Scheme v3.1): false
+Verified using v4 scheme (APK Signature Scheme v4): false
+Verified for SourceStamp: false
+Number of signers: 1
+Signer #1 certificate DN: CN=Ncrust GPL Fork, OU=Personal, O=yaxiaiyuting, L=Unknown, ST=Unknown, C=CN
+Signer #1 certificate SHA-256 digest: e75af3ffbcf76a36a567188d88d132adf3c7484c53c20a3a083cb1d222025511
+Signer #1 certificate SHA-1 digest: 12f56c4b8bcdb72590f198e247210842e54d9b38
+Signer #1 certificate MD5 digest: ae4b8c93d4dce7754c5cd72721f05884
+Signer #1 key algorithm: RSA
+
+$ ls -l app/build/outputs/apk/release/ benchmark/build/outputs/apk/debug/
+app/build/outputs/apk/release/:
+总计 9812
+-rw-r--r-- 1 duanjb666 duanjb666 10042824  9月26日 15:27 app-release.apk
+drwxr-xr-x 1 duanjb666 duanjb666        4  9月26日 15:27 baselineProfiles
+-rw-r--r-- 1 duanjb666 duanjb666      720  9月26日 15:27 output-metadata.json
+
+benchmark/build/outputs/apk/debug/:
+总计 39040
+-rw-r--r-- 1 duanjb666 duanjb666 39971640  9月26日 15:03 benchmark-debug.apk
+-rw-r--r-- 1 duanjb666 duanjb666      420  9月26日 15:03 output-metadata.json

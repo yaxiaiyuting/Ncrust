@@ -1,0 +1,107 @@
+# 命令: /tmp/fieldmap.sh <FQCN>  —— 提取 mapping.txt 中该类的字段映射行
+# mapping.txt: /home/duanjb666/deepseek/ncrust-gpl/Ncrust/app/build/outputs/mapping/release/mapping.txt (v2.5.4 release / versionCode 45 / versionName 2.5.4-gpl)
+# awk: 命中 '^<FQCN> ->' 进入该类，跳过 '#' 注释行，输出字段行（无 '(' 且含 ' -> '）
+########## com.takahashirinta.ncrust.cache.OfflineTrack
+com.takahashirinta.ncrust.cache.OfflineTrack -> F4.h:
+    long songId -> a
+    java.lang.String name -> b
+    java.lang.String artist -> c
+    java.lang.String albumPicUrl -> d
+    java.lang.Long durationMs -> e
+    java.lang.String level -> f
+    java.lang.String cacheKey -> g
+    java.lang.Long approxBytes -> h
+    java.lang.Long completedAt -> i
+########## com.takahashirinta.ncrust.cache.OfflineUrlIndex
+com.takahashirinta.ncrust.cache.OfflineUrlIndex -> F4.i:
+    int maxEntries -> a
+    java.util.LinkedHashMap map -> b
+########## com.takahashirinta.ncrust.player.PlaybackStateManager$PositionEntry
+com.takahashirinta.ncrust.player.PlaybackStateManager$PositionEntry -> H4.F:
+    long posMs -> a
+    long savedAtMs -> b
+########## com.takahashirinta.ncrust.player.PlaybackStateManager$SavedState
+com.takahashirinta.ncrust.player.PlaybackStateManager$SavedState -> H4.G:
+    long songId -> a
+    java.lang.String songName -> b
+    java.lang.String songArtist -> c
+    java.lang.String songArtwork -> d
+    boolean isPlaying -> e
+########## com.takahashirinta.ncrust.library.AlbumInfo
+com.takahashirinta.ncrust.library.AlbumInfo -> G4.a:
+    long albumId -> a
+    java.lang.String name -> b
+    java.lang.String picUrl -> c
+    java.lang.String artist -> d
+    int songCount -> e
+########## com.takahashirinta.ncrust.library.SearchHistoryCodec$EntryDto
+com.takahashirinta.ncrust.library.SearchHistoryCodec$EntryDto -> G4.k:
+    java.lang.Long id -> a
+    java.lang.String title -> b
+    java.lang.String coverUrl -> c
+    java.lang.String subtitle -> d
+    java.lang.Long timestamp -> e
+    java.lang.String source -> f
+    java.lang.String sourceId -> g
+    java.lang.String mediaId -> h
+########## com.takahashirinta.ncrust.library.SearchHistoryManager$HistoryItem
+com.takahashirinta.ncrust.library.SearchHistoryManager$HistoryItem -> G4.m:
+    long id -> a
+    java.lang.String title -> b
+    java.lang.String coverUrl -> c
+    java.lang.String subtitle -> d
+    long timestamp -> e
+    java.lang.String source -> f
+    java.lang.String sourceId -> g
+    java.lang.String mediaId -> h
+########## com.takahashirinta.ncrust.qq.QqFallbackCounters
+com.takahashirinta.ncrust.qq.QqFallbackCounters -> I4.I:
+    java.lang.Long parsedTotal -> a
+    java.lang.Long parsedNoSongId -> b
+    java.lang.Long parsedNoMediaMid -> c
+    java.lang.Long resolveTotal -> d
+    java.lang.Long resolveNoSongMid -> e
+    java.lang.Long resolveMediaMidFallback -> f
+    java.lang.Long resolveOk -> g
+    java.lang.Long resolveFail -> h
+    java.lang.Long fallbackPlaybackConfirmed -> i
+    java.lang.Long fallbackPlaybackFailed -> j
+    java.lang.Long firstSeenAtMs -> k
+    java.lang.Long lastUpdatedAtMs -> l
+    java.lang.Integer schemaVersion -> m
+########## com.takahashirinta.ncrust.lyric.CachedLyrics
+com.takahashirinta.ncrust.lyric.CachedLyrics -> com.takahashirinta.ncrust.lyric.CachedLyrics:
+########## com.takahashirinta.ncrust.network.SongItem
+com.takahashirinta.ncrust.network.SongItem -> com.takahashirinta.ncrust.network.SongItem:
+########## com.takahashirinta.ncrust.network.PlaylistApi$PlaylistCard
+com.takahashirinta.ncrust.network.PlaylistApi$PlaylistCard -> com.takahashirinta.ncrust.network.PlaylistApi$PlaylistCard:
+########## com.takahashirinta.ncrust.local.LocalPlaylistCodec$LocalPlaylistDto
+com.takahashirinta.ncrust.local.LocalPlaylistCodec$LocalPlaylistDto -> com.takahashirinta.ncrust.local.LocalPlaylistCodec$LocalPlaylistDto:
+########## com.takahashirinta.ncrust.local.LocalPlaylistCodec$LocalTrackDto
+com.takahashirinta.ncrust.local.LocalPlaylistCodec$LocalTrackDto -> com.takahashirinta.ncrust.local.LocalPlaylistCodec$LocalTrackDto:
+########## com.takahashirinta.ncrust.local.LocalPlaylistCodec$PlaylistEnvelopeDto
+com.takahashirinta.ncrust.local.LocalPlaylistCodec$PlaylistEnvelopeDto -> com.takahashirinta.ncrust.local.LocalPlaylistCodec$PlaylistEnvelopeDto:
+########## com.takahashirinta.ncrust.crosssource.MatchCacheCodec$EnvelopeDto
+com.takahashirinta.ncrust.crosssource.MatchCacheCodec$EnvelopeDto -> com.takahashirinta.ncrust.crosssource.MatchCacheCodec$EnvelopeDto:
+########## com.takahashirinta.ncrust.crosssource.MatchCacheCodec$AliasDto
+com.takahashirinta.ncrust.crosssource.MatchCacheCodec$AliasDto -> com.takahashirinta.ncrust.crosssource.MatchCacheCodec$AliasDto:
+########## com.takahashirinta.ncrust.playlist.PlaylistCacheCodec$PlaylistDto
+com.takahashirinta.ncrust.playlist.PlaylistCacheCodec$PlaylistDto -> com.takahashirinta.ncrust.playlist.PlaylistCacheCodec$PlaylistDto:
+########## com.takahashirinta.ncrust.playlist.PlaylistCacheCodec$SongDto
+com.takahashirinta.ncrust.playlist.PlaylistCacheCodec$SongDto -> com.takahashirinta.ncrust.playlist.PlaylistCacheCodec$SongDto:
+########## com.takahashirinta.ncrust.playlist.PlaylistCacheCodec$ListEnvelope
+com.takahashirinta.ncrust.playlist.PlaylistCacheCodec$ListEnvelope -> com.takahashirinta.ncrust.playlist.PlaylistCacheCodec$ListEnvelope:
+########## com.takahashirinta.ncrust.playlist.PlaylistCacheCodec$DetailEnvelope
+com.takahashirinta.ncrust.playlist.PlaylistCacheCodec$DetailEnvelope -> com.takahashirinta.ncrust.playlist.PlaylistCacheCodec$DetailEnvelope:
+########## com.takahashirinta.ncrust.ui.theme.ThemeMode
+com.takahashirinta.ncrust.ui.theme.ThemeMode -> S4.s:
+    com.takahashirinta.ncrust.ui.theme.ThemeMode SYSTEM -> U
+    com.takahashirinta.ncrust.ui.theme.ThemeMode DARK -> V
+    com.takahashirinta.ncrust.ui.theme.ThemeMode LIGHT -> W
+    com.takahashirinta.ncrust.ui.theme.ThemeMode[] $VALUES -> X
+########## com.takahashirinta.ncrust.ui.theme.AccentSource
+com.takahashirinta.ncrust.ui.theme.AccentSource -> S4.a:
+    com.takahashirinta.ncrust.ui.theme.AccentSource PRESET -> U
+    com.takahashirinta.ncrust.ui.theme.AccentSource COVER -> V
+    com.takahashirinta.ncrust.ui.theme.AccentSource SYSTEM -> W
+    com.takahashirinta.ncrust.ui.theme.AccentSource[] $VALUES -> X
