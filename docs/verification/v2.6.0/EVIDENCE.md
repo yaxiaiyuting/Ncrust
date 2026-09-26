@@ -244,3 +244,55 @@ bash docs/verification/v2.6.0/verification/ui-drive.sh <serial> tap "列表式"
 bash docs/verification/v2.6.0/verification/ui-drive.sh <serial> shot /tmp/x.png
 bash docs/verification/v2.6.0/verification/ui-drive.sh <serial> prefs ncrust_settings.xml
 ```
+
+---
+
+## 8. 发布物回填（发布动作完成后写入）
+
+| 项 | 值 |
+|---|---|
+| tag | `v2.6.0-gpl`（**附注 tag** `c87a1993`）→ 提交 **`793702d6e18b32ecf60d8819de255b6422f207ac`** |
+| draft release | https://github.com/yaxiaiyuting/Ncrust/releases/tag/untagged-5b90b47cec94b90d8fd4 |
+| release APK | `Ncrust-v2.6.0-gpl-release.apk` · 10,075,592 字节 · `sha256:08d861d6cd3ab585f95b03806ccc2713d34e800d776e3d43fbc18ea45025eeb6` |
+| debug APK | `Ncrust-v2.6.0-gpl-debug.apk` · 30,860,654 字节 · `sha256:98fad35347abd356c0feb5234cbde6aa445b467b4fa06189b088ff2a880f43d1` |
+| GitHub 侧 digest | 与上两行**逐字符一致**（`gh release view --json assets` 回读） |
+| `dist/` 副本 | `Ncrust-v2.6.0-gpl-{release,debug}.apk` + `SHA256SUMS-v2.6.0-gpl.txt` |
+
+### HEAD == 产物源码（**机器可验，不是声明**）
+
+1. release APK 里内嵌 `META-INF/version-control-info.textproto`：
+
+   ```text
+   repositories {
+     system: GIT
+     local_root_path: "$PROJECT_DIR"
+     revision: "793702d6e18b32ecf60d8819de255b6422f207ac"
+   }
+   ```
+
+   这正是 tag 指向的提交。
+2. 在最终 HEAD 上再跑一次 `./gradlew :app:assembleRelease` → **`assembleRelease` 之前所有任务 UP-TO-DATE**，
+   产物 sha256 不变（`08d861d6…`）。
+3. `git diff <(git rev-parse v2.6.0-gpl^{}:app) <(git rev-parse HEAD:app)` → **无差异**
+   （tag 之后的提交只动 `docs/`）。
+
+### 一处容易看错的差异（记录下来，避免下一个人以为产物与 HEAD 不一致）
+
+第一次 `assembleRelease`（提交**之前**）产出的 sha256 是 `12d075b4…`，
+与最终的 `08d861d6…` **不同**。原因是 AGP 的 `extractReleaseVersionControlInfo`
+把 **HEAD 的提交号**写进了 APK —— 提交之后 HEAD 变了，产物自然变。
+所以「先出包再提交」在这个仓库里必然要重出一次：
+**versionCode 提交必须在产出正式产物的那次构建之前**（与 v2.1.3 的 tag 位置教训同源），
+本次流程是「全量验证构建 → `build: 升级至 …` 提交 → 出产物 → tag → push → draft」。
+
+### 已发布 tag 的完整性
+
+`git ls-remote --tags origin` 回读：`v2.5.6-gpl^{} = fb2aef1f…`、`v2.5.5-gpl^{} = de304d38…`、
+`v2.5.4-gpl^{} = cc30c753…` —— 与本次开工前记录的值**逐字符相同**。
+本次只**新增** `v2.6.0-gpl`，**没有**推送 / 强推 / 删除任何既有 tag（铁律 7）。
+
+### 设备收尾
+
+S6 上安装的是 `v2.6.0-gpl / versionCode 48`（release，项目签名）；
+探针注入的条目已删除并回读确认（`saved_songs entries = 147, probe entry present = False`）；
+登录态（网易云 + QQ）全程未动；原 prefs 备份仍在 `/data/local/tmp/ncrust_library.bak`。
